@@ -1,0 +1,258 @@
+﻿@model HulubejeBooking.Models.CInemaModels.MovieModel
+<head>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column; /* Stack children vertically */
+        }
+
+        .background-container {
+            position: relative;
+            height: 60vh; /* Set height to 75% of the viewport height */
+            overflow: hidden;
+        }
+
+        .background-image {
+            height: 100%; /* Set height to 100% of the container */
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center the content vertically */
+            position: relative; /* Set position to relative for absolute positioning */
+        }
+
+            .background-image::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: url('@Model.BackdropPath') center/cover no-repeat; /* Set backdrop as background */
+                filter: blur(2px); /* Add a 5px blur effect to the background image */
+            }
+
+        .info-container {
+            background-color: rgba(255, 255, 255, 0.4);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: -30px; /* Adjust margin to overlap with the background image */
+            z-index: 2; /* Bring the content to the front */
+        }
+
+            .info-container img {
+                width: 300px; /* Set the width to your desired value */
+                height: 450px; /* Set the height to your desired value */
+                object-fit: cover; /* Maintain aspect ratio and cover the container */
+                border-radius: 8px; /* Add border-radius for a rounded look */
+            }
+
+        h3 {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            font-size: 24px;
+            color: white; /* Blue color for CompanyName */
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        h4, p {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .companyName {
+            color: black;
+            font-size: 40px;
+        }
+        /* Add this CSS to your stylesheet */
+        .btn:focus,
+        .btn:active {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .cast-section {
+            overflow-x: auto; /* Enable horizontal scrolling */
+            white-space: nowrap; /* Prevent line breaks */
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            z-index: 1; /* Bring the cast section to the front */
+        }
+
+        .cast-card {
+            display: inline-block;
+            margin: 0 10px; /* Adjust margin for spacing */
+            max-width: 180px; /* Set the maximum width of the cast card */
+            text-align: center;
+        }
+
+            .cast-card img {
+                max-width: 100%;
+                max-height: 200px; /* Set the maximum height of the cast card image */
+                height: auto;
+                border-radius: 8px;
+            }
+
+        .cast-card-title {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <div class="background-image">
+            <!-- Empty container to hold the background image -->
+            <div class="info-container container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img src="@Model.PosterUrl" alt="Movie Poster">
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="companyName" style="background-color:rgba(0,0,0,0.3) ">@Model.CompanyName</h4>
+                        <h1 style="color: white">@Model.MovieName</h1>
+                        <h4>Overview</h4>
+                        <p>@Model.Overview</p>
+                        <div>
+                            @functions {
+                                // Helper function to get the color based on genre
+                                string GetGenreColor(string genreName)
+                                {
+                                    switch (genreName)
+                                    {
+                                        case "Action": return "#E57373";
+                                        case "Adventure": return "#81C784";
+                                        case "Animation": return "#64B5F6";
+                                        case "Comedy": return "#FFD54F";
+                                        case "Crime": return "#BA68C8";
+                                        case "Documentary": return "#90A4AE";
+                                        case "Drama": return "#FFB74D";
+                                        case "Family": return "#A1887F";
+                                        case "Fantasy": return "#B0BEC5";
+                                        case "History": return "#9575CD";
+                                        case "Horror": return "#EC407A";
+                                        case "Music": return "#FFF176";
+                                        case "Mystery": return "#7986CB";
+                                        case "Romance": return "#F48FB1";
+                                        case "Science Fiction": return "#80DEEA";
+                                        case "TV Movie": return "#C5E1A5";
+                                        case "Thriller": return "#64B5F6";
+                                        case "War": return "#FF8A65";
+                                        case "Western": return "#BCAAA4";
+                                        default: return "lightgray";
+                                    }
+                                }
+                            }
+                            @if (Model.Genres is not null)
+                            {
+                                <h4>Genres</h4>
+                                @foreach (var genre in Model.Genres)
+                                {
+                                    if (genre.Name is not null)
+                                    {
+                                        <div style="display: inline-block; margin-right: 15px; padding: 5px; background-color:@GetGenreColor(genre.Name); color:white; border-radius:7px;">@genre.Name</div>
+                                    }
+                                }
+                            }
+                        </div>
+                        <div>
+                            @if (Model.GenreNames is not null)
+                            {
+                                @foreach (var genres in Model.GenreNames)
+                                {
+                                    <div class="genres">
+                                        @genres
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div>
+                            <h4 style="display: inline-block; margin-right: 10px;">Runtime:</h4>
+                            <p style="display: inline-block;">@Model.FormattedRunTime</p>
+                        </div>
+                        <div>
+                            <h4 style="display: inline-block; margin-right: 10px;">Pg-Rating:</h4>
+                            <p style="display: inline-block;">@Model.PgRating</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Existing code ... -->
+
+    <div class="container py-5">
+        <h4 style="color: black">
+            Casts
+        </h4>
+        @if (Model.Cast is not null)
+        {
+            <div class="cast-section">
+                @foreach (var castMember in Model.Cast.Take(10))
+                {
+                    <div class="cast-card">
+                        @if (castMember.ProfilePath == "https://image.tmdb.org/t/p/w500")
+                        {
+                            <img src="../Assets/NoCastImage.jpg" alt="@castMember.Name">
+                        }
+                        else
+                        {
+                            <img src="@castMember.ProfilePath" alt="@castMember.Name">
+                        }
+                        <div class="cast-card-title">@castMember.Name</div>
+                    </div>
+                }
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-6" style="margin-top: 30px;">
+                @if (!string.IsNullOrEmpty(Model.YoutubeKey))
+                {
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/@Model.YoutubeKey?rel=0" frameborder="0" allowfullscreen></iframe>
+                }
+                else
+                {
+                    <partial name="_Schedules" />
+                }
+            </div>
+
+            <div class="col-md-6" style="margin-top: 30px;">
+                @if (!string.IsNullOrEmpty(Model.YoutubeKey))
+                {
+                    <partial name="_Schedules" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function onScheduleButtonClick(spacecode, companyTinNumber, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, price, hallName, utcTime) {
+
+            var form = $('<form action="/CinemaSeatLayout/SeatArrangement" method="post">' +
+                '<input type="hidden" name="spacecode" value="' + spacecode + '" />' +
+                '<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />' +
+                '<input type="hidden" name="companyName" value="' + companyName + '" />' +
+                '<input type="hidden" name="movieName" value="' + movieName + '" />' +
+                '<input type="hidden" name="movieCode" value="' + movieCode + '" />' +
+                '<input type="hidden" name="dimension" value="' + dimension + '" />' +
+                '<input type="hidden" name="spaceType" value="' + spaceType + '" />' +
+                '<input type="hidden" name="selectedDate" value="' + selectedDate + '" />' +
+                '<input type="hidden" name="code" value="' + code + '" />' +
+                '<input type="hidden" name="price" value="' + price + '" />' +
+                '<input type="hidden" name="hallName" value="' + hallName + '" />' +
+                '<input type="hidden" name="utcTime" value="' + utcTime + '" />' +
+                '</form>');
+            // Append the form to the body
+            $('body').append(form);
+
+            // Submit the form
+            form.submit();
+        }
+    </script>
+</body>
