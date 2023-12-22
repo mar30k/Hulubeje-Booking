@@ -1,0 +1,212 @@
+﻿@model HulubejeBooking.Models.CInemaModels.SeatLayout
+<style>
+    .container-xl {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .buttons:hover {
+        background-color: green;
+        color: white;
+        cursor: pointer;
+    }
+
+    .buttons {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        font-size: 10px;
+        font-weight: 400;
+        background: #fff;
+        border: 1px solid #1ea83c;
+        border-radius: 2px;
+        color: #1ea83c;
+        width: 100%;
+        height: 100%;
+    }
+
+    .hall {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+        .hall .p {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            background: #fff;
+            width: 100%;
+            height: 100%;
+        }
+
+    .booked-seat {
+        background-color: blue;
+        color: white;
+    }
+</style>
+<div class="row mt-3">
+    <div class="col-lg-10">
+        <div style="background: lightgrey; padding: 20px;" class="mr-2 mb-4">
+            @if (Model != null)
+            {
+                <div class="container">
+                </div>
+                @if (Model.Seats != null && Model.Seats.Any())
+                {
+                    <div style="display: flex;justify-content:safe center; align-items: center; overflow-x: auto; margin-top: 30px;">
+                        <table>
+                            @for (int y = Model.MaxY; y >= 1; y--)
+                            {
+                                <tr>
+                                    @for (int x = 1; x <= Model.MaxX; x++)
+                                    {
+                                        <td style="height: 30px !important; width: 30px !important">
+                                            @if (Model.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))
+                                            {
+                                                var seat = Model.Seats.First(seat => seat.X == x && seat.Y == y);
+
+                                                // Check if the seat is booked, sold, or taken
+                                                var isBooked = Model.BookedSeats?.Contains(seat.Code) ?? false;
+                                                var isSold = Model.SoldSeats?.Contains(seat.Code) ?? false;
+                                                var isTaken = Model.TakenSeats?.Contains(seat.Code) ?? false;
+
+                                                var backgroundColor = isBooked ? (isSold ? "red" : "blue") : (isTaken ? "orange" : "");
+                                                var textColor = isTaken || isBooked || (isBooked && isSold) ? "white" : "";
+
+                                                <button id="@seat.Code" class="buttons" onclick="return false" @(isBooked || isSold || isTaken ? "disabled" : "") style="background-color: @(backgroundColor); color: @(textColor)">
+                                                    @seat.Name
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <div class="hall">
+                                                    <p></p>
+                                                </div>
+                                            }
+                                        </td>
+
+                                    }
+                                </tr>
+
+                            }
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p>No seats available.</p>
+                }
+            }
+            else
+            {
+                <p>No seat arrangement data available.</p>
+            }
+        </div>
+    </div>
+    <div class="col-2  ml-0">
+        <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:280px; ">
+            <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model.CompanyName</h4>
+            <div style="text-align: left;">
+                <p style="margin: 0; color: #555; font-size: 15px;">
+                    <strong>Movie:</strong>&nbsp; @Model.MovieName
+                </p>
+                <p style="margin: 0; color: #555; font-size: 15px;">
+                    <strong>Hall Name:</strong>&nbsp; @Model.HallName
+                </p>
+                <p style="margin: 0; color: #555; font-size: 15px;">
+                    <strong>Time:</strong>&nbsp; @Model.UtcTime (@GetEthiopianTime(Model?.UtcTime) Local)
+                </p>
+                <p style="margin: 0; color: #555; font-size: 15px;">
+                    <strong>Date:</strong>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.SelectedDate)
+                </p>
+                <p style="margin: 0; color: #555; font-size: 15px;">
+                    <strong>Dimension:</strong>&nbsp;
+                    <span style="background-color: @(Model?.Dimension == "2D" ? "blue" : "red"); color:white; padding: 1.5px; border-radius:3px;">
+                        @Model?.Dimension
+                    </span>
+                </p>
+            </div>
+            <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
+                <div class="row">
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Available seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
+                                    @(Model.AvailableSeats?.Count(seatCode => Model.Seats.Any(seat => seat.Code == seatCode && !string.IsNullOrWhiteSpace(seat.Name))) - Model.TakenSeats?.Count ?? 0)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Booked seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@(Model.BookedSeats?.Count ?? 0)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Taken seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@(Model.TakenSeats?.Count ?? 0)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Sold seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@(Model.SoldSeats?.Count ?? 0)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@functions {
+    public string GetFormattedDateWithDayOfWeek(string? date)
+    {
+        DateTime parsedDate;
+        if (DateTime.TryParse(date, out parsedDate))
+        {
+            string dayOfWeek = parsedDate.ToString("ddd"); // Get abbreviated day of the week
+            string formattedDate = parsedDate.ToString("dd-MM-yyyy"); // "dd-MM-yyyy" gives the desired format
+
+            return $"{dayOfWeek} {formattedDate}";
+        }
+
+        return string.Empty;
+    }
+
+    public string GetEthiopianTime(string? utcTimeString)
+    {
+        if (DateTime.TryParse(utcTimeString, out DateTime utcTime))
+        {
+            // Convert UTC time to Ethiopia time
+            DateTime ethiopianTime = utcTime.AddHours(6);
+
+            return ethiopianTime.ToString("h.mm tt");
+        }
+
+        return "Invalid time format";
+    }
+}
