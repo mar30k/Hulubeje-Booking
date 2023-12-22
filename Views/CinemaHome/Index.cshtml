@@ -1,0 +1,186 @@
+﻿@using System.Web
+@model List<HulubejeBooking.Models.CInemaModels.MovieModel>;
+@{
+    DateTime today = DateTime.Today;
+    string minDate = today.ToString("yyyy-MM-dd");
+    string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
+}
+<html>
+    <body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center w-100 ml-5">
+                    <form asp-action="Index" method="post">
+                        <div class="calendar">
+                            @Html.TextBox("selectedDate", DateTime.Now.ToString("yyyy-MM-dd"), new { @class = "form-control", @type = "date", @onchange = "this.form.submit()", /* @min = minDate */ })
+                        </div>
+                    </form>
+                    <div class="Company Filter">
+                        <!-- Keep the search input, remove the filter button -->
+                        <div class="input-group">
+                            <input type="text" id="companyFilter" class="form-control" placeholder="Search By Cinemas" />
+                        </div>
+                    </div>
+                    <div class="Company Filter">
+                        <!-- Add a new input for filtering movies -->
+                        <div class="input-group">
+                            <input type="text" id="movieFilter" class="form-control" placeholder="Search By Movies" />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="today-date" style="display: inline-block; margin-top: 10px; margin-right: 10px;">
+                            <p style="margin-left:10px;">@formattedDate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="custom-container">
+        <div class="row mt-3">
+            <div id="filteredCardsContainer" class="card-container row flex-wrap" style="display: none;">
+                <!-- Filtered cards will be dynamically added here -->
+            </div>
+            <div id="moviesContainer">
+                <partial name="_MovieCardsPartial" />
+            </div>
+        </div>
+    </div>
+    @section Scripts {
+        <script>
+            function onDateSelect() {
+                // Get the selected date value
+                var selectedDate = document.getElementById("selectedDate").value;
+
+                // Make an AJAX request to fetch movies based on the selected date
+                $.ajax({
+                    url: '@Url.Action("Index", "Home")',
+                    type: 'POST',
+                    data: { selectedDate: selectedDate },
+                    success: function (data) {
+                        // Update the movies container with the new partial view
+                        $('#moviesContainer').html(data);
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        // Handle errors more gracefully
+                        var errorMessage = "Error fetching movies.";
+
+                        if (xhr.status === 500) {
+                            // If it's a server error, parse the response JSON for details
+                            try {
+                                var responseJson = JSON.parse(xhr.responseText);
+                                if (responseJson.ExceptionMessage) {
+                                    errorMessage = responseJson.ExceptionMessage;
+                                }
+                            } catch (error) {
+                                // Ignore and use the default error message
+                            }
+                        }
+
+                        // Update an element on your page with the error message
+                        $('#errorContainer').text(errorMessage);
+                    }
+                });
+            }
+
+            function filterByCompany() {
+                var companyFilterText = document.getElementById('companyFilter').value.trim().toLowerCase();
+                var moviesContainer = document.getElementById('moviesContainer');
+                var movieFilterInput = document.getElementById('movieFilter');
+                var filteredCardsContainer = document.getElementById('filteredCardsContainer');
+                filteredCardsContainer.classList.add('filtered-cards-container');
+
+                if (companyFilterText === '') {
+                    moviesContainer.style.display = 'block';
+                    moviesContainer.style.paddingLeft = '15px';
+                    moviesContainer.style.paddingRight = '15px';
+                    filteredCardsContainer.style.display = 'none';
+                    movieFilterInput.disabled = false;
+                } else {
+                    moviesContainer.style.display = 'none';
+                    filteredCardsContainer.style.display = 'flex';
+                    filteredCardsContainer.innerHTML = '';
+                    movieFilterInput.disabled = true;
+
+                    var cards = Array.from(moviesContainer.querySelectorAll('.movie-card'));
+
+                    cards.forEach(function (card) {
+                        var companyNameButtons = card.querySelectorAll('.button');
+                        var matchingButtons = Array.from(companyNameButtons).filter(function (button) {
+                            return button.textContent.trim().toLowerCase().includes(companyFilterText);
+                        });
+
+                        if (matchingButtons.length > 0) {
+                            var clonedCard = card.cloneNode(true);
+                            var buttonContainer = clonedCard.querySelector('.button-container');
+
+                            buttonContainer.innerHTML = '';
+
+                            matchingButtons.forEach(function (matchingButton) {
+                                buttonContainer.appendChild(matchingButton.cloneNode(true));
+                            });
+
+                            filteredCardsContainer.appendChild(clonedCard);
+                        }
+                    });
+                }
+            }
+
+            function filterByMovie() {
+                var movieFilterText = document.getElementById('movieFilter').value.trim().toLowerCase();
+                var companyFilterInput = document.getElementById('companyFilter');
+                var moviesContainer = document.getElementById('moviesContainer');
+                var filteredCardsContainer = document.getElementById('filteredCardsContainer');
+
+                if (movieFilterText === '') {
+                    moviesContainer.style.display = 'block';
+                    moviesContainer.style.paddingLeft = '15px';
+                    moviesContainer.style.paddingRight = '15px';
+                    filteredCardsContainer.style.display = 'none';
+                    companyFilterInput.disabled = false;
+                } else {
+                    moviesContainer.style.display = 'none';
+                    filteredCardsContainer.style.display = 'flex';
+                    companyFilterInput.disabled = true;
+
+                    filteredCardsContainer.innerHTML = '';
+
+                    var cards = Array.from(moviesContainer.querySelectorAll('.movie-card'));
+
+                    cards.forEach(function (card) {
+                        var movieTitle = card.querySelector('.card-title').textContent.trim().toLowerCase();
+
+                        if (movieTitle.includes(movieFilterText)) {
+                            var clonedCard = card.cloneNode(true);
+                            filteredCardsContainer.appendChild(clonedCard);
+                        }
+                    });
+                }
+            }
+
+            // Add event listeners to the search inputs for real-time filtering
+            document.getElementById('companyFilter').addEventListener('input', function () {
+                if (document.getElementById('movieFilter').value.trim().length > 0) {
+                    // Disable company filter if movie filter has text
+                    document.getElementById('companyFilter').disabled = true;
+                } else {
+                    filterByCompany();
+                    document.getElementById('companyFilter').disabled = false;
+                }
+            });
+
+            document.getElementById('movieFilter').addEventListener('input', function () {
+                if (document.getElementById('companyFilter').value.trim().length > 0) {
+                    // Disable movie filter if company filter has text
+                    document.getElementById('movieFilter').disabled = true;
+                } else {
+                    filterByMovie();
+                    document.getElementById('movieFilter').disabled = false;
+                }
+            });
+
+        </script>
+    }
+    </body>
+</html>
