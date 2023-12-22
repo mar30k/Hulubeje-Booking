@@ -1,0 +1,81 @@
+﻿<div>
+    <h2>Schedules</h2>
+    @foreach (var schedule in Model.Schedules)
+    {
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-6" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <div class="card-body">
+                        <p class="card-title" style="color: black; margin-bottom: 0;">
+                            @schedule.HallName
+                            @if (@schedule.Dimension == "2D")
+                            {
+                                <span class="badge bg-primary">@schedule.Dimension</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@schedule.Dimension</span>
+                            }
+                        </p>
+                        @{
+                            string utcTimeString = schedule.StartTime;
+
+                            if (DateTime.TryParse(utcTimeString, out DateTime utcTime))
+                            {
+                                DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
+                                // Add a 6-hour offset to match Ethiopia's local time interpretation
+                                if (ethiopianTime.ToString("tt").Equals("AM"))
+                                {
+                                    ethiopianTime = ethiopianTime.AddHours(6);
+                                }
+                                else
+                                {
+                                    ethiopianTime = ethiopianTime.AddHours(-6);
+                                }
+
+                                <p class="card-text" style="color: black; margin: 0;">@utcTime.ToString("h.mm tt")</p>
+                                <p class="card-text" style="color: black; margin: 0;">@ethiopianTime.ToString("h.mm tt") (Local)</p>
+                            }
+                            else
+                            {
+                                <p class="card-text" style="color: red; margin: 0;">Invalid date format</p>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-center justify-content-center">
+                    @if (schedule.Status == "CLOSED")
+                    {
+                        <button class="btn btn-danger" type="button" disabled>Closed</button>
+                    }
+                    else
+                    {
+                        var spaceType = "Regular";
+                        <button class="btn btn-success " onclick="onScheduleButtonClick('@schedule.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.CompanyName','@Model.MovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
+                                            '@Model.SelectedDate.ToString()','@schedule.Code','@schedule.NPrice','@schedule.HallName','@utcTime.ToString("h.mm tt")')" type="button">
+                            Book Now <br> @schedule.NPrice ETB
+                        </button>
+                    }
+                </div>
+
+                @if (schedule.VIP != null)
+                {
+                    <div class="col-md-3 d-flex align-items-center justify-content-center">
+                        @if (schedule.VIP.Status == "CLOSED")
+                        {
+                            <button class="btn btn-danger" type="button" disabled>Closed</button>
+                        }
+                        else
+                        {
+                            var spaceType = "VIP";
+                            <button class="btn btn-warning" onclick="onScheduleButtonClick('@schedule.VIP.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.CompanyName','@Model.MovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
+                                            '@Model.SelectedDate.ToString()','@schedule.VIP.Code','@schedule.VIP.VPrice','@schedule.VIP.HallName','@utcTime.ToString("h.mm tt")')" type="button">
+                                Book Vip <br> @schedule.VIP.VPrice ETB
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

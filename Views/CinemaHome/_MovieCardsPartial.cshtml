@@ -40,3 +40,28 @@ else
         <p class="no-movie">There are no movies available on this day</p>
     </div>
 }
+<script>
+    function onCompanyButtonClick(movieCode, companyName, overview, articleCode, posterUrl, movieName, movieId, backdropPath) {
+        var selectedDate = document.getElementById("selectedDate").value;
+
+        sessionStorage.setItem('selectedMovieName', movieName);
+        sessionStorage.setItem('selectedCompanyName ', companyName);
+        sessionStorage.setItem('selectedDate', selectedDate);
+        sessionStorage.setItem('articleCode', articleCode);
+        // Create a form dynamically
+        var form = $('<form action="/CinemaMovieDetails/Details" method="post">' +
+            '<input type="hidden" name="selectedDate" value="' + selectedDate + '" />' +
+            '<input type="hidden" name="movieCode" value="' + movieCode + '" />' +
+            '<input type="hidden" name="companyName" value="' + companyName + '" />' +
+            '<input type="hidden" name="overview" value="' + overview + '" />' +
+            '<input type="hidden" name="articleCode" value="' + articleCode + '" />' +
+            '<input type="hidden" name="posterUrl" value="' + posterUrl + '" />' +
+            '<input type="hidden" name="movieName" value="' + movieName + '" />' +
+            '<input type="hidden" name="movieId" value="' + movieId + '" />' +
+            '<input type="hidden" name="backdropPath" value="' + backdropPath + '" />' +
+            '</form>');
+        $('body').append(form);
+
+        form.submit();
+    }
+</script>
