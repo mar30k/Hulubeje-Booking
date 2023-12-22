@@ -1,6 +1,7 @@
 ﻿using HulubejeBooking.Models.HotelModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
@@ -55,6 +56,99 @@ namespace HulubejeBooking.Controllers.HotelController
             _hotelListBuffer._hotels = hotels;
 
             return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> HotelList([FromBody] FormData formData)
+        {
+            var _client = _httpClientFactory.CreateClient("HotelBooking");
+            List<GetModel> dataList = new List<GetModel>();
+
+            var cityName = formData.City;
+            var adultCount = formData.AdultCount;
+            var childCount = formData.ChildrenCount;
+            var roomCount = formData.RoomsCount;
+            var dt = DateRangeParser.parseDateRange(formData.DateRange);
+            var arrivalDate = dt.startDate;
+            var departureDate = dt.endDateString;
+            var numberOfDay = formData.numberOfNights;
+
+            if (numberOfDay <= 0)
+            {
+                numberOfDay = 1;
+            }
+
+
+            dataList = _hotelListBuffer._hotels;
+            if (dataList != null)
+            {
+                var filteredCompanies = dataList
+                    .SelectMany(hotel =>
+                        hotel.Branches
+                            .Where(branch => branch.City.Equals(cityName, StringComparison.OrdinalIgnoreCase))
+                            .Select(branch =>
+                                new FilteredCompany
+                                {
+                                    isSponsored = hotel.IsSponsored,
+                                    code = hotel.Code,
+                                    tradeName = hotel.TradeName,
+                                    brandName = hotel.BrandName,
+                                    industryType = hotel.IndustryType,
+                                    rating = hotel.Rating,
+                                    TIN = hotel.TIN,
+                                    attachments = hotel.Attachments,
+                                    registerDate = hotel.RegisterDate,
+                                    isTaxInclusive = hotel.IsTaxInclusive,
+                                    termsAndConditionUrl = hotel.TermsAndConditionsUrl,
+                                    ratingCount = (int)hotel.RatingCount,
+                                    oud = branch.Code,
+                                    branchName = branch.BranchName,
+                                    branchCategory = branch.Category
+                                }
+                            )
+                    )
+                    .ToList();
+
+                var filteredHotel = new FilteredHotel
+                {
+                    adultCount = adultCount,
+                    childCount = childCount,
+                    roomCount = roomCount,
+                    numberOfDay = numberOfDay,
+                    arrivalDate = arrivalDate.ToString(),
+                    departureDate = departureDate,
+                    cityName = cityName,
+                    filteredCompanies = filteredCompanies
+                };
+
+
+                string jsonBody = JsonConvert.SerializeObject(filteredHotel);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                List<HotelModel> hotels = new List<HotelModel>();
+
+                HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Industry/GetHotelsFilteredByCity", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string data = await response.Content.ReadAsStringAsync();
+                    hotels = JsonConvert.DeserializeObject<List<HotelModel>>(data);
+                }
+
+                var viewModel = new HotelViewModel
+                {
+                    Hotels = hotels,
+                    Rooms = new List<RoomModel>()
+                };
+                var viewModelJson = JsonConvert.SerializeObject(viewModel);
+
+                HttpContext.Session.SetString("HotelViewModel", viewModelJson);
+                return Json(new HotelViewModel());
+
+            }
+            else
+            {
+                return Json(new HotelViewModel());
+            }
         }
     }
 }

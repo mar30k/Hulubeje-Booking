@@ -1,4 +1,8 @@
 ﻿@model HulubejeBooking.Models.HotelModels.HotelListRequest
+@{
+    Html.RenderPartial("_Navigation");
+}
+
 <style>
     @@import "bourbon";
 
@@ -408,9 +412,21 @@
                 numberOfNights: numberOfNights
             };
 
+            // $.ajax({
+            //     url: '@Url.Action("HotelList", "HotelHome")',
+            //     type: 'POST',
+            //     contentType: 'application/json',
+            //     data: JSON.stringify(formData),
+            //     success: function () {
+            //         window.location.href = '/FilteredHotels/Index';
+            //     },
+            //     error: function (error) {
+            //         console.error('Error:', error);
+            //     }
+            // });
 
             $.ajax({
-                url: 'Home/HotelList',
+                url: './HotelHome/HotelList',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
@@ -422,8 +438,12 @@
                 error: function (error) {
                     console.error('Error:', error);
                 }
-            })
+            });
         });
 
     });
 </script>
+
+@{
+    Html.RenderPartial("_Footer");
+}
