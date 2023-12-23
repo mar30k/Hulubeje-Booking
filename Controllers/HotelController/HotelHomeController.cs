@@ -151,5 +151,58 @@ namespace HulubejeBooking.Controllers.HotelController
                 return Json(new HotelViewModel());
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
+        {
+            var _client = _httpClientFactory.CreateClient("HotelBooking");
+            var dt = DateRangeParser.parseDateRange(roomFormData.Date);
+            var arrivalDate = dt.startDateString;
+            var departureDate = dt.endDateString;
+
+            var orgTin = roomFormData.orgTin;
+            var oud = roomFormData.oud;
+            var adultCount = roomFormData.adultCount;
+            var childCount = roomFormData.childrenCount;
+            var roomCount = roomFormData.roomsCount;
+
+
+            var requestBody = new
+            {
+                orgTin,
+                arrivalDate,
+                departureDate,
+                adultCount,
+                childCount,
+                roomCount,
+                oud
+            };
+            var roomBody = JsonConvert.SerializeObject(requestBody);
+            var roomContent = new StringContent(roomBody, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync(_client.BaseAddress + "/Hotel/getOnlineRoom", roomContent);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                var availableRooms = JsonConvert.DeserializeObject<List<RoomModel>>(data);
+
+
+                var viewModel = new AvailabilityViewModel
+                {
+                    AvailableRooms = availableRooms
+                };
+
+
+                var viewModelJson = JsonConvert.SerializeObject(viewModel);
+
+                HttpContext.Session.SetString("AvailabilityViewModel", viewModelJson);
+                return Json(new AvailabilityViewModel());
+            }
+            else
+            {
+                return Json(new AvailabilityViewModel());
+            }
+        }
     }
 }

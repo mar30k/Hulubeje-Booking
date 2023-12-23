@@ -1,0 +1,253 @@
+﻿@{
+	Html.RenderPartial("_Navigation");
+}
+@model HulubejeBooking.Models.HotelModels.AvailabilityViewModel
+
+
+
+<div class="container">
+
+
+
+
+
+	<div class="row mt-2 g-2">
+
+		<a href="#" id="hotelLink"><h5 class="card-title">HotelName</h5></a>
+		<div class="col-lg-6 col-md-6 col-sm-6 ">
+			<div class="row">
+				@for (int i = 1; i < 5 && i < Model.AllPictureUrls.Count; i++)
+				{
+					<div class="col-lg-6 col-md-6 col-sm-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
+							padding-right: 5px;">
+						<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="w-100  " data-toggle="modal" data-target="#modal1" />
+					</div>
+				}
+			</div>
+		</div>
+
+		<div class="col-lg-6 col-md-6 col-sm-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
+			<img src="@Model.AllPictureUrls[1]" alt="Hotel Picture" class="w-100 h-200  " data-toggle="modal" data-target="#modal1" />
+		</div>
+
+
+	</div>
+	<div class="row g-2">
+		@for (int i = 1; i < 5 && i < Model.AllPictureUrls.Count; i++)
+		{
+			<div class="col-lg-3 col-md-3 col-sm-3 mb-2 " style="padding-left: 5px;
+							padding-right: 5px;">
+				<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="w-100  " data-toggle="modal" data-target="#modal1" />
+			</div>
+		}
+	</div>
+
+
+
+	<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1Label" aria-hidden="true">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="row">
+						<div class="d-flex flex-wrap">
+							@foreach (var roomPic in Model.AvailableRooms)
+							{
+								@foreach (var pictureUrl in roomPic.PictureUrls)
+								{
+									<div class="col-lg-4 col-md-4 col-sm-4 mb-3">
+										<img src="@pictureUrl" class="img-fluid shadow-1-strong rounded mb-4 w-100 h-200" alt="Boat on Calm Water" />
+									</div>
+								}
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	@foreach (var roomPic in Model.AvailableRooms)
+	{
+		<div class="row g-1">
+			<div class="d-flex flex-wrap">
+
+				@if (roomPic == Model.AvailableRooms.First())
+				{
+					@foreach (var amenity in roomPic.Aminities)
+					{
+						<div class="col-lg-2 col-md-3 col-sm-4 mb-2" style="padding-left: 5px; padding-right: 5px;">
+							<div class="border">
+								<div class="d-flex align-items-center">
+									<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+									<span>@amenity.Name</span>
+								</div>
+							</div>
+						</div>
+					}
+				}
+
+			</div>
+		</div>
+	}
+
+	<div class="row">
+		<div class="col-12">
+			<table class="table table-image">
+				<thead>
+					<tr>
+						<th scope="col" hidden style="display:none">Room Type</th>
+						<th scope="col" hidden style="display:none">Image</th>
+						<th scope="col" hidden style="display:none">Price</th>
+					</tr>
+				</thead>
+				<tbody>
+
+
+
+					@foreach (var room in Model.AvailableRooms)
+					{
+						<tr class="w-50">
+
+							<th scope="row">@room.RoomTypeDescription</th>
+							@if (room.PictureUrls != null && room.PictureUrls.Any())
+							{
+								<td>
+									@{
+										var pictureUrls = room.PictureUrls.ToList();
+										var numberOfPictures = pictureUrls.Count;
+									}
+
+									@if (numberOfPictures >= 3)
+									{
+										<div class="row">
+											<div class="col-10" style="padding-left: 5px;  padding-right: 5px;">
+												<img src="@pictureUrls[0]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-5" style="padding-left: 5px;  padding-right: 5px;">
+												<img src="@pictureUrls[1]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
+											</div>
+											<div class="col-5" style="padding-left: 5px;  padding-right: 5px;">
+												<img src="@pictureUrls[2]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
+											</div>
+										</div>
+									}
+									else if (numberOfPictures == 2)
+									{
+										<div class="row">
+											<div class="col-5" style="padding-left: 5px;  padding-right: 5px;">
+												<img src="@pictureUrls[0]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
+											</div>
+											<div class="col-5 " style="padding-left: 5px;  padding-right: 5px;">
+												<img src="@pictureUrls[1]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
+											</div>
+										</div>
+									}
+									else if (numberOfPictures == 1)
+									{
+										<div class="row">
+											<div class="col-10">
+												<img src="@pictureUrls[0]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
+											</div>
+										</div>
+									}
+
+									<div class="row g-1">
+										<div class="d-flex flex-wrap">
+											@foreach (var amenity in room.Aminities)
+											{
+												<div class="col-lg-2 col-md-3 col-sm-4 my-1" style="padding-left: 5px;  padding-right: 5px;">
+													<div class="border d-flex flex-column align-items-center">
+
+														<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+														<span style="font-size: small; text-align: center;">@amenity.Name</span>
+													</div>
+												</div>
+											}
+										</div>
+									</div>
+
+
+								</td>
+							}
+
+
+							<td class="d-flex flex-column">
+								Price: ETB @room.AverageAmount.ToString("N2", new System.Globalization.CultureInfo("am-ET"))
+								<button class="btn btn-primary btn-sm mt-auto submit"
+										data-rate-policy="@room.RatePolicy"
+										data-room-type-description="@room.RoomTypeDescription"
+										data-room-pakages="@room.PackageList"
+										data-room-price="@room.AverageAmount"
+										data-room-type-code="@room.RoomTypeCode"
+										data-room-type="@room.RoomTypeDescription">
+									Book
+								</button>
+							</td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+<script>
+
+	document.addEventListener("DOMContentLoaded", function () {
+		if (sessionStorage.getItem("hotelName")) {
+			var hotelLink = document.getElementById("hotelLink");
+
+			var hotelName = sessionStorage.getItem("hotelName");
+
+			hotelLink.innerHTML = '<h5 class="card-title">' + hotelName + '</h5>';
+		}
+	});
+
+	$(document).ready(function () {
+		$('.submit').click(function () {
+			var orgTin = sessionStorage.getItem('orgTin');
+			var oud = sessionStorage.getItem('oud');
+
+			var hotelName = sessionStorage.getItem('hotelName');
+
+			sessionStorage.setItem('price', $(this).data('room-price'));
+			sessionStorage.setItem('roomTypeCode', $(this).data('room-type-code'));
+			sessionStorage.setItem('roomType', $(this).data('room-type'));
+			sessionStorage.setItem('roomPakages', $(this).data('room-pakages'));
+			sessionStorage.setItem('ratePolicy', $(this).data('rate-policy'));
+
+
+
+			var Date = sessionStorage.getItem('dateRange');
+			var adultCount = sessionStorage.getItem('adultCount');
+			var childCount = sessionStorage.getItem('childrenCount');
+			var roomCount = sessionStorage.getItem('roomsCount');
+
+			var form = $('<form action="/Home/GuestInfo" method="post">' +
+				'<input type="hidden" name="orgTin" value="' + orgTin + '" />' +
+				'<input type="hidden" name="RoomTypeCode" value="' + $(this).data('room-type-code') + '" />' +
+				'<input type="hidden" name="Date" value="' + Date + '" />' +
+				'<input type="hidden" name="adultCount" value="' + adultCount + '" />' +
+				'<input type="hidden" name="childCount" value="' + childCount + '" />' +
+				'<input type="hidden" name="roomCount" value="' + roomCount + '" />' +
+				'<input type="hidden" name="oud" value="' + oud + '" />' +
+				'</form>');
+			$('body').append(form);
+			form.submit();
+		});
+	});
+
+</script>
+
+@{
+	Html.RenderPartial("_Footer");
+}
