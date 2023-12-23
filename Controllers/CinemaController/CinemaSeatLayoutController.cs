@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 namespace CinemaSeatBooking.Controllers;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 

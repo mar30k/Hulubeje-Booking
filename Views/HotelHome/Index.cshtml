@@ -4,8 +4,8 @@
 }
 
 <style>
-    @@import "bourbon";
-
+/*     @@import "bourbon";
+ */
     * {
         box-sizing: border-box;
     }
@@ -426,7 +426,7 @@
             // });
 
             $.ajax({
-                url: './HotelHome/HotelList',
+                url: '/Hotel/HotelList',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(formData),

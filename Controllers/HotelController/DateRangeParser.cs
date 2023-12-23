@@ -1,7 +1,4 @@
-﻿using Nest;
-using HulubejeBooking.Models.HotelModels;
-
-namespace HulubejeBooking.Controllers.HotelController
+﻿namespace HulubejeBooking.Controllers.HotelController
 {
     public class DateRangeParser
     {

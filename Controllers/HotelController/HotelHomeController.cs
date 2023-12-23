@@ -60,6 +60,8 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpPost]
         public async Task<IActionResult> HotelList([FromBody] FormData formData)
         {
+            Console.WriteLine("HotelList action method called.");
+
             var _client = _httpClientFactory.CreateClient("HotelBooking");
             List<GetModel> dataList = new List<GetModel>();
 
