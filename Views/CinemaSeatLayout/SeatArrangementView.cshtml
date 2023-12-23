@@ -3,6 +3,9 @@
 @{
     string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
 }
+@{
+    Html.RenderPartial("_Navigation");
+}
 <head>
     <style>
         .btn:focus,
@@ -459,3 +462,6 @@
         </div>
     </div>
 </body>
+@{
+    Html.RenderPartial("_Footer");
+}

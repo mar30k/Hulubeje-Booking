@@ -61,7 +61,7 @@
         h4, p {
             margin-top: 10px;
             margin-bottom: 10px;
-            color: white;
+            color: black;
         }
 
         .companyName {
@@ -103,6 +103,9 @@
         }
 
     </style>
+    @{
+        Html.RenderPartial("_Navigation");
+    }
 </head>
 <body>
     <div class="background-container">
@@ -256,3 +259,4 @@
         }
     </script>
 </body>
+<partial name="_Footer" />

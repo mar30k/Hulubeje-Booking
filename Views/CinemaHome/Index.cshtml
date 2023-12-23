@@ -4,7 +4,8 @@
     DateTime today = DateTime.Today;
     string minDate = today.ToString("yyyy-MM-dd");
     string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
-}@{
+}
+@{
     Html.RenderPartial("_Navigation");
 }
 
@@ -189,9 +190,8 @@
 
         </script>
     }
+
     </body>
 </html>
+<partial name="_Footer" />
 
-@{
-    Html.RenderPartial("_Footer");
-}
