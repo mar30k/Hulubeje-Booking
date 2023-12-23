@@ -60,6 +60,7 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpPost]
         public async Task<IActionResult> HotelList([FromBody] FormData formData)
         {
+
             var _client = _httpClientFactory.CreateClient("HotelBooking");
             List<GetModel> dataList = new List<GetModel>();
 
@@ -68,7 +69,7 @@ namespace HulubejeBooking.Controllers.HotelController
             var childCount = formData.ChildrenCount;
             var roomCount = formData.RoomsCount;
             var dt = DateRangeParser.parseDateRange(formData.DateRange);
-            var arrivalDate = dt.startDate;
+            var arrivalDate = dt.startDateString;
             var departureDate = dt.endDateString;
             var numberOfDay = formData.numberOfNights;
 
@@ -114,7 +115,7 @@ namespace HulubejeBooking.Controllers.HotelController
                     childCount = childCount,
                     roomCount = roomCount,
                     numberOfDay = numberOfDay,
-                    arrivalDate = arrivalDate.ToString(),
+                    arrivalDate = arrivalDate,
                     departureDate = departureDate,
                     cityName = cityName,
                     filteredCompanies = filteredCompanies
@@ -142,12 +143,66 @@ namespace HulubejeBooking.Controllers.HotelController
                 var viewModelJson = JsonConvert.SerializeObject(viewModel);
 
                 HttpContext.Session.SetString("HotelViewModel", viewModelJson);
+
                 return Json(new HotelViewModel());
 
             }
             else
             {
                 return Json(new HotelViewModel());
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
+        {
+            var _client = _httpClientFactory.CreateClient("HotelBooking");
+            var dt = DateRangeParser.parseDateRange(roomFormData.Date);
+            var arrivalDate = dt.startDateString;
+            var departureDate = dt.endDateString;
+
+            var orgTin = roomFormData.orgTin;
+            var oud = roomFormData.oud;
+            var adultCount = roomFormData.adultCount;
+            var childCount = roomFormData.childrenCount;
+            var roomCount = roomFormData.roomsCount;
+
+
+            var requestBody = new
+            {
+                orgTin,
+                arrivalDate,
+                departureDate,
+                adultCount,
+                childCount,
+                roomCount,
+                oud
+            };
+            var roomBody = JsonConvert.SerializeObject(requestBody);
+            var roomContent = new StringContent(roomBody, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync(_client.BaseAddress + "/Hotel/getOnlineRoom", roomContent);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                var availableRooms = JsonConvert.DeserializeObject<List<RoomModel>>(data);
+
+
+                var viewModel = new AvailabilityViewModel
+                {
+                    AvailableRooms = availableRooms
+                };
+
+
+                var viewModelJson = JsonConvert.SerializeObject(viewModel);
+
+                HttpContext.Session.SetString("AvailabilityViewModel", viewModelJson);
+                return Json(new AvailabilityViewModel());
+            }
+            else
+            {
+                return Json(new AvailabilityViewModel());
             }
         }
     }
