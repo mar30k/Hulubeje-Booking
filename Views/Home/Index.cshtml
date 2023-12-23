@@ -1,5 +1,8 @@
-﻿<a asp-controller="CinemaHome" asp-action="Index">Cinema</a>
-<a asp-controller="HotelHome" asp-action="Index">Hotels</a>
+﻿@{
+    Html.RenderPartial("_Navigation");
+}
+
+
 @{
     Html.RenderPartial("_Footer");
 }

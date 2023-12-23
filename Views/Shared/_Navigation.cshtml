@@ -14,8 +14,8 @@
                 <div class="col-md-7">
                     <nav class="navbar navbar-light">
                         <div class="container">
-                            <a class="navbar-brand" href="#" style="color: white;">
-                                Hotel Booking
+                            <a class="navbar-brand" asp-controller="Home" asp-action="Index" style="color: white;">
+                                Hulubeje Booking
                             </a>
                         </div>
                     </nav>
@@ -32,10 +32,10 @@
 
             <div class="container-fluid">
                 <div class="ml-4" style="margin-left:auto">
-                    <a href="#" type="button" class="btn btn-outline-primary rounded" style="color: white; border-radius: 50%"><span><i class="bi bi-house"></i></span> Stays</a>
+                    <a asp-action="Index" asp-controller="HotelHome" type="button" class="btn btn-outline-primary rounded" style="color: white; border-radius: 50%"><span><i class="bi bi-house"></i></span> Stays</a>
+                    <a asp-action="Index" asp-controller="CinemaHome" type="button" class="btn btn-outline-primary rounded" style="color: white;"><span> <i class="bi bi-film"></i></span> Cinema</a>
                     <a href="#" type="button" class="btn btn-outline-primary rounded" style="color: white;"><span><i class="bi bi-bus-front"></i></span> Bus Ticket</a>
-                    <a href="#" type="button" class="btn btn-outline-primary rounded" style="color: white;"><span> <i class="bi bi-car-front"></i></span> Car rentals</a>
-                    <a href="#" type="button" class="btn btn-outline-primary rounded" style="color: white;"><span><i class="bi bi-gear-wide-connected"></i></span> Attractions</a>
+                    <a href="#" type="button" class="btn btn-outline-primary rounded" style="color: white;"><span><i class="fa-solid fa-masks-theater"></i></span> Event</a>
                     <a href="#" type="button" class="btn btn-outline-primary rounded" style="color: white;"><span><i class="bi bi-taxi-front"></i></span> Airport taxi</a>
                 </div>
             </div>
