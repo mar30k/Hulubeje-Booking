@@ -12,7 +12,7 @@
     public class TaxInformation
     {
         public decimal TaxAmount { get; set; }
-        public string TaxInPercentage { get; set; }
+        public string? TaxInPercentage { get; set; }
         public int TaxType { get; set; }
     }
 
