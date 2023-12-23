@@ -60,7 +60,6 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpPost]
         public async Task<IActionResult> HotelList([FromBody] FormData formData)
         {
-            Console.WriteLine("HotelList action method called.");
 
             var _client = _httpClientFactory.CreateClient("HotelBooking");
             List<GetModel> dataList = new List<GetModel>();
@@ -70,7 +69,7 @@ namespace HulubejeBooking.Controllers.HotelController
             var childCount = formData.ChildrenCount;
             var roomCount = formData.RoomsCount;
             var dt = DateRangeParser.parseDateRange(formData.DateRange);
-            var arrivalDate = dt.startDate;
+            var arrivalDate = dt.startDateString;
             var departureDate = dt.endDateString;
             var numberOfDay = formData.numberOfNights;
 
@@ -116,7 +115,7 @@ namespace HulubejeBooking.Controllers.HotelController
                     childCount = childCount,
                     roomCount = roomCount,
                     numberOfDay = numberOfDay,
-                    arrivalDate = arrivalDate.ToString(),
+                    arrivalDate = arrivalDate,
                     departureDate = departureDate,
                     cityName = cityName,
                     filteredCompanies = filteredCompanies
