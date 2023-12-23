@@ -109,7 +109,7 @@
                 var dimension = "@Model.Dimension";
                 var spaceType = "@Model.SpaceType";
                 // Use AJAX to fetch updated seat information
-                $.get("/SeatLayout/GetUpdatedSeatInfo", {
+                $.get("/CinemaSeatLayout/GetUpdatedSeatInfo", {
                     companyTinNumber: companyTinNumber, code: code, spacecode: spacecode, movieName: movieName,
                     companyName: companyName, utcTime: utcTime, selectedDate: selectedDate, hallName: hallName, spaceType: spaceType, dimension: dimension
                 }, function (data) {
@@ -362,7 +362,7 @@
                     sessionStorage.setItem('countdownStarted', true);
                 }
 
-                var form = $('<form action="/FoodAndBeverage/Products" method="post"></form>');
+                var form = $('<form action="/CinemaFoodAndBeverage/Products" method="post"></form>');
 
                 form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />');
                 form.append('<input type="hidden" name="movieScheduleCode" value="' + movieScheduleCode + '" />');
