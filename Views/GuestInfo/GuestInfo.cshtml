@@ -1,0 +1,254 @@
+﻿﻿@{
+    Html.RenderPartial("_Navigation");
+}
+
+@model HulubejeBooking.Models.HotelModels.AvailabilityViewModel
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <h5 class="h5">Guest Information</h5>
+            </div>
+            <section class="vh-100 bg-image w-100">
+                <div class="mask d-flex align-items-center gradient-custom-3">
+                    <form id="guestForm">
+                        <div class="form-check mb-5">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">For Me</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">First Name</label>
+                            <input type="text" class="form-control" id="name" placeholder=" First Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="middle">Middle Name</label>
+                            <input type="text" class="form-control" id="middle" placeholder=" Middle Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="last">Last Name</label>
+                            <input type="text" class="form-control" id="last" placeholder=" Last Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date of born</label>
+                            <input type="date" class="form-control" id="date" placeholder=" Your birth date">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Gender</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="male" name="gender" value="Male">
+                                    <label class="form-check-label" for="male">Male</label>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>&nbsp;</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="female" name="gender" value="Female">
+                                    <label class="form-check-label" for="female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="nationality">Nationality</label>
+                            <select class="form-select operator" id="nationality">
+                                <option selected>...</option>
+                                <option>Ethipian</option>
+                                <option>Eritrean</option>
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="Phone">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            Submit
+                        </button>
+
+                    </form>
+                </div>
+            </section>
+        </div>
+        <div class="col-md-6">
+            <h5 class="h5" hidden style="display: none;">BranchName Information Table</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" hidden style="display: none;">Information</th>
+                    </tr>
+                </thead>
+                <tbody id="guestTableBody">
+                </tbody>
+            </table>
+            <button id="confirmButton" class="btn btn-success" onclick="redirect()">Confirm</button>
+        </div>
+
+    </div>
+
+
+</div>
+<script>
+
+    $(document).ready(function () {
+        $('#nationality').select2();
+    });
+
+
+    $(document).ready(function () {
+        var guestRow = null;
+        var hotelRow = null;
+
+        $('#guestForm').submit(function (e) {
+            e.preventDefault();
+
+            var formData = {
+                name: $('#name').val(),
+                middle: $('#middle').val(),
+                last: $('#last').val(),
+                DOB: $('#date').val(),
+                email: $('#email').val(),
+                phone: $('#phone').val(),
+                gender: $('input[name="gender"]:checked').val(),
+                nationality: $('#nationality').val()
+            };
+
+            sessionStorage.setItem("gender", formData.gender);
+
+            var hotelData = {
+                price: sessionStorage.getItem("price"),
+                cityName: sessionStorage.getItem("city"),
+                adult: sessionStorage.getItem("adultCount"),
+                child: sessionStorage.getItem("childrenCount"),
+                room: sessionStorage.getItem("roomsCount"),
+                Date: sessionStorage.getItem("dateRange"),
+                hotel: sessionStorage.getItem("hotelName"),
+                branch: sessionStorage.getItem("branchName"),
+                roomType: sessionStorage.getItem("roomType"),
+                registrationNumber: "To be Assign",
+                reservationtType: "To be Determined"
+
+            };
+            var date = hotelData.Date;
+            dateRange = date.split(" - ");
+            var arrivalDate = new Date(dateRange[0]);
+            var departureDate = new Date(dateRange[1]);
+
+            var formattedArrivalDate = arrivalDate.toLocaleDateString("en-US", { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+            var formattedDepartureDate = departureDate.toLocaleDateString("en-US", { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+
+            sessionStorage.setItem("arrivalDate", formattedArrivalDate);
+            sessionStorage.setItem("departureDate", formattedDepartureDate);
+            sessionStorage.setItem('hotel', hotelData.hotel);
+            sessionStorage.setItem('branch', hotelData.branch);
+
+            var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
+            var totalPay = numberOfNights * hotelData.price * hotelData.room;
+
+            sessionStorage.getItem('RoomTypeCode');
+            sessionStorage.getItem("roomType");
+            sessionStorage.setItem("numberOfNight", numberOfNights);
+            sessionStorage.setItem("totalPay", totalPay);
+
+
+
+
+
+            var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
+
+            var formattedInfo = '<b>Guest Information</b><br>' +
+                '<p><span>Full Name:</span> ' + formData.name + " " + formData.middle + " " + formData.last + '</p>' +
+                '<p><span>Date of born:</span> ' + formData.DOB + '</p>' +
+                '<p><span>Email:</span> ' + formData.email + '</p>' +
+                '<p><span>Phone Number:</span> ' + formData.phone + '</p>' +
+                '<p><span>Gender:</span>' + formData.gender + '</p>' +
+                '<p><span>Nationality:</span> ' + formData.nationality + '</p>';
+
+            if (guestRow === null) {
+                guestRow = $('<tr><td>' + formattedInfo + '</td></tr>');
+                $('#guestTableBody').append(guestRow);
+            } else {
+                guestRow.html('<td>' + formattedInfo + '</td>');
+            }
+            var regiistraion_number = "To be Assign";
+
+            var hotelInfo = '<b>Hotel Information</b><br>' +
+                '<p><span>Hotel:</span> ' + hotelData.hotel + '</p>' +
+                '<p><span>Hotel Branch:</span> ' + hotelData.branch + '</p>' +
+                '<p><span>City:</span> ' + hotelData.cityName + '</p>' +
+                '<p><span>Registration Number:</span> ' + hotelData.registrationNumber + '</p>' +
+                '<p><span>Reservation Type:</span> ' + hotelData.reservationtType + '</p>' +
+                '<p><span>Arrival Date:</span> ' + formattedArrivalDate + '</p>' +
+                '<p><span>Departure Date:</span> ' + formattedDepartureDate + '</p>' +
+                '<p><span>Number of nights :</span> ' + numberOfNights + '</p>' +
+                '<p><span>Number of People:</span> ' + "Child " + hotelData.child + "," + "Adults " + hotelData.adult + '</p>' +
+                '<p><span>Room Type:</span> ' + hotelData.roomType + '</p>' +
+                '<p><span>Number of Rooms:</span> ' + hotelData.room + '</p>' +
+                '<p><span>Rate per Night:</span> ' + hotelData.price + '</p>' +
+                '<p><span>Rate for ' + numberOfNights + ' nights :</span> ' + totalPay + '</p>';
+
+
+
+            if (hotelRow === null) {
+                hotelRow = $('<tr><td>' + hotelInfo + '</td></tr>');
+                $('#guestTableBody').append(hotelRow);
+            } else {
+                hotelRow.html('<td>' + hotelInfo + '</td>');
+            }
+
+
+
+            function calculateNumberOfNights(arrivalDate, departureDate) {
+                var timeDifference = departureDate.getTime() - arrivalDate.getTime();
+                var numberOfNights = Math.round(timeDifference / (1000 * 3600 * 24));
+                return numberOfNights;
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        function toggleButtonVisibility() {
+            var tableBody = $("#guestTableBody");
+            var confirmButton = $("#confirmButton");
+
+            if (tableBody.children().length > 0) {
+                confirmButton.show();
+            } else {
+                confirmButton.hide();
+            }
+        }
+
+        toggleButtonVisibility();
+
+        $("#guestForm").submit(function (event) {
+
+            toggleButtonVisibility();
+
+            event.preventDefault();
+        });
+    });
+
+
+    function redirect() {
+
+
+        sessionStorage.setItem("name", $('#name').val());
+        sessionStorage.setItem("middle", $('#middle').val());
+        sessionStorage.setItem("last", $('#last').val());
+        sessionStorage.setItem("DOB", $('#date').val());
+        sessionStorage.setItem("email", $('#email').val());
+        sessionStorage.setItem("phone", $('#phone').val());
+        sessionStorage.setItem("nationality", $('#nationality').val());
+
+
+
+        window.location.href = "#";
+    }
+
+</script>
+@{
+    Html.RenderPartial("_Footer");
+}

@@ -143,6 +143,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 var viewModelJson = JsonConvert.SerializeObject(viewModel);
 
                 HttpContext.Session.SetString("HotelViewModel", viewModelJson);
+
                 return Json(new HotelViewModel());
 
             }

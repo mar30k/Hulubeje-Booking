@@ -4,14 +4,12 @@ using Newtonsoft.Json;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
-    public class FilteredRoomController : Controller
-    {
-        public class FilteredHotelsController : Controller
+        public class FilteredRoomController : Controller
         {
             private readonly IHttpClientFactory _httpClientFactory;
             private readonly HotelListBuffer _hotelListBuffer;
 
-            public FilteredHotelsController(
+            public FilteredRoomController(
                 IHttpClientFactory httpClientFactory,
                 HotelListBuffer hotelListBuffer)
             {
@@ -38,5 +36,5 @@ namespace HulubejeBooking.Controllers.HotelController
 
 
         }
-    }
+    
 }
