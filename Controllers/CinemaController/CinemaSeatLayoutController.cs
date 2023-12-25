@@ -171,7 +171,7 @@ public class CinemaSeatLayoutController : Controller
                 }
                 else
                 {
-                    return PartialView("_SeatInfoPartialView", null);
+                    return PartialView("_SeatArrangementPartialView", null);
                 }
 
                 HttpResponseMessage soldseatsResponse = await _httpClient.GetAsync($"cinema/GetSoldSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
@@ -186,7 +186,7 @@ public class CinemaSeatLayoutController : Controller
                 }
                 else
                 {
-                    return PartialView("_SeatInfoPartialView", null);
+                    return PartialView("_SeatArrangementPartialView", null);
                 }
 
                 HttpResponseMessage availableSeatsResponse = await _httpClient.GetAsync($"cinema/GetAvailableSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
@@ -220,7 +220,7 @@ public class CinemaSeatLayoutController : Controller
                     }
                     else
                     {
-                        return PartialView("_SeatInfoPartialView", null);
+                        return PartialView("_SeatArrangementPartialView", null);
                     }
                     updatedSeatModel.CompanyName = companyName;
                     updatedSeatModel.Dimension = dimension; 
@@ -230,16 +230,16 @@ public class CinemaSeatLayoutController : Controller
                     updatedSeatModel.SpaceType = spaceType; 
                     updatedSeatModel.HallName = hallName;
                 }
-                return PartialView("_SeatInfoPartialView", updatedSeatModel);
+                return PartialView("_SeatArrangementPartialView", updatedSeatModel);
             }
             else
             {
-                return PartialView("_SeatInfoPartialView", null);
+                return PartialView("_SeatArrangementPartialView", null);
             }
         }
         catch (Exception)
         {
-            return PartialView("_SeatInfoPartialView", null);
+            return PartialView("_SeatArrangementPartialView", null);
         }
     }
 
