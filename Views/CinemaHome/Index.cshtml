@@ -5,10 +5,7 @@
     string minDate = today.ToString("yyyy-MM-dd");
     string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
 }
-@{
-    Html.RenderPartial("_Navigation");
-}
-
+<partial name="_Navigation" />
 
 <head>
     <link rel="stylesheet" type="text/css" href="css/Style.css">

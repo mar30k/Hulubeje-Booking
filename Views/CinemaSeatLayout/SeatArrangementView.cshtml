@@ -3,9 +3,7 @@
 @{
     string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
 }
-@{
-    Html.RenderPartial("_Navigation");
-}
+<partial name="_Navigation" />
 <head>
     <style>
         .btn:focus,
@@ -134,6 +132,7 @@
             }
 
             function startBooking() {
+                console.log("isThereSelectedSeat " + isThereSelectedSeat);
                 if (!isThereSelectedSeat) {
                     $('#bookingModal').modal('show');
                     // Handle "OK" button click
@@ -432,9 +431,6 @@
         <div id="seatInfoContainer">
             <partial name="_SeatArrangementPartialView" />
         </div>
-        <div style="text-align: center; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);" id="priceContainer">
-            <button id="skipButton" class="btn btn-outline-primary">Skip</button>
-        </div>
     </div>
     <div class="modal" tabindex="-1" role="dialog" id="bookingModal">
         <div class="modal-dialog" role="document">
@@ -459,6 +455,4 @@
         </div>
     </div>
 </body>
-@{
-    Html.RenderPartial("_Footer");
-}
+<partial name="_Footer" />

@@ -1,6 +1,7 @@
 ﻿@model HulubejeBooking.Models.CInemaModels.ProductsViewModel
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
+@using System.Globalization
 @{
     ViewBag.Title = "Products";
 }
@@ -116,6 +117,7 @@
         }
     </style>
 </head>
+<partial name="_Navigation" />
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -305,12 +307,18 @@
                             return string.Empty;
                         }
 
-                        public string GetEthiopianTime(string utcTimeString)
+                        public string GetEthiopianTime(string? utcTimeString)
                         {
-                            if (DateTime.TryParse(utcTimeString, out DateTime utcTime))
+                            // Specify the expected format of the time string
+                            string format = "h.mm tt";
+
+                            if (DateTime.TryParseExact(utcTimeString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime utcTime))
                             {
                                 // Convert UTC time to Ethiopia time
-                                DateTime ethiopianTime = utcTime.AddHours(6);
+                                DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
+
+                                // Adjust the time based on AM or PM
+                                ethiopianTime = ethiopianTime.AddHours(ethiopianTime.ToString("tt").Equals("AM") ? 6 : -6);
 
                                 return ethiopianTime.ToString("h.mm tt");
                             }
@@ -634,3 +642,4 @@
     </script>
 </body>
 </html>
+<partial name="_Footer" />
