@@ -49,16 +49,16 @@
                 border-radius: 8px; /* Add border-radius for a rounded look */
             }
 
-        h3 {
+        .movienName {
             margin-top: 10px;
             margin-bottom: 10px;
             font-weight: bold;
-            font-size: 24px;
+            font-size: 30px;
             color: white; /* Blue color for CompanyName */
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
 
-        h4, p {
+        .details {
             margin-top: 10px;
             margin-bottom: 10px;
             color: black;
@@ -103,9 +103,7 @@
         }
 
     </style>
-    @{
-        Html.RenderPartial("_Navigation");
-    }
+    <partial name="_Navigation" />
 </head>
 <body>
     <div class="background-container">
@@ -118,9 +116,9 @@
                     </div>
                     <div class="col-md-8">
                         <h4 class="companyName" style="background-color:rgba(0,0,0,0.3) ">@Model.CompanyName</h4>
-                        <h1 style="color: white">@Model.MovieName</h1>
-                        <h4>Overview</h4>
-                        <p>@Model.Overview</p>
+                        <h1 class="movienName" style="color: white">@Model.MovieName</h1>
+                        <h4 class="details">Overview</h4>
+                        <p class="details">@Model.Overview</p>
                         <div>
                             @functions {
                                 // Helper function to get the color based on genre
@@ -153,7 +151,7 @@
                             }
                             @if (Model.Genres is not null)
                             {
-                                <h4>Genres</h4>
+                                <h4 class="details">Genres</h4>
                                 @foreach (var genre in Model.Genres)
                                 {
                                     if (genre.Name is not null)
@@ -176,11 +174,11 @@
                         </div>
                         <div>
                             <h4 style="display: inline-block; margin-right: 10px;">Runtime:</h4>
-                            <p style="display: inline-block;">@Model.FormattedRunTime</p>
+                            <p class="details" style="display: inline-block;">@Model.FormattedRunTime</p>
                         </div>
                         <div>
                             <h4 style="display: inline-block; margin-right: 10px;">Pg-Rating:</h4>
-                            <p style="display: inline-block;">@Model.PgRating</p>
+                            <p class="details" style="display: inline-block;">@Model.PgRating</p>
                         </div>
                     </div>
                 </div>
@@ -236,7 +234,10 @@
 
     <script>
         function onScheduleButtonClick(spacecode, companyTinNumber, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, price, hallName, utcTime) {
-
+            var selectedSeats = [];
+            sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+            sessionStorage.setItem('selectedSeatNames', JSON.stringify(selectedSeats));
+            sessionStorage.setItem('remainingTime', 0);
             var form = $('<form action="/CinemaSeatLayout/SeatArrangement" method="post">' +
                 '<input type="hidden" name="spacecode" value="' + spacecode + '" />' +
                 '<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />' +
