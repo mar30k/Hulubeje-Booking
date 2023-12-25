@@ -1,0 +1,27 @@
+﻿<partial name="_Navigation" />
+<div class="container">
+    <header class="container-fluid" style="padding-top: 5%;">
+        <div>
+            <h1 style="color: black;">Book Your Bus Journey</h1>
+            <h6 style="color: gray;">Discover convenient and hassle-free bus travel with our easy booking platform.</h6>
+        </div>
+    </header>
+</div>
+<div class="container">
+    <div class="d-flex">
+        <select class="select" style="width:100%;" id="departure" required>
+            <option value="" disabled selected>Select a Departure City</option>
+            <option value="Country 1">Country 1</option>
+            <option value="Country 2">Country 2</option>
+        </select>
+
+        <select class="select" style="width:100%;" id="destination" required>
+            <option value="" disabled selected>Select a Destination City</option>
+            <option value="Country 1">Country 1</option>
+            <option value="Country 2">Country 2</option>
+        </select>
+        <input style="width:50%;" class="select" type="date" id="travelDate" required>
+        <button class="btn btn-outline-primary">Search</button>
+    </div>  
+</div>
+@* <partial name="_Footer" /> *@

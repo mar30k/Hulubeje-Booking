@@ -237,7 +237,6 @@
             var selectedSeats = [];
             sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
             sessionStorage.setItem('selectedSeatNames', JSON.stringify(selectedSeats));
-            sessionStorage.setItem('remainingTime', 0);
             var form = $('<form action="/CinemaSeatLayout/SeatArrangement" method="post">' +
                 '<input type="hidden" name="spacecode" value="' + spacecode + '" />' +
                 '<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />' +
