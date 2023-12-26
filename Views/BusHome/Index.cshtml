@@ -1,4 +1,6 @@
-﻿<partial name="_Navigation" />
+﻿@model HulubejeBooking.Models.BusModels.BusModel
+@using HulubejeBooking.Models.BusModels
+<partial name="_Navigation" />
 <div class="container">
     <header class="container-fluid" style="padding-top: 5%;">
         <div>
@@ -8,20 +10,89 @@
     </header>
 </div>
 <div class="container">
+    @{
+        List<Routes> allRoutes = Model.RouteConfiguration.Routes ?? new List<Routes>();
+        List<City> allCities = Model.RouteConfiguration.Cities ?? new List<City>();
+        List<int?> fromCities = Model.RouteConfiguration.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
+        List<string> fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
+    }
     <div class="d-flex">
         <select class="select" style="width:100%;" id="departure" required>
             <option value="" disabled selected>Select a Departure City</option>
-            <option value="Country 1">Country 1</option>
-            <option value="Country 2">Country 2</option>
+            @if (fromCityNames is not null)
+            {
+                @foreach (var city in fromCityNames)
+                {
+                    <option value="@city">@city</option>
+                }
+            }
         </select>
-
         <select class="select" style="width:100%;" id="destination" required>
             <option value="" disabled selected>Select a Destination City</option>
-            <option value="Country 1">Country 1</option>
-            <option value="Country 2">Country 2</option>
         </select>
+
         <input style="width:50%;" class="select" type="date" id="travelDate" required>
         <button class="btn btn-outline-primary">Search</button>
     </div>  
+    @{
+        var shuffledModel = Model.Company.OrderBy(x => Guid.NewGuid()).ToList();
+    }
+    <div class="row mt-3">
+        @foreach (var item in shuffledModel)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img class="img-fluid" src="https://as2.ftcdn.net/v2/jpg/05/72/26/07/1000_F_572260724_ZjJFr1r8idb63hw4DBa5kCJmq7VJXGMZ.webp">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.CompanyName</h5>
+                                <p class="card-text">The detail information will be posted here.</p>
+                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        } 
+    </div>  
 </div>
-@* <partial name="_Footer" /> *@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById('departure').addEventListener('change', function () {
+            var selectedDepartureCity = this.value;
+            var allCities = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Cities));
+            var selectedDepartureCityObject = allCities.find(city => city.cityName === selectedDepartureCity);
+            console.log("selectedDepartureCityObject", selectedDepartureCityObject);
+            // Clear existing options in the destination select
+            var destinationSelect = document.getElementById('destination');
+            destinationSelect.innerHTML = '<option value="" disabled selected>Select a Destination City</option>';
+
+            // Add new options based on the retrieved destination cities
+            if (selectedDepartureCityObject) {
+                var allRoutes = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Routes));
+                var selectedDepartureCityCode = selectedDepartureCityObject.cityCode;
+                var selectedRouteObject = allRoutes.find(route => route.fromCity === selectedDepartureCityCode);
+                console.log(selectedRouteObject);
+                if (selectedRouteObject && selectedRouteObject.toCity) {
+                        selectedRouteObject.toCity
+                        .map(toCity => ({
+                            city: allCities.find(city => city.cityCode === toCity.cityCode),
+                            toCity
+                        }))
+                        .filter(mappedCity => mappedCity.city)
+                        .sort((a, b) => a.city.cityName.localeCompare(b.city.cityName, undefined, { sensitivity: 'base' }))
+                        .forEach(mappedCity => {
+                            const destinationOption = document.createElement('option');
+                            destinationOption.value = mappedCity.toCity.cityCode;
+                            destinationOption.text = mappedCity.city.cityName;
+                            destinationSelect.add(destinationOption);
+                        });
+                }
+            }
+        });
+    });
+</script>
+<partial name="_Footer" />
