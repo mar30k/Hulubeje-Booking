@@ -1,3 +1,61 @@
-﻿<partial name="_Navigation" />
-<p>in schedules page</p>
+﻿@model List<HulubejeBooking.Models.BusModels.VwRouteSchedule>
+<partial name="_Navigation" />
+<div class="container">
+
+    <div class="row" style="padding-bottom:10px;">
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-8">
+            @foreach (var schedule in Model)
+            {
+                <div class="card w-100 mt-3">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img src="../Assets/bus.png" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body">
+                                <div class="row align-items-start">
+                                    <div class="col-md-9">
+                                        <h5 class="card-title">@schedule.VehicleOperator</h5>
+                                        <p class="route"><span><i class="fas fa-route"></i></span>
+                                            @if (@schedule.RouteDescription is not null)
+                                            {
+                                                @foreach (var city in schedule.RouteDescription.Split('-'))
+                                                {
+                                                    <span>@city</span>
+                                                    @if (!city.Equals(schedule.RouteDescription.Split('-').Last()))
+                                                    {
+                                                        <i class="bi bi-caret-right"></i>
+                                                    }
+                                                }
+                                            }
+                                        </p>
+                                        <p class="level"><span><i class="fas fa-star mr-2"></i></span>@schedule.LevelDesc</p>
+                                        @{
+                                            string formattedDate = schedule.DepartureDate.ToString("ddd, MMM d, yyyy");
+                                            string formattedTime = schedule.DepartureDate.ToString("h:mm tt");
+                                            <p><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
+                                            if (DateTime.TryParse(formattedTime, out DateTime utcTime))
+                                            {
+                                                DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
+                                                ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
+                                                <p><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") Local Time)</p>
+                                            }
+                                        }
+                                        <p class="level"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <p class="level mb-0"><span><i class="fas fa-dollar-sign mr-2"></i></span>@Math.Round(@schedule.Tariff, 2)</p>
+                                            <button id="seats" class="btn btn-primary">Select</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 <partial name="_Footer" />
