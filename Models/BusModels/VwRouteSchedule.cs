@@ -113,5 +113,8 @@
         public int? Demand { get; set; }
 
         public string? ImgUrl { get; set; }
+        public List<string>? Amenities { get; set; }
+        public string? VehiclePlateNumber { get; set; }
+
     }
 }
