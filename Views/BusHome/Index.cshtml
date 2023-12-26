@@ -32,7 +32,7 @@
         </select>
 
         <input style="width:50%;" class="select" type="date" id="travelDate" required>
-        <button class="btn btn-outline-primary">Search</button>
+        <button id="searchButton" class="btn btn-outline-primary">Search</button>
     </div>  
     @{
         var shuffledModel = Model.Company.OrderBy(x => Guid.NewGuid()).ToList();
@@ -81,12 +81,29 @@
                         .sort((a, b) => a.city.cityName.localeCompare(b.city.cityName, undefined, { sensitivity: 'base' }))
                         .forEach(mappedCity => {
                             const destinationOption = document.createElement('option');
-                            destinationOption.value = mappedCity.toCity.cityCode;
+                            destinationOption.value = mappedCity.toCity.routeId;
                             destinationOption.text = mappedCity.city.cityName;
                             destinationSelect.add(destinationOption);
                         });
                 }
             }
+        });
+        $(document).ready(function () {
+            // Assuming you have a button with the id "searchButton"
+            $('#searchButton').click(function () {
+                // Get selected values from the destination dropdown and input
+                var selectedDestination = $('#destination').val();
+                var selectedTravelDate = $('#travelDate').val();
+
+                // Create a hidden form
+                var form = $('<form action="/BusSchedule/Index" method="post"></form>');
+                form.append('<input type="hidden" name="destination" value="' + selectedDestination + '">');
+                form.append('<input type="hidden" name="travelDate" value="' + selectedTravelDate + '">');
+
+                // Append the form to the body and submit it
+                $('body').append(form);
+                form.submit();
+            });
         });
     });
 </script>

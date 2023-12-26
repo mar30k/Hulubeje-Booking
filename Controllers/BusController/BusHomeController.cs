@@ -34,7 +34,6 @@ namespace HulubejeBooking.Controllers.BusController
                     busModel.RouteConfiguration = routeData;
                 }
                 busModel.Company = companyData;
-                //busModel.C = RouteData.C;
                 return View(busModel);
             }
 
