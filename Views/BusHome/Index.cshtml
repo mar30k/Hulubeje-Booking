@@ -65,17 +65,12 @@
             var selectedDepartureCity = this.value;
             var allCities = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Cities));
             var selectedDepartureCityObject = allCities.find(city => city.cityName === selectedDepartureCity);
-            console.log("selectedDepartureCityObject", selectedDepartureCityObject);
-            // Clear existing options in the destination select
             var destinationSelect = document.getElementById('destination');
             destinationSelect.innerHTML = '<option value="" disabled selected>Select a Destination City</option>';
-
-            // Add new options based on the retrieved destination cities
             if (selectedDepartureCityObject) {
                 var allRoutes = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Routes));
                 var selectedDepartureCityCode = selectedDepartureCityObject.cityCode;
                 var selectedRouteObject = allRoutes.find(route => route.fromCity === selectedDepartureCityCode);
-                console.log(selectedRouteObject);
                 if (selectedRouteObject && selectedRouteObject.toCity) {
                         selectedRouteObject.toCity
                         .map(toCity => ({
