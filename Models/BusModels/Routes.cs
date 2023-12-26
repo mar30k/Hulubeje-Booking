@@ -1,9 +1,9 @@
 ﻿namespace HulubejeBooking.Models.BusModels
 {
-    public class Routes
+    public class RouteConfiguration
     {
         public List<City>? Cities { get; set; }
-        public List<Route>? Route { get; set; }
+        public List<Routes>? Routes { get; set; }
     }
     public class City
     {
@@ -11,7 +11,7 @@
         public int? CityCode { get; set; }
     }
 
-    public class Route 
+    public class Routes
     {
         public int? FromCity { get; set; }
         public List<ToCity>? ToCity { get; set; }
