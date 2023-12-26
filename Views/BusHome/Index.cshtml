@@ -89,18 +89,12 @@
             }
         });
         $(document).ready(function () {
-            // Assuming you have a button with the id "searchButton"
             $('#searchButton').click(function () {
-                // Get selected values from the destination dropdown and input
                 var selectedDestination = $('#destination').val();
                 var selectedTravelDate = $('#travelDate').val();
-
-                // Create a hidden form
-                var form = $('<form action="/BusSchedule/Index" method="post"></form>');
+                var form = $('<form action="/BusSchedule/BusScheduleview" method="post"></form>');
                 form.append('<input type="hidden" name="destination" value="' + selectedDestination + '">');
                 form.append('<input type="hidden" name="travelDate" value="' + selectedTravelDate + '">');
-
-                // Append the form to the body and submit it
                 $('body').append(form);
                 form.submit();
             });
