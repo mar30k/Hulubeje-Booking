@@ -237,24 +237,21 @@
             var selectedSeats = [];
             sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
             sessionStorage.setItem('selectedSeatNames', JSON.stringify(selectedSeats));
-            var form = $('<form action="/CinemaSeatLayout/SeatArrangement" method="post">' +
-                '<input type="hidden" name="spacecode" value="' + spacecode + '" />' +
-                '<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />' +
-                '<input type="hidden" name="companyName" value="' + companyName + '" />' +
-                '<input type="hidden" name="movieName" value="' + movieName + '" />' +
-                '<input type="hidden" name="movieCode" value="' + movieCode + '" />' +
-                '<input type="hidden" name="dimension" value="' + dimension + '" />' +
-                '<input type="hidden" name="spaceType" value="' + spaceType + '" />' +
-                '<input type="hidden" name="selectedDate" value="' + selectedDate + '" />' +
-                '<input type="hidden" name="code" value="' + code + '" />' +
-                '<input type="hidden" name="price" value="' + price + '" />' +
-                '<input type="hidden" name="hallName" value="' + hallName + '" />' +
-                '<input type="hidden" name="utcTime" value="' + utcTime + '" />' +
-                '</form>');
-            // Append the form to the body
-            $('body').append(form);
+            var form = $('<form action="/CinemaSeatLayout/SeatArrangement" method="post"></form>');
+            form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
+            form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '">');
+            form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
+            form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
+            form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
+            form.append('<input type="hidden" name="dimension" value="' + dimension + '">');
+            form.append('<input type="hidden" name="spaceType" value="' + spaceType + '">');
+            form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '">');
+            form.append('<input type="hidden" name="code" value="' + code + '">');
+            form.append('<input type="hidden" name="price" value="' + price + '">');
+            form.append('<input type="hidden" name="hallName" value="' + hallName + '">');
+            form.append('<input type="hidden" name="utcTime" value="' + utcTime + '">');
 
-            // Submit the form
+            $('body').append(form);
             form.submit();
         }
     </script>

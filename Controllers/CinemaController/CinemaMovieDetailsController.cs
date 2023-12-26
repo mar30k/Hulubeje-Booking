@@ -10,26 +10,8 @@ namespace HulubejeBooking.Controllers
         private readonly string apiKey = "1ba83335ce22421020a77845254a578e";
         private readonly string baseUrl = "https://api.themoviedb.org/3/movie/";
 
-        [HttpPost]
-        public IActionResult Details(string selectedDate, string movieCode, string companyName, string overview,string articleCode,
+        public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string overview,string articleCode,
              string posterUrl, string movieName, int movieId, string backdropPath)
-        {
-            return RedirectToAction("DetailsViewPage", new
-            {
-                selectedDate,
-                movieCode,
-                companyName,
-                overview,
-                articleCode,
-                posterUrl,
-                movieName,
-                movieId,
-                backdropPath,
-            });
-        }
-
-        public async Task<IActionResult> DetailsViewPage(string selectedDate, string movieCode, string companyName, string overview, string articleCode,
-    string posterUrl, string movieName, int movieId, string backdropPath)
         {
             try
             {
@@ -171,7 +153,7 @@ namespace HulubejeBooking.Controllers
                                                     CultureInfo cultureInfo = CultureInfo.InvariantCulture;
                                                     string format24Hours = "hh:mm:ss tt";
 
-                                                    movieDetails.Schedules = await Task.Run(()=>schedules.OrderBy(e=> DateTime.ParseExact(e.StartTime.ToString(), format24Hours, cultureInfo)).ToList());
+                                                    movieDetails.Schedules = await Task.Run(() => schedules.OrderBy(e => DateTime.ParseExact(e.StartTime.ToString(), format24Hours, cultureInfo)).ToList());
                                                     movieDetails.PgRating = pgRating;
                                                 }
                                             }

@@ -15,30 +15,8 @@ namespace CinemaSeatBooking.Controllers
             };
         }
         [HttpPost]
-        public IActionResult Products([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string companyName, [FromForm] string movieName,
-                    [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType, [FromForm] string articleCode, [FromForm] int numberOfElements)
-        {
-            // Convert the selectedSeats string to a list or array as needed
-            return RedirectToAction("ProductsView", new
-            {
-                companyTinNumber,
-                movieScheduleCode,
-                companyName,
-                hallName,
-                utcTime,
-                selectedDate,
-                movieName,
-                price,
-                dimension,
-                spaceType,
-                articleCode,
-                numberOfElements,
-        });
-
-        }
-
-        public async Task<IActionResult> ProductsView(string companyTinNumber, string movieScheduleCode, string companyName, string hallName,
-            string utcTime, string selectedDate, string movieName, decimal price, string dimension, string spaceType, string articleCode, string numberOfElements)
+        public async Task<IActionResult> Products([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string companyName, [FromForm] string movieName,
+                    [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType, [FromForm] string articleCode, [FromForm] string numberOfElements)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"Product/GetProducts?orgTin={companyTinNumber}&type=Restaurant&consignee=0912141914&platform=Web&longitude=0");
 
@@ -72,7 +50,6 @@ namespace CinemaSeatBooking.Controllers
                 return View(viewModel);
             }
         }
-
         public async Task<IActionResult> CalculateBill(string movieName, string moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems)
         {
             try

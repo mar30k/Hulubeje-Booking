@@ -16,29 +16,7 @@ public class CinemaSeatLayoutController : Controller
             BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
         };
     }
-    [HttpPost]
-    public IActionResult SeatArrangement(string spacecode, string companyTinNumber, string companyName, string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
-    {
-        return RedirectToAction("SeatArrangementView", new
-        {
-            spacecode,
-            companyTinNumber,
-            companyName,
-            selectedDate,
-            code,
-            price,
-            utcTime,
-            hallName,
-            movieName,
-            dimension,
-            spaceType,
-            movieCode,
-        });
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> SeatArrangementView(string spacecode, string companyTinNumber, string companyName, string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
-
+    public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string companyName, string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
     {
         HttpResponseMessage response = await _httpClient.GetAsync($"cinema/getCinemaSeatArrangment?orgTin={companyTinNumber}&spaceCode={spacecode}");
 
@@ -144,7 +122,6 @@ public class CinemaSeatLayoutController : Controller
         // Handle the case when the first API call fails
         return View("Error");
     }
-
     public async Task<IActionResult> GetUpdatedSeatInfo(string spacecode, string companyTinNumber, string code, string movieName, string companyName, string utcTime, string selectedDate, string hallName,
         string spaceType, string dimension)
     {

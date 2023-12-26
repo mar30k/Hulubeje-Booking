@@ -41,27 +41,27 @@ else
     </div>
 }
 <script>
-    function onCompanyButtonClick(movieCode, companyName, overview, articleCode, posterUrl, movieName, movieId, backdropPath) {
+    function onCompanyButtonClick(movieCode, companyName, sanitizedOverview, articleCode, posterUrl, movieName, movieId, backdropPath) {
+        // Create a form element
         var selectedDate = document.getElementById("selectedDate").value;
-
         sessionStorage.setItem('selectedMovieName', movieName);
         sessionStorage.setItem('selectedCompanyName ', companyName);
         sessionStorage.setItem('selectedDate', selectedDate);
         sessionStorage.setItem('articleCode', articleCode);
-        // Create a form dynamically
-        var form = $('<form action="/CinemaMovieDetails/Details" method="post">' +
-            '<input type="hidden" name="selectedDate" value="' + selectedDate + '" />' +
-            '<input type="hidden" name="movieCode" value="' + movieCode + '" />' +
-            '<input type="hidden" name="companyName" value="' + companyName + '" />' +
-            '<input type="hidden" name="overview" value="' + overview + '" />' +
-            '<input type="hidden" name="articleCode" value="' + articleCode + '" />' +
-            '<input type="hidden" name="posterUrl" value="' + posterUrl + '" />' +
-            '<input type="hidden" name="movieName" value="' + movieName + '" />' +
-            '<input type="hidden" name="movieId" value="' + movieId + '" />' +
-            '<input type="hidden" name="backdropPath" value="' + backdropPath + '" />' +
-            '</form>');
-        $('body').append(form);
+        var form = $('<form action="/CinemaMovieDetails/Details" method="post"></form>');
+        // Append hidden input fields for the parameters
+        form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '">');
+        form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
+        form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
+        form.append('<input type="hidden" name="sanitizedOverview" value="' + sanitizedOverview + '">');
+        form.append('<input type="hidden" name="articleCode" value="' + articleCode + '">');
+        form.append('<input type="hidden" name="posterUrl" value="' + posterUrl + '">');
+        form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
+        form.append('<input type="hidden" name="movieId" value="' + movieId + '">');
+        form.append('<input type="hidden" name="backdropPath" value="' + backdropPath + '">');
 
+        // Append the form to the body and submit it
+        $('body').append(form);
         form.submit();
     }
 </script>
