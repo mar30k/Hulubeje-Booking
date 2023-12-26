@@ -1,5 +1,9 @@
 ﻿@model HulubejeBooking.Models.BusModels.BusModel
 @using HulubejeBooking.Models.BusModels
+@{
+    DateTime today = DateTime.Today;
+    string minDate = today.ToString("yyyy-MM-dd");
+}
 <partial name="_Navigation" />
 <div class="container">
     <header class="container-fluid" style="padding-top: 5%;">
@@ -31,7 +35,7 @@
             <option value="" disabled selected>Select a Destination City</option>
         </select>
 
-        <input style="width:50%;" class="select" type="date" id="travelDate" required>
+        <input style="width:50%;" class="select" type="date" min="@minDate" id="travelDate" required>
         <button id="searchButton" class="btn btn-outline-primary">Search</button>
     </div>  
     @{
@@ -44,7 +48,7 @@
                 <div class="card" style="max-width: 540px;">
                     <div class="row g-0">
                         <div class="col-md-4">
-                            <img class="img-fluid" src="https://as2.ftcdn.net/v2/jpg/05/72/26/07/1000_F_572260724_ZjJFr1r8idb63hw4DBa5kCJmq7VJXGMZ.webp">
+                            <img class="img-fluid" src="../Assets/bus.png">
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
@@ -66,13 +70,17 @@
             var allCities = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Cities));
             var selectedDepartureCityObject = allCities.find(city => city.cityName === selectedDepartureCity);
             var destinationSelect = document.getElementById('destination');
+
+            // Clear existing options
             destinationSelect.innerHTML = '<option value="" disabled selected>Select a Destination City</option>';
+
             if (selectedDepartureCityObject) {
                 var allRoutes = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Routes));
                 var selectedDepartureCityCode = selectedDepartureCityObject.cityCode;
                 var selectedRouteObject = allRoutes.find(route => route.fromCity === selectedDepartureCityCode);
+
                 if (selectedRouteObject && selectedRouteObject.toCity) {
-                        selectedRouteObject.toCity
+                    selectedRouteObject.toCity
                         .map(toCity => ({
                             city: allCities.find(city => city.cityCode === toCity.cityCode),
                             toCity
@@ -92,6 +100,14 @@
             $('#searchButton').click(function () {
                 var selectedDestination = $('#destination').val();
                 var selectedTravelDate = $('#travelDate').val();
+                if (!selectedDestination || !selectedTravelDate) {
+                    // Display Bootstrap alert for 1 second and then close it
+                    alert("Please select both destination and travel date.");
+                    setTimeout(function () {
+                        $('.alert').alert('close');
+                    }, 2000);
+                    return; 
+                }
                 var form = $('<form action="/BusSchedule/BusScheduleview" method="post"></form>');
                 form.append('<input type="hidden" name="destination" value="' + selectedDestination + '">');
                 form.append('<input type="hidden" name="travelDate" value="' + selectedTravelDate + '">');
