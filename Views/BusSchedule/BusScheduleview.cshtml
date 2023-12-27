@@ -108,10 +108,12 @@
     </div>
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded" function () {
+    document.addEventListener("DOMContentLoaded", function () {
         $(document).ready(function () {
             $("#book").click(function () {
-
+                var form = $('<form action="/BusSeatLayout/Seatlayout" method="post" </form>');
+                $("body").append(form);
+                form.submit();
             });
         });
     });
