@@ -18,13 +18,17 @@ namespace HulubejeBooking.Controllers.BusController
 
             _httpClient.DefaultRequestHeaders.Add("x-api-key", "9BE090F9-7F52-4297-93A1-32D03D361DE9");
         }
-        public async  Task<IActionResult> BusScheduleview(string destination, DateTime travelDate)
+        public async  Task<IActionResult> BusScheduleview(string depature,string destination, DateTime travelDate)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"routeschedule/getschedulesbyroute?route={destination}&date={travelDate}");
             if(response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
                 var scheduleData = JsonConvert.DeserializeObject<List<VwRouteSchedule>>(responseData);
+                foreach (var schedule in scheduleData)
+                {
+                    schedule.DepatureCity = depature;
+                }
                 return View(scheduleData);
             }
             return View(null);
