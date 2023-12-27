@@ -15,9 +15,9 @@
             </div>
         </header>
         @{
-            List<Routes> allRoutes = Model.RouteConfiguration.Routes ?? new List<Routes>();
-            List<City> allCities = Model.RouteConfiguration.Cities ?? new List<City>();
-            List<int?> fromCities = Model.RouteConfiguration.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
+            List<Routes> allRoutes = Model?.RouteConfiguration?.Routes ?? new List<Routes>();
+            List<City> allCities = Model?.RouteConfiguration?.Cities ?? new List<City>();
+            List<int?> fromCities = Model?.RouteConfiguration?.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
             List<string> fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
         }
         <div class="d-flex" style="">
@@ -31,46 +31,48 @@
                     }
                 }
             </select>
-            <select class="select" style="width:100%; border-color:#FEBB02; height:60px; border-radius:5px;" id="destination" required>
+            <select class="selectCity" style="width:100%; border-color:#FEBB02; height:60px; border-radius:5px;" id="destination" required>
                 <option value="" disabled selected>Select a Destination City</option>
             </select>
-
             <input style="width:50%; border-color:#FEBB02; height:60px;border-radius:5px;" class="select" type="date" min="@minDate" id="travelDate" required>
             <button id="searchButton" class="btn btn-outline-primary">Search</button>
         </div>
     </div>
 </div>
     @{
-        var shuffledModel = Model.Company.OrderBy(x => Guid.NewGuid()).ToList();
+        var shuffledModel = Model?.Company?.OrderBy(x => Guid.NewGuid()).ToList();
     }
 <div class="container">
     <div class="row mt-3">
-        @foreach (var item in shuffledModel)
+        @if (shuffledModel is not null)
         {
-            <div class="col-md-6 mb-3">
-                <div class="card" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img class="img-fluid" src="../Assets/bus.png">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">@item.CompanyName</h5>
-                                <p class="card-text">The detail information will be posted here.</p>
-                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+            @foreach (var item in shuffledModel)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img class="img-fluid" src="../Assets/bus.png">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@item.CompanyName</h5>
+                                    <p class="card-text">The detail information will be posted here.</p>
+                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        } 
+            }
+        }
     </div>  
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('departure').addEventListener('change', function () {
             var selectedDepartureCity = this.value;
-            var allCities = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Cities));
+            var allCities = @Html.Raw(Json.Serialize(Model?.RouteConfiguration?.Cities));
             var selectedDepartureCityObject = allCities.find(city => city.cityName === selectedDepartureCity);
             var destinationSelect = document.getElementById('destination');
 
@@ -78,7 +80,7 @@
             destinationSelect.innerHTML = '<option value="" disabled selected>Select a Destination City</option>';
 
             if (selectedDepartureCityObject) {
-                var allRoutes = @Html.Raw(Json.Serialize(Model.RouteConfiguration.Routes));
+                var allRoutes = @Html.Raw(Json.Serialize(Model?.RouteConfiguration?.Routes));
                 var selectedDepartureCityCode = selectedDepartureCityObject.cityCode;
                 var selectedRouteObject = allRoutes.find(route => route.fromCity === selectedDepartureCityCode);
 
@@ -102,6 +104,8 @@
         $(document).ready(function () {
             $('#searchButton').click(function () {
                 var selectedDestination = $('#destination').val();
+                var selectedDestinationName = $('#destination').text();
+                var selectedDeparture = $('#departure').val();
                 var selectedTravelDate = $('#travelDate').val();
                 if (!selectedDestination || !selectedTravelDate) {
                     // Display Bootstrap alert for 1 second and then close it
@@ -113,6 +117,7 @@
                 }
                 var form = $('<form action="/BusSchedule/BusScheduleview" method="post"></form>');
                 form.append('<input type="hidden" name="destination" value="' + selectedDestination + '">');
+                form.append('<input type="hidden" name="depature" value="' + selectedDeparture + '">');
                 form.append('<input type="hidden" name="travelDate" value="' + selectedTravelDate + '">');
                 $('body').append(form);
                 form.submit();

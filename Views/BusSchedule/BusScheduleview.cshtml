@@ -1,61 +1,119 @@
 ﻿@model List<HulubejeBooking.Models.BusModels.VwRouteSchedule>
+<head>
+    <title>Route Schedule</title>
+</head>
 <partial name="_Navigation" />
 <div class="container">
-
     <div class="row" style="padding-bottom:10px;">
         <div class="col-md-4">
+            <div class="row" style="padding-right: 0px; padding-left:0px;">
+                <form>
+                    <fieldset>
+                        <div class="row">
+                            <legend>Filter by Amenities</legend>
+                            <div class="busAmenities">
+                                <div>
+                                    <input type="checkbox" id="wifi" name="busAmenities" value="wifi">
+                                    <label for="Wifi">Wifi</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
+                                    <label for="Wifi">Power Outlets</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
+                                    <label for="Wifi">Snack </label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
+                                    <label for="Wifi">Air Conditioning</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
+                                    <label for="Wifi">TV</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
+                                    <label for="Wifi">Bottled water</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
+                                    <label for="Wifi">Comfy chair</label>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                 </form>
+            </div>
         </div>
         <div class="col-md-8">
-            @foreach (var schedule in Model)
+            @if (Model is not null)
             {
-                <div class="card w-100 mt-3">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <img src="../Assets/bus.png" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
-                        </div>
-                        <div class="col-md-7">
-                            <div class="card-body">
-                                <div class="row align-items-start">
-                                    <div class="col-md-9">
-                                        <h5 class="card-title">@schedule.VehicleOperator</h5>
-                                        <p class="route"><span><i class="fas fa-route"></i></span>
-                                            @if (@schedule.RouteDescription is not null)
-                                            {
-                                                @foreach (var city in schedule.RouteDescription.Split('-'))
+                @foreach (var schedule in Model)
+                {
+                    <div class="card w-100 mt-3">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <img src="../Assets/bus.png" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
+                            </div>
+                            <div class="col-md-7">
+                                <div class="card-body">
+                                    <div class="row align-items-start">
+                                        <div class="col-md-9">
+                                            <a href="#">
+                                                <h5 class="card-title">@schedule.VehicleOperator</h5>
+                                            </a>
+                                            <p class="route mb-1">
+                                                <span><i class="fas fa-route"></i></span><span class="ml-2">@schedule.RouteDescription <span><i class="bi bi-caret-right"></i></span> Via @schedule.ViaDescription</span>
+                                            </p>
+                                            <p class="level mb-1"><span><i class="fas fa-star mr-2"></i></span>@schedule.LevelDesc</p>
+                                            @{
+                                                string formattedDate = schedule.DepartureDate.ToString("ddd, MMM d, yyyy");
+                                                string formattedTime = schedule.DepartureDate.ToString("h:mm tt");
+                                                            <p class="mb-1"><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
+                                                            @if (DateTime.TryParse(formattedTime, out DateTime utcTime))
                                                 {
-                                                    <span>@city</span>
-                                                    @if (!city.Equals(schedule.RouteDescription.Split('-').Last()))
-                                                    {
-                                                        <i class="bi bi-caret-right"></i>
-                                                    }
+                                                    DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
+                                                    ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
+                                                                <p class="mb-1"><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") Local Time)</p>
                                                 }
                                             }
-                                        </p>
-                                        <p class="level"><span><i class="fas fa-star mr-2"></i></span>@schedule.LevelDesc</p>
-                                        @{
-                                            string formattedDate = schedule.DepartureDate.ToString("ddd, MMM d, yyyy");
-                                            string formattedTime = schedule.DepartureDate.ToString("h:mm tt");
-                                            <p><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
-                                            if (DateTime.TryParse(formattedTime, out DateTime utcTime))
-                                            {
-                                                DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
-                                                ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
-                                                <p><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") Local Time)</p>
+                                            <p class="level mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber (@schedule.SideNumber)</p>
+                                            <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule.OriginTerminalName</p>
+                                            <p class="distance mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance @schedule.Distance KM, Duration @schedule.TravelDuration</p>
+                                            @{
+                                                Console.WriteLine("Travel Duration: " + @schedule.TravelDuration.ToString() ?? "null");
                                             }
-                                        }
-                                        <p class="level"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <p class="level mb-0"><span><i class="fas fa-dollar-sign mr-2"></i></span>@Math.Round(@schedule.Tariff, 2)</p>
-                                            <button id="seats" class="btn btn-primary">Select</button>
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <p class="level mb-1"><span><i class="fas fa-dollar-sign mr-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
+                                                <button id="book" class="btn btn-primary">Book</button>
+                                            </div>
+                                            <div class="d-flex justify-content-lg-start align-text-center flex-lg-wrap">
+                                                <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Wifi</span>
+                                                <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Charger</span>
+                                                <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Snack</span>
+                                                <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Tv</span>
+                                                <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Water</span>
+                                                <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Comfy Chair</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
             }
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded" function () {
+        $(document).ready(function () {
+            $("#book").click(function () {
+
+            });
+        });
+    });
+</script>
 <partial name="_Footer" />
