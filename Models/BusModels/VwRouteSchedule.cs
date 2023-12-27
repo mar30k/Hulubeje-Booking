@@ -109,12 +109,17 @@
         public string? ChangerOperator { get; set; }
 
         public decimal? TravelDuration { get; set; }
-
+        public int? Via { get; set; }
         public int? Demand { get; set; }
-
+        public int? Distance { get; set; }
+        public int? OriginTerminal { get; set; }
         public string? ImgUrl { get; set; }
         public List<string>? Amenities { get; set; }
         public string? VehiclePlateNumber { get; set; }
+        public string? OriginTerminalName { get; set; }
+        public string? ViaDescription { get; set; }
+        public string? DestiantionCity { get; set; }
+        public string? DepatureCity { get; set; }
 
     }
 }
