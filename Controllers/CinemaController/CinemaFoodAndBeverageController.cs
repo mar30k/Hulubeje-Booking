@@ -14,7 +14,6 @@ namespace CinemaSeatBooking.Controllers
                 BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
             };
         }
-        [HttpPost]
         public async Task<IActionResult> Products([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string companyName, [FromForm] string movieName,
                     [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType, [FromForm] string articleCode, [FromForm] string numberOfElements)
         {
