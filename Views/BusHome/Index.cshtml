@@ -5,42 +5,45 @@
     string minDate = today.ToString("yyyy-MM-dd");
 }
 <partial name="_Navigation" />
-<div class="container">
-    <header class="container-fluid" style="padding-top: 5%;">
-        <div>
-            <h1 style="color: black;">Book Your Bus Journey</h1>
-            <h6 style="color: gray;">Discover convenient and hassle-free bus travel with our easy booking platform.</h6>
-        </div>
-    </header>
-</div>
-<div class="container">
-    @{
-        List<Routes> allRoutes = Model.RouteConfiguration.Routes ?? new List<Routes>();
-        List<City> allCities = Model.RouteConfiguration.Cities ?? new List<City>();
-        List<int?> fromCities = Model.RouteConfiguration.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
-        List<string> fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
-    }
-    <div class="d-flex">
-        <select class="select" style="width:100%;" id="departure" required>
-            <option value="" disabled selected>Select a Departure City</option>
-            @if (fromCityNames is not null)
-            {
-                @foreach (var city in fromCityNames)
-                {
-                    <option value="@city">@city</option>
-                }
-            }
-        </select>
-        <select class="select" style="width:100%;" id="destination" required>
-            <option value="" disabled selected>Select a Destination City</option>
-        </select>
 
-        <input style="width:50%;" class="select" type="date" min="@minDate" id="travelDate" required>
-        <button id="searchButton" class="btn btn-outline-primary">Search</button>
-    </div>  
+<div style="background-color:#063970;">
+    <div class="container">
+        <header class="container-fluid" style="padding-top: 5%;">
+            <div>
+                <h1 style="color: white;">Book Your Bus Journey</h1>
+                <h4 style="color: white;">Discover convenient and hassle-free bus travel with our easy booking platform.</h4>
+            </div>
+        </header>
+        @{
+            List<Routes> allRoutes = Model.RouteConfiguration.Routes ?? new List<Routes>();
+            List<City> allCities = Model.RouteConfiguration.Cities ?? new List<City>();
+            List<int?> fromCities = Model.RouteConfiguration.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
+            List<string> fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
+        }
+        <div class="d-flex" style="">
+            <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>
+                <option value="" disabled selected>Select a Departure City</option>
+                @if (fromCityNames is not null)
+                {
+                    @foreach (var city in fromCityNames)
+                    {
+                        <option value="@city">@city</option>
+                    }
+                }
+            </select>
+            <select class="select" style="width:100%; border-color:#FEBB02; height:60px; border-radius:5px;" id="destination" required>
+                <option value="" disabled selected>Select a Destination City</option>
+            </select>
+
+            <input style="width:50%; border-color:#FEBB02; height:60px;border-radius:5px;" class="select" type="date" min="@minDate" id="travelDate" required>
+            <button id="searchButton" class="btn btn-outline-primary">Search</button>
+        </div>
+    </div>
+</div>
     @{
         var shuffledModel = Model.Company.OrderBy(x => Guid.NewGuid()).ToList();
     }
+<div class="container">
     <div class="row mt-3">
         @foreach (var item in shuffledModel)
         {
