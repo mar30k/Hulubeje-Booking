@@ -99,7 +99,7 @@
                         <div class="row">
                             <legend>Filter by Amenities</legend>
 
-                            <div class=" col-md-6 hotelAmenities">
+                            <div class=" col-md-6 hotelAmenities" style="border: 1px solid #928F63;">
 
                                 <label>Hotel Amenities</label>
                                 <div>
@@ -141,7 +141,7 @@
 
 
                             </div>
-                            <div class=" col-md-6 roomAmenities">
+                            <div class=" col-md-6 roomAmenities" style="border: 1px solid #928F63;">
                                 @* <div class="vertical-line" style="position: absolute; border-right: 1px solid #eee; height: 100%; margin-top: 5px; padding-right:10px;"></div> *@
 
                                 <label>Room Amenities</label>
@@ -228,7 +228,7 @@
                                     <label for="toothpasteAndBrush">Toothpaste and Brush</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" id="bedNet" name="roomAmenities" value="Bed n`et">
+                                    <input type="checkbox" id="bedNet" name="roomAmenities" value="Bed net">
                                     <label for="bedNet">Bed Net</label>
                                 </div>
 
@@ -236,9 +236,9 @@
                         </div>
                         
                     </fieldset>
-                    <div>
+                    <div class="row">
                         <legend>Filter By Price</legend>
-                        <div class="card cardPrice">
+                        <div class=" col-md-6 card cardPrice" style="border: 1px solid #928F63;">
                             <div class="price-content">
                                 <div>
                                     <label for="filter-min-value">Min</label>
@@ -254,6 +254,20 @@
                                 <div class="range-fill"></div>
                                 <input id="filter-min-value" type="range" class="min-price" value="50" min="10" max="5000" step="10" />
                                 <input id="filter-max-value" type="range" class="max-price" value="5000" min="10" max="5000" step="10" />
+                            </div>
+                        </div>
+                        <div class=" col-md-6 " style="border: 1px solid #928F63;">
+                            <div>
+                                <input type="checkbox" id="default" name="default" value=" ">
+                                <label for="default">Default</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="lowToHigh" name="lowToHigh" value=" ">
+                                <label for="lowToHigh">Low To High</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="highToLow" name="highToLow" value=" ">
+                                <label for="highToLow">High To Low </label>
                             </div>
                         </div>
                     </div>
