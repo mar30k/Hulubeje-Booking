@@ -28,18 +28,36 @@
                 <div style="display: flex;justify-content:center; align-items: center; overflow-x: auto; margin-top: 20px;">
                     <table>
                         @{
-                            var MaxY = 12;
-                            var MaxX = 5;
-                            for (int y = 1; y <= MaxY; y++)
+                            var seatLayout = Model?.SeatLayout;
+                            var seats = seatLayout?.Seats;
+
+                            if (seatLayout != null && seats != null)
                             {
-                                <tr>
-                                    @for (int x = 1; x <= MaxX; x++)
-                                    {
-                                        <td style="height: 30px !important; width: 30px !important">
-                                            <button class="buttons" onclick="toggleButton(this)">@x,@y</button>
-                                        </td>
-                                    }
-                                </tr>
+                                var maxX = seatLayout.MaxX;
+                                var maxY = seatLayout.MaxY;
+
+                                for (int y = 1; y <= maxY; y++)
+                                {
+                                    <tr>
+                                        @for (int x = 1; x <= maxX; x++)
+                                        {
+                                            var seat = seats.FirstOrDefault(s => s.X == x && s.Y == y && (s.Type == "Seat" || s.Type == "Driver Seat"));
+
+                                            if (seat != null)
+                                            {
+                                                <td style="height: 30px !important; width: 30px !important">
+                                                    <button class="buttons" onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style="height: 30px !important; width: 30px !important">
+                                                    <!-- You can add an empty cell or any other placeholder -->
+                                                </td>
+                                            }
+                                        }
+                                    </tr>
+                                }
                             }
                         }
                     </table>
