@@ -12,7 +12,24 @@
         public string? Time {  get; set; }  
         public string? Date {  get; set; }  
         public string? DestinationCity {  get; set; }  
-        public string? DepatureCity {  get; set; }  
+        public string? DepatureCity {  get; set; }
+        public SeatLayout? SeatLayout { get; set; }
 
+    }
+    public class SeatLayout
+    {
+        public int Id { get; set; }
+        public int MaxX { get; set; }
+        public int MaxY { get; set; }
+        public List<Seat> Seats { get; set; }
+    }
+
+    public class Seat
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public string Type { get; set; }
     }
 }
