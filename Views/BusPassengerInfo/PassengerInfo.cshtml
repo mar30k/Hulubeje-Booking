@@ -194,9 +194,20 @@
     {
         var selectedButtons = ViewBag.SelectedButtons as List<string>;
 
-        if (selectedButtons != null && passengerIndex - 1 < selectedButtons.Count)
+        if (selectedButtons != null && selectedButtons.Count > 0)
         {
-            return selectedButtons[passengerIndex - 1];
+            // Split each element into row and column parts, convert to integers, and then sort
+            selectedButtons = selectedButtons
+                .Select(btn => btn.Split(',').Select(int.Parse).ToArray())
+                .OrderBy(btnParts => btnParts[0])
+                .ThenBy(btnParts => btnParts[1])
+                .Select(btnParts => $"{btnParts[0]},{btnParts[1]}")
+                .ToList();
+
+            if (passengerIndex - 1 < selectedButtons.Count)
+            {
+                return selectedButtons[passengerIndex - 1];
+            }
         }
 
         return string.Empty;

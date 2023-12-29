@@ -22,7 +22,7 @@
         }
         <div class="d-flex" style="">
             <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>
-                <option value="" disabled selected>Select a Departure City</option>
+                <option value="">Select a Departure City</option>
                 @if (fromCityNames is not null)
                 {
                     @foreach (var city in fromCityNames)
@@ -36,7 +36,7 @@
             </select>
             <input style="width:50%; border-color:#FEBB02; height:60px;border-radius:5px;" class="select" type="date" value="@minDate" min="@minDate" id="travelDate" required>
             <button id="searchButton" class="btn btn-outline-primary">Search</button>
-        </div>
+        </div> 
     </div>
 </div>
     @{
@@ -70,14 +70,13 @@
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById('departure').addEventListener('change', function () {
-            var selectedDepartureCity = this.value;
+        function populateDestinationDropdown(selectedDepartureCity) {
             var allCities = @Html.Raw(Json.Serialize(Model?.RouteConfiguration?.Cities));
             var selectedDepartureCityObject = allCities.find(city => city.cityName === selectedDepartureCity);
-            var destinationSelect = document.getElementById('destination');
+            var destinationSelect = $('#destination');
 
             // Clear existing options
-            destinationSelect.innerHTML = '<option value="" disabled selected>Select a Destination City</option>';
+            destinationSelect.html('<option value="" disabled selected>Select a Destination City</option>');
 
             if (selectedDepartureCityObject) {
                 var allRoutes = @Html.Raw(Json.Serialize(Model?.RouteConfiguration?.Routes));
@@ -93,13 +92,18 @@
                         .filter(mappedCity => mappedCity.city)
                         .sort((a, b) => a.city.cityName.localeCompare(b.city.cityName, undefined, { sensitivity: 'base' }))
                         .forEach(mappedCity => {
-                            const destinationOption = document.createElement('option');
-                            destinationOption.value = mappedCity.toCity.routeId;
-                            destinationOption.text = mappedCity.city.cityName;
-                            destinationSelect.add(destinationOption);
+                            destinationSelect.append($('<option>', {
+                                value: mappedCity.toCity.routeId,
+                                text: mappedCity.city.cityName
+                            }));
                         });
                 }
             }
+        }
+
+        $('#departure').change(function () {
+            var selectedDepartureCity = this.value;
+            populateDestinationDropdown(selectedDepartureCity);
         });
         $(document).ready(function () {
             $('#searchButton').click(function () {

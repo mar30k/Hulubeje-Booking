@@ -32,8 +32,7 @@ namespace HulubejeBooking.Controllers.BusController
                 DestinationCity = destinationCity,
                 DepatureCity = depatureCity
             };
-            var vehcleId = "6915";
-            HttpResponseMessage response = await _httpClient.GetAsync($"vehicles/getvehicleseatlayout?id={vehcleId}");
+            HttpResponseMessage response = await _httpClient.GetAsync($"vehicles/getvehicleseatlayout?id={6915}");
             if (response.IsSuccessStatusCode) { 
                string resopnseData = await response.Content.ReadAsStringAsync();
                var seatLayout = JsonConvert.DeserializeObject<SeatLayout>(resopnseData);
