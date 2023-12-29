@@ -1,0 +1,164 @@
+﻿<partial name="_Navigation" />
+@{
+    ViewData["Title"] = "Passenger Information";
+}
+<head>
+    <style>
+        .passenger-container {
+            margin-bottom: 10px;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .passenger-content {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .form-group label {
+            width: 150px;
+            margin-right: 10px;  
+        }
+
+        .form-group select {
+            display: inline-block;
+            vertical-align: middle; 
+            width: 40%;
+        }
+
+        .gender{
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="container">
+            <h1>Passenger Information</h1>
+
+            <form method="post" action="/ControllerName/SubmitPassengerInfo">
+                @for (int i = 1; i <= ViewBag.SelectedButtonsCount; i++)
+                {
+                    <div class="passenger-container">
+                        <details @(i == 1 ? "open" : "")>
+                            <summary>Passenger @i - (Seat @GetSeatName(i))</summary>
+                            <div class="passenger-content">
+                                <div class="form-group mb-1">
+                                    <label for="passengerName">Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span></label>
+                                    <input type="text" name="passengerName_@i" required>
+                                </div>
+
+                                <div class="form-group mb-1">
+                                    <label for="passengerAge">Age<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span></label>
+                                    <input type="number" min="0"name="passengerAge_@i" required>
+                                </div>
+
+                                <div class="form-group mb-1">
+                                    <label for="nationality">Nationality</label>
+                                    <select class="form-select" name="nationality_@i" id="nationality">
+                                        <option disabled>Choose a country</option>
+                                        @foreach (var country in GetOrderedCountries())
+                                        {
+                                            if (country == "Ethiopia")
+                                            {
+                                                <option selected>@country</option>
+                                            }
+                                            else
+                                            {
+                                                <option>@country</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group mb-1">
+                                    <label>Gender<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span> </label>
+                                    <div class="gender">
+                                        <input type="radio" id="male_@i" name="gender_@i" value="Male">
+                                        <label for="male_@i">Male</label>
+
+                                        <input type="radio" id="female_@i" name="gender_@i" value="Female">
+                                        <label for="female_@i">Female</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-1">
+                                    <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span></label>
+                                    <input type="tel" name="phoneNumber_@i" required>
+                                </div>
+
+                                <div class="form-group mb-1">
+                                    <label for="email">Email:</label>
+                                    <input type="email" name="email_@i">
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                }
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+           
+        </div>
+    </div>
+    <div class="footer">
+        <partial name="_Footer" />
+    </div>
+</body>
+@functions {
+    List<string> GetOrderedCountries()
+    {
+        try
+        {
+            var client = new System.Net.Http.HttpClient();
+            var response = client.GetStringAsync("https://restcountries.com/v2/all").Result;
+
+            var countryList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<dynamic>>(response);
+
+            // Extract 'demonym' property and sort countries alphabetically
+            var sortedCountries = countryList
+                .OrderBy(c => (c.name?.ToString()) ?? "")
+                .Select(c => (string)c.demonym)
+                .ToList();
+
+            // Move Ethiopia and Eritrea to the top
+            sortedCountries.Remove("Ethiopian");
+            sortedCountries.Remove("Eritrean");
+            sortedCountries.Insert(0, "Ethiopian");
+            sortedCountries.Insert(1, "Eritrean");
+
+            return sortedCountries;
+        }
+        catch (Exception ex)
+        {
+            return new List<string>();
+        }
+    }
+}
+@functions {
+    string GetSeatName(int passengerIndex)
+    {
+        var selectedButtons = ViewBag.SelectedButtons as List<string>;
+
+        if (selectedButtons != null && passengerIndex - 1 < selectedButtons.Count)
+        {
+            return selectedButtons[passengerIndex - 1];
+        }
+
+        return string.Empty;
+    }
+}
