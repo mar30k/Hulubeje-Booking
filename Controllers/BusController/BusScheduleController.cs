@@ -25,9 +25,12 @@ namespace HulubejeBooking.Controllers.BusController
             {
                 string responseData = await response.Content.ReadAsStringAsync();
                 var scheduleData = JsonConvert.DeserializeObject<List<VwRouteSchedule>>(responseData);
-                foreach (var schedule in scheduleData)
+                if(scheduleData != null )
                 {
-                    schedule.DepatureCity = depature;
+                    foreach (var schedule in scheduleData)
+                    {
+                        schedule.DepatureCity = depature;
+                    }
                 }
                 return View(scheduleData);
             }
