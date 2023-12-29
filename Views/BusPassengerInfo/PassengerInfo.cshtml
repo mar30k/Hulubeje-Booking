@@ -14,11 +14,6 @@
             min-height: 100vh;
             margin: 0;
         }
-
-        .content {
-            flex: 1;
-        }
-
         .passenger-content {
             padding: 10px;
             border: 1px solid #ddd;
@@ -45,74 +40,119 @@
             display: inline-block;
             vertical-align: middle;
         }
+
+        .extra-small-asterisk {
+            font-size: 10px; /* Adjust the size as needed */
+        }
     </style>
+    <title>Passenger Information</title>
 </head>
 <body>
-    <div class="content">
-        <div class="container">
-            <h1>Passenger Information</h1>
+    <div class="row mt-3 mb-4">
+        <div class="col-lg-9">
+            <div class="content">
+                <div class="container">
+                    <h1>Passenger Information</h1>
 
-            <form method="post" action="/ControllerName/SubmitPassengerInfo">
-                @for (int i = 1; i <= ViewBag.SelectedButtonsCount; i++)
-                {
-                    <div class="passenger-container">
-                        <details @(i == 1 ? "open" : "")>
-                            <summary>Passenger @i - (Seat @GetSeatName(i))</summary>
-                            <div class="passenger-content">
-                                <div class="form-group mb-1">
-                                    <label for="passengerName">Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span></label>
-                                    <input type="text" name="passengerName_@i" required>
-                                </div>
+                    <form method="post" action="#">
+                        @for (int i = 1; i <= ViewBag.SelectedButtonsCount; i++)
+                        {
+                            <div class="passenger-container mb-3">
+                                <details open @* @(i == 1 ? "open" : "") *@>
+                                    <summary>Passenger @i - (Seat @GetSeatName(i))</summary>
+                                    <div class="passenger-content">
+                                        <div class="gender form-group mb-1">
+                                            <label for="passengerName">Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                            <input type="text" name="passengerName_@i" required>
+                                        </div>
 
-                                <div class="form-group mb-1">
-                                    <label for="passengerAge">Age<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span></label>
-                                    <input type="number" min="0"name="passengerAge_@i" required>
-                                </div>
+                                        <div class="form-group mb-1">
+                                            <label for="passengerAge">Age<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                            <input type="number" min="0" name="passengerAge_@i" required>
+                                        </div>
 
-                                <div class="form-group mb-1">
-                                    <label for="nationality">Nationality</label>
-                                    <select class="form-select" name="nationality_@i" id="nationality">
-                                        <option disabled>Choose a country</option>
-                                        @foreach (var country in GetOrderedCountries())
-                                        {
+                                        <div class="form-group mb-1">
+                                            <label for="nationality">Nationality</label>
+                                            <select class="form-select" name="nationality_@i" id="nationality">
+                                                @* @foreach (var country in GetOrderedCountries())
+                                            {
                                             if (country == "Ethiopia")
                                             {
-                                                <option selected>@country</option>
+                                            <option selected>@country</option>
                                             }
                                             else
                                             {
-                                                <option>@country</option>
+                                            <option>@country</option>
                                             }
-                                        }
-                                    </select>
-                                </div>
-                                <div class="form-group mb-1">
-                                    <label>Gender<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span> </label>
-                                    <div class="gender">
-                                        <input type="radio" id="male_@i" name="gender_@i" value="Male">
-                                        <label for="male_@i">Male</label>
+                                            } *@
+                                                <option selected>...</option>
+                                                <option>Ethipian</option>
+                                                <option>Eritrean</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-1">
+                                            <label>Gender<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span> </label>
+                                            <div class="gender">
+                                                <input type="radio" id="male_@i" name="gender_@i" value="Male" required>
+                                                <label for="male_@i">Male</label>
 
-                                        <input type="radio" id="female_@i" name="gender_@i" value="Female">
-                                        <label for="female_@i">Female</label>
+                                                <input type="radio" id="female_@i" name="gender_@i" value="Female" required>
+                                                <label for="female_@i">Female</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group mb-1">
+                                            <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                            <input type="tel" name="phoneNumber_@i" required>
+                                        </div>
+
+                                        <div class="form-group mb-1">
+                                            <label for="email">Email:</label>
+                                            <input type="email" name="email_@i">
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div class="form-group mb-1">
-                                    <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk fa-xs"></i></span></label>
-                                    <input type="tel" name="phoneNumber_@i" required>
-                                </div>
-
-                                <div class="form-group mb-1">
-                                    <label for="email">Email:</label>
-                                    <input type="email" name="email_@i">
-                                </div>
+                                </details>
                             </div>
-                        </details>
+                        }
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-3  mt-2">
+            <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
+                <div class="row">
+                    <h4 class="mb-1" style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@ViewBag.OperatorName</h4>
+                    <div style="text-align: left;">
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>Level:</strong>&nbsp; @ViewBag.Level
+                        </p>
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>DepatureCity:</strong>&nbsp; @ViewBag.DepatureCity
+                        </p>
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>Destination:</strong>&nbsp; @ViewBag.DestinationCity
+                        </p>
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>Depature Date:</strong>&nbsp; @ViewBag.Date
+                        </p>
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>Time:</strong>&nbsp; @ViewBag.Time
+                        </p>
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>PlateNumber:</strong>&nbsp; @ViewBag.PlateNumber
+                        </p>
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>Terminal:</strong>&nbsp; @ViewBag.Terminal
+                        </p>
+                        <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                            <strong>Tariff:</strong>&nbsp; @ViewBag.Tariff
+                        </p>
                     </div>
-                }
-                <button class="btn btn-primary" type="submit">Submit</button>
-            </form>
-           
+                </div>
+            </div>
         </div>
     </div>
     <div class="footer">
