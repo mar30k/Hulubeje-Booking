@@ -21,24 +21,24 @@
                                     <label for="Wifi">Power Outlets</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
-                                    <label for="Wifi">Snack </label>
+                                    <input type="checkbox" id="snack" name="busAmenities" value="snack">
+                                    <label for="Snack">Snack </label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
-                                    <label for="Wifi">Air Conditioning</label>
+                                    <input type="checkbox" id="aircon" name="busAmenities" value="aircon">
+                                    <label for="aircon">Air Conditioning</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
-                                    <label for="Wifi">TV</label>
+                                    <input type="checkbox" id="tv" name="busAmenities" value="tv">
+                                    <label for="tv">TV</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
-                                    <label for="Wifi">Bottled water</label>
+                                    <input type="checkbox" id="water" name="busAmenities" value="water">
+                                    <label for="water">Bottled water</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" id="charger" name="busAmenities" value="charger">
-                                    <label for="Wifi">Comfy chair</label>
+                                    <input type="checkbox" id="chair" name="busAmenities" value="chair">
+                                    <label for="chair">Comfy chair</label>
                                 </div>
                             </div>
                         </div>
@@ -61,31 +61,28 @@
                                     <div class="row align-items-start">
                                         <div class="col-md-9">
                                             <a href="#">
-                                                <h5 class="card-title">@schedule.VehicleOperator</h5>
+                                                <h5 class="card-title operatorName">@schedule.VehicleOperator</h5>
                                             </a>
-                                            <p class="route mb-1">
-                                                <span><i class="fas fa-route"></i></span><span class="ml-2">@schedule.RouteDescription <span><i class="bi bi-caret-right"></i></span> Via @schedule.ViaDescription</span>
+                                            <p class="mb-1">
+                                                <span><i class="fas fa-route"></i></span><span class="route ml-2">@schedule.RouteDescription </span><span><i class="bi bi-caret-right"></i></span>
                                             </p>
                                             <p class="level mb-1"><span><i class="fas fa-star mr-2"></i></span>@schedule.LevelDesc</p>
                                             @{
                                                 string formattedDate = schedule.DepartureDate.ToString("ddd, MMM d, yyyy");
                                                 string formattedTime = schedule.DepartureDate.ToString("h:mm tt");
-                                                            <p class="mb-1"><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
+                                                            <p class="scheduleDate mb-1"><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
                                                             @if (DateTime.TryParse(formattedTime, out DateTime utcTime))
                                                 {
                                                     DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
                                                     ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
-                                                                <p class="mb-1"><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") Local Time)</p>
+                                                                <p class="scheduleTime mb-1"><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
                                                 }
                                             }
-                                            <p class="level mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber (@schedule.SideNumber)</p>
+                                            <p class="plateNumber mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber (@schedule.SideNumber)</p>
                                             <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule.OriginTerminalName</p>
-                                            <p class="distance mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance @schedule.Distance KM, Duration @schedule.TravelDuration</p>
-                                            @{
-                                                Console.WriteLine("Travel Duration: " + @schedule.TravelDuration.ToString() ?? "null");
-                                            }
+                                            <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
                                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <p class="level mb-1"><span><i class="fas fa-dollar-sign mr-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
+                                                <p class="tariff mb-1"><span><i class="fas fa-dollar-sign mr-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
                                                 <button id="book" class="btn btn-primary">Book</button>
                                             </div>
                                             <div class="d-flex justify-content-lg-start align-text-center flex-lg-wrap">
@@ -111,11 +108,32 @@
     document.addEventListener("DOMContentLoaded", function () {
         $(document).ready(function () {
             $("#book").click(function () {
-                var form = $('<form action="/BusSeatLayout/Seatlayout" method="post" </form>');
+                var form = $('<form action="/BusSeatLayout/Seatlayout" method="post"></form>');
+
+                var plateNumber = $(this).closest('.card-body').find('.plateNumber').text().trim();
+                var terminal = $(this).closest('.card-body').find('.terminal').text().trim();
+                var distance = $(this).closest('.card-body').find('.distance').text().trim();
+                var tariff = $(this).closest('.card-body').find('.tariff').text().trim();
+                var level = $(this).closest('.card-body').find('.level').text().trim();
+                var route = $(this).closest('.card-body').find('.route').text().trim();
+                var operatorName = $(this).closest('.card-body').find('.operatorName').text().trim();
+                var scheduleDate = $(this).closest('.card-body').find('.scheduleDate').text().trim();
+                var scheduleTime = $(this).closest('.card-body').find('.scheduleTime').text().trim();
+
+                form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
+                form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
+                form.append('<input type="hidden" name="level" value="' + level + '">');
+                form.append('<input type="hidden" name="distance" value="' + distance + '">');
+                form.append('<input type="hidden" name="tariff" value="' + tariff + '">');
+                form.append('<input type="hidden" name="route" value="' + route + '">');
+                form.append('<input type="hidden" name="operatorName" value="' + operatorName + '">');
+                form.append('<input type="hidden" name="scheduleDate" value="' + scheduleDate + '">');
+                form.append('<input type="hidden" name="scheduleTime" value="' + scheduleTime + '">');
                 $("body").append(form);
                 form.submit();
             });
         });
     });
 </script>
+
 <partial name="_Footer" />
