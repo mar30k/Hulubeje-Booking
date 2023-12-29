@@ -118,7 +118,11 @@
         public string? VehiclePlateNumber { get; set; }
         public string? OriginTerminalName { get; set; }
         public string? ViaDescription { get; set; }
-        public string? DestiantionCity { get; set; }
+        public int? DestiantionCity { get; set; }
+        public int? NoOfSeat { get; set; }
+        public int? DestinationTerminal { get; set; }
+        public string? DestCityName { get; set; }
+        public string? DestinationTerminalName { get; set; }
         public string? DepatureCity { get; set; }
 
     }
