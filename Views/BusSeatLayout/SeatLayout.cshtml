@@ -1,4 +1,5 @@
-﻿<partial name="_Navigation" />
+﻿@model HulubejeBooking.Models.BusModels.SeatLayoutFormData
+<partial name="_Navigation" />
 <style>
     .buttons {
         display: flex;
@@ -13,6 +14,11 @@
         color: #1ea83c;
         width: 100%;
         height: 100%;
+    }
+
+    .selected {
+        background-color: green;
+        color: white;
     }
 </style>
 <div class="row mt-3">
@@ -30,7 +36,7 @@
                                     @for (int x = 1; x <= MaxX; x++)
                                     {
                                         <td style="height: 30px !important; width: 30px !important">
-                                            <button class="buttons">@x,@y</button>
+                                            <button class="buttons" onclick="toggleButton(this)">@x,@y</button>
                                         </td>
                                     }
                                 </tr>
@@ -40,12 +46,66 @@
                 </div>
             </div>
         </div>
+        <div id="continue" style="text-align: center; position: relative;  margin-top:10px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
+            <button id="continue" class="btn btn-outline-primary">Continue</button>
+        </div>
     </div>
     <div class="col-2  ml-0">
         <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; 
-                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:280px; ">
-        <p>This is wher the schedule info is displayed</p>
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
+            <div class="row">
+                <h4 class="mb-1" style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model.OperatorName</h4>
+                <div style="text-align: left;">
+                    <p class ="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Level:</strong>&nbsp; @Model.Level
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Depature Date:</strong>&nbsp; @Model.Date
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Time:</strong>&nbsp; @Model.Time
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>PlateNumber:</strong>&nbsp; @Model.PlateNumber
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Terminal:</strong>&nbsp; @Model.Terminal
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Tariff:</strong>&nbsp; @Model.Tariff
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<script>
+    var selectedButtons = [];
+    var selectedButtonsCount = 0;
+    function toggleButton(button) {
+        var index = selectedButtons.indexOf(button.innerText);
+        if (index === -1) {
+            selectedButtons.push(button.innerText);
+            button.classList.add('selected');
+        } else {
+            selectedButtons.splice(index, 1);
+            button.classList.remove('selected');
+        }
+        selectedButtonsCount = selectedButtons.length;
+        console.log(selectedButtons);
+    }
+    $(document).ready(function () {
+        $("#continue").click(function () {
+            var form = $('<form action="/BusPassengerInfo/PassengerInfo" method="Post"></form>');
+
+            selectedButtons.forEach(function (seatName) {
+                form.append('<input type="hidden" name="selectedButtons" value="' + seatName + '">');
+            });
+
+            form.append('<input type="hidden" name="selectedButtonsCount" value="' + selectedButtonsCount +'">');
+            $("body").append(form);
+            form.submit();
+        });
+    });
+</script>
 <partial name="_Footer" />

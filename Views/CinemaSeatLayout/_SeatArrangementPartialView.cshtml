@@ -114,77 +114,78 @@
     </div>
     <div class="col-2  ml-0">
         <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:280px; ">
-            <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model.CompanyName</h4>
-            <div style="text-align: left;">
-                <p style="margin: 0; color: #555; font-size: 15px;">
-                    <strong>Movie:</strong>&nbsp; @Model.MovieName
-                </p>
-                <p style="margin: 0; color: #555; font-size: 15px;">
-                    <strong>Hall Name:</strong>&nbsp; @Model.HallName
-                </p>
-                <p style="margin: 0; color: #555; font-size: 15px;">
-                    <strong>Time:</strong>&nbsp; @Model.UtcTime (@GetEthiopianTime(Model?.UtcTime) Local)
-                </p>
-                <p style="margin: 0; color: #555; font-size: 15px;">
-                    <strong>Date:</strong>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.SelectedDate)
-                </p>
-                <p style="margin: 0; color: #555; font-size: 15px;">
-                    <strong>Dimension:</strong>&nbsp;
-                    <span style="background-color: @(Model?.Dimension == "2D" ? "blue" : "red"); color:white; padding: 1.5px; border-radius:3px;">
-                        @Model?.Dimension
-                    </span>
-                </p>
-            </div>
-            <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
-                <div class="row">
-                    <div class="col-10">
-                        <div class="row">
-                            <div class="col-8 mt-1">
-                                <p style="color:black">Available seats</p>
-                            </div>
-                            <div class="col-4" style="text-align: center">
-                                <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
-                                    @(Model.AvailableSeats?.Count(seatCode => Model.Seats.Any(seat => seat.Code == seatCode && !string.IsNullOrWhiteSpace(seat.Name))) - Model.TakenSeats?.Count ?? 0)
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-10">
-                        <div class="row">
-                            <div class="col-8 mt-1">
-                                <p style="color:black">Booked seats</p>
-                            </div>
-                            <div class="col-4" style="text-align: center">
-                                <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@(Model.BookedSeats?.Count ?? 0)</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-10">
-                        <div class="row">
-                            <div class="col-8 mt-1">
-                                <p style="color:black">Taken seats</p>
-                            </div>
-                            <div class="col-4" style="text-align: center">
-                                <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@(Model.TakenSeats?.Count ?? 0)</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-10">
-                        <div class="row">
-                            <div class="col-8 mt-1">
-                                <p style="color:black">Sold seats</p>
-                            </div>
-                            <div class="col-4" style="text-align: center">
-                                <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@(Model.SoldSeats?.Count ?? 0)</p>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+            <div class="row">
+                <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.CompanyName</h4>
+                <div style="text-align: left;">
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Movie:</strong>&nbsp; @Model?.MovieName
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Hall Name:</strong>&nbsp; @Model?.HallName
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Time:</strong>&nbsp; @Model?.UtcTime (@GetEthiopianTime(Model?.UtcTime) Local)
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Date:</strong>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.SelectedDate)
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>Dimension:</strong>&nbsp;
+                        <span style="background-color: @(Model?.Dimension == "2D" ? "blue" : "red"); color:white; padding: 1.5px; border-radius:3px;">
+                            @Model?.Dimension
+                        </span>
+                    </p>
             </div>
         </div>
+        <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
+            <div class="row">
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-8 mt-1">
+                            <p style="color:black">Available seats</p>
+                        </div>
+                        <div class="col-4" style="text-align: center">
+                            <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
+                                @(Model?.AvailableSeats?.Count(seatCode => Model.Seats.Any(seat => seat.Code == seatCode && !string.IsNullOrWhiteSpace(seat.Name))) - Model?.TakenSeats?.Count ?? 0)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-8 mt-1">
+                            <p style="color:black">Booked seats</p>
+                        </div>
+                        <div class="col-4" style="text-align: center">
+                            <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@(Model.BookedSeats?.Count ?? 0)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-8 mt-1">
+                            <p style="color:black">Taken seats</p>
+                        </div>
+                        <div class="col-4" style="text-align: center">
+                            <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@(Model.TakenSeats?.Count ?? 0)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-8 mt-1">
+                            <p style="color:black">Sold seats</p>
+                        </div>
+                        <div class="col-4" style="text-align: center">
+                            <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@(Model.SoldSeats?.Count ?? 0)</p>
+                        </div>
+                    </div>
+                </div>
 
+            </div>
+        </div>
     </div>
+
 </div>
 <div class="mb-3"></div>
 @functions {
