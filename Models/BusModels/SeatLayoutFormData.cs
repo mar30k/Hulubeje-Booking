@@ -11,5 +11,8 @@
         public string? OperatorName { get; set; }
         public string? Time {  get; set; }  
         public string? Date {  get; set; }  
+        public string? DestinationCity {  get; set; }  
+        public string? DepatureCity {  get; set; }  
+
     }
 }

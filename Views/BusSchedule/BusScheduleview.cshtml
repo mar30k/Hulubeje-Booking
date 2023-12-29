@@ -64,7 +64,7 @@
                                                 <h5 class="card-title operatorName">@schedule.VehicleOperator</h5>
                                             </a>
                                             <p class="mb-1">
-                                                <span><i class="fas fa-route"></i></span><span class="route ml-2">@schedule.RouteDescription </span><span><i class="bi bi-caret-right"></i></span>
+                                                <span><i class="fas fa-route"></i></span><span class="route ml-2">@schedule.RouteDescription </span><span><i class="fas fa-highway"></i></span>
                                             </p>
                                             <p class="level mb-1"><span><i class="fas fa-star mr-2"></i></span>@schedule.LevelDesc</p>
                                             @{
@@ -78,6 +78,8 @@
                                                                 <p class="scheduleTime mb-1"><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
                                                 }
                                             }
+                                            <p class="destinationCity" style="display: none">@schedule.DestCityName</p>
+                                            <p class="depatureCity" style="display: none">@schedule.DepatureCity</p>
                                             <p class="plateNumber mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber (@schedule.SideNumber)</p>
                                             <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule.OriginTerminalName</p>
                                             <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
@@ -119,6 +121,8 @@
                 var operatorName = $(this).closest('.card-body').find('.operatorName').text().trim();
                 var scheduleDate = $(this).closest('.card-body').find('.scheduleDate').text().trim();
                 var scheduleTime = $(this).closest('.card-body').find('.scheduleTime').text().trim();
+                var destinationCity = $(this).closest('.card-body').find('.destinationCity').text().trim();
+                var depatureCity = $(this).closest('.card-body').find('.depatureCity').text().trim();
 
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
                 form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
@@ -129,6 +133,8 @@
                 form.append('<input type="hidden" name="operatorName" value="' + operatorName + '">');
                 form.append('<input type="hidden" name="scheduleDate" value="' + scheduleDate + '">');
                 form.append('<input type="hidden" name="scheduleTime" value="' + scheduleTime + '">');
+                form.append('<input type="hidden" name="destinationCity" value="' + destinationCity + '">');
+                form.append('<input type="hidden" name="depatureCity" value="' + depatureCity + '">');
                 $("body").append(form);
                 form.submit();
             });

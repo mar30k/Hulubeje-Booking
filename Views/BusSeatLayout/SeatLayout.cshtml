@@ -60,6 +60,12 @@
                         <strong>Level:</strong>&nbsp; @Model.Level
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>DepatureCity:</strong>&nbsp; @Model.DepatureCity
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                        <strong>DestinationCity:</strong>&nbsp; @Model.DestinationCity
+                    </p>
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                         <strong>Depature Date:</strong>&nbsp; @Model.Date
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
@@ -80,6 +86,17 @@
     </div>
 </div>
 <script>
+    var plateNumber = "@Model.PlateNumber";
+    var terminal = " @Model.Terminal";
+    var level = "@Model.Level";
+    var distance = "@Model.Distance";
+    var tariff = "@Model.Tariff";
+    var route = "@Model.Route";
+    var operatorName = "@Model.OperatorName";
+    var scheduleDate = "@Model.Date";
+    var scheduleTime = "@Model.Time";
+    var destinationCity = "@Model.DestinationCity";
+    var depatureCity = "@Model.DepatureCity";
     var selectedButtons = [];
     var selectedButtonsCount = 0;
     function toggleButton(button) {
@@ -96,15 +113,31 @@
     }
     $(document).ready(function () {
         $("#continue").click(function () {
-            var form = $('<form action="/BusPassengerInfo/PassengerInfo" method="Post"></form>');
+            if (selectedButtonsCount >= 1) {
+                var form = $('<form action="/BusPassengerInfo/PassengerInfo" method="Post"></form>');
+                selectedButtons.forEach(function (seatName) {
+                    form.append('<input type="hidden" name="selectedButtons" value="' + seatName + '">');
+                });
 
-            selectedButtons.forEach(function (seatName) {
-                form.append('<input type="hidden" name="selectedButtons" value="' + seatName + '">');
-            });
-
-            form.append('<input type="hidden" name="selectedButtonsCount" value="' + selectedButtonsCount +'">');
-            $("body").append(form);
-            form.submit();
+                form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
+                form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
+                form.append('<input type="hidden" name="level" value="' + level + '">');
+                form.append('<input type="hidden" name="distance" value="' + distance + '">');
+                form.append('<input type="hidden" name="tariff" value="' + tariff + '">');
+                form.append('<input type="hidden" name="route" value="' + route + '">');
+                form.append('<input type="hidden" name="operatorName" value="' + operatorName + '">');
+                form.append('<input type="hidden" name="scheduleDate" value="' + scheduleDate + '">');
+                form.append('<input type="hidden" name="scheduleTime" value="' + scheduleTime + '">');
+                form.append('<input type="hidden" name="destinationCity" value="' + destinationCity + '">');
+                form.append('<input type="hidden" name="depatureCity" value="' + depatureCity + '">');
+                form.append('<input type="hidden" name="selectedButtonsCount" value="' + selectedButtonsCount + '">');
+                $("body").append(form);
+                form.submit();
+            }
+            else{
+                alert("please select seats!!")
+            }
+            
         });
     });
 </script>

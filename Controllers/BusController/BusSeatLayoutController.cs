@@ -6,7 +6,7 @@ namespace HulubejeBooking.Controllers.BusController
     public class BusSeatLayoutController : Controller
     {
 
-        public IActionResult SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName, string scheduleDate, string scheduleTime)
+        public IActionResult SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName, string scheduleDate, string scheduleTime, string destinationCity, string depatureCity)
         {
             var schedueleInfo = new SeatLayoutFormData
             {
@@ -18,7 +18,9 @@ namespace HulubejeBooking.Controllers.BusController
                 Tariff = tariff,
                 OperatorName = operatorName,
                 Date = scheduleDate,
-                Time = scheduleTime
+                Time = scheduleTime,
+                DestinationCity = destinationCity,
+                DepatureCity = depatureCity
             };
             return View(schedueleInfo);
         }
