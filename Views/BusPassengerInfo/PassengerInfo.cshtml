@@ -157,7 +157,7 @@
     </div>
 </body>
 @functions {
-    List<string> GetOrderedCountries()
+    List<string> GetCountries()
     {
         try
         {
@@ -193,7 +193,8 @@
 
         if (selectedButtons != null && selectedButtons.Count > 0)
         {
-            return selectedButtons[passengerIndex - 1];
+            var orderedSelectedButtons = selectedButtons.OrderBy(order => int.Parse(order)).ToList();
+            return orderedSelectedButtons[passengerIndex - 1];
         }
 
         return string.Empty;
