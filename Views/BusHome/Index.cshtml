@@ -128,6 +128,8 @@
                 $('body').append(form);
                 form.submit();
             });
+            var initialDepartureCity = $('#departure').val();
+            populateDestinationDropdown(initialDepartureCity);
         });
     });
 </script>

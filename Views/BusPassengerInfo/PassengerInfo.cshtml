@@ -1,4 +1,5 @@
-﻿<partial name="_Navigation" />
+﻿@using System.Text.RegularExpressions
+<partial name="_Navigation" />
 <head>
     <style>
         .passenger-container {
@@ -151,6 +152,40 @@
                             <strong>Tariff:</strong>&nbsp; @ViewBag.Tariff
                         </p>
                     </div>
+                </div>
+            </div>
+            <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
+                <div>
+                    @{
+                        // Check if ViewBag.Level is not null and is a List<string>
+                        var levelList = ViewBag.SelectedButtons as List<string>;
+
+                        // Check if levelList is not null and has elements
+                        if (levelList != null && levelList.Any())
+                        {
+                            // Remove non-numeric characters from ViewBag.Tariff and parse as double
+                            var tariffString = Regex.Replace(ViewBag.Tariff, "[^0-9.]", ""); // Keep only digits and dot
+                            if (double.TryParse(tariffString, out double tariff))
+                            {
+                                // Calculate the result based on the count of elements and the tariff
+                                var result = levelList.Count * tariff;
+
+                                // Display the calculated result
+                                <p>The calculated result is: @result</p>
+                            }
+                            else
+                            {
+                                // Display an error message if the parsed value is not a valid double
+                                <p>Invalid value for Tariff.</p>
+                            }
+                        }
+                        else
+                        {
+                        // Handle the case where ViewBag.Level is null or empty
+                            <p>No elements in the Level list.</p>
+                        }
+                    }
                 </div>
             </div>
         </div>
