@@ -1,7 +1,4 @@
 ﻿<partial name="_Navigation" />
-@{
-    ViewData["Title"] = "Passenger Information";
-}
 <head>
     <style>
         .passenger-container {
@@ -130,10 +127,10 @@
                             <strong>Level:</strong>&nbsp; @ViewBag.Level
                         </p>
                         <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                            <strong>DepatureCity:</strong>&nbsp; @ViewBag.DepatureCity
+                            <strong>Depature City:</strong>&nbsp; @ViewBag.DepatureCity
                         </p>
                         <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                            <strong>Destination:</strong>&nbsp; @ViewBag.DestinationCity
+                            <strong>Destination City:</strong>&nbsp; @ViewBag.DestinationCity
                         </p>
                         <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                             <strong>Depature Date:</strong>&nbsp; @ViewBag.Date
@@ -142,7 +139,7 @@
                             <strong>Time:</strong>&nbsp; @ViewBag.Time
                         </p>
                         <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                            <strong>PlateNumber:</strong>&nbsp; @ViewBag.PlateNumber
+                            <strong>Plate Number:</strong>&nbsp; @ViewBag.PlateNumber
                         </p>
                         <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                             <strong>Terminal:</strong>&nbsp; @ViewBag.Terminal
@@ -196,18 +193,7 @@
 
         if (selectedButtons != null && selectedButtons.Count > 0)
         {
-            // Split each element into row and column parts, convert to integers, and then sort
-            selectedButtons = selectedButtons
-                .Select(btn => btn.Split(',').Select(int.Parse).ToArray())
-                .OrderBy(btnParts => btnParts[0])
-                .ThenBy(btnParts => btnParts[1])
-                .Select(btnParts => $"{btnParts[0]},{btnParts[1]}")
-                .ToList();
-
-            if (passengerIndex - 1 < selectedButtons.Count)
-            {
-                return selectedButtons[passengerIndex - 1];
-            }
+            return selectedButtons[passengerIndex - 1];
         }
 
         return string.Empty;
