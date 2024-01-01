@@ -60,9 +60,12 @@
                                     <div class="passenger-content">
                                         <div class="gender form-group mb-1">
                                             <label for="passengerName">Full Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="passengerName_@i" required>
+                                            <input type="text" name="passengerName_@i" required style="width: 250px;">
                                         </div>
-
+                                        <div class="form-group mb-1">
+                                            <label for="passenderId">Id Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                            <input type="text" name="passenderId_@i" required>
+                                        </div>
                                         <div class="form-group mb-1">
                                             <label for="passengerAge">Age<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
                                             <input type="number" min="0" name="passengerAge_@i" required>
@@ -71,7 +74,7 @@
                                         <div class="form-group mb-1">
                                             <label for="nationality">Nationality</label>
                                             <select class="form-select" name="nationality_@i" id="nationality">
-                                                @* @foreach (var country in GetOrderedCountries())
+                                                @* @foreach (var country in GetCountries())
                                             {
                                             if (country == "Ethiopia")
                                             {
