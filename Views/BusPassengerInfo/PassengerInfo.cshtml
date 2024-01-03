@@ -52,7 +52,7 @@
                 <div class="container">
                     <h1>Passenger Information</h1>
 
-                    <form method="post" action="#">
+                    <form method="post" action="/BusConfirmation/ConfirmationPage">
                         @for (int i = 1; i <= ViewBag.SelectedButtonsCount; i++)
                         {
                             <div class="passenger-container mb-3">
@@ -154,7 +154,7 @@
                     </div>
                 </div>
             </div>
-            <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 0; border-radius: 8px;
+            @* <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 0; border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
                 <div>
                     @{
@@ -166,12 +166,12 @@
                             if (double.TryParse(tariffString, out double tariff))
                             {
                                 var result = selectedButtons.Count * tariff;
-                                <p>You Will Pay @result for @selectedButtonsCount Seats.</p>
+                                <p class="mt-3">You Will Pay @result for @selectedButtonsCount Seats.</p>
                             }
                         }
                     }
                 </div>
-            </div>
+            </div> *@
         </div>
     </div>
     <div class="footer">
