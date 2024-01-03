@@ -122,7 +122,7 @@
             </div>
         </div>
         <div class="col-3  mt-2">
-            <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
+            <div class="mb-3"style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
                 <div class="row">
                     <h4 class="mb-1" style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@ViewBag.OperatorName</h4>
@@ -154,36 +154,20 @@
                     </div>
                 </div>
             </div>
-            <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
+            <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 0; border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
                 <div>
                     @{
-                        // Check if ViewBag.Level is not null and is a List<string>
-                        var levelList = ViewBag.SelectedButtons as List<string>;
-
-                        // Check if levelList is not null and has elements
-                        if (levelList != null && levelList.Any())
+                        var selectedButtons = ViewBag.SelectedButtons as List<string>;
+                        var selectedButtonsCount = selectedButtons?.Count();
+                        if (selectedButtons != null && selectedButtons.Any())
                         {
-                            // Remove non-numeric characters from ViewBag.Tariff and parse as double
-                            var tariffString = Regex.Replace(ViewBag.Tariff, "[^0-9.]", ""); // Keep only digits and dot
+                            var tariffString = Regex.Replace(ViewBag.Tariff, "[^0-9.]", "");
                             if (double.TryParse(tariffString, out double tariff))
                             {
-                                // Calculate the result based on the count of elements and the tariff
-                                var result = levelList.Count * tariff;
-
-                                // Display the calculated result
-                                <p>The calculated result is: @result</p>
+                                var result = selectedButtons.Count * tariff;
+                                <p>You Will Pay @result for @selectedButtonsCount Seats.</p>
                             }
-                            else
-                            {
-                                // Display an error message if the parsed value is not a valid double
-                                <p>Invalid value for Tariff.</p>
-                            }
-                        }
-                        else
-                        {
-                        // Handle the case where ViewBag.Level is null or empty
-                            <p>No elements in the Level list.</p>
                         }
                     }
                 </div>
