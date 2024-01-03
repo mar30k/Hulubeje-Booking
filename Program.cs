@@ -16,6 +16,11 @@ builder.Services.AddHttpClient("BusBooking", httpClient =>
     httpClient.BaseAddress = new Uri("http://192.168.1.25:8092/api/");
     httpClient.DefaultRequestHeaders.Add("x-api-key", "9BE090F9-7F52-4297-93A1-32D03D361DE9");
 });
+builder.Services.AddHttpClient("MovieDb", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://api.themoviedb.org/3/movie/");
+    httpClient.DefaultRequestHeaders.Add("x-api-key", "1ba83335ce22421020a77845254a578e");
+});
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<HotelListBuffer>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
