@@ -11,7 +11,7 @@ namespace HulubejeBooking.Controllers.BusController
             _httpClientFactory = httpClientFactory;
         }
         public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,
-            string scheduleDate, string scheduleTime, string destinationCity, string depatureCity)
+            string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate)
         {
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
             var schedueleInfo = new BusSeatLayout
@@ -26,7 +26,9 @@ namespace HulubejeBooking.Controllers.BusController
                 Date = scheduleDate,
                 Time = scheduleTime,
                 DestinationCity = destinationCity,
-                DepatureCity = depatureCity
+                DepatureCity = depatureCity,
+                ArrivialDate = arrivalDate,
+                DepartureDate = departureDate,
             };
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={6915}");
             if (response.IsSuccessStatusCode) { 
