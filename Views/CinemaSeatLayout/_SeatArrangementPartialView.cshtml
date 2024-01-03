@@ -135,57 +135,56 @@
                             @Model?.Dimension
                         </span>
                     </p>
+                </div>
             </div>
-        </div>
-        <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
-            <div class="row">
-                <div class="col-10">
-                    <div class="row">
-                        <div class="col-8 mt-1">
-                            <p style="color:black">Available seats</p>
+            <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
+                <div class="row">
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Available seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
+                                    @(Model?.AvailableSeats?.Count(seatCode => Model.Seats.Any(seat => seat.Code == seatCode && !string.IsNullOrWhiteSpace(seat.Name))) - Model?.TakenSeats?.Count ?? 0)
+                                </p>
+                            </div>
                         </div>
-                        <div class="col-4" style="text-align: center">
-                            <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
-                                @(Model?.AvailableSeats?.Count(seatCode => Model.Seats.Any(seat => seat.Code == seatCode && !string.IsNullOrWhiteSpace(seat.Name))) - Model?.TakenSeats?.Count ?? 0)
-                            </p>
+                    </div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Booked seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@(Model.BookedSeats?.Count ?? 0)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Taken seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@(Model.TakenSeats?.Count ?? 0)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="row">
+                            <div class="col-8 mt-1">
+                                <p style="color:black">Sold seats</p>
+                            </div>
+                            <div class="col-4" style="text-align: center">
+                                <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@(Model.SoldSeats?.Count ?? 0)</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-10">
-                    <div class="row">
-                        <div class="col-8 mt-1">
-                            <p style="color:black">Booked seats</p>
-                        </div>
-                        <div class="col-4" style="text-align: center">
-                            <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@(Model.BookedSeats?.Count ?? 0)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-10">
-                    <div class="row">
-                        <div class="col-8 mt-1">
-                            <p style="color:black">Taken seats</p>
-                        </div>
-                        <div class="col-4" style="text-align: center">
-                            <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@(Model.TakenSeats?.Count ?? 0)</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-10">
-                    <div class="row">
-                        <div class="col-8 mt-1">
-                            <p style="color:black">Sold seats</p>
-                        </div>
-                        <div class="col-4" style="text-align: center">
-                            <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@(Model.SoldSeats?.Count ?? 0)</p>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
-
 </div>
 <div class="mb-3"></div>
 @functions {
