@@ -18,9 +18,7 @@
         public string? Overview { get; set; }
         public List<int>? GenreId { get; set; }
         public int? MovieId { get; set; }
-        public List<string>? Genre { get; set; }
         public List<Genre>? Genres { get; set; }
-        public List<string>? GenreNames { get; set; }
         public List<CastMember>? Cast { get; set; }
         public int? RunTime { get; set; }
         public string? YoutubeKey { get; set; }

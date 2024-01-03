@@ -10,7 +10,7 @@ namespace HulubejeBooking.Controllers
         private readonly string apiKey = "1ba83335ce22421020a77845254a578e";
         private readonly string baseUrl = "https://api.themoviedb.org/3/movie/";
 
-        public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string overview,string articleCode,
+        public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string sanitizedOverview, string articleCode,
              string posterUrl, string movieName, int movieId, string backdropPath)
         {
             try
@@ -59,28 +59,13 @@ namespace HulubejeBooking.Controllers
                         {
                             movieDetails.MovieCode = movieCode;
                             movieDetails.CompanyName = companyName;
-                            movieDetails.Overview = overview;
+                            movieDetails.Overview = sanitizedOverview;
                             movieDetails.ArticleCode = articleCode;
                             movieDetails.PosterUrl = posterUrl;
                             movieDetails.MovieName = movieName;
                             movieDetails.BackdropPath = backdropPath;
                             movieDetails.YoutubeKey = trailerKey; // Add the YoutubeKey property
                             movieDetails.SelectedDate = selectedDate;
-                            var genreNames = new List<string>();
-                            if (movieDetails.Genre != null)
-                            {
-                                foreach (var genreInfo in movieDetails.Genre)
-                                {
-                                    if (genreInfo is not null)
-                                    {
-                                        genreNames.Add((string)genreInfo);
-                                    }
-                                }
-                            }
-
-                            // Assign the genre names to the GenreNames property in MovieModel
-                            movieDetails.GenreNames = genreNames;
-
                             string castApiUrl = $"{baseUrl}{movieId}/credits?api_key={apiKey}";
                             HttpResponseMessage castResponse = await client.GetAsync(castApiUrl);
 
@@ -97,8 +82,6 @@ namespace HulubejeBooking.Controllers
                                         ProfilePath = "https://image.tmdb.org/t/p/w500" + c["profile_path"].ToString()
                                     })
                                     .ToList();
-
-                                    // Assign the castList to the Cast property in MovieModel
                                     movieDetails.Cast = castList;
                                 }
                             }

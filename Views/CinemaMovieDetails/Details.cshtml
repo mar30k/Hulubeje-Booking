@@ -117,8 +117,11 @@
                     <div class="col-md-8">
                         <h4 class="companyName" style="background-color:rgba(0,0,0,0.3) ">@Model.CompanyName</h4>
                         <h1 class="movienName" style="color: white">@Model.MovieName</h1>
-                        <h4 class="details">Overview</h4>
-                        <p class="details">@Model.Overview</p>
+                        @if(Model.Overview is not null)
+                        {
+                            <h4 class="details">Overview</h4>
+                            <p class="details">@Model.Overview</p>
+                        }
                         <div>
                             @functions {
                                 // Helper function to get the color based on genre
@@ -162,23 +165,18 @@
                             }
                         </div>
                         <div>
-                            @if (Model.GenreNames is not null)
+                            @if(Model.FormattedRunTime is not null)
                             {
-                                @foreach (var genres in Model.GenreNames)
-                                {
-                                    <div class="genres">
-                                        @genres
-                                    </div>
-                                }
+                                <h4 style="display: inline-block; margin-right: 10px;">Runtime:</h4>
+                                <p class="details" style="display: inline-block;">@Model.FormattedRunTime</p>
                             }
                         </div>
                         <div>
-                            <h4 style="display: inline-block; margin-right: 10px;">Runtime:</h4>
-                            <p class="details" style="display: inline-block;">@Model.FormattedRunTime</p>
-                        </div>
-                        <div>
-                            <h4 style="display: inline-block; margin-right: 10px;">Pg-Rating:</h4>
-                            <p class="details" style="display: inline-block;">@Model.PgRating</p>
+                            @if(Model.PgRating is not null)
+                            {
+                                <h4 style="display: inline-block; margin-right: 10px;">Pg-Rating:</h4>
+                                <p class="details" style="display: inline-block;">@Model.PgRating</p>
+                            }
                         </div>
                     </div>
                 </div>
