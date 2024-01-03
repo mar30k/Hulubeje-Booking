@@ -11,34 +11,34 @@
     }
     <div class="row border rounded mb-4 pt-3 bg-dark">
         <div class="col-md-4 text-center">
-            <h5 class="text-primary">@ViewBag.OperatorName</h5>
+            <h5 class="text-primary mb-0">@ViewBag.OperatorName</h5>
             <p class="mb-0" style="color: white"><small>@ViewBag.PlateNumber</small></p>
             <p class="font-weight-bold" style="color: white">@ViewBag.Date</p>
         </div>
-        <div class="col-md-1 text-right mt-3">
+        <div class="col-md-1 text-lg-center mt-2">
             <p><span style="color: white;"><i class="fas fa-bus fa-3x ml-2"></i></span></p>
         </div>
         <div class="col-md-3 text-center">
-            <h6 class="text-success">Departure</h6>
+            <h6 class="text-success mb-0">Departure</h6>
             <p class="mb-0" style="color: white">@ViewBag.DepatureCity</p>
             @if (DateTime.TryParse(formattedDepartTime, out DateTime utcDepartTime))
             {
                 DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcDepartTime, "Africa/Addis_Ababa");
                 ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
-                <p class="font-weight-bold" style="color: white">@formattedDepartTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
+                <p class="font-weight-bold" style="color: white">@formattedDepartTime Local Time</p>
             }
         </div>
         <div class="col-md-1 text-right mt-2">
             <p><span style="color: white;"><i class="fas fa-arrow-right fa-4x ml-2"></i></span></p>
         </div>
         <div class="col-md-3 text-center">
-            <h6 class="text-danger">Arrival</h6>
+            <h6 class="text-danger mb-0">Arrival</h6>
             <p class="mb-0" style="color: white">@ViewBag.DestinationCity</p>
             @if (DateTime.TryParse(formattedArrivalTime, out DateTime utcArrivalTime))
             {
                 DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcArrivalTime, "Africa/Addis_Ababa");
                 ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
-                <p class="font-weight-bold" style="color: white">@formattedArrivalTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
+                <p class="font-weight-bold" style="color: white">@formattedArrivalTime Local Time</p>
             }
         </div>
     </div>
@@ -49,22 +49,28 @@
         @foreach (var passenger in Model)
         {
             <div class="mb-4">
-                <div class="card border-primary h-100">
+                <div class="card border-primary h-100 p-2">
                     <div class="card-body ">
-                        <h5 class="card-title text-primary">Passenger @count</h5>
+                        <div style=""> 
+                            <h5 class="card-title text-primary">@passenger.PassengerName</h5>
+                        </div>
                         <hr>
-                        <div class="row p-2">
-                            <div class="col-md-4 mr-5">
-                                <p class="card-text"><strong>Name</strong>  <span class="float-right">@passenger.PassengerName</span></p>
-                                <p class="card-text"><strong>ID Number </strong>  <span class="float-right">@passenger.PassengerId</span></p>
-                            </div>
-                            <div class="col-md-3 mr-4">
-                                <p class="card-text"><strong>Age:</strong>  <span class="float-right">@passenger.PassengerAge</span></p>
+                        <div class="row p-2" style="background-color: #e0b300; border-radius: 5px;">
+                            <div class="col-md-4 ">
+                                <p class="card-text"><strong>Age</strong>  <span class="float-right">@passenger.PassengerAge</span></p>
                                 <p class="card-text"><strong>Nationality:</strong>  <span class="float-right">@passenger.Nationality</span></p>
                             </div>
                             <div class="col-md-4">
                                 <p class="card-text"><strong>Gender:</strong>  <span class="float-right">@passenger.Gender</span></p>
                                 <p class="card-text"><strong>Phone Number:</strong>  <span class="float-right">@passenger.PhoneNumber</span></p>
+
+                            </div>
+                            <div class="col-md-4">
+                                <p class="card-text"><strong>ID Number </strong>  <span class="float-right">@passenger.PassengerId</span></p>
+                                @if (passenger.Email is not null)
+                                {
+                                    <p class="card-text"><strong>Email:</strong>  <span class="float-right">@passenger.Email</span></p>
+                                }
                             </div>
                         </div>
                     </div>
