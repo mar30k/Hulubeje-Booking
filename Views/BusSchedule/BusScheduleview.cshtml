@@ -79,7 +79,9 @@
                                                 }
                                             }
                                             <p class="destinationCity" style="display: none">@schedule.DestCityName</p>
+                                            <p class="departureDate" style="display: none">@schedule.DepartureDate</p>
                                             <p class="depatureCity" style="display: none">@schedule.DepatureCity</p>
+                                            <p class="arrivalDate" style="display: none">@schedule.ArrivalDate</p>
                                             <p class="plateNumber mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber (@schedule.SideNumber)</p>
                                             <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule.OriginTerminalName</p>
                                             <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
@@ -123,6 +125,8 @@
                 var scheduleTime = $(this).closest('.card-body').find('.scheduleTime').text().trim();
                 var destinationCity = $(this).closest('.card-body').find('.destinationCity').text().trim();
                 var depatureCity = $(this).closest('.card-body').find('.depatureCity').text().trim();
+                var arrivalDate = $(this).closest('.card-body').find('.arrivalDate').text().trim();
+                var departureDate = $(this).closest('.card-body').find('.departureDate').text().trim();
 
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
                 form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
@@ -135,6 +139,8 @@
                 form.append('<input type="hidden" name="scheduleTime" value="' + scheduleTime + '">');
                 form.append('<input type="hidden" name="destinationCity" value="' + destinationCity + '">');
                 form.append('<input type="hidden" name="depatureCity" value="' + depatureCity + '">');
+                form.append('<input type="hidden" name="arrivalDate" value="' + arrivalDate + '">');
+                form.append('<input type="hidden" name="departureDate" value="' + departureDate + '">');
                 $("body").append(form);
                 form.submit();
             });

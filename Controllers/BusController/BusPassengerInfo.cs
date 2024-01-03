@@ -5,7 +5,7 @@ namespace HulubejeBooking.Controllers.BusController
     public class BusPassengerInfo : Controller
     {
         public IActionResult PassengerInfo(int selectedButtonsCount, List<string> selectedButtons, string plateNumber, string terminal, string distance, 
-            string tariff, string level, string route, string operatorName, string scheduleDate, string scheduleTime, string destinationCity, string depatureCity)
+            string tariff, string level, string route, string operatorName, string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivialDate, string departureDate)
         {
             ViewBag.PlateNumber = plateNumber;
             ViewBag.Terminal = terminal;
@@ -20,6 +20,8 @@ namespace HulubejeBooking.Controllers.BusController
             ViewBag.DepatureCity = depatureCity; 
             ViewBag.SelectedButtonsCount = selectedButtonsCount;
             ViewBag.SelectedButtons = selectedButtons;
+            ViewBag.ArrivalDate = arrivialDate;
+            ViewBag.DepartureDate = departureDate;
             return View();
         }
     }

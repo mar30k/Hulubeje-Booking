@@ -13,6 +13,8 @@
         public string? Date {  get; set; }  
         public string? DestinationCity {  get; set; }  
         public string? DepatureCity {  get; set; }
+        public string? ArrivialDate {  get; set; }
+        public string? DepartureDate {  get; set; }
         public SeatLayout? SeatLayout { get; set; }
 
     }

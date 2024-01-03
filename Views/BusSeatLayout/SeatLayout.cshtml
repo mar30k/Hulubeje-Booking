@@ -118,6 +118,8 @@
     var scheduleTime = "@Model?.Time";
     var destinationCity = "@Model?.DestinationCity";
     var depatureCity = "@Model?.DepatureCity";
+    var arrivialDate = "@Model?.ArrivialDate";
+    var departureDate = "@Model?.DepartureDate";
     var selectedButtons = [];
     var selectedButtonsCount = 0;
     function toggleButton(button) {
@@ -151,6 +153,8 @@
                 form.append('<input type="hidden" name="scheduleTime" value="' + scheduleTime + '">');
                 form.append('<input type="hidden" name="destinationCity" value="' + destinationCity + '">');
                 form.append('<input type="hidden" name="depatureCity" value="' + depatureCity + '">');
+                form.append('<input type="hidden" name="arrivialDate" value="' + arrivialDate + '">');
+                form.append('<input type="hidden" name="departureDate" value="' + departureDate + '">');
                 form.append('<input type="hidden" name="selectedButtonsCount" value="' + selectedButtonsCount + '">');
                 $("body").append(form);
                 form.submit();
