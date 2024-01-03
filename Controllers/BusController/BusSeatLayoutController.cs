@@ -5,20 +5,16 @@ namespace HulubejeBooking.Controllers.BusController
 {
     public class BusSeatLayoutController : Controller
     {
-        private readonly HttpClient _httpClient;
-        public BusSeatLayoutController()
+        private readonly IHttpClientFactory _httpClientFactory;
+        public BusSeatLayoutController(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri("http://192.168.1.25:8092/api/")
-            };
-
-            _httpClient.DefaultRequestHeaders.Add("x-api-key", "9BE090F9-7F52-4297-93A1-32D03D361DE9");
+            _httpClientFactory = httpClientFactory;
         }
         public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,
             string scheduleDate, string scheduleTime, string destinationCity, string depatureCity)
         {
-            var schedueleInfo = new SeatLayoutFormData
+            var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
+            var schedueleInfo = new BusSeatLayout
             {
                 Distance = distance,
                 Level = level,
@@ -32,7 +28,7 @@ namespace HulubejeBooking.Controllers.BusController
                 DestinationCity = destinationCity,
                 DepatureCity = depatureCity
             };
-            HttpResponseMessage response = await _httpClient.GetAsync($"vehicles/getvehicleseatlayout?id={6915}");
+            HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={6915}");
             if (response.IsSuccessStatusCode) { 
                string resopnseData = await response.Content.ReadAsStringAsync();
                var seatLayout = JsonConvert.DeserializeObject<SeatLayout>(resopnseData);

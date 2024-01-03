@@ -8,19 +8,15 @@ namespace HulubejeBooking.Controllers.BusController
 {
     public class BusScheduleController : Controller
     {
-        private readonly HttpClient _httpClient;
-        public BusScheduleController()
+        private readonly IHttpClientFactory _httpClientFactory;
+        public BusScheduleController(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri("http://192.168.1.25:8092/api/")
-            };
-
-            _httpClient.DefaultRequestHeaders.Add("x-api-key", "9BE090F9-7F52-4297-93A1-32D03D361DE9");
+            _httpClientFactory = httpClientFactory;
         }
         public async  Task<IActionResult> BusScheduleview(string depature,string destination, DateTime travelDate)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync($"routeschedule/getschedulesbyroute?route={destination}&date={travelDate}");
+            var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
+            HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"routeschedule/getschedulesbyroute?route={destination}&date={travelDate}");
             if(response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
