@@ -1,0 +1,30 @@
+﻿@model List<HulubejeBooking.Models.BusModels.PassengerModel>
+
+<partial name="_Navigation" />
+
+<div class="container mt-4">
+    <div class="row">
+        @{
+            var count = 1;
+        }
+        @foreach (var passenger in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Passenger @count</h5>
+                        <p class="card-text"><strong>Name:</strong> @passenger.PassengerName</p>
+                        <p class="card-text"><strong>ID Number:</strong> @passenger.PassengerId</p>
+                        <p class="card-text"><strong>Age:</strong> @passenger.PassengerAge</p>
+                        <p class="card-text"><strong>Nationality:</strong> @passenger.Nationality</p>
+                        <p class="card-text"><strong>Gender:</strong> @passenger.Gender</p>
+                        <p class="card-text"><strong>Phone Number:</strong> @passenger.PhoneNumber</p>
+                        <p class="card-text"><strong>Email:</strong> @passenger.Email</p>
+                    </div>
+                </div>
+            </div>
+            count+= 1;
+        }
+    </div>
+</div>
+<partial name="_Footer" />

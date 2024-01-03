@@ -61,20 +61,20 @@
                                     <div class="passenger-content">
                                         <div class="gender form-group mb-1">
                                             <label for="passengerName">Full Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="passengerName_@i" required style="width: 250px;">
+                                            <input type="text" name="Passengers[@(i - 1)].PassengerName" required style="width: 250px;">
                                         </div>
                                         <div class="form-group mb-1">
-                                            <label for="passenderId">Id Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="passenderId_@i" required>
+                                            <label for="passengerId">Id Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                            <input type="text" name="Passengers[@(i - 1)].PassengerId" required>
                                         </div>
                                         <div class="form-group mb-1">
                                             <label for="passengerAge">Age<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="number" min="0" name="passengerAge_@i" required>
+                                            <input type="number" min="0" name="Passengers[@(i - 1)].PassengerAge" required>
                                         </div>
 
                                         <div class="form-group mb-1">
                                             <label for="nationality">Nationality</label>
-                                            <select class="form-select" name="nationality_@i" id="nationality">
+                                            <select class="form-select" name="Passengers[@(i - 1)].Nationality" id="nationality">
                                                 @* @foreach (var country in GetCountries())
                                             {
                                             if (country == "Ethiopia")
@@ -87,37 +87,37 @@
                                             }
                                             } *@
                                                 <option selected>...</option>
-                                                <option>Ethipian</option>
+                                                <option>Ethiopian</option>
                                                 <option>Eritrean</option>
                                             </select>
                                         </div>
                                         <div class="form-group mb-1">
                                             <label>Gender<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span> </label>
                                             <div class="gender">
-                                                <input type="radio" id="male_@i" name="gender_@i" value="Male" required>
+                                                <input type="radio" id="male_@i" name="Passengers[@(i - 1)].Gender" value="Male" required>
                                                 <label for="male_@i">Male</label>
 
-                                                <input type="radio" id="female_@i" name="gender_@i" value="Female" required>
+                                                <input type="radio" id="female_@i" name="Passengers[@(i - 1)].Gender" value="Female" required>
                                                 <label for="female_@i">Female</label>
                                             </div>
                                         </div>
 
                                         <div class="form-group mb-1">
                                             <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="tel" name="phoneNumber_@i" required>
+                                            <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required>
                                         </div>
 
                                         <div class="form-group mb-1">
                                             <label for="email">Email:</label>
-                                            <input type="email" name="email_@i">
+                                            <input type="email" name="Passengers[@(i - 1)].Email">
                                         </div>
                                     </div>
                                 </details>
                             </div>
                         }
+                        <input type="hidden" name="Tariff" value="@ViewBag.Tariff">
                         <button class="btn btn-primary" type="submit">Submit</button>
                     </form>
-
                 </div>
             </div>
         </div>
