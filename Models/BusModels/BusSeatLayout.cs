@@ -1,6 +1,6 @@
 ﻿namespace HulubejeBooking.Models.BusModels
 {
-    public class SeatLayoutFormData
+    public class BusSeatLayout
     {
         public string? PlateNumber { get; set; }
         public string? Terminal { get; set; }
@@ -18,18 +18,18 @@
     }
     public class SeatLayout
     {
-        public int Id { get; set; }
-        public int MaxX { get; set; }
-        public int MaxY { get; set; }
-        public List<Seat> Seats { get; set; }
+        public int? Id { get; set; }
+        public int? MaxX { get; set; }
+        public int? MaxY { get; set; }
+        public List<Seat>? Seats { get; set; }
     }
 
     public class Seat
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
-        public string Type { get; set; }
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public int? X { get; set; }
+        public int? Y { get; set; }
+        public string? Type { get; set; }
     }
 }
