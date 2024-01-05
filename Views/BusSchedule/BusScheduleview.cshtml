@@ -87,7 +87,7 @@
                                             <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <p class="tariff mb-1"><span><i class="fas fa-dollar-sign mr-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
-                                                <button id="book" class="btn btn-primary">Book</button>
+                                                <button class="book btn btn-primary">Book</button>
                                             </div>
                                             <div class="d-flex justify-content-lg-start align-text-center flex-lg-wrap">
                                                 <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Wifi</span>
@@ -111,7 +111,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         $(document).ready(function () {
-            $("#book").click(function () {
+            $(".book").click(function () {
                 var form = $('<form action="/BusSeatLayout/Seatlayout" method="post"></form>');
 
                 var plateNumber = $(this).closest('.card-body').find('.plateNumber').text().trim();
