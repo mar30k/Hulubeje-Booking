@@ -11,11 +11,6 @@ namespace HulubejeBooking.Controllers.BusController
         {
             ViewBag.DepatureCity = depatureCity; ViewBag.DestinationCity = destinationCity; ViewBag.Terminal = terminal; ViewBag.OperatorName = operatorName;
             ViewBag.Tariff = tariff; ViewBag.Date = date; ViewBag.PlateNumber = plateNumber; ViewBag.ArrivalDate = arrivalDate; ViewBag.DepartureDate = departureDate;
-            Console.WriteLine(tariff);
-            Console.WriteLine(operatorName);
-            Console.WriteLine(depatureCity);
-            Console.WriteLine(destinationCity);
-            Console.WriteLine(terminal);
             return View(passengers);
         }
     }
