@@ -7,6 +7,35 @@
 <partial name="_Navigation" />
 <head>
     <title>Bus Booking Home</title>
+    <style>
+    /* Default styling for larger screens */
+    .d-flex {
+        display: flex;
+    }
+
+    .select,
+    .selectCity,
+    #travelDate,
+    #searchButton {
+        margin-right: 0px;
+    }
+
+    /* Responsive styling for smaller screens */
+    @@media (max-width: 500px) {
+        .d-flex {
+            flex-direction: column;
+        }
+
+        .select,
+        .selectCity,
+        #travelDate,
+        #searchButton {
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+    }
+</style>
 </head>
 <div style="background-color:#063970;">
     <div class="container">
@@ -50,7 +79,7 @@
         {
             @foreach (var item in shuffledModel)
             {
-                <div class="col-md-6 mb-3">
+                <div class="col-12 col-sm-6 mb-3">
                     <div class="card" style="max-width: 540px;">
                         <div class="row g-0">
                             <div class="col-md-4">

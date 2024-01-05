@@ -61,15 +61,15 @@
                                     <div class="passenger-content">
                                         <div class="gender form-group mb-1">
                                             <label for="passengerName">Full Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="Passengers[@(i - 1)].PassengerName" required style="width: 250px;">
+                                            <input type="text" name="Passengers[@(i - 1)].PassengerName" required style="width: 250px;" value="John Doe">
                                         </div>
                                         <div class="form-group mb-1">
                                             <label for="passengerId">Id Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="Passengers[@(i - 1)].PassengerId" required>
+                                            <input type="text" name="Passengers[@(i - 1)].PassengerId" required value="as921">
                                         </div>
                                         <div class="form-group mb-1">
                                             <label for="passengerAge">Age<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="number" min="0" max="100" name="Passengers[@(i - 1)].PassengerAge" required>
+                                            <input type="number" min="0" max="100" name="Passengers[@(i - 1)].PassengerAge" required value="12">
                                         </div>
 
                                         <div class="form-group mb-1">
@@ -94,7 +94,7 @@
                                         <div class="form-group mb-1">
                                             <label>Gender<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span> </label>
                                             <div class="gender">
-                                                <input type="radio" id="male_@i" name="Passengers[@(i - 1)].Gender" value="Male" required>
+                                                <input type="radio" id="male_@i" name="Passengers[@(i - 1)].Gender" value="Male" required checked>
                                                 <label for="male_@i">Male</label>
 
                                                 <input type="radio" id="female_@i" name="Passengers[@(i - 1)].Gender" value="Female" required>
@@ -104,12 +104,12 @@
 
                                         <div class="form-group mb-1">
                                             <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required>
+                                            <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required value="0912141">
                                         </div>
 
                                         <div class="form-group mb-1">
                                             <label for="email">Email:</label>
-                                            <input type="email" name="Passengers[@(i - 1)].Email">
+                                            <input type="email" name="Passengers[@(i - 1)].Email" value="johndoe@gmail.com">
                                         </div>
                                     </div>
                                 </details>
@@ -123,6 +123,7 @@
                         <input type="hidden" name="Date" value="@ViewBag.Date">
                         <input type="hidden" name="PlateNumber" value="@ViewBag.PlateNumber">
                         <input type="hidden" name="ArrivalDate" value="@ViewBag.ArrivalDate">
+                        <input type="hidden" name="DepartureDate" value="@ViewBag.DepartureDate">
                         <button class="btn btn-primary" type="submit">Submit</button>
                     </form>
                 </div>

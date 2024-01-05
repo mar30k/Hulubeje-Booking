@@ -1,65 +1,86 @@
 ﻿@model List<HulubejeBooking.Models.BusModels.VwRouteSchedule>
 <head>
     <title>Route Schedule</title>
+    <style>
+    .busAmenities {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .busAmenities div {
+        flex-basis: 50%;
+        box-sizing: border-box;
+    }
+
+        .amenities{
+            display: flex;
+            align-items: center;
+        }
+        label {
+            white-space: nowrap;
+            margin-left: 5px;
+        }
+</style>
 </head>
 <partial name="_Navigation" />
 <div class="container">
-    <div class="row" style="padding-bottom:10px;">
-        <div class="col-md-4">
+    <div class="row pb-3 mt-3">
+        <div class="col-md-4 filters" style="padding-left: 30px; padding-right:30px;">
             <div class="row" style="padding-right: 0px; padding-left:0px;">
                 <form>
                     <fieldset>
-                        <div class="row">
+                        <div class="row mt-2 bg-light rounded shadow" style="border: 1px solid black">
                             <legend>Filter by Amenities</legend>
-                            <div class="busAmenities">
-                                <div>
+                            <div class="busAmenities pl-3">
+                                <div class="amenities">
                                     <input type="checkbox" id="wifi" name="busAmenities" value="wifi">
                                     <label for="Wifi">Wifi</label>
                                 </div>
-                                <div>
+                                <div class="amenities">
                                     <input type="checkbox" id="charger" name="busAmenities" value="charger">
                                     <label for="Wifi">Power Outlets</label>
                                 </div>
-                                <div>
+                                <div class="amenities">
                                     <input type="checkbox" id="snack" name="busAmenities" value="snack">
                                     <label for="Snack">Snack </label>
                                 </div>
-                                <div>
-                                    <input type="checkbox" id="aircon" name="busAmenities" value="aircon">
-                                    <label for="aircon">Air Conditioning</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="tv" name="busAmenities" value="tv">
-                                    <label for="tv">TV</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="water" name="busAmenities" value="water">
-                                    <label for="water">Bottled water</label>
-                                </div>
-                                <div>
+                                <div class="amenities">
                                     <input type="checkbox" id="chair" name="busAmenities" value="chair">
                                     <label for="chair">Comfy chair</label>
                                 </div>
+                                <div class="amenities">
+                                    <input type="checkbox" id="tv" name="busAmenities" value="tv">
+                                    <label for="tv">TV</label>
+                                </div>
+                                <div class="amenities">
+                                    <input type="checkbox" id="water" name="busAmenities" value="water">
+                                    <label for="water">Bottled water</label>
+                                </div>
+                                <div class="amenities">
+                                    <input type="checkbox" id="aircon" name="busAmenities" value="aircon">
+                                    <label for="aircon">Air Conditioning</label>
+                                </div>
+                                
                             </div>
                         </div>
                     </fieldset>
                  </form>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-8 schedules">
             @if (Model is not null)
             {
                 @foreach (var schedule in Model)
                 {
-                    <div class="card w-100 mt-3">
+                    <div class="card w-100 mt-2 border-dark rounded">
                         <div class="row">
-                            <div class="col-md-5" style="top: 30px;">
+                            <div class="col-lg-5" style="top: 15px;">
                                 <img src="../Assets/bus.png" class="img-fluid rounded-start" alt="..." style="height:200px; width:300px;">
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-lg-7">
                                 <div class="card-body">
-                                    <div class="row align-items-start">
-                                        <div class="col-md-9">
+                                    <div class="row align-items-start bg-light p-2 pl-3">
+                                        <div class="col-sm-10 col-12">
                                             <a href="#">
                                                 <h5 class="card-title operatorName">@schedule.VehicleOperator</h5>
                                             </a>
@@ -85,11 +106,11 @@
                                             <p class="plateNumber mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber (@schedule.SideNumber)</p>
                                             <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule.OriginTerminalName</p>
                                             <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <p class="tariff mb-1"><span><i class="fas fa-dollar-sign mr-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
-                                                <button class="book btn btn-primary">Book</button>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <p class="tariff"><span><i class="fas fa-dollar-sign mr-2 mt-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
+                                                <button class="book btn btn-sm btn-primary">Book</button>
                                             </div>
-                                            <div class="d-flex justify-content-lg-start align-text-center flex-lg-wrap">
+                                            <div class="d-flex justify-content-lg-start align-text-center flex-wrap">
                                                 <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Wifi</span>
                                                 <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Charger</span>
                                                 <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">Snack</span>
