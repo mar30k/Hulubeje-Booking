@@ -69,13 +69,13 @@
                                         </div>
                                         <div class="form-group mb-1">
                                             <label for="passengerAge">Age<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="number" min="0" name="Passengers[@(i - 1)].PassengerAge" required>
+                                            <input type="number" min="0" max="100" name="Passengers[@(i - 1)].PassengerAge" required>
                                         </div>
 
                                         <div class="form-group mb-1">
                                             <label for="nationality">Nationality</label>
                                             <select class="form-select" name="Passengers[@(i - 1)].Nationality" id="nationality">
-                                                @* @foreach (var country in GetCountries())
+                                                @foreach (var country in GetCountries())
                                             {
                                             if (country == "Ethiopia")
                                             {
@@ -85,10 +85,10 @@
                                             {
                                             <option>@country</option>
                                             }
-                                            } *@
-                                                <option selected>...</option>
+                                            }
+@*                                                 <option selected>...</option>
                                                 <option>Ethiopian</option>
-                                                <option>Eritrean</option>
+                                                <option>Eritrean</option> *@
                                             </select>
                                         </div>
                                         <div class="form-group mb-1">
