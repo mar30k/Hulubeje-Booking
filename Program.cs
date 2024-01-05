@@ -11,6 +11,10 @@ builder.Services.AddHttpClient("HotelBooking", httpClient =>
 {
     httpClient.BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api");
 });
+builder.Services.AddHttpClient("Payment", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://payment.cnetcommerce.com");
+});
 builder.Services.AddHttpClient("BusBooking", httpClient =>
 {
     httpClient.BaseAddress = new Uri("http://192.168.1.25:8092/api/");

@@ -1,0 +1,143 @@
+﻿<style>
+    @@import url('https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+
+
+    .card {
+        max-width: 500px;
+        margin: auto;
+        color: black;
+        border-radius: 20 px;
+    }
+
+    p {
+        margin: 0px;
+    }
+
+    .container .h8 {
+        font-size: 30px;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .btn.btn-primary {
+        width: 100%;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 15px;
+        background-image: linear-gradient(to right, #77A1D3 0%, #79CBCA 51%, #77A1D3 100%);
+        border: none;
+        transition: 0.5s;
+        background-size: 200% auto;
+    }
+
+
+    .btn.btn.btn-primary:hover {
+        background-position: right center;
+        color: #fff;
+        text-decoration: none;
+    }
+</style>
+@model HulubejeBooking.Models.PaymentModels.Wrapper
+
+<div class="container align-items-center justify-content-center vh-100 d-flex">
+    <div class="row mt-3">
+        @foreach (var paymentMethod in Model.PaymentOptions)
+        {
+        <div class="col-md-6 mb-3">
+            <div class="card" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="@paymentMethod.paymentProviderImage" class="img-fluid rounded-start" alt="PaymentProviderOrganizationName">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@paymentMethod.paymentProviderOrganizationName</h5>
+                            <p class="card-text price">@paymentMethod.paymentOptionName</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                            <button class="btn btn-primary btn-sm payment" id="payment"
+                            data-operation-mode="@paymentMethod.operationMode"
+                            data-payment-provider-org-unit-def="@paymentMethod.paymentProviderOrgUnitDef">
+                                Pay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        }
+        <div class="col-md-6 mb-3">
+            <div class="card" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="@Model.Boa.paymentProviderImage" class="img-fluid rounded-start" alt="PaymentProviderOrganizationName">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@Model.Boa.paymentProviderOrganizationName</h5>
+                            <p class="card-text price">@Model.Boa.paymentOptionName</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                            <button class="btn btn-primary btn-sm payment" id="payment"
+                                    data-operation-mode="@Model.Boa.operationMode"
+                                    data-payment-provider-org-unit-def="@Model.Boa.paymentProviderOrgUnitDef">
+                                Pay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.payment').on('click', function () {
+            sessionStorage.setItem('ts', $(this).data('payment-provider-org-unit-def'));
+            var data = {
+                FlagData: { operationMode: $(this).data('operation-mode') },
+                AuthorizePaymentData: {
+                    UserMobileNumber: sessionStorage.getItem('UserMobileNumber'),
+                    PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
+                },
+                TransactionData: {
+                    UserMobileNumber: sessionStorage.getItem('UserMobileNumber'),
+                    PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
+                }
+            };
+
+            $.ajax({
+                url: '/Home/Testing',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data), 
+                success: function (response) {
+                    var cardText = response.cardText;
+
+                    
+                    if (cardText === 'telebirr SMS OTP') {
+                        window.location.href = '/Spayment/index';
+                    } else if (cardText === 'telebirr USSD Push') {
+                        window.location.href = '/Apayment/index';
+                    }
+                    else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
+                        window.open(response.redirectUrl, '_blank');
+                    }
+                    
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>

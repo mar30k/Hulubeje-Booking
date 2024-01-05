@@ -81,7 +81,7 @@
                 <tbody id="guestTableBody">
                 </tbody>
             </table>
-            <button id="confirmButton" class="btn btn-success" onclick="redirect()">Confirm</button>
+            <button id="confirmButton" class="btn btn-success Confirm" onclick="redirect()">Confirm</button>
         </div>
 
     </div>
@@ -229,21 +229,58 @@
     });
 
 
-    function redirect() {
+    $(document).ready(function () {
+        $('.Confirm').on('click', function () {
+            sessionStorage.setItem("name", $('#name').val());
+            sessionStorage.setItem("middle", $('#middle').val());
+            sessionStorage.setItem("last", $('#last').val());
+            sessionStorage.setItem("DOB", $('#date').val());
+            sessionStorage.setItem("email", $('#email').val());
+            sessionStorage.setItem("phone", $('#phone').val());
+            sessionStorage.setItem("nationality", $('#nationality').val());
+            var data = {
+               
+                AuthorizePaymentData: {
+                    UserMobileNumber: $('#phone').val(),
+                    SupplierTin: sessionStorage.getItem('orgTin'),
+                    SupplierOUD: sessionStorage.getItem('orgTin')
+
+                }
+               
+            };
+
+            $.ajax({
+                url: '/PaymentHome/Index',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (/* response */) {
+                    // var cardText = response.cardText;
+
+                    window.location.href = "/PaymentHome/index";
+                    // if (cardText === 'telebirr SMS OTP') {
+                    //     window.location.href = '/Spayment/index';
+                    // } else if (cardText === 'telebirr USSD Push') {
+                    //     window.location.href = '/Apayment/index';
+                    // }
+                    // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
+                    //     window.open(response.redirectUrl, '_blank');
+                    // }
+
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
 
 
-        sessionStorage.setItem("name", $('#name').val());
-        sessionStorage.setItem("middle", $('#middle').val());
-        sessionStorage.setItem("last", $('#last').val());
-        sessionStorage.setItem("DOB", $('#date').val());
-        sessionStorage.setItem("email", $('#email').val());
-        sessionStorage.setItem("phone", $('#phone').val());
-        sessionStorage.setItem("nationality", $('#nationality').val());
 
 
 
-        window.location.href = "#";
-    }
+       
+    
 
 </script>
 <partial name="_Footer" />
