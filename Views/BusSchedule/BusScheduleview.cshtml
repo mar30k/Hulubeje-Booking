@@ -70,7 +70,7 @@
                                             @{
                                                 string formattedDate = schedule.DepartureDate.ToString("ddd, MMM d, yyyy");
                                                 string formattedTime = schedule.DepartureDate.ToString("h:mm tt");
-                                                            <p class="scheduleDate mb-1"><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
+                                                <p class="scheduleDate mb-1"><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
                                                             @if (DateTime.TryParse(formattedTime, out DateTime utcTime))
                                                 {
                                                     DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
