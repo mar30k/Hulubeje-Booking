@@ -49,13 +49,12 @@
                                             if (seat != null)
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
-                                                    <button class="buttons" onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
+                                                    <button style="background-color: @(seat.Type == "Driver Seat" ? "Black" : ""); border-color:@(seat.Type == "Driver Seat" ? "black" : "")" class="buttons" onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
                                                 </td>
                                             }
                                             else
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
-                                                    <!-- You can add an empty cell or any other placeholder -->
                                                 </td>
                                             }
                                         }
