@@ -42,20 +42,7 @@
         .hall {
             width: 100%;
             height: 100%;
-            overflow: hidden;
         }
-
-            .hall .p {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 0;
-                font-size: 10px;
-                font-weight: 400;
-                background: #fff;
-                width: 100%;
-                height: 100%;
-            }
 
         .booked-seat {
             background-color: blue;
@@ -128,7 +115,6 @@
                 var selectedSeatsCountArray = sessionStorage.getItem('selectedSeats');
                 var selectedSeatsArray = JSON.parse(selectedSeatsCountArray);
                 var selectedSeatsCount = selectedSeatsArray ? selectedSeatsArray.length : 0;
-                console.log("selectedSeatsCount" + selectedSeatsCount);
                 selectedSeatsDisplay.textContent = selectedSeatsCount ;
             }
 
