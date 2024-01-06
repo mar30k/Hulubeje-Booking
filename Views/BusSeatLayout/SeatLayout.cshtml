@@ -1,6 +1,7 @@
 ﻿@model HulubejeBooking.Models.BusModels.BusSeatLayout
 <partial name="_Navigation" />
 <style>
+    @@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap'); 
     .buttons {
         display: flex;
         align-items: center;
@@ -20,6 +21,23 @@
         background-color: green;
         color: white;
     }
+
+    #continue {
+        display: inline-block;
+        font-size: 15px;
+        font-family: 'Playfair Display', sans-serif;
+        color: #fff;
+        background-color: #4CAF50;
+        border: 2px solid #4CAF50;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        cursor: pointer;
+    }
+
+        #continue:hover {
+            background-color: #45a049;
+            color: #fff;
+        }
 </style>
 <head>
     <title>Seat Layout</title>
@@ -67,7 +85,7 @@
             </div>
         </div>
         <div id="continue" style="text-align: center; position: relative;  margin-top:10px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
-            <button id="continue" class="btn btn-outline-primary">Continue</button>
+            <button id="continue" class="btn btn-sm">Continue</button>
         </div>
     </div>
     <div class="col-2  ml-0">
