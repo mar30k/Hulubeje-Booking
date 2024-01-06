@@ -30,7 +30,7 @@
 
     .hall {
         width: 30px;
-        height: 30px;
+        height: 30px;   
     }
 
     .booked-seat {
@@ -41,61 +41,57 @@
 <div class="row mt-3">
     <div class="col-lg-10 mb-3">
         <div style="background: lightgrey; padding: 20px;" class="mr-2 mb-4">
-            @if (Model != null)
+            @if (Model != null && Model.Seats != null && Model.Seats.Any())
             {
-                <div class="container">
+                <div style="display: flex;justify-content:safe center; align-items: center; overflow-x: auto; margin-top: 30px;">
+                    <table>
+                        @for (int y = Model.MaxY; y >= 1; y--)
+                        {
+                            <tr>
+                                @for (int x = 1; x <= Model.MaxX; x++)
+                                {
+                                    <td style="height: 30px !important; width: 30px !important">
+                                        @if (Model.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))
+                                        {
+                                            var seat = Model.Seats.First(seat => seat.X == x && seat.Y == y);
+
+                                            // Check if the seat is booked, sold, or taken
+                                            var isBooked = (Model.BookedSeats?.Contains(seat.Code) ?? false);
+                                            var isSold = Model.SoldSeats?.Contains(seat.Code) ?? false;
+                                            var isTaken = Model.TakenSeats?.Contains(seat.Code) ?? false;
+
+                                            var backgroundColor = isBooked ? (isSold ? "red" : "blue") : (isTaken ? "orange" : "");
+                                            var textColor = isTaken || isBooked || (isBooked && isSold) ? "white" : "";
+
+                                            <button id="@seat.Code" class="buttons" onclick="return false" @(isBooked || isSold || isTaken ? "disabled" : "") style="background-color: @(backgroundColor); color: @(textColor); ">
+                                                @seat.Name
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <div class="hall">
+                                            </div>
+                                        }
+                                    </td>
+
+                                }
+                            </tr>
+
+                        }
+                    </table>
                 </div>
-                @if (Model.Seats != null && Model.Seats.Any())
-                {
-                    <div style="display: flex;justify-content:safe center; align-items: center; overflow-x: auto; margin-top: 30px;">
-                        <table>
-                            @for (int y = Model.MaxY; y >= 1; y--)
-                            {
-                                <tr>
-                                    @for (int x = 1; x <= Model.MaxX; x++)
-                                    {
-                                        <td style="height: 30px !important; width: 30px !important">
-                                            @if (Model.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))
-                                            {
-                                                var seat = Model.Seats.First(seat => seat.X == x && seat.Y == y);
-
-                                                // Check if the seat is booked, sold, or taken
-                                                var isBooked = Model.BookedSeats?.Contains(seat.Code) ?? false;
-                                                var isSold = Model.SoldSeats?.Contains(seat.Code) ?? false;
-                                                var isTaken = Model.TakenSeats?.Contains(seat.Code) ?? false;
-
-                                                var backgroundColor = isBooked ? (isSold ? "red" : "blue") : (isTaken ? "orange" : "");
-                                                var textColor = isTaken || isBooked || (isBooked && isSold) ? "white" : "";
-
-                                                <button id="@seat.Code" class="buttons" onclick="return false" @(isBooked || isSold || isTaken ? "disabled" : "") style="background-color: @(backgroundColor); color: @(textColor); ">
-                                                    @seat.Name
-                                                </button>
-                                            }
-                                            else
-                                            {
-                                                <div class="hall">
-                                                </div>
-                                            }
-                                        </td>
-
-                                    }
-                                </tr>
-
-                            }
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <p>No seats available.</p>
-                }
             }
             else
             {
-                <p>No seat arrangement data available.</p>
+                <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+                    <div>
+                        <i class="bi bi-exclamation-circle" style="font-size: 48px; color: red;"></i>
+                        <p>No seats available.</p>
+                    </div>
+                </div>
             }
         </div>
-        <div id="priceContainer" style="text-align: center; position: relative;  margin-top:30px; ,margin-bottom:20px; left: 50%; transform: translateX(-50%);">
+        <div id="priceContainer" style="text-align: center; position: relative;  margin-top:30px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
             <button id="skipButton" class="btn btn-outline-primary">Skip</button>
         </div>
     </div>
@@ -133,7 +129,7 @@
                             </div>
                             <div class="col-4" style="text-align: center">
                                 <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
-                                    @(Model?.AvailableSeats?.Count(seatCode => Model.Seats.Any(seat => seat.Code == seatCode && !string.IsNullOrWhiteSpace(seat.Name))) - Model?.TakenSeats?.Count ?? 0)
+                                    @(Model?.AvailableSeats?.Count(seatCode => Model.Seats?.Any(seat => seat.Code == seatCode && !string.IsNullOrWhiteSpace(seat.Name)) == true) - (Model?.TakenSeats?.Count ?? 0) ?? 0)
                                 </p>
                             </div>
                         </div>
@@ -144,7 +140,7 @@
                                 <p style="color:black">Booked seats</p>
                             </div>
                             <div class="col-4" style="text-align: center">
-                                <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@(Model.BookedSeats?.Count ?? 0)</p>
+                                <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@(Model?.BookedSeats?.Count ?? 0)</p>
                             </div>
                         </div>
                     </div>
@@ -154,7 +150,7 @@
                                 <p style="color:black">Taken seats</p>
                             </div>
                             <div class="col-4" style="text-align: center">
-                                <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@(Model.TakenSeats?.Count ?? 0)</p>
+                                <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@(Model?.TakenSeats?.Count ?? 0)</p>
                             </div>
                         </div>
                     </div>
@@ -164,7 +160,7 @@
                                 <p style="color:black">Sold seats</p>
                             </div>
                             <div class="col-4" style="text-align: center">
-                                <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@(Model.SoldSeats?.Count ?? 0)</p>
+                                <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@(Model?.SoldSeats?.Count ?? 0)</p>
                             </div>
                         </div>
                     </div>
@@ -174,7 +170,7 @@
                                 <p style="color:black">Selected seats</p>
                             </div>
                             <div class="col-4" style="text-align: center">
-                                <p id="selectedSeatsDisplay"style="background-color: green;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid green; margin-right: 5px;"></p>
+                                <p id="selectedSeatsDisplay" style="background-color: green;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid green; margin-right: 5px;"></p>
                             </div>
                         </div>
                     </div>
