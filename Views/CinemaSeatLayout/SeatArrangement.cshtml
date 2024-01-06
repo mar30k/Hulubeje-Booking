@@ -118,8 +118,18 @@
                     applyEventListeners();
                     updateButtonStatus();
                     updateSelectedSeatsUI();
+                    selectedSeatsCountUpdate()
                 });
                 console.log("updated the data");
+            }
+
+            function selectedSeatsCountUpdate() {
+                var selectedSeatsDisplay = document.getElementById("selectedSeatsDisplay");
+                var selectedSeatsCountArray = sessionStorage.getItem('selectedSeats');
+                var selectedSeatsArray = JSON.parse(selectedSeatsCountArray);
+                var selectedSeatsCount = selectedSeatsArray ? selectedSeatsArray.length : 0;
+                console.log("selectedSeatsCount" + selectedSeatsCount);
+                selectedSeatsDisplay.textContent = selectedSeatsCount ;
             }
 
             function applyEventListeners() {
@@ -190,8 +200,7 @@
             $('#cancelButton').click(function () {
                 $('#bookingModal').modal('hide');
                 resetBooking();
-                // count = 0;
-                // selectedSeatsCount.innerText = "0";
+                selectedSeatsCountUpdate();
             });
 
             function formatTime(seconds) {
@@ -238,12 +247,8 @@
                 updateButtonStatus();
                 isBookingStarted = false; // Reset booking flag
             }
-            // if (!isThereSelectedSeat) {
-            //     var count = 0;
-            // } else {
-            //     var count = numberOfElements;
-            // }
             function toggleSeatSelection(seatCode, isDisabled) {
+                console.log("isDisabled" + isDisabled);
                 var maxSeats = parseInt("@Model.MaxSeats", 10);
                 var index = selectedSeats.indexOf(seatCode);
                 var companyTinNumber = "@Model.CompanyTinNumber";
@@ -275,7 +280,6 @@
                                 console.error(error);
                             }
                         });
-                        // count += 1;
                     } else {
                         var alertElement = document.getElementById("seatLimitAlert");
                         alertElement.style.display = "block";
@@ -285,7 +289,6 @@
                         return;
                     }
                 } else if (!isDisabled) {
-                    // count -= 1;
                     selectedSeats.splice(index, 1);
                     var updatedSeatNames = selectedSeats.map(function (code) {
                         console.log("seat code: " + code);
@@ -312,11 +315,6 @@
                         }
                     });
                 }
-                // var selectedSeatsCount = document.getElementById("selectedSeatsCount");
-                // if (selectedSeatsCount) {
-                //     selectedSeatsCount.innerText = count.toString();
-                // }
-                // Toggle background color based on selection
                 var button = document.getElementById(seatCode);
                 if (button) {
                     button.style.backgroundColor = index === -1 ? "green" : "";
@@ -326,6 +324,7 @@
 
                 saveSelectedSeatsToStorage();
                 updateSelectedSeatsUI();
+                selectedSeatsCountUpdate()
                 return selectedSeats;
             }
             function saveSelectedSeatsToStorage() {
@@ -401,6 +400,7 @@
                     }
                 );
                 // $('#selectedSeatsCount').text(count.toString());
+                selectedSeatsCountUpdate();
             });
             updateSelectedSeatsUI();
         });
