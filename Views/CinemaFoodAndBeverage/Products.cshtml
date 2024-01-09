@@ -138,7 +138,7 @@
         </nav>
     </header>
     <div class="custom-container" style="position: relative; padding-right: 0; padding-left: 0">
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-9 ml-5 mb-3 mt-3 ">
                 @if (Model?.Products != null && Model.Products.Any())
                 {
@@ -171,13 +171,13 @@
 
                                                             <!-- Quantity Control Division (Initially Hidden) -->
                                                             <div class="quantity-control d-flex" style="margin-top: 5px; text-align: center; display: none !important;">
-                                                                <button class="btn btn-outline-danger btn-circle" style="padding: 6px; font-size: 12px;" onclick="decrementValue()">-</button>
+                                                                <button class="btn btn-outline-danger decrement btn-circle" style="padding: 6px; font-size: 12px;" onclick="decrementValue()">-</button>
                                                                 <p class="quantity" style="padding: 5px; font-size: 12px; margin: 0 ;">0</p>
-                                                                <button class="btn btn-outline-primary btn-circle" style="padding: 6px; font-size: 12px; border-color: #28a745;" onclick="incrementValue()">+</button>
+                                                                <button class="btn btn-outline-primary increment btn-circle" style="padding: 6px; font-size: 12px; border-color: #28a745;" onclick="incrementValue()">+</button>
                                                             </div>
 
                                                             <!-- Show Button -->
-                                                            <button class="btn btn-sm btn-outline-primary" style="margin-top: 5px;" onclick="showQuantityControl(this)">Add to Cart</button>
+                                                            <button class="btn btn-sm btn-outline-primary " id="addToCart" style="margin-top: 5px;" onclick="showQuantityControl(this)">Add to Cart</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -387,8 +387,8 @@
                 console.log("already extended cache time");
             }
         }
-        var showBillButton = document.getElementById('showBillButton');
-        var confirmButton = document.getElementById('confirmButton');
+        const showBillButton = document.getElementById('showBillButton');
+        const confirmButton = document.getElementById('confirmButton');
         showBillButton.addEventListener('click', function () {
             var billContainer = document.getElementById('BillContainer');
             var selectedItemsContainer = document.getElementById('selected-items-container');
@@ -461,9 +461,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Use event delegation to handle clicks on dynamically generated cards
             document.addEventListener('click', function (event) {
-                if (event.target.matches('.btn-outline-danger')) {
+                if (event.target.matches('.decrement')) {
                     decrementValue(event.target);
-                } else if (event.target.matches('.btn-outline-primary')) {
+                } else if (event.target.matches('.increment')) {
                     incrementValue(event.target);
                 }
             });
