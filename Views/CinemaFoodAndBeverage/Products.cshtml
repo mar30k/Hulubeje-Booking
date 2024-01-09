@@ -171,13 +171,13 @@
 
                                                             <!-- Quantity Control Division (Initially Hidden) -->
                                                             <div class="quantity-control d-flex" style="margin-top: 5px; text-align: center; display: none !important;">
-                                                                <button class="btn btn-outline-danger decrement btn-circle" style="padding: 6px; font-size: 12px;" onclick="decrementValue()">-</button>
+                                                                <button class="btn btn-outline-danger btn-circle" style="padding: 6px; font-size: 12px;" onclick="decrementValue()">-</button>
                                                                 <p class="quantity" style="padding: 5px; font-size: 12px; margin: 0 ;">0</p>
-                                                                <button class="btn btn-outline-primary increment btn-circle" style="padding: 6px; font-size: 12px; border-color: #28a745;" onclick="incrementValue()">+</button>
+                                                                <button class="btn btn-outline-primary  btn-circle" style="padding: 6px; font-size: 12px; border-color: #28a745;" onclick="incrementValue()">+</button>
                                                             </div>
 
                                                             <!-- Show Button -->
-                                                            <button class="btn btn-sm btn-outline-primary " id="addToCart" style="margin-top: 5px;" onclick="showQuantityControl(this)">Add to Cart</button>
+                                                            <button class="btn btn-sm btn-outline-primary " style="margin-top: 5px;" onclick="showQuantityControl(this)">Add to Cart</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -461,9 +461,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Use event delegation to handle clicks on dynamically generated cards
             document.addEventListener('click', function (event) {
-                if (event.target.matches('.decrement')) {
+                if (event.target.matches('.btn-outline-danger')) {
                     decrementValue(event.target);
-                } else if (event.target.matches('.increment')) {
+                } else if (event.target.matches('.btn-outline-primary')) {
                     incrementValue(event.target);
                 }
             });
