@@ -12,7 +12,6 @@
 
         .background-container {
             position: relative;
-            height: 60vh; /* Set height to 75% of the viewport height */
             overflow: hidden;
         }
 
@@ -103,19 +102,53 @@
             font-weight: bold;
         }
 
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Media query for small screens */
+        @@media (max-width: 576px) {
+            .img-fluid {
+                max-width: 80%;
+            }
+        }
+
+        /* Media query for medium screens */
+        @@media (min-width: 577px) and (max-width: 768px) {
+            .img-fluid {
+                max-width: 70%;
+            }
+        }
+
+        /* Media query for large screens */
+        @@media (min-width: 769px) and (max-width: 992px) {
+            .img-fluid {
+                max-width: 60%;
+            }
+        }
+
+        /* Media query for extra-large screens */
+        @@media (min-width: 993px) {
+            .img-fluid {
+                max-width: 50%;
+            }
+        }
+
+
     </style>
     <partial name="_Navigation" />
 </head>
 <body>
-    <div class="background-container">
+    <div class="background-container vh-50 md-vh-auto">
         <div class="background-image">
             <!-- Empty container to hold the background image -->
-            <div class="info-container container">
+            <div class="info-container container mt-3 mb-3">
                 <div class="row">
-                    <div class="col-md-4">
-                        <img src="@Model.PosterUrl" alt="Movie Poster">
+                    <div class="col-md-4 d-flex justify-content-center">
+                        <img src="@Model.PosterUrl" alt="Movie Poster" style="max-width: 100%;">
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 mt-3">
                         <h4 class="companyName" style="background-color:rgba(0,0,0,0.3) ">@Model.CompanyName</h4>
                         <h1 class="movienName" style="color: white">@Model.MovieName</h1>
                         @if(Model.Overview is not null)
@@ -199,11 +232,13 @@
                     <div class="cast-card">
                         @if (castMember.ProfilePath == "https://image.tmdb.org/t/p/w500")
                         {
-                            <img src="../Assets/NoCastImage.jpg" alt="@castMember.Name">
+                            <div class="d-flex justify-content-center">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjtNBgCacCwHhxVPj1ubPRygdT7X_7w_UrLQ&usqp=CAU" alt="@castMember.Name" class="img-fluid" style="max-width: 100%;">
+                            </div>
                         }
                         else
                         {
-                            <img src="@castMember.ProfilePath" alt="@castMember.Name">
+                            <img src="@castMember.ProfilePath" alt="@castMember.Name" class="img-fluid">
                         }
                         <div class="cast-card-title">@castMember.Name</div>
                     </div>
@@ -211,10 +246,12 @@
             </div>
         }
         <div class="row">
-            <div class="col-md-6" style="margin-top: 30px;">
+            <div class="col-lg-6" style="margin-top: 30px;">
                 @if (!string.IsNullOrEmpty(Model.YoutubeKey))
                 {
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/@Model.YoutubeKey?rel=0" frameborder="0" allowfullscreen></iframe>
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/@Model.YoutubeKey?rel=0" allowfullscreen></iframe>
+                    </div>
                 }
                 else
                 {
