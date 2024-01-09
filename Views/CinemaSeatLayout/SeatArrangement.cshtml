@@ -1,5 +1,6 @@
 ﻿@model HulubejeBooking.Models.CInemaModels.SeatLayout
 @using System.Globalization
+@using System.Web
 @{
     string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
 }
@@ -50,6 +51,9 @@
         }
 
     </style>
+    @{
+        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model.MovieName);
+    }
     <script>
         var selectedSeats = [];
         var countdownInterval;
@@ -86,16 +90,17 @@
             }, 10000); // Update every 10000 milliseconds (10 seconds)
 
             function updateSeatInfo() {
+                var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
                 var companyTinNumber = "@Model.CompanyTinNumber";
                 var code = "@Model.MovieScheduleCode";
                 var spacecode = "@Model.SpaceCode";
-                var movieName = "@Model.MovieName";
                 var companyName = "@Model.CompanyName";
                 var utcTime = "@Model.UtcTime";
                 var selectedDate = "@Model.SelectedDate";
                 var hallName = "@Model.HallName";
                 var dimension = "@Model.Dimension";
                 var spaceType = "@Model.SpaceType";
+
                 // Use AJAX to fetch updated seat information
                 $.get("/CinemaSeatLayout/GetUpdatedSeatInfo", {
                     companyTinNumber: companyTinNumber, code: code, spacecode: spacecode, movieName: movieName,
@@ -105,8 +110,9 @@
                     applyEventListeners();
                     updateButtonStatus();
                     updateSelectedSeatsUI();
-                    selectedSeatsCountUpdate()
+                    selectedSeatsCountUpdate();
                 });
+
                 console.log("updated the data");
             }
 

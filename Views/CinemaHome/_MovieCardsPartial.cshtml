@@ -19,7 +19,9 @@
                             @foreach (var companyName in companyNames)
                             {
                                 var sanitizedOverview = HttpUtility.JavaScriptStringEncode(movie.Overview);
-                                <button class="button" onclick="onCompanyButtonClick('@movie.MovieCode', '@companyName', '@sanitizedOverview', '@movie.ArticleCode', '@movie.PosterUrl', '@movie.MovieName', '@movie.MovieId', '@movie.BackdropPath')">
+                                var santizedMovieName = HttpUtility.JavaScriptStringEncode(movie.MovieName);
+                                var santizedBackdropPath = HttpUtility.JavaScriptStringEncode(movie.BackdropPath);
+                                <button class="button" onclick="onCompanyButtonClick('@movie.MovieCode', '@companyName', '@sanitizedOverview', '@movie.ArticleCode', '@movie.PosterUrl', '@santizedMovieName', '@movie.MovieId', '@santizedBackdropPath')">
                                     @companyName
                                 </button>
                             }
