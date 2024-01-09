@@ -1,5 +1,6 @@
 ﻿@model HulubejeBooking.Models.CInemaModels.SeatLayout
 @using System.Globalization
+@using System.Text.RegularExpressions
 <style>
     .container-xl {
         max-width: 100%;
@@ -101,7 +102,11 @@
                 <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.CompanyName</h4>
                 <div style="text-align: left;">
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                        <strong>Movie:</strong>&nbsp; @Model?.MovieName
+                        @{
+                            var decodedMovieName = Regex.Unescape(Model?.MovieName ?? "");
+                        }
+
+                        <strong>Movie:</strong>&nbsp; @decodedMovieName
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                         <strong>Hall Name:</strong>&nbsp; @Model?.HallName
