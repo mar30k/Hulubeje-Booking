@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Http
 @using Newtonsoft.Json
 @using System.Globalization
+@using System.Text.RegularExpressions
 @{
     ViewBag.Title = "Products";
 }
@@ -228,7 +229,10 @@
                     }
 
                     <div class="Movie" style="display: flex; justify-content: space-between; padding: 5px">
-                        <span style="flex: 2 1 0%;">@Model?.MovieName [Movie]</span>
+                        @{
+                            var decodedMovieName = Regex.Unescape(Model?.MovieName ?? "");
+                        }
+                        <span style="flex: 2 1 0%;">@decodedMovieName [Movie]</span>
                         <span style="flex: 1 1 0%">@Model?.NumberOfSeats</span>
                         <span style="flex: 1 1 0%">@Model?.Price $</span>
                         <span style="flex: 1 1 0%; text-align: right;"> @totalAmount $</span>

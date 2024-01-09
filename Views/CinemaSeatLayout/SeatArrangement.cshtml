@@ -334,7 +334,7 @@
                 var companyTinNumber = "@Model.CompanyTinNumber";
                 var movieScheduleCode = "@Model.MovieScheduleCode";
                 var articleCode = "@Model.ArticleCode";
-                var movieName = "@Model.MovieName";
+                var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
                 var companyName = "@Model.CompanyName";
                 var utcTime = "@Model.UtcTime";
                 var selectedDate = "@Model.SelectedDate";
