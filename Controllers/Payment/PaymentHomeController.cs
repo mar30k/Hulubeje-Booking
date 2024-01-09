@@ -2,6 +2,7 @@
 using HulubejeBooking.Models.PaymentModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Protocol.Plugins;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -111,6 +112,165 @@ namespace HulubejeBooking.Controllers.Payment
             {
                 return Error();
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SelectedOptionAsync([FromBody] RequestWrapper data)
+        {
+            try
+            {
+                var operationMode = data.FlagData.operationMode;
+                var value = OperationModeController.FlagChecker(operationMode);
+                var synch = value.Synchronous;
+                var asynch = value.Asynchronous;
+                var Currency = "etb";
+                // Storing in the session
+                //HttpContext.Session.SetString("VoucherCode", JsonConvert.SerializeObject(TransactionId));
+
+                // Retrieving from the session
+                var vCode = HttpContext.Session.GetString("VoucherCode");
+                var TransactionId = JsonConvert.DeserializeObject<string>(vCode);
+
+
+                if (!HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
+                {
+                    return Error();
+                }
+
+                string accessToken = Encoding.UTF8.GetString(accessTokenBytes);
+
+                using (var _client = _httpClientFactory.CreateClient("Payment"))
+                {
+                    if (synch)
+                    {
+                        var param = new
+                        {
+                            data.AuthorizePaymentData.UserMobileNumber,
+                            data.AuthorizePaymentData.SupplierTin,
+                            data.AuthorizePaymentData.SupplierOUD,
+                            TransactionId,
+                            data.AuthorizePaymentData.PaymentProviderOUD,
+                            data.AuthorizePaymentData.Amount,
+                            AdditionalParameters = new
+                            {
+                                data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
+                            }
+                        };
+
+
+                        var jsonRequest = JsonConvert.SerializeObject(param);
+
+                        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+                        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                        HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/authorization", content);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            //TransactionModel transactionModel = new TransactionModel();
+                            var transactionModel = new
+                            {
+                                data.AuthorizePaymentData.UserMobileNumber,
+                                data.AuthorizePaymentData.SupplierTin,
+                                data.AuthorizePaymentData.SupplierOUD,
+                                TransactionId,
+                                data.AuthorizePaymentData.PaymentProviderOUD,
+                                data.AuthorizePaymentData.Amount,
+                                AdditionalParameters = new
+                                {
+                                    data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
+                                }
+                            };
+                            var values = JsonConvert.SerializeObject(transactionModel);
+
+                            HttpContext.Session.SetString("transactionDatas", values);
+
+                            return Json(new { cardText = "telebirr SMS OTP" });
+
+                        }
+                    }
+                    if (asynch)
+                    {
+                        var param = new
+                        {
+                            data.TransactionData.UserMobileNumber,
+                            data.TransactionData.SupplierTin,
+                            data.TransactionData.SupplierOUD,
+                            TransactionId,
+                            data.TransactionData.PaymentProviderOUD,
+                            data.TransactionData.Amount,
+                            data.TransactionData.Pin,
+                            AdditionalParameters = new
+                            {
+                                data.TransactionData.AdditionalParameters?.ReferenceNumber
+                            }
+                        };
+
+                        var jsonRequest = JsonConvert.SerializeObject(param);
+                        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                        var transactionVerification = new
+                        {
+                            data.TransactionData.SupplierOUD,
+                            TransactionId,
+                            data.TransactionData.Amount,
+                        };
+                        var values = JsonConvert.SerializeObject(transactionVerification);
+                        HttpContext.Session.SetString("paymentValidation", values);
+                        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                        HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+
+
+                            return Json(new { cardText = "telebirr USSD Push" });
+
+                        }
+                    }
+                    if (!synch && !asynch)
+                    {
+                        var param = new
+                        {
+                            data.TransactionData.UserMobileNumber,
+                            data.TransactionData.SupplierTin,
+                            data.TransactionData.SupplierOUD,
+                            TransactionId,
+                            data.TransactionData.PaymentProviderOUD,
+                            data.TransactionData.Amount,
+                            data.TransactionData.Pin,
+                            Currency
+
+                        };
+                        var jsonRequest = JsonConvert.SerializeObject(param);
+                        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                        HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
+                        if (response.IsSuccessStatusCode)
+                        {
+                            // Deserialize the API response
+                            var responseData = await response.Content.ReadAsStringAsync();
+                            var apiResponse = JsonConvert.DeserializeObject<BoAResponse>(responseData);
+
+                            // Extract relevant information
+                            var cardText = "BOA Card Payment"; // Set the appropriate value based on your logic
+                            var redirectUrl = apiResponse?.additionalParameters?.RedirectUrl;
+
+                            // Return the custom response
+                            var paymentResponse = new PaymentResponse
+                            {
+                                cardText = cardText,
+                                RedirectUrl = redirectUrl
+                            };
+
+                            return Json(paymentResponse);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+            }
+
+            return Error();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

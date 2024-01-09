@@ -1,0 +1,11 @@
+﻿@model HulubejeBooking.Models.PaymentModels.PaymentResponseModel
+<div>
+    @if (Model.IsResolved && Model.IsFulfilled)
+    {
+        <div>Payment is successfully done</div>
+    }
+    else
+    {
+        <div>Payment timed out</div>
+    }
+</div>

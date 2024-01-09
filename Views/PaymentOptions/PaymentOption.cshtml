@@ -108,17 +108,21 @@
             var data = {
                 FlagData: { operationMode: $(this).data('operation-mode') },
                 AuthorizePaymentData: {
-                    UserMobileNumber: sessionStorage.getItem('UserMobileNumber'),
+                    UserMobileNumber: sessionStorage.getItem('phone'),
+                    SupplierTin: sessionStorage.getItem('orgTin'),
+                    SupplierOUD: sessionStorage.getItem('oud'),
                     PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
                 },
                 TransactionData: {
-                    UserMobileNumber: sessionStorage.getItem('UserMobileNumber'),
+                    UserMobileNumber: sessionStorage.getItem('phone'),
+                    SupplierTin: sessionStorage.getItem('orgTin'),
+                    SupplierOUD: sessionStorage.getItem('oud'),
                     PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
                 }
             };
 
             $.ajax({
-                url: '/Home/Testing',
+                url: '/PaymentHome/SelectedOption',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data), 
