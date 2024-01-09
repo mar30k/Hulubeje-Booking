@@ -331,6 +331,7 @@
                         }
                     }
                 <button style="text-align: center" class="btn btn-sm btn-primary mt-2"id="showBillButton">Calculate Bill</button>
+                <button style="text-align: center; display: none" class="btn btn-sm btn-success mt-2" id="confirmButton">Confirm</button>
             </div>
         </div>
     </div>
@@ -387,6 +388,7 @@
             }
         }
         var showBillButton = document.getElementById('showBillButton');
+        var confirmButton = document.getElementById('confirmButton');
         showBillButton.addEventListener('click', function () {
             var billContainer = document.getElementById('BillContainer');
             var selectedItemsContainer = document.getElementById('selected-items-container');
@@ -399,6 +401,7 @@
                 totalpricecontainer.style.display = 'none';
                 bill();
                 showBillButton.style.display = 'none';
+                confirmButton.style.display = 'block';
             } 
         });
 
@@ -495,6 +498,7 @@
             billContainer.style.display = 'none';
             selectedItemsContainer.style.display = 'block';
             showBillButton.style.display = 'block';
+            confirmButton.style.display = 'none';
         }
 
         function decrementValue(button) {
@@ -511,6 +515,7 @@
             selectedItemsContainer.style.display = 'block';
             if (showBillButton.style.display === 'none') {
                 showBillButton.style.display = 'block';
+                confirmButton.style.display = 'none';
             }
         }
 
