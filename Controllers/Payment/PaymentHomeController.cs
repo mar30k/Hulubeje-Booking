@@ -25,6 +25,9 @@ namespace HulubejeBooking.Controllers.Payment
             try
             {
                 string password = pass;
+                var UserMobileNumber = data.AuthorizePaymentData.UserMobileNumber;
+                var SupplierTin = data.AuthorizePaymentData.SupplierTin;
+                var SupplierOUD = data.AuthorizePaymentData.SupplierOUD;
 
                 using (var _client = _httpClientFactory.CreateClient("Payment"))
                 {
@@ -49,9 +52,9 @@ namespace HulubejeBooking.Controllers.Payment
                             string accessTokenValue = Encoding.UTF8.GetString(accessTokenBytes);
                             var parameters = new
                             {
-                                UserMobileNumber = data.AuthorizePaymentData.UserMobileNumber,
-                                SupplierTin = data.AuthorizePaymentData.SupplierTin,
-                                SupplierOUD = data.AuthorizePaymentData.SupplierOUD
+                                UserMobileNumber,
+                                SupplierTin ,
+                                SupplierOUD 
                             };
 
                             List<PaymentOptionModel> paymentOptions = new List<PaymentOptionModel>();
@@ -80,7 +83,7 @@ namespace HulubejeBooking.Controllers.Payment
                                 var paymentOptionsJson = JsonConvert.SerializeObject(paymentOptions);
                                 HttpContext.Session.SetString("PaymentOptions", paymentOptionsJson);
 
-                                return Json(new PaymentOptionModel());
+                                 return Json(new PaymentOptionModel());
                             }
                             else
                             {

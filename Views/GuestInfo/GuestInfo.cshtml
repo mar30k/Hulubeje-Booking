@@ -243,7 +243,7 @@
                 AuthorizePaymentData: {
                     UserMobileNumber: $('#phone').val(),
                     SupplierTin: sessionStorage.getItem('orgTin'),
-                    SupplierOUD: sessionStorage.getItem('orgTin')
+                    SupplierOUD: sessionStorage.getItem('oud')
 
                 }
                
@@ -257,7 +257,7 @@
                 success: function (/* response */) {
                     // var cardText = response.cardText;
 
-                    window.location.href = "/PaymentHome/index";
+                    window.location.href = "/PaymentOptions/PaymentOption";
                     // if (cardText === 'telebirr SMS OTP') {
                     //     window.location.href = '/Spayment/index';
                     // } else if (cardText === 'telebirr USSD Push') {
