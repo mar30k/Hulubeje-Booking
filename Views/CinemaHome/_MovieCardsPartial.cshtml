@@ -11,7 +11,6 @@
             {
                 var movie = group.First();
                 var companyNames = group.Select(m => m.CompanyName).ToList();
-
                 <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
                     <div class="card position-relative">
                         <img src="@movie.PosterUrl" alt="Poster Image" class="img-fluid">
@@ -21,7 +20,7 @@
                                 var sanitizedOverview = HttpUtility.JavaScriptStringEncode(movie.Overview);
                                 var santizedMovieName = HttpUtility.JavaScriptStringEncode(movie.MovieName);
                                 var santizedBackdropPath = HttpUtility.JavaScriptStringEncode(movie.BackdropPath);
-                                <button class="button" onclick="onCompanyButtonClick('@movie.MovieCode', '@movie.BranchCode', '@companyName', '@sanitizedOverview', '@movie.ArticleCode', '@movie.PosterUrl', '@santizedMovieName', '@movie.MovieId', '@santizedBackdropPath')">
+                                <button class="button" onclick="onCompanyButtonClick('@movie.MovieCode','@companyName', '@sanitizedOverview', '@movie.PosterUrl', '@santizedMovieName', '@movie.MovieId', '@santizedBackdropPath')">
                                     @companyName
                                 </button>
                             }
@@ -46,21 +45,18 @@ else
     </div>
 }
 <script>
-    function onCompanyButtonClick(movieCode, branchCode, companyName, sanitizedOverview, articleCode, posterUrl, movieName, movieId, backdropPath) {
+    function onCompanyButtonClick(movieCode, companyName, sanitizedOverview, posterUrl, movieName, movieId, backdropPath) {
         // Create a form element
         var selectedDate = document.getElementById("selectedDate").value;
         sessionStorage.setItem('selectedMovieName', movieName);
         sessionStorage.setItem('selectedCompanyName ', companyName);
         sessionStorage.setItem('selectedDate', selectedDate);
-        sessionStorage.setItem('articleCode', articleCode);
         var form = $('<form action="/CinemaMovieDetails/Details" method="post"></form>');
         // Append hidden input fields for the parameters
         form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '">');
         form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
-        form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
         form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
         form.append('<input type="hidden" name="sanitizedOverview" value="' + sanitizedOverview + '">');
-        form.append('<input type="hidden" name="articleCode" value="' + articleCode + '">');
         form.append('<input type="hidden" name="posterUrl" value="' + posterUrl + '">');
         form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
         form.append('<input type="hidden" name="movieId" value="' + movieId + '">');
