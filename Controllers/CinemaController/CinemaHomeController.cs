@@ -83,5 +83,40 @@ namespace HulubejeBooking.Controllers.CinemaController
                 return View(null);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> Index(DateTime selectedDate)
+        {
+            try
+            {
+                // Format the selected date
+                string formattedDate = selectedDate.ToString("yyyy-MM-dd");
+
+                // Make an HTTP GET request with the selected date
+                HttpResponseMessage response = await _httpClient.GetAsync($"Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // If the request is successful, read and deserialize the response
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    var movies = JsonConvert.DeserializeObject<List<MovieModel>>(responseData);
+
+                    // Call the method to get movies with poster URLs
+                    var moviesWithPosters = await GetMoviesWithPosterUrls(movies);
+
+                    // Return the view with the list of movies
+                    return View(moviesWithPosters);
+                }
+                else
+                {
+                    // If the request is not successful, return an error view
+                    return View(null);
+                }
+            }
+            catch (HttpRequestException)
+            {
+                // If an exception occurs during the HTTP request, return an error view
+                return View(null);
+            }
+        }
     }
 }
