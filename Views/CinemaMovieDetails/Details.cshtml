@@ -54,7 +54,7 @@
             margin-bottom: 10px;
             font-weight: bold;
             font-size: 30px;
-            color: white; /* Blue color for CompanyName */
+            color: blue; 
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
 
@@ -150,7 +150,7 @@
                     </div>
                     <div class="col-md-8 mt-3">
                         <h4 class="companyName" style="background-color:rgba(0,0,0,0.3) ">@Model.CompanyName</h4>
-                        <h1 class="movienName" style="color: white">@Model.MovieName</h1>
+                        <h1 class="movienName" >@Model.MovieName</h1>
                         @if(Model.Overview is not null)
                         {
                             <h4 class="details">Overview</h4>
