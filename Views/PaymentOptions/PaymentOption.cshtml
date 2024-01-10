@@ -108,15 +108,11 @@
             var data = {
                 FlagData: { operationMode: $(this).data('operation-mode') },
                 AuthorizePaymentData: {
-                    UserMobileNumber: sessionStorage.getItem('phone'),
-                    SupplierTin: sessionStorage.getItem('orgTin'),
-                    SupplierOUD: sessionStorage.getItem('oud'),
+
                     PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
                 },
                 TransactionData: {
-                    UserMobileNumber: sessionStorage.getItem('phone'),
-                    SupplierTin: sessionStorage.getItem('orgTin'),
-                    SupplierOUD: sessionStorage.getItem('oud'),
+
                     PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
                 }
             };
