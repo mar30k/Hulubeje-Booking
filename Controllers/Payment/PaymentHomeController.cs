@@ -1,5 +1,7 @@
 ﻿using HulubejeBooking.Models;
 using HulubejeBooking.Models.PaymentModels;
+using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
+
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
@@ -23,13 +25,14 @@ namespace HulubejeBooking.Controllers.Payment
         }
         public async Task<IActionResult> IndexAsync([FromBody] RequestWrapper data)
         {
+
             try
             {
                 string password = pass;
                 var UserMobileNumber = data.AuthorizePaymentData.UserMobileNumber;
                 var SupplierTin = data.AuthorizePaymentData.SupplierTin;
                 var SupplierOUD = data.AuthorizePaymentData.SupplierOUD;
-
+                GuestInfoModel guestInfoModel = data.GuestInfoData;
                 using (var _client = _httpClientFactory.CreateClient("Payment"))
                 {
                     // Authentication request

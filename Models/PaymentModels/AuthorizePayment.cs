@@ -1,4 +1,6 @@
-﻿namespace HulubejeBooking.Models.PaymentModels
+﻿using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
+
+namespace HulubejeBooking.Models.PaymentModels
 {
     public class AuthorizePayment
     {
@@ -16,10 +18,5 @@
     {
         public string? ReferenceNumber { get; set; } = "Optional";
     }
-    public class RequestWrapper
-    {
-        public FlagModel FlagData { get; set; }
-        public AuthorizePayment AuthorizePaymentData { get; set; }
-        public TransactionModel TransactionData { get; set; }
-    }
+    
 }
