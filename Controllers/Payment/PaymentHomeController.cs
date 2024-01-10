@@ -57,6 +57,10 @@ namespace HulubejeBooking.Controllers.Payment
                                 SupplierTin ,
                                 SupplierOUD 
                             };
+                            var paymentInfoJson = JsonConvert.SerializeObject(parameters);
+
+                            HttpContext.Session.SetString("paymentInfo", paymentInfoJson);
+
 
                             List<PaymentOptionModel> paymentOptions = new List<PaymentOptionModel>();
 
@@ -130,6 +134,11 @@ namespace HulubejeBooking.Controllers.Payment
                 var vCode = HttpContext.Session.GetString("VoucherCode");
                 var TransactionId = JsonConvert.DeserializeObject<string>(vCode);
 
+                var parameters = HttpContext.Session.GetString("paymentInfo");
+                var newParam = JsonConvert.DeserializeObject<AuthorizePayment>(parameters);
+
+
+
 
                 if (!HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
                 {
@@ -144,9 +153,9 @@ namespace HulubejeBooking.Controllers.Payment
                     {
                         var param = new
                         {
-                            data.AuthorizePaymentData.UserMobileNumber,
-                            data.AuthorizePaymentData.SupplierTin,
-                            data.AuthorizePaymentData.SupplierOUD,
+                            newParam.UserMobileNumber,
+                            newParam.SupplierTin,
+                            newParam.SupplierOUD,
                             TransactionId,
                             data.AuthorizePaymentData.PaymentProviderOUD,
                             data.AuthorizePaymentData.Amount,
@@ -169,9 +178,9 @@ namespace HulubejeBooking.Controllers.Payment
                             //TransactionModel transactionModel = new TransactionModel();
                             var transactionModel = new
                             {
-                                data.AuthorizePaymentData.UserMobileNumber,
-                                data.AuthorizePaymentData.SupplierTin,
-                                data.AuthorizePaymentData.SupplierOUD,
+                                newParam.UserMobileNumber,
+                                newParam.SupplierTin,
+                                newParam.SupplierOUD,
                                 TransactionId,
                                 data.AuthorizePaymentData.PaymentProviderOUD,
                                 data.AuthorizePaymentData.Amount,
@@ -192,9 +201,9 @@ namespace HulubejeBooking.Controllers.Payment
                     {
                         var param = new
                         {
-                            data.TransactionData.UserMobileNumber,
-                            data.TransactionData.SupplierTin,
-                            data.TransactionData.SupplierOUD,
+                            newParam.UserMobileNumber,
+                            newParam.SupplierTin,
+                            newParam.SupplierOUD,
                             TransactionId,
                             data.TransactionData.PaymentProviderOUD,
                             data.TransactionData.Amount,
@@ -229,9 +238,9 @@ namespace HulubejeBooking.Controllers.Payment
                     {
                         var param = new
                         {
-                            data.TransactionData.UserMobileNumber,
-                            data.TransactionData.SupplierTin,
-                            data.TransactionData.SupplierOUD,
+                            newParam.UserMobileNumber,
+                            newParam.SupplierTin,
+                            newParam.SupplierOUD,
                             TransactionId,
                             data.TransactionData.PaymentProviderOUD,
                             data.TransactionData.Amount,
