@@ -253,7 +253,7 @@
                             if (numberOfSelectedSeats >= 1) {
                                 selectedSeatsSpan.innerText = "[ " + selectedSeatNamesArray.join(', ') + " ]"; // Join array elements with a comma and space
                             } else {
-                                selectedSeatsSpan.innerText = "[]"; // Join array elements with a comma and space
+                                selectedSeatsSpan.innerText = "No Seats Selected"; // Join array elements with a comma and space
                             }
                         }
                     });
@@ -388,7 +388,7 @@
             }
         }
         const showBillButton = document.getElementById('showBillButton');
-        const confirmButton = document.getElementById('confirmButton');
+        // const confirmButton = document.getElementById('confirmButton');
         showBillButton.addEventListener('click', function () {
             var billContainer = document.getElementById('BillContainer');
             var selectedItemsContainer = document.getElementById('selected-items-container');
@@ -648,38 +648,6 @@
             totalpricecontainer.style.display = 'block';
             totalpricecontainer.appendChild(totalDiv);
         }
-        $('#confirmButton').on('click', function () {
-            var data = {
-                AuthorizePaymentData: {
-                    UserMobileNumber: "0912141914",
-                    SupplierTin: '@(Model?.CompanyTinNumber)',
-                    SupplierOUD: '@(Model?.BranchCode)',
-                }
-            };
-            $.ajax({
-                url: '/PaymentHome/Index',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function (/* response */) {
-                    // var cardText = response.cardText;
-
-                    window.location.href = "/PaymentOptions/PaymentOption";
-                    // if (cardText === 'telebirr SMS OTP') {
-                    //     window.location.href = '/Spayment/index';
-                    // } else if (cardText === 'telebirr USSD Push') {
-                    //     window.location.href = '/Apayment/index';
-                    // }
-                    // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
-                    //     window.open(response.redirectUrl, '_blank');
-                    // }
-
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
-        });
     </script>
 </body>
 </html>

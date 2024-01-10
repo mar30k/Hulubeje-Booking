@@ -57,3 +57,61 @@
         <span style="text-align: right; margin-right: 10px">Total Amount: @(Model?.Bill?.TotalAmount.ToString("F2") ?? "N/A")</span>
     </div>
 </div>
+@{
+    var specialFlagItems = Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT");
+
+    if (specialFlagItems != null && specialFlagItems.Any())
+    {
+        foreach (var taxinfo in specialFlagItems)
+        {
+            var TaxAmount = taxinfo.TaxAmount;
+            var TotalAmount = taxinfo.TotalAmount;
+            var TaxType = taxinfo.TaxType;
+            var TaxableAmount = taxinfo.TaxableAmount;
+            var UnitPrice = taxinfo.UnitPrice;
+            var Quantity = taxinfo.Quantity;
+            var LineItemNote = taxinfo.LineItemNote;
+            var SpecialFlag = taxinfo.SpecialFlag;
+            var Code = taxinfo.Code;
+        }   
+    }
+    var Schedule = Model?.MovieScheduleCode;
+    var GrandTotal = Model?.Bill?.Extras?.SubTotal;
+}
+<script>
+    $('#confirmButton').on('click', function () {
+        var data = {
+            AuthorizePaymentData: {
+                UserMobileNumber: "0912141914",
+                SupplierTin: '@(Model?.CompanyTinNumber)',
+                SupplierOUD: '@(Model?.BranchCode)',
+            }
+        };
+        var CinemaArticles = {
+            Code: '@Model?.ArticleCode',
+        }
+        $.ajax({
+            url: '/PaymentHome/Index',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (/* response */) {
+                // var cardText = response.cardText;
+
+                window.location.href = "/PaymentOptions/PaymentOption";
+                // if (cardText === 'telebirr SMS OTP') {
+                //     window.location.href = '/Spayment/index';
+                // } else if (cardText === 'telebirr USSD Push') {
+                //     window.location.href = '/Apayment/index';
+                // }
+                // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
+                //     window.open(response.redirectUrl, '_blank');
+                // }
+
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+</script>
