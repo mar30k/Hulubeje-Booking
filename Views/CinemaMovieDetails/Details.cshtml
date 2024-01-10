@@ -30,7 +30,7 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: url('@Model.BackdropPath') center/cover no-repeat; /* Set backdrop as background */
+                background: url('@Model?.BackdropPath') center/cover no-repeat; /* Set backdrop as background */
                 filter: blur(2px); /* Add a 5px blur effect to the background image */
             }
 
@@ -146,15 +146,15 @@
             <div class="info-container container mt-3 mb-3">
                 <div class="row">
                     <div class="col-md-4 d-flex justify-content-center">
-                        <img src="@Model.PosterUrl" alt="Movie Poster" style="max-width: 100%;">
+                        <img src="@Model?.PosterUrl" alt="Movie Poster" style="max-width: 100%;">
                     </div>
                     <div class="col-md-8 mt-3">
-                        <h4 class="companyName" style="background-color:rgba(0,0,0,0.3) ">@Model.CompanyName</h4>
-                        <h1 class="movienName" >@Model.MovieName</h1>
-                        @if(Model.Overview is not null)
+                        <h4 class="companyName" style="background-color:rgba(0,0,0,0.3) ">@Model?.CompanyName</h4>
+                        <h1 class="movienName" >@Model?.MovieName</h1>
+                        @if(Model?.Overview is not null)
                         {
                             <h4 class="details">Overview</h4>
-                            <p class="details">@Model.Overview</p>
+                            <p class="details">@Model?.Overview</p>
                         }
                         <div>
                             @functions {
@@ -186,7 +186,7 @@
                                     }
                                 }
                             }
-                            @if (Model.Genres is not null)
+                            @if (Model?.Genres is not null)
                             {
                                 <h4 class="details">Genres</h4>
                                 @foreach (var genre in Model.Genres)
@@ -199,17 +199,17 @@
                             }
                         </div>
                         <div>
-                            @if(Model.FormattedRunTime is not null)
+                            @if(Model?.FormattedRunTime is not null)
                             {
                                 <h4 style="display: inline-block; margin-right: 10px;">Runtime:</h4>
-                                <p class="details" style="display: inline-block;">@Model.FormattedRunTime</p>
+                                <p class="details" style="display: inline-block;">@Model?.FormattedRunTime</p>
                             }
                         </div>
                         <div>
-                            @if(Model.PgRating is not null)
+                            @if(Model?.PgRating is not null)
                             {
                                 <h4 style="display: inline-block; margin-right: 10px;">Pg-Rating:</h4>
-                                <p class="details" style="display: inline-block;">@Model.PgRating</p>
+                                <p class="details" style="display: inline-block;">@Model?.PgRating</p>
                             }
                         </div>
                     </div>
@@ -224,7 +224,7 @@
         <h4 style="color: black">
             Casts
         </h4>
-        @if (Model.Cast is not null)
+        @if (Model?.Cast is not null)
         {
             <div class="cast-section">
                 @foreach (var castMember in Model.Cast.Take(10))
@@ -247,10 +247,10 @@
         }
         <div class="row">
             <div class="col-lg-6" style="margin-top: 30px;">
-                @if (!string.IsNullOrEmpty(Model.YoutubeKey))
+                @if (!string.IsNullOrEmpty(Model?.YoutubeKey))
                 {
                     <div class="embed-responsive embed-responsive-16by9">
-                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/@Model.YoutubeKey?rel=0" allowfullscreen></iframe>
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/@Model?.YoutubeKey?rel=0" allowfullscreen></iframe>
                     </div>
                 }
                 else
@@ -260,7 +260,7 @@
             </div>
 
             <div class="col-lg-6" style="margin-top: 30px;">
-                @if (!string.IsNullOrEmpty(Model.YoutubeKey))
+                @if (!string.IsNullOrEmpty(Model?.YoutubeKey))
                 {
                     <partial name="_Schedules" />
                 }
