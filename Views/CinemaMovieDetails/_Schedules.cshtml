@@ -45,7 +45,7 @@
                     {
                         var spaceType = "Regular";
                         var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model.MovieName);
-                        <button class="btn btn-success " onclick="onScheduleButtonClick('@schedule.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.CompanyName','@santizedMovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
+                        <button class="btn btn-success " onclick="onScheduleButtonClick('@schedule.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.BranchCode.ToString()','@Model.CompanyName','@santizedMovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
                                             '@Model.SelectedDate.ToString()','@schedule.Code','@schedule.NPrice','@schedule.HallName','@utcTime.ToString("h.mm tt")')" type="button">
                             Book Now <br> @schedule.NPrice ETB
                         </button>
@@ -63,7 +63,7 @@
                         {
                             var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model.MovieName);
                             var spaceType = "VIP";
-                            <button class="btn btn-warning" onclick="onScheduleButtonClick('@schedule.VIP.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.CompanyName','@santizedMovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
+                            <button class="btn btn-warning" onclick="onScheduleButtonClick('@schedule.VIP.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.BranchCode.ToString()','@Model.CompanyName','@santizedMovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
                                             '@Model.SelectedDate.ToString()','@schedule.VIP.Code','@schedule.VIP.VPrice','@schedule.VIP.HallName','@utcTime.ToString("h.mm tt")')" type="button">
                                 Book Vip <br> @schedule.VIP.VPrice ETB
                             </button>

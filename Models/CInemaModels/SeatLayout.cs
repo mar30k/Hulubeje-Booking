@@ -13,6 +13,7 @@
         public string? SpaceType { get; set; }
         public string? Dimension { get; set; }
         public string? MovieScheduleCode { get; set; }
+        public string? BranchCode { get; set; }
         public int MaxX { get; set; }
         public int MaxY { get; set; }
         public decimal Price { get; set; }

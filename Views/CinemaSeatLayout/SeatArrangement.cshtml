@@ -342,6 +342,7 @@
                 var price = "@Model.Price";
                 var dimension = "@Model.Dimension";
                 var spaceType = "@Model.SpaceType";
+                var branchCode = "@Model.BranchCode";
 
                 var remainingTime = countdown ?? 0;
 
@@ -368,6 +369,7 @@
                 form.append('<input type="hidden" name="dimension" value="' + dimension + '" />');
                 form.append('<input type="hidden" name="spaceType" value="' + spaceType + '" />');
                 form.append('<input type="hidden" name="articleCode" value="' + articleCode + '" />');
+                form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
                 form.append('<input type="hidden" name="numberOfElements" value="' + numberOfElements + '" />');
 
                 $('body').append(form);

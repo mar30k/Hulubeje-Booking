@@ -15,13 +15,14 @@ namespace CinemaSeatBooking.Controllers
             };
         }
         [HttpPost]
-        public async Task<IActionResult> Products([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string companyName, [FromForm] string movieName,
+        public async Task<IActionResult> Products([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string branchCode, [FromForm] string companyName, [FromForm] string movieName,
                     [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType, [FromForm] string articleCode, [FromForm] string numberOfElements)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"Product/GetProducts?orgTin={companyTinNumber}&type=Restaurant&consignee=0912141914&platform=Web&longitude=0");
 
             var viewModel = new ProductsViewModel
             {
+                BranchCode = branchCode,
                 MovieScheduleCode = movieScheduleCode,
                 CompanyTinNumber = companyTinNumber,
                 CompanyName = companyName,

@@ -16,7 +16,7 @@ public class CinemaSeatLayoutController : Controller
             BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
         };
     }
-    public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string companyName, string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
+    public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string branchCode, string companyName, string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
     {
         HttpResponseMessage response = await _httpClient.GetAsync($"cinema/getCinemaSeatArrangment?orgTin={companyTinNumber}&spaceCode={spacecode}");
 
@@ -103,6 +103,7 @@ public class CinemaSeatLayoutController : Controller
             if (seatArrangement is not null)
             {
                 seatArrangement.CompanyTinNumber = companyTinNumber;
+                seatArrangement.BranchCode = branchCode;
                 seatArrangement.SpaceCode = spacecode;
                 seatArrangement.MovieScheduleCode = code;
                 seatArrangement.Price = price;

@@ -14,6 +14,7 @@
         public string? HallName { get; set; }
         public string? Dimension { get; set; }
         public string? NumberOfSeats { get; set; }
+        public string? BranchCode { get; set; }
         public decimal Price { get; set; }
         public Bill? Bill { get; set; }
 

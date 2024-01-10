@@ -269,13 +269,14 @@
     </div>
 
     <script>
-        function onScheduleButtonClick(spacecode, companyTinNumber, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, price, hallName, utcTime) {
+        function onScheduleButtonClick(spacecode, companyTinNumber, branchCode, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, price, hallName, utcTime) {
             var selectedSeats = [];
             sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
             sessionStorage.setItem('selectedSeatNames', JSON.stringify(selectedSeats));
             var form = $('<form action="/CinemaSeatLayout/SeatArrangement" method="post"></form>');
             form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
             form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '">');
+            form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
             form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
             form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
             form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
