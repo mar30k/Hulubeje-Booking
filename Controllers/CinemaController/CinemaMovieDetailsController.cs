@@ -10,7 +10,7 @@ namespace HulubejeBooking.Controllers
         private readonly string apiKey = "1ba83335ce22421020a77845254a578e";
         private readonly string baseUrl = "https://api.themoviedb.org/3/movie/";
 
-        public async Task<IActionResult> Details(string selectedDate, string movieCode, string branchCode, string companyName, string sanitizedOverview, string articleCode,
+        public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, int movieId, string backdropPath)
         {
             try
@@ -57,11 +57,9 @@ namespace HulubejeBooking.Controllers
                         // Set additional properties in your MovieModel
                         if (movieDetails != null)
                         {
-                            movieDetails.BranchCode = branchCode;
                             movieDetails.MovieCode = movieCode;
                             movieDetails.CompanyName = companyName;
                             movieDetails.Overview = sanitizedOverview;
-                            movieDetails.ArticleCode = articleCode;
                             movieDetails.PosterUrl = posterUrl;
                             movieDetails.MovieName = movieName;
                             movieDetails.BackdropPath = backdropPath;
@@ -101,6 +99,8 @@ namespace HulubejeBooking.Controllers
                                 if (movieInfo != null && movieDetails != null)
                                 {
                                     movieDetails.CompanyTinNumber = movieInfo.CompanyTinNumber;
+                                    movieDetails.BranchCode = movieInfo.BranchCode; 
+                                    movieDetails.ArticleCode = movieInfo.ArticleCode;
                                 }
 
 

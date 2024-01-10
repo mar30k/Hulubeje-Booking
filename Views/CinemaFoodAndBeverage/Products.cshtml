@@ -648,6 +648,38 @@
             totalpricecontainer.style.display = 'block';
             totalpricecontainer.appendChild(totalDiv);
         }
+        $('#confirmButton').on('click', function () {
+            var data = {
+                AuthorizePaymentData: {
+                    UserMobileNumber: "0912141914",
+                    SupplierTin: '@(Model?.CompanyTinNumber)',
+                    SupplierOUD: '@(Model?.BranchCode)',
+                }
+            };
+            $.ajax({
+                url: '/PaymentHome/Index',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (/* response */) {
+                    // var cardText = response.cardText;
+
+                    window.location.href = "/PaymentOptions/PaymentOption";
+                    // if (cardText === 'telebirr SMS OTP') {
+                    //     window.location.href = '/Spayment/index';
+                    // } else if (cardText === 'telebirr USSD Push') {
+                    //     window.location.href = '/Apayment/index';
+                    // }
+                    // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
+                    //     window.open(response.redirectUrl, '_blank');
+                    // }
+
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
     </script>
 </body>
 </html>
