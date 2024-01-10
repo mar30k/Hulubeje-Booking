@@ -239,13 +239,47 @@
             sessionStorage.setItem("phone", $('#phone').val());
             sessionStorage.setItem("nationality", $('#nationality').val());
             var data = {
-               
+
                 AuthorizePaymentData: {
                     UserMobileNumber: $('#phone').val(),
                     SupplierTin: sessionStorage.getItem('orgTin'),
                     SupplierOUD: sessionStorage.getItem('oud')
-
                 }
+                // GuestInfoData: {
+
+                //     orgTin: sessionStorage.getItem('orgTin'),
+                //     date: sessionStorage.getItem('dateRange'),
+                //     adult = sessionStorage.getItem('adultCount'),
+                //     child = sessionStorage.getItem('childrenCount'),
+                //     roomTypeCode = sessionStorage.getItem('roomTypeCode'),
+                //     rateCode = sessionStorage.getItem('rateCode'),
+                //     rateCodeDetail: sessionStorage.getItem('rateCodeDetail'),
+                //     averageAmount: 1,
+                //     totalAmount: 1,
+                //     roomCount: sessionStorage.getItem('roomsCount'),
+                //     oud: session.getItem('oud'),
+                //     specialRequirement: "i am testing special requirments",
+                //     transactionReference:"",
+                //     guests:{
+                //         Code: $('#phone').val(), 
+                //         FirstName: $('#name').val(),
+                //         MiddleName: $('#middle').val(),
+                //         LastName: $('#last').val(),
+                //         Email: $('#email').val(),
+                //         PhoneNumber: $('#phone').val(),
+                //         IdPicture: "",
+                //         DateOfBirth: $('#date').val(),
+                //         Gender: $('input[name="gender"]:checked').val(),
+                //         Nationality: $('#nationality').val()
+                //     },
+                //     onHotelBookSuccess: {
+                //         firstName: $('#name').val(),
+                //         company: sessionStorage.getItem("hotelName"),
+                //         branch: sessionStorage.getItem("branchName"),
+                //         nightCount: numberOfNights
+                //     }
+
+                // }
                
             };
 
@@ -257,7 +291,7 @@
                 success: function (/* response */) {
                     // var cardText = response.cardText;
 
-                    window.location.href = "/PaymentOptions/PaymentOption";
+                    window.location.href = "/PaymentOptions/PaymentOption"; 
                     // if (cardText === 'telebirr SMS OTP') {
                     //     window.location.href = '/Spayment/index';
                     // } else if (cardText === 'telebirr USSD Push') {

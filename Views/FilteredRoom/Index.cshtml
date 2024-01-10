@@ -183,7 +183,9 @@
 										data-room-pakages="@room.PackageList"
 										data-room-price="@room.AverageAmount"
 										data-room-type-code="@room.RoomTypeCode"
-										data-room-type="@room.RoomTypeDescription">
+										data-room-type="@room.RoomTypeDescription"
+										data-rate-code ="@room.RateCode"
+										data-rate-code-detail="@room.RateCodeDetail">
 									Book
 								</button>
 							</td>
@@ -226,6 +228,10 @@
 			sessionStorage.setItem('roomType', $(this).data('room-type'));
 			sessionStorage.setItem('roomPakages', $(this).data('room-pakages'));
 			sessionStorage.setItem('ratePolicy', $(this).data('rate-policy'));
+			sessionStorage.setItem('rateCode', $(this).data('rate-code'));
+			sessionStorage.setItem('rateCodeDetail', $(this).data('rate-code-detail'));
+
+
 
 
 
