@@ -51,7 +51,8 @@ namespace CinemaSeatBooking.Controllers
                 return View(viewModel);
             }
         }
-        public async Task<IActionResult> CalculateBill(string movieName, string moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems)
+        public async Task<IActionResult> CalculateBill(string movieName,string branchCode,string movieDimension, string date, string time, string company, string hallName,
+            string moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems)
         {
             try
             {
@@ -101,7 +102,16 @@ namespace CinemaSeatBooking.Controllers
                 {
                     return PartialView("_Bill", null);
                 }
-
+                calculatedModel.MovieScheduleCode = movieScheduleCode;
+                calculatedModel.MovieName = movieName;
+                calculatedModel.CompanyTinNumber = companyTin;
+                calculatedModel.BranchCode = branchCode;
+                calculatedModel.CompanyName = company;
+                calculatedModel.ScheduleDate = date;
+                calculatedModel.ScheduleTime = time;
+                calculatedModel.Dimension = movieDimension;
+                calculatedModel.HallName = hallName;
+                calculatedModel.SelectedItems = selectedItemsList;
                 return PartialView("_Bill", calculatedModel);
             }
             catch (Exception)

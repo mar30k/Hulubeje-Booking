@@ -77,41 +77,78 @@
     }
     var Schedule = Model?.MovieScheduleCode;
     var GrandTotal = Model?.Bill?.Extras?.SubTotal;
+    var OrgTin = Model?.CompanyTinNumber;
+    var OrgUnitDef = Model?.BranchCode;
 }
 <script>
     $('#confirmButton').on('click', function () {
-        var data = {
-            AuthorizePaymentData: {
-                UserMobileNumber: "0912141914",
-                SupplierTin: '@(Model?.CompanyTinNumber)',
-                SupplierOUD: '@(Model?.BranchCode)',
-            }
-        };
-        var CinemaArticles = {
-            Code: '@Model?.ArticleCode',
-        }
-        $.ajax({
-            url: '/PaymentHome/Index',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function (/* response */) {
-                // var cardText = response.cardText;
-
-                window.location.href = "/PaymentOptions/PaymentOption";
-                // if (cardText === 'telebirr SMS OTP') {
-                //     window.location.href = '/Spayment/index';
-                // } else if (cardText === 'telebirr USSD Push') {
-                //     window.location.href = '/Apayment/index';
-                // }
-                // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
-                //     window.open(response.redirectUrl, '_blank');
-                // }
-
+    var cinemaArticles = @Html.Raw(Json.Serialize(Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT")));
+    var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
+    var selectedSeatNames = JSON.parse(sessionStorage.getItem('selectedSeatNames')) || [];
+    var data = {
+        AuthorizePaymentData: {
+            UserMobileNumber: "0912141914",
+            SupplierTin: '@Model?.CompanyTinNumber',
+            SupplierOUD: '@Model?.BranchCode',
+        },
+        CinemaDetails: {
+            Schedule: '@Model?.MovieScheduleCode',
+            GrandTotal: '@Model?.Bill?.Extras?.SubTotal',
+            OrgTin: '@Model?.CompanyTinNumber',
+            OrgUnitDef: '@Model?.BranchCode',
+            SeatsToBook: selectedSeats,
+            CinemaArticles: cinemaArticles.map(function (taxinfo) {
+                var cinemaArticleData = {
+                    TaxAmount: taxinfo.taxAmount,
+                    TotalAmount: taxinfo.totalAmount,
+                    TaxType: taxinfo.taxType,
+                    TaxableAmount: taxinfo.taxableAmount,
+                    UnitPrice: taxinfo.unitPrice,
+                    Quantity: taxinfo.quantity,
+                    LineItemNote: taxinfo.lineItemNote,
+                    SpecialFlag: taxinfo.specialFlag,
+                    Code: taxinfo.code,
+                };
+                return cinemaArticleData;
+            }),
+            OnBookSuccess: {
+                seats: selectedSeatNames,
+                movieName: '@Model?.MovieName',
+                movieDimension: '@Model?.Dimension',
+                company: '@Model?.CompanyName',
+                time: '@Model?.ScheduleTime',
+                date: '@Model?.ScheduleDate',
+                hallName: '@Model?.HallName',
+                items: [
+                    @if (Model?.SelectedItems != null)
+                    {
+                        for (var i = 0; i < Model?.SelectedItems.Count; i++)
+                        {
+                            <text>"@Model?.SelectedItems[i].articleName"</text>
+                            if (i < Model?.SelectedItems.Count - 1)
+                            {
+                                <text>,</text>
+                            }
+                        }
+                    }
+                ],
             },
-            error: function (error) {
-                console.error('Error:', error);
-            }
-        });
+        },
+    };
+
+    console.log('Data Object:', data);
+
+    $.ajax({
+        url: '/PaymentHome/Index',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function (/* response */) {
+            window.location.href = "/PaymentOptions/PaymentOption";
+        },
+        error: function (error) {
+            console.error('Error:', error);
+        }
     });
+});
 </script>

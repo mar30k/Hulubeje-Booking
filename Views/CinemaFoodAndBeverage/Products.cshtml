@@ -3,15 +3,12 @@
 @using Newtonsoft.Json
 @using System.Globalization
 @using System.Text.RegularExpressions
-@{
-    ViewBag.Title = "Products";
-}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title</title>
+    <title>Produts</title>
     <style>
         .custom-container {
             padding-left: 35px;
@@ -408,13 +405,25 @@
         function bill() {
             
             var movieName = "@Model?.MovieName";
+            var branchCode = "@Model?.BranchCode";
             var moviePrice = "@Model?.Price";
             var movieScheduleCode = "@Model?.MovieScheduleCode";
             var companyTin = "@Model?.CompanyTinNumber";
             var movieArticleCode = "@Model?.ArticleCode";
             var numberOfSeats = "@Model?.NumberOfSeats";
+            var hallName = "@Model?.HallName";
+            var company = "@Model?.CompanyName";
+            var time = "@Model?.ScheduleTime";
+            var date = "@Model?.ScheduleDate";
+            var movieDimension = "@Model?.Dimension";
             $.get("/CinemaFoodAndBeverage/CalculateBill", {
                 movieName: movieName,
+                branchCode: branchCode,
+                hallName: hallName,
+                company: company,
+                time: time,
+                date: date,
+                movieDimension: movieDimension,
                 moviePrice: moviePrice,
                 movieScheduleCode: movieScheduleCode,
                 companyTin: companyTin,
