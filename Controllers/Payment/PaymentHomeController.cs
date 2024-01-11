@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models;
+using HulubejeBooking.Models.HotelModels;
 using HulubejeBooking.Models.PaymentModels;
 using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
 
@@ -32,7 +33,7 @@ namespace HulubejeBooking.Controllers.Payment
                 var UserMobileNumber = data.AuthorizePaymentData.UserMobileNumber;
                 var SupplierTin = data.AuthorizePaymentData.SupplierTin;
                 var SupplierOUD = data.AuthorizePaymentData.SupplierOUD;
-                GuestInfoModel guestInfoModel = data.GuestInfoData;
+
                 using (var _client = _httpClientFactory.CreateClient("Payment"))
                 {
                     // Authentication request
@@ -178,7 +179,9 @@ namespace HulubejeBooking.Controllers.Payment
 
                         if (response.IsSuccessStatusCode)
                         {
-                            //TransactionModel transactionModel = new TransactionModel();
+                           
+
+
                             var transactionModel = new
                             {
                                 newParam.UserMobileNumber,

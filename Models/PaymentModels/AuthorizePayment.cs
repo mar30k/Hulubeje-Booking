@@ -1,5 +1,5 @@
 ﻿using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
-
+using HulubejeBooking.Models.PaymentModels.CinemaPaymentModel;
 namespace HulubejeBooking.Models.PaymentModels
 {
     public class AuthorizePayment
@@ -18,5 +18,14 @@ namespace HulubejeBooking.Models.PaymentModels
     {
         public string? ReferenceNumber { get; set; } = "Optional";
     }
-    
+    public class RequestWrapper
+    {
+        public FlagModel FlagData { get; set; }
+        public AuthorizePayment AuthorizePaymentData { get; set; }
+        public TransactionModel TransactionData { get; set; }
+        public GuestInfoModel GuestInfoData { get; set; }
+        public CinemaDetails CinemaDetailsData { get; set; }
+
+    }
+
 }

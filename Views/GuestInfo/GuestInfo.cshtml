@@ -304,6 +304,20 @@
                     console.error('Error:', error);
                 }
             });
+
+            $.ajax({
+                url: '/SHotelpayment/Payment',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function () {
+                    
+
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
         });
     });
 

@@ -38,6 +38,7 @@ namespace HulubejeBooking.Controllers.Payment
                 var SupplierTin = newParam.SupplierTin;
                 var TransactionId = newParam.TransactionId;
                 var Amount = newParam.Amount;
+                var userMobile = newParam.UserMobileNumber;
 
                 var parameters = new
                 {
@@ -47,7 +48,16 @@ namespace HulubejeBooking.Controllers.Payment
                 };
 
                 string queryString = string.Join("&", parameters.GetType().GetProperties()
-                    .Select(prop => $"{prop.Name}={Uri.EscapeDataString(prop.GetValue(parameters)?.ToString())}"));
+                                  .Select(prop =>
+                                  {
+                                      var value = prop.GetValue(parameters);
+                                      if (value != null)
+                                      {
+                                          return $"{prop.Name}={Uri.EscapeDataString(value.ToString())}";
+                                      }
+                                      return null;
+                                  })
+                                  .Where(s => s != null));
 
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 string apiUrl = $"{_client.BaseAddress}payment/transaction?{queryString}";

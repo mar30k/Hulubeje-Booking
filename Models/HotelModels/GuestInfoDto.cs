@@ -1,4 +1,5 @@
-﻿namespace HulubejeBooking.Models.HotelModels
+﻿using HulubejeBooking.Models.PaymentModels;
+namespace HulubejeBooking.Models.HotelModels
 {
     public class GuestInfoDto
     {
@@ -47,25 +48,6 @@
         public int nightCount { get; set; }
     }
 
-    public class PaymentInfoModel
-    {
-        public string UserAccessToken { get; set; } = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2NzM4NTczMzksImV4cCI6MTY3MzkwMDUzOSwiaWF0IjoxNjczODU3MzM5LCJpc3MiOiJDTkVULlBheW1lbnQuQVBJIiwiYXVkIjoiQ05FVC5QYXltZW50LkFQSSJ9.Hh_CF39I-tk11-SJeDzjXhq7o8ka4_cAIsGklOyzgKU";
-
-        public PaymentTransactionRequestModel PaymentTransactionRequest { get; set; }
-
-        public bool IsAsyncMode { get; set; } = true;
-    }
-    public class PaymentTransactionRequestModel
-    {
-        public string UserMobileNumber { get; set; } 
-        public string SupplierTin { get; set; } = "0054889410";
-        public string SupplierOUD { get; set; } = "OUD100007845";
-        public string TransactionId { get; set; } = "0939977886-107836-720";
-        public string Amount { get; set; } 
-        public string PaymentProviderOUD { get; set; }
-        public string Pin { get; set; } = "785686";
-        public string ExpirationDate { get; set; } = "";
-    }
 
 
 }

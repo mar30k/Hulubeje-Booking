@@ -46,27 +46,27 @@ namespace HulubejeBooking.Controllers.Payment.HotlePaymentModels
                     TransactionId,
                     Amount,
                 };
-                GuestInfoModel hotelPayment = new GuestInfoModel
-                {
-                    paymentInfo = new PaymentInfoModel
-                    {
-                        isAsyncMode = true,
-                        userAccessToken = accessToken,
-                        paymentTransactionRequest = new PaymentTransactionRequestModel
-                        {
-                            UserMobileNumber = newParam.UserMobileNumber,
-                            SupplierTin = newParam.SupplierTin,
-                            SupplierOUD = newParam.SupplierOUD,
-                            TransactionId = newParam.TransactionId,
-                            Amount = newParam.Amount,
-                            PaymentProviderOUD = newParam.PaymentProviderOUD,
-                            Pin = null,
-                            ExpirationDate = "",
+                //GuestInfoModel hotelPayment = new GuestInfoModel
+                //{
+                //    paymentInfo = new PaymentInfoModel
+                //    {
+                //        isAsyncMode = true,
+                //        userAccessToken = accessToken,
+                //        paymentTransactionRequest = new PaymentTransactionRequestModel
+                //        {
+                //            UserMobileNumber = newParam.UserMobileNumber,
+                //            SupplierTin = newParam.SupplierTin,
+                //            SupplierOUD = newParam.SupplierOUD,
+                //            TransactionId = newParam.TransactionId,
+                //            Amount = newParam.Amount,
+                //            PaymentProviderOUD = newParam.PaymentProviderOUD,
+                //            Pin = null,
+                //            ExpirationDate = "",
 
-                        }
-                    },
+                //        }
+                //    },
 
-                };
+                //};
 
                 string queryString = string.Join("&", parameters.GetType().GetProperties()
                     .Select(prop => $"{prop.Name}={Uri.EscapeDataString(prop.GetValue(parameters)?.ToString())}"));

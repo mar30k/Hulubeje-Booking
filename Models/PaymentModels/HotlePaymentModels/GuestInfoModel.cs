@@ -1,4 +1,5 @@
-﻿namespace HulubejeBooking.Models.PaymentModels.HotlePaymentModels
+﻿
+namespace HulubejeBooking.Models.PaymentModels.HotlePaymentModels
 {
     public class GuestInfoModel
     {
@@ -45,31 +46,4 @@
         public int nightCount { get; set; }
     }
 
-    public class PaymentInfoModel
-    {
-        public string? userAccessToken { get; set; }
-        public PaymentTransactionRequestModel paymentTransactionRequest { get; set; }
-        public bool isAsyncMode { get; set; }
-    }
-
-    public class PaymentTransactionRequestModel
-    {
-        public string? UserMobileNumber { get; set; }
-        public string? SupplierTin { get; set; }
-        public string? SupplierOUD { get; set; }
-        public string? TransactionId { get; set; }
-        public double Amount { get; set; }
-        public string? PaymentProviderOUD { get; set; }
-        public string? Pin { get; set; }
-        public string? ExpirationDate { get; set; }
-    }
-
-	public class RequestWrapper
-	{
-		public FlagModel FlagData { get; set; }
-		public AuthorizePayment AuthorizePaymentData { get; set; }
-		public TransactionModel TransactionData { get; set; }
-		public GuestInfoModel GuestInfoData { get; set; }
-
-	}
 }

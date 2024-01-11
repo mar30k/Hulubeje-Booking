@@ -6,6 +6,8 @@ using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 using System.Text;
 using System.Net.Http.Headers;
+using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
+using Microsoft.AspNetCore.Http;
 
 namespace HulubejeBooking.Controllers.Payment
 {
@@ -53,14 +55,74 @@ namespace HulubejeBooking.Controllers.Payment
                     }
 
                 };
+                
+                HttpContext.Session.Remove("transactionDatas");
+
                 var reqJson = JsonConvert.SerializeObject(request);
                 var content = new StringContent(reqJson, Encoding.UTF8, "application/json");
                 _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
                 HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
-                if (response.IsSuccessStatusCode) 
+                
+                if (response.IsSuccessStatusCode)
                 {
-                    HttpContext.Session.Remove("transactionDatas");
+                    var responseData = await response.Content.ReadAsStringAsync();
+
+                    var isSuccessful = new
+                    {
+                        accessToken,
+                        paymentTransactionRequest = new
+                        {
+                            newParam.UserMobileNumber,
+                            newParam.SupplierTin,
+                            newParam.SupplierOUD,
+                            newParam.TransactionId,
+                            newParam.Amount,
+                            newParam.PaymentProviderOUD,
+                            data.Pin,
+                            ExpirationDate = ""
+
+                        },
+                        IsAsyncMode = false
+
+                    };
+                    var isSuccessfulJson = JsonConvert.SerializeObject(isSuccessful);
+                    HttpContext.Session.SetString("PaymentInfo", isSuccessfulJson);
+
+                    var validationData = JsonConvert.DeserializeObject(responseData);
+
+                    //var ValidationData = new
+                    //{
+                    //    IsSuccessful = validationData.isSuccessful,
+                    //    TransactionReference = validationData.transactionReference,
+                    //    ErrorMessages = validationData.errorMessages,
+                    //    AdditionalParameters = validationData.additionalParameters
+                    //};
+                    var ValidationDataJson = JsonConvert.SerializeObject(validationData);
+
+                    HttpContext.Session.SetString("ValidationInfo", ValidationDataJson);
+
+                    return RedirectToAction("PaymentCommon", "SHotelpayment");
                 }
+
+         
+
+                
+                
+
+                //if (response.IsSuccessStatusCode) 
+                //{
+                //    string responseData = await response.Content.ReadAsStringAsync();
+                //    PaymentValidation validationData = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+
+                //}
+                //else
+                //{
+                //    string responseData = await response.Content.ReadAsStringAsync();
+                //    PaymentValidation validationData = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+
+
+                //}
 
             }
             return View();

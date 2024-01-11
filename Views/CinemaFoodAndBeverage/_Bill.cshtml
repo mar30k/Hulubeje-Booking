@@ -91,7 +91,7 @@
             SupplierTin: '@Model?.CompanyTinNumber',
             SupplierOUD: '@Model?.BranchCode',
         },
-        CinemaDetails: {
+        CinemaDetailsData: {
             Schedule: '@Model?.MovieScheduleCode',
             GrandTotal: '@Model?.Bill?.Extras?.SubTotal',
             OrgTin: '@Model?.CompanyTinNumber',
@@ -145,6 +145,17 @@
         data: JSON.stringify(data),
         success: function (/* response */) {
             window.location.href = "/PaymentOptions/PaymentOption";
+        },
+        error: function (error) {
+            console.error('Error:', error);
+        }
+    });
+    $.ajax({
+        url: '/SavingPayment/Payment',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data),
+        success: function () {
         },
         error: function (error) {
             console.error('Error:', error);
