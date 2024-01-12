@@ -29,6 +29,9 @@ namespace HulubejeBooking.Controllers.Payment
         {
             var _client = _httpClientFactory.CreateClient("Payment");
             var param = HttpContext.Session.GetString("transactionDatas");
+
+            PaymentValidation paymentValidation = new PaymentValidation();
+
             if (!HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
             {
                 return Error();
@@ -89,16 +92,10 @@ namespace HulubejeBooking.Controllers.Payment
                     var isSuccessfulJson = JsonConvert.SerializeObject(isSuccessful);
                     HttpContext.Session.SetString("PaymentInfo", isSuccessfulJson);
 
-                    var validationData = JsonConvert.DeserializeObject(responseData);
+                     paymentValidation = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
-                    //var ValidationData = new
-                    //{
-                    //    IsSuccessful = validationData.isSuccessful,
-                    //    TransactionReference = validationData.transactionReference,
-                    //    ErrorMessages = validationData.errorMessages,
-                    //    AdditionalParameters = validationData.additionalParameters
-                    //};
-                    var ValidationDataJson = JsonConvert.SerializeObject(validationData);
+                    
+                    var ValidationDataJson = JsonConvert.SerializeObject(paymentValidation);
 
                     HttpContext.Session.SetString("ValidationInfo", ValidationDataJson);
 
