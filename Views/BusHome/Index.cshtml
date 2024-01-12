@@ -37,7 +37,7 @@
     }
 </style>
 </head>
-<div style="background-color:#063970;">
+<div class="row" style="background-color:#063970;">
     <div class="container">
         <header class="container-fluid" style="padding-top: 5%;">
             <div>
@@ -45,6 +45,8 @@
                 <h4 style="color: white;">Discover convenient and hassle-free bus travel with our easy booking platform.</h4>
             </div>
         </header>
+    </div>
+    <div class="container mt-5">
         @{
             List<Routes> allRoutes = Model?.RouteConfiguration?.Routes ?? new List<Routes>();
             List<City> allCities = Model?.RouteConfiguration?.Cities ?? new List<City>();
