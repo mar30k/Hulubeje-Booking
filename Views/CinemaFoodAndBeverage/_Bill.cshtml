@@ -57,7 +57,7 @@
         <span style="text-align: right; margin-right: 10px">Total Amount: @(Model?.Bill?.TotalAmount.ToString("F2") ?? "N/A")</span>
     </div>
 </div>
-@{
+@* @{
     var specialFlagItems = Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT");
 
     if (specialFlagItems != null && specialFlagItems.Any())
@@ -79,7 +79,7 @@
     var GrandTotal = Model?.Bill?.Extras?.SubTotal;
     var OrgTin = Model?.CompanyTinNumber;
     var OrgUnitDef = Model?.BranchCode;
-}
+} *@
 <script>
     $('#confirmButton').on('click', function () {
     var cinemaArticles = @Html.Raw(Json.Serialize(Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT")));
@@ -92,8 +92,9 @@
             SupplierOUD: '@Model?.BranchCode'
         },
         CinemaDetailsData: {
+            Consignee: "0912141914",
             MovieSchedule: '@Model?.MovieScheduleCode',
-            GrandTotal: '@Model?.Bill?.Extras?.SubTotal',
+            GrandTotal: '@Model?.Bill?.TotalAmount',
             OrgTin: '@Model?.CompanyTinNumber',
             OrgUnitDef: '@Model?.BranchCode',
             SeatsToBook: selectedSeats,
