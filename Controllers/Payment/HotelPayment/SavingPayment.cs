@@ -8,6 +8,7 @@ using System.Text;
 using System.Net.Http.Headers;
 using Payment.Controllers;
 using HulubejeBooking.Models.HotelModels;
+using HulubejeBooking.Controllers.HotelController;
 
 namespace HulubejeBooking.Controllers.Payment.HotlePayment
 {
@@ -74,17 +75,31 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.Platform,
                     paymentInfo = new { newPaymentInfo }
                 };
+
             }
+
             else if (newData.GuestInfoData != null)
             {
                 var b = newData.GuestInfoData;
+                var dt = DateRangeParser.parseDateRange(b.date);
+                var arrivalDate = dt.startDateString;
+                var departureDate = dt.endDateString; 
                 param = new
                 {
-                    b.oud,
-                    b.adult,
-                    b.rateCodeDetail,
-                    b.onHotelBookSuccess,
-                    b.
+                   b.orgTin,
+                   newPaymentInfo.PaymentTransactionRequest.TransactionId,
+                   arrivalDate, departureDate,b.adult,b.child,b.roomTypeCode,
+                   b.rateCode,b.rateCodeDetail,
+                   averageAmount = "0.1",
+                   totalAmount = "0.1",
+                   newPaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
+                   b.roomCount,
+                   b.guests,
+                   b.oud,
+                   b.specialRequirement,newValidationInfo.transactionReference,
+                   b.onHotelBookSuccess,
+                   newPaymentInfo
+
                 };
             }
 
