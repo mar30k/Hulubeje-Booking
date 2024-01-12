@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;     
 using HulubejeBooking.Models.PaymentModels;
 using HulubejeBooking.Models;
 using System.Diagnostics;
@@ -45,12 +45,12 @@ namespace HulubejeBooking.Controllers.Payment
 
                 var request = new  
                 { 
-                    newParam.UserMobileNumber,
-                    newParam.SupplierTin,
-                    newParam.SupplierOUD,
-                    newParam.TransactionId,
-                    newParam.Amount,
-                    newParam.PaymentProviderOUD,
+                    newParam?.UserMobileNumber,
+                    newParam?.SupplierTin,
+                    newParam?.SupplierOUD,
+                    newParam?.TransactionId,
+                    newParam?.Amount,
+                    newParam?.PaymentProviderOUD,
                     data.Pin,
                     AdditionalParameters = new
                     {
@@ -76,12 +76,12 @@ namespace HulubejeBooking.Controllers.Payment
                         accessToken,
                         paymentTransactionRequest = new
                         {
-                            newParam.UserMobileNumber,
-                            newParam.SupplierTin,
-                            newParam.SupplierOUD,
-                            newParam.TransactionId,
-                            newParam.Amount,
-                            newParam.PaymentProviderOUD,
+                            newParam?.UserMobileNumber,
+                            newParam?.SupplierTin,
+                            newParam?.SupplierOUD,
+                            newParam?.TransactionId,
+                            newParam?.Amount,
+                            newParam?.PaymentProviderOUD,
                             data.Pin,
                             ExpirationDate = ""
 
