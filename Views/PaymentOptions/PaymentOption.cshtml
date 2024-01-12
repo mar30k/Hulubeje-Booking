@@ -101,6 +101,12 @@
         </div>
     </div>
 </div>
+@{
+    if (ViewBag.CoutDown is not null)
+    {
+        <p>there is count down </p>
+    }
+}
 <script>
     $(document).ready(function () {
         $('.payment').on('click', function () {

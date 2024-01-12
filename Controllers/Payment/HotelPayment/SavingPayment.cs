@@ -42,6 +42,8 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
         public async Task<IActionResult> PaymentCommonAsync()
         {
+            var _Hotel = _httpClientFactory.CreateClient("HotelBooking");
+
             var data = HttpContext.Session.GetString("ValidationData");
             var paymentInfo = HttpContext.Session.GetString("PaymentInfo");
             var validationInfo = HttpContext.Session.GetString("ValidationInfo");
@@ -83,27 +85,42 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 var b = newData.GuestInfoData;
                 var dt = DateRangeParser.parseDateRange(b.date);
                 var arrivalDate = dt.startDateString;
-                var departureDate = dt.endDateString; 
+                var departureDate = dt.endDateString;
                 param = new
                 {
-                   b.orgTin,
-                   newPaymentInfo.PaymentTransactionRequest.TransactionId,
-                   arrivalDate, departureDate,b.adult,b.child,b.roomTypeCode,
-                   b.rateCode,b.rateCodeDetail,
-                   averageAmount = "0.1",
-                   totalAmount = "0.1",
-                   newPaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
-                   b.roomCount,
-                   b.guests,
-                   b.oud,
-                   b.specialRequirement,newValidationInfo.transactionReference,
-                   b.onHotelBookSuccess,
-                   newPaymentInfo
+                    b.orgTin,
+                    newPaymentInfo.PaymentTransactionRequest.TransactionId,
+                    arrivalDate,
+                    departureDate,
+                    b.adult,
+                    b.child,
+                    b.roomTypeCode,
+                    b.rateCode,
+                    b.rateCodeDetail,
+                    averageAmount = "0.1",
+                    totalAmount = "0.1",
+                    newPaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
+                    b.roomCount,
+                    b.guests,
+                    b.oud,
+                    b.specialRequirement,
+                    newValidationInfo.transactionReference,
+                    b.onHotelBookSuccess,
+                    newPaymentInfo
 
                 };
-            }
+                var paramBody = JsonConvert.SerializeObject(param);
+                var roomContent = new StringContent(paramBody, Encoding.UTF8, "application/json");
 
-            // You can use the param variable here or in subsequent code.
+                var response = await _Hotel.PostAsync(_Hotel.BaseAddress + "/HotelBook/BookHotelRoom", roomContent);
+
+                var responseData = await response.Content.ReadAsStringAsync();
+
+                PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+
+
+
+            }
             return View();
         }
 
