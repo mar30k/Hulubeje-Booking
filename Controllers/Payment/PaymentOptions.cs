@@ -15,6 +15,9 @@ namespace Payment.Controllers
         public IActionResult PaymentOption()
         {
             var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
+            var value = HttpContext.Session.GetString("cinema");
+
+            ViewBag.CoutDown= value;
             if (!string.IsNullOrEmpty(paymentOptionsJson))
             {
                 var viewPayments = JsonConvert.DeserializeObject<List<PaymentOptionModel>>(paymentOptionsJson);

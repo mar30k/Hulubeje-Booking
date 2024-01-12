@@ -34,6 +34,13 @@ namespace HulubejeBooking.Controllers.Payment
                 var SupplierTin = data.AuthorizePaymentData.SupplierTin;
                 var SupplierOUD = data.AuthorizePaymentData.SupplierOUD;
 
+                if (data.CinemaDetailsData is not null)
+                {
+                    var val = "this is cinema";
+                    HttpContext.Session.SetString("cinema", val);
+                }
+
+
                 using (var _client = _httpClientFactory.CreateClient("Payment"))
                 {
                     // Authentication request
@@ -141,8 +148,7 @@ namespace HulubejeBooking.Controllers.Payment
                 var newParam = JsonConvert.DeserializeObject<AuthorizePayment>(parameters);
 
 
-
-
+              
                 if (!HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
                 {
                     return Error();
