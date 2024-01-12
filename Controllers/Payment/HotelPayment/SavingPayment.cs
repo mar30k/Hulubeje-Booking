@@ -28,32 +28,34 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
         }
         public async Task<IActionResult> PaymentAsync([FromBody] RequestWrapper data)
         {
-            var validation = data;
+            var validation = new RequestWrapper 
+            {
+                GuestInfoData = data.GuestInfoData,
+                CinemaDetailsData = data.CinemaDetailsData
+            };
             var validationJson = JsonConvert.SerializeObject(validation);
             HttpContext.Session.SetString("ValidationData", validationJson);
 
             return Json(new RequestWrapper());
         }
 
-        public async Task<IActionResult> PaymentCommonAsync() 
+        public async Task<IActionResult> PaymentCommonAsync()
         {
             var data = HttpContext.Session.GetString("ValidationData");
-            //var validationInfo = HttpContext.Session.GetString("ValidationInfo");
             var paymentInfo = HttpContext.Session.GetString("PaymentInfo");
 
             HttpContext.Session.Remove("ValidationData");
-            HttpContext.Session.Remove("ValidationInfo");
             HttpContext.Session.Remove("PaymentInfo");
 
             var newData = JsonConvert.DeserializeObject<RequestWrapper>(data);
-            //var newValidationInfo = JsonConvert.DeserializeObject<PaymentValidation>(validationInfo);
             var newPaymentInfo = JsonConvert.DeserializeObject<PaymentInfoModel>(paymentInfo);
 
+            object param = null; // Declare param outside the if-else blocks
 
-            if (newData.CinemaDetailsData != null) 
+            if (newData.CinemaDetailsData != null)
             {
                 var b = newData.CinemaDetailsData;
-                var param = new
+                param = new
                 {
                     b.Consignee,
                     b.GrandTotal,
@@ -64,26 +66,25 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     //newValidationInfo.transactionReference,
                     b.CinemaArticles,
                     b.OnBookSuccess,
-                    b.Latitude, b.Longitude,
+                    b.Latitude,
+                    b.Longitude,
                     b.Platform,
                     paymentInfo = new { newPaymentInfo }
-
                 };
-
             }
-            else if (newData.GuestInfoData != null) 
+            else if (newData.GuestInfoData != null)
             {
                 var b = newData.GuestInfoData;
-                var param = new 
+                param = new
                 {
                     b.oud,
                     b.adult,
                     b.rateCodeDetail,
-                    b.onHotelBookSuccess,
+                    b.onHotelBookSuccess
                 };
-
-
             }
+
+            // You can use the param variable here or in subsequent code.
             return View();
         }
 

@@ -87,9 +87,9 @@
     var selectedSeatNames = JSON.parse(sessionStorage.getItem('selectedSeatNames')) || [];
     var data = {
         AuthorizePaymentData: {
-            UserMobileNumber: "0912141914",
+            UserMobileNumber: "0905986890",
             SupplierTin: '@Model?.CompanyTinNumber',
-            SupplierOUD: '@Model?.BranchCode',
+            SupplierOUD: '@Model?.BranchCode'
         },
         CinemaDetailsData: {
             Schedule: '@Model?.MovieScheduleCode',
@@ -151,7 +151,7 @@
         }
     });
     $.ajax({
-        url: '/SavingPayment/Payment',
+        url: '/SHotelpayment/Payment',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(data),
