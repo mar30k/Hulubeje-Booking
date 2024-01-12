@@ -87,10 +87,12 @@ namespace HulubejeBooking.Controllers.Payment
                                 string transactionId = JsonConvert.DeserializeObject<string>(codeResponseData);
 
                                 HttpContext.Session.SetString("VoucherCode", JsonConvert.SerializeObject(transactionId));
+
                                 paymentOptions = JsonConvert.DeserializeObject<List<PaymentOptionModel>>(optionsResponseData);
 
                                 var paymentOptionsJson = JsonConvert.SerializeObject(paymentOptions);
                                 HttpContext.Session.SetString("PaymentOptions", paymentOptionsJson);
+
 
                                  return Json(new PaymentOptionModel());
                             }
@@ -131,10 +133,7 @@ namespace HulubejeBooking.Controllers.Payment
                 var synch = value.Synchronous;
                 var asynch = value.Asynchronous;
                 var Currency = "etb";
-                // Storing in the session
-                //HttpContext.Session.SetString("VoucherCode", JsonConvert.SerializeObject(TransactionId));
-
-                // Retrieving from the session
+                
                 var vCode = HttpContext.Session.GetString("VoucherCode");
                 var TransactionId = JsonConvert.DeserializeObject<string>(vCode);
 
@@ -260,15 +259,13 @@ namespace HulubejeBooking.Controllers.Payment
                         HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
                         if (response.IsSuccessStatusCode)
                         {
-                            // Deserialize the API response
                             var responseData = await response.Content.ReadAsStringAsync();
                             var apiResponse = JsonConvert.DeserializeObject<BoAResponse>(responseData);
 
-                            // Extract relevant information
-                            var cardText = "BOA Card Payment"; // Set the appropriate value based on your logic
+                            var cardText = "BOA Card Payment"; 
                             var redirectUrl = apiResponse?.additionalParameters?.RedirectUrl;
 
-                            // Return the custom response
+                            
                             var paymentResponse = new PaymentResponse
                             {
                                 cardText = cardText,
@@ -282,7 +279,7 @@ namespace HulubejeBooking.Controllers.Payment
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it appropriately
+                
             }
 
             return Error();

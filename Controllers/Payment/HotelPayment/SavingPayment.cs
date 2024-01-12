@@ -43,14 +43,17 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
         {
             var data = HttpContext.Session.GetString("ValidationData");
             var paymentInfo = HttpContext.Session.GetString("PaymentInfo");
-
+            var validationInfo = HttpContext.Session.GetString("ValidationInfo");
             HttpContext.Session.Remove("ValidationData");
             HttpContext.Session.Remove("PaymentInfo");
+            HttpContext.Session.Remove("ValidationInfo");
+
 
             var newData = JsonConvert.DeserializeObject<RequestWrapper>(data);
             var newPaymentInfo = JsonConvert.DeserializeObject<PaymentInfoModel>(paymentInfo);
+            var newValidationInfo = JsonConvert.DeserializeObject<PaymentValidation>(validationInfo);
 
-            object param = null; // Declare param outside the if-else blocks
+            object param = null; 
 
             if (newData.CinemaDetailsData != null)
             {
@@ -63,7 +66,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.SeatsToBook,
                     b.OrgUnitDef,
                     b.OrgTin,
-                    //newValidationInfo.transactionReference,
+                    newValidationInfo.transactionReference,
                     b.CinemaArticles,
                     b.OnBookSuccess,
                     b.Latitude,
@@ -80,7 +83,8 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.oud,
                     b.adult,
                     b.rateCodeDetail,
-                    b.onHotelBookSuccess
+                    b.onHotelBookSuccess,
+                    b.
                 };
             }
 
