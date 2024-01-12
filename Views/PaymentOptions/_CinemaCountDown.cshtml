@@ -14,9 +14,23 @@
         if (updatedRemainingTime > 0) {
             startCountdownTimer(updatedRemainingTime);
         }
+        extendCachedSeats();
     });
     var storedRemainingTime = sessionStorage.getItem('remainingTime');
-    var updatedRemainingTime = parseInt(storedRemainingTime);
+    var movieScheduleCode = sessionStorage.getItem('movieScheduleCode');
+    var companyTin = sessionStorage.getItem('companyTin');
+    var secondsAdded = sessionStorage.getItem('secondsAdded') === 'true';
+    var secondsAddedInPayement = sessionStorage.getItem('secondsAddedInPayement') === 'true';
+
+    var updatedRemainingTime;
+
+    if (secondsAdded && secondsAddedInPayement) {
+        updatedRemainingTime = parseInt(storedRemainingTime);
+    } else if (!secondsAddedInPayement && !secondsAdded) {
+        updatedRemainingTime = parseInt(storedRemainingTime);
+    } else {
+        updatedRemainingTime = parseInt(storedRemainingTime) + 60;
+    }
     var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
     function startCountdownTimer() {
         $('#countdownTimer').show();
@@ -32,6 +46,35 @@
             }
             sessionStorage.setItem("remainingTime", updatedRemainingTime);
         }, 1000);
+        sessionStorage.setItem('secondsAddedInPayement', 'true');
+    }
+    function extendCachedSeats() {
+        if (!secondsAddedInPayement) {
+            var endpoint = 'https://api-hulubeje.cnetcommerce.com/api/ManageSeatCache/ExtendCachedSeatsForSchedule';
+
+            var payload = {
+                "schedule": movieScheduleCode,
+                "allSeats": selectedSeats,
+                "orgTin": companyTin,
+                "seconds": updatedRemainingTime
+            };
+
+            $.ajax({
+                url: endpoint,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (response) {
+                    console.log('Success:', response);
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        }
+        else {
+            console.log("already extended cache time");
+        }
     }
     function formatTime(seconds) {
         var min = Math.floor(seconds / 60);
