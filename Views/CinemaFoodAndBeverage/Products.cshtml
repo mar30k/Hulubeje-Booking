@@ -354,6 +354,9 @@
         var companyTin = "@Model?.CompanyTinNumber";
         var movieScheduleCode = "@Model?.MovieScheduleCode";
 
+        sessionStorage.setItem('companyTin', companyTin);
+        sessionStorage.setItem('movieScheduleCode', movieScheduleCode);
+
         var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
 
         function extendCachedSeats() {
