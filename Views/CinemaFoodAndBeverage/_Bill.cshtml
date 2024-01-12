@@ -87,12 +87,12 @@
     var selectedSeatNames = JSON.parse(sessionStorage.getItem('selectedSeatNames')) || [];
     var data = {
         AuthorizePaymentData: {
-            UserMobileNumber: "0905986890",
+            UserMobileNumber: "0912141914",
             SupplierTin: '@Model?.CompanyTinNumber',
             SupplierOUD: '@Model?.BranchCode'
         },
         CinemaDetailsData: {
-            Schedule: '@Model?.MovieScheduleCode',
+            MovieSchedule: '@Model?.MovieScheduleCode',
             GrandTotal: '@Model?.Bill?.Extras?.SubTotal',
             OrgTin: '@Model?.CompanyTinNumber',
             OrgUnitDef: '@Model?.BranchCode',

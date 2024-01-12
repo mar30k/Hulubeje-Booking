@@ -84,7 +84,6 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.adult,
                     b.rateCodeDetail,
                     b.onHotelBookSuccess,
-                    b.
                 };
             }
 
