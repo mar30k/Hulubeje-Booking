@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using HulubejeBooking.Models.PaymentModels;
-using HulubejeBooking.Models;
+
 using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Text.Json.Serialization;
@@ -35,7 +35,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 CinemaDetailsData = data.CinemaDetailsData
             };
             var validationJson = JsonConvert.SerializeObject(validation);
-            HttpContext.Session.SetString("ValidationData", validationJson);
+            HttpContext.Session.SetString("Data", validationJson);
 
             return Json(new RequestWrapper());
         }
@@ -44,10 +44,11 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
         {
             var _Hotel = _httpClientFactory.CreateClient("HotelBooking");
 
-            var data = HttpContext.Session.GetString("ValidationData");
+            var data = HttpContext.Session.GetString("Data");
             var paymentInfo = HttpContext.Session.GetString("PaymentInfo");
             var validationInfo = HttpContext.Session.GetString("ValidationInfo");
-            HttpContext.Session.Remove("ValidationData");
+
+            HttpContext.Session.Remove("Data");
             HttpContext.Session.Remove("PaymentInfo");
             HttpContext.Session.Remove("ValidationInfo");
 
@@ -77,6 +78,14 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.Platform,
                     newPaymentInfo 
                 };
+                var paramBody = JsonConvert.SerializeObject(param);
+                var roomContent = new StringContent(paramBody, Encoding.UTF8, "application/json");
+
+                var response = await _Hotel.PostAsync(_Hotel.BaseAddress + "/CinemaBook/BookSeat", roomContent);
+
+                var responseData = await response.Content.ReadAsStringAsync();
+
+                PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
             }
 
@@ -126,10 +135,10 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
 
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //public IActionResult Error()
+        //{
+        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //}
     }
 }

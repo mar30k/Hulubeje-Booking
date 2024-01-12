@@ -34,6 +34,7 @@ namespace HulubejeBooking.Controllers.Payment
 
             if (!string.IsNullOrEmpty(param))
             {
+                PaymentValidation paymentValidation  = new PaymentValidation();
                 var newParam = JsonConvert.DeserializeObject<TransactionModel>(param);
                 var SupplierTin = newParam.SupplierTin;
                 var TransactionId = newParam.TransactionId;
@@ -68,16 +69,42 @@ namespace HulubejeBooking.Controllers.Payment
                 while (DateTime.Now < endTime && !isSuccess)
                 {
                     HttpResponseMessage response = await _client.GetAsync(apiUrl);
-
-                    if (response.IsSuccessStatusCode)
+                    var responseData = await response.Content.ReadAsStringAsync();
+                    
+                    pay = JsonConvert.DeserializeObject<PaymentResponseModel>(responseData);
+                    isSuccess = pay.IsFulfilled;
+                    var isSuccessful = new
                     {
-                        var responseData = await response.Content.ReadAsStringAsync();
-                        pay = JsonConvert.DeserializeObject<PaymentResponseModel>(responseData);
-                        isSuccess = pay.IsFulfilled; 
-                    }
+                        accessToken,
+                        paymentTransactionRequest = new
+                        {
+                            newParam?.UserMobileNumber,
+                            newParam?.SupplierTin,
+                            newParam?.SupplierOUD,
+                            newParam?.TransactionId,
+                            newParam?.Amount,
+                            newParam?.PaymentProviderOUD,
+                            newParam?.Pin,
+                            ExpirationDate = ""
 
-                    await Task.Delay(5000); 
+                        },
+                        IsAsyncMode = false
+
+                    };
+                    var isSuccessfulJson = JsonConvert.SerializeObject(isSuccessful);
+                    HttpContext.Session.SetString("PaymentInfo", isSuccessfulJson);
+
+                    paymentValidation = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+
+
+                    var ValidationDataJson = JsonConvert.SerializeObject(paymentValidation);
+
+                    HttpContext.Session.SetString("ValidationInfo", ValidationDataJson);
+
+                    return RedirectToAction("PaymentCommon", "SHotelpayment");
+                                                    
                 }
+                await Task.Delay(5000);
             }
 
             return View(pay);
