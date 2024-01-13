@@ -54,9 +54,9 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
 
             var newData = JsonConvert.DeserializeObject<RequestWrapper>(data);
-            var newPaymentInfo = JsonConvert.DeserializeObject<PaymentInfoModel>(paymentInfo);
+            var PaymentInfo = JsonConvert.DeserializeObject<PaymentInfoModel>(paymentInfo);
             var newValidationInfo = JsonConvert.DeserializeObject<PaymentValidation>(validationInfo);
-
+            var PaymentMethod = "Telebirr OTP";
             object param = null; 
 
             if (newData.CinemaDetailsData != null)
@@ -76,7 +76,8 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.Latitude,
                     b.Longitude,
                     b.Platform,
-                    newPaymentInfo 
+                    PaymentInfo,
+                    PaymentMethod
                 };
                 var paramBody = JsonConvert.SerializeObject(param);
                 var roomContent = new StringContent(paramBody, Encoding.UTF8, "application/json");
@@ -87,6 +88,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
                 PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
+                HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
             }
 
             else if (newData.GuestInfoData != null)
@@ -95,10 +97,10 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 var dt = DateRangeParser.parseDateRange(b.date);
                 var arrivalDate = dt.startDateString;
                 var departureDate = dt.endDateString;
+                var cashRecieptVoucher = PaymentInfo.PaymentTransactionRequest.TransactionId;
                 param = new
                 {
                     b.orgTin,
-                    newPaymentInfo.PaymentTransactionRequest.TransactionId,
                     arrivalDate,
                     departureDate,
                     b.adult,
@@ -108,14 +110,15 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.rateCodeDetail,
                     averageAmount = "0.1",
                     totalAmount = "0.1",
-                    newPaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
+                    PaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
                     b.roomCount,
                     b.guests,
                     b.oud,
                     b.specialRequirement,
+                    cashRecieptVoucher,
                     newValidationInfo.transactionReference,
                     b.onHotelBookSuccess,
-                    newPaymentInfo
+                    PaymentInfo
 
                 };
                 var paramBody = JsonConvert.SerializeObject(param);
@@ -128,9 +131,11 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
 
-
+                HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
+                Console.WriteLine($"PaymentDoneModel in session: {HttpContext.Session.GetString("PaymentDoneModel")}");
             }
-            return View();
+
+            return RedirectToAction("BookingPost", "Index");
         }
 
 

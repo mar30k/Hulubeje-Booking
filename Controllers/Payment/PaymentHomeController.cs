@@ -26,7 +26,13 @@ namespace HulubejeBooking.Controllers.Payment
         }
         public async Task<IActionResult> IndexAsync([FromBody] RequestWrapper data)
         {
-
+            var validation = new RequestWrapper
+            {
+                GuestInfoData = data.GuestInfoData,
+                CinemaDetailsData = data.CinemaDetailsData
+            };
+            var validationJson = JsonConvert.SerializeObject(validation);
+            HttpContext.Session.SetString("Data", validationJson);
             try
             {
                 string password = pass;

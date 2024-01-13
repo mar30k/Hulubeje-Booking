@@ -10,6 +10,6 @@
     }
     public class AdditionalParameters 
     {
-        public string CustomerName { get; set; }
+        public string? CustomerName { get; set; }
     }
 }
