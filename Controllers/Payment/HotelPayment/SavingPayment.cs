@@ -89,6 +89,8 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
+                return Json(new { successcode = "Done" });
+
             }
 
             else if (newData.GuestInfoData != null)
@@ -101,6 +103,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 param = new
                 {
                     b.orgTin,
+                    voucherCode = PaymentInfo.PaymentTransactionRequest.TransactionId,
                     arrivalDate,
                     departureDate,
                     b.adult,
@@ -110,7 +113,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.rateCodeDetail,
                     averageAmount = "0.1",
                     totalAmount = "0.1",
-                    PaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
+                    paymentMethod = PaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
                     b.roomCount,
                     b.guests,
                     b.oud,
@@ -133,9 +136,12 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
                 Console.WriteLine($"PaymentDoneModel in session: {HttpContext.Session.GetString("PaymentDoneModel")}");
+
+
+                //return Json(new { successcode = "Done"});
             }
 
-            return RedirectToAction("BookingPost", "Index");
+            return RedirectToAction("Index", "BookingPost");
         }
 
 
