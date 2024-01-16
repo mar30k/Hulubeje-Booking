@@ -64,6 +64,7 @@
         var selectedSeatArray = selectedSeats ? JSON.parse(selectedSeats) : [];
         var numberOfElements = selectedSeatArray.length;
         document.addEventListener("DOMContentLoaded", function () {
+            applyEventListenersSkip();
             var buttons = document.querySelectorAll('.buttons');
             var countdown;
             selectedSeats = retrieveSelectedSeatsFromStorage();
@@ -111,6 +112,7 @@
                     updateButtonStatus();
                     updateSelectedSeatsUI();
                     selectedSeatsCountUpdate();
+                    applyEventListenersSkip();
                 });
 
                 console.log("updated the data");
@@ -132,7 +134,60 @@
                     });
                 });
             }
+            function applyEventListenersSkip() {
+                var button = document.getElementById('skipButton');
+                if (button) {
+                    button.addEventListener('click', function () {
+                        var selectedSeats = retrieveSelectedSeatsFromStorage();
+                        var companyTinNumber = "@Model.CompanyTinNumber";
+                        var movieScheduleCode = "@Model.MovieScheduleCode";
+                        var articleCode = "@Model.ArticleCode";
+                        var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
+                        var companyName = "@Model.CompanyName";
+                        var utcTime = "@Model.UtcTime";
+                        var selectedDate = "@Model.SelectedDate";
+                        var hallName = "@Model.HallName";
+                        var price = "@Model.Price";
+                        var dimension = "@Model.Dimension";
+                        var spaceType = "@Model.SpaceType";
+                        var branchCode = "@Model.BranchCode";
 
+                        var remainingTime = countdown ?? 0;
+
+                        var selectedSeatsJson = sessionStorage.getItem('selectedSeats');
+                        var selectedSeatsArray = selectedSeatsJson ? JSON.parse(selectedSeatsJson) : [];
+                        var numberOfElements = selectedSeatsArray.length;
+                        console.log("numberOfElements: " + numberOfElements);
+
+                        sessionStorage.setItem('remainingTime', remainingTime);
+                        if (remainingTime != 0) {
+                            sessionStorage.setItem('countdownStarted', true);
+                        }
+
+                        var form = $('<form action="/CinemaFoodAndBeverage/Products" method="post"></form>');
+
+                        form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />');
+                        form.append('<input type="hidden" name="movieScheduleCode" value="' + movieScheduleCode + '" />');
+                        form.append('<input type="hidden" name="movieName" value="' + movieName + '" />');
+                        form.append('<input type="hidden" name="companyName" value="' + companyName + '" />');
+                        form.append('<input type="hidden" name="hallName" value="' + hallName + '" />');
+                        form.append('<input type="hidden" name="utcTime" value="' + utcTime + '" />');
+                        form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '" />');
+                        form.append('<input type="hidden" name="price" value="' + price + '" />');
+                        form.append('<input type="hidden" name="dimension" value="' + dimension + '" />');
+                        form.append('<input type="hidden" name="spaceType" value="' + spaceType + '" />');
+                        form.append('<input type="hidden" name="articleCode" value="' + articleCode + '" />');
+                        form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
+                        form.append('<input type="hidden" name="numberOfElements" value="' + numberOfElements + '" />');
+
+                        $('body').append(form);
+
+                        form.submit();
+                    });
+                } else {
+                    console.error("Button not found!");
+                }
+            }
             function startBooking() {
                 console.log("isThereSelectedSeat " + isThereSelectedSeat);
                 if (!isThereSelectedSeat) {
@@ -327,55 +382,6 @@
                 var storedSelectedSeats = sessionStorage.getItem('selectedSeats');
                 return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
             }
-
-            $('#skipButton').click(function () {
-                // Get selected seats from session storage
-                var selectedSeats = retrieveSelectedSeatsFromStorage();
-                var companyTinNumber = "@Model.CompanyTinNumber";
-                var movieScheduleCode = "@Model.MovieScheduleCode";
-                var articleCode = "@Model.ArticleCode";
-                var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
-                var companyName = "@Model.CompanyName";
-                var utcTime = "@Model.UtcTime";
-                var selectedDate = "@Model.SelectedDate";
-                var hallName = "@Model.HallName";
-                var price = "@Model.Price";
-                var dimension = "@Model.Dimension";
-                var spaceType = "@Model.SpaceType";
-                var branchCode = "@Model.BranchCode";
-
-                var remainingTime = countdown ?? 0;
-
-                var selectedSeatsJson = sessionStorage.getItem('selectedSeats');
-                var selectedSeatsArray = selectedSeatsJson ? JSON.parse(selectedSeatsJson) : [];
-                var numberOfElements = selectedSeatsArray.length;
-                console.log("numberOfElements: " + numberOfElements);
-
-                sessionStorage.setItem('remainingTime', remainingTime);
-                if (remainingTime != 0) {
-                    sessionStorage.setItem('countdownStarted', true);
-                }
-
-                var form = $('<form action="/CinemaFoodAndBeverage/Products" method="post"></form>');
-
-                form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />');
-                form.append('<input type="hidden" name="movieScheduleCode" value="' + movieScheduleCode + '" />');
-                form.append('<input type="hidden" name="movieName" value="' + movieName + '" />');
-                form.append('<input type="hidden" name="companyName" value="' + companyName + '" />');
-                form.append('<input type="hidden" name="hallName" value="' + hallName + '" />');
-                form.append('<input type="hidden" name="utcTime" value="' + utcTime + '" />');
-                form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '" />');
-                form.append('<input type="hidden" name="price" value="' + price + '" />');
-                form.append('<input type="hidden" name="dimension" value="' + dimension + '" />');
-                form.append('<input type="hidden" name="spaceType" value="' + spaceType + '" />');
-                form.append('<input type="hidden" name="articleCode" value="' + articleCode + '" />');
-                form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
-                form.append('<input type="hidden" name="numberOfElements" value="' + numberOfElements + '" />');
-
-                $('body').append(form);
-
-                form.submit();
-            });
             function updateSelectedSeatsUI() {
                 selectedSeats.forEach(function (seatCode) {
                     var button = document.getElementById(seatCode);
@@ -393,7 +399,6 @@
                         keyboard: false
                     }
                 );
-                // $('#selectedSeatsCount').text(count.toString());
                 selectedSeatsCountUpdate();
             });
             updateSelectedSeatsUI();
