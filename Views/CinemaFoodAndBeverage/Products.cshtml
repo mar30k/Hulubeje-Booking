@@ -22,8 +22,9 @@
         }
 
         .card-img-top {
-            height: 230px;
+            height: 240px;
             width: 100%;
+            object-fit: cover;
         }
 
         .btn-circle {
@@ -55,7 +56,8 @@
             margin-top: 10px;
             padding-top: 5px; 
             }
-        .taxCalculator{
+
+        .taxCalculator {
             margin-top: 20px;
             border: 1px solid #ddd;
             padding: 10px;
@@ -113,6 +115,25 @@
             background-color: #28a745; /* Green color on hover */
             color: #fff; /* Text color on hover */
         }
+
+        @@media (max-width: 576px) {
+            .col-lg-3 {
+                width: 100%;
+            }
+        }
+
+        .card {
+            position: relative;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            height: 100%;
+            min-width: 300px;
+            width: 100%;
+/*             display: flex;
+            flex-direction: column;
+            align-items: center; */
+            text-align: center;
+        }
+
     </style>
 </head>
 <partial name="_Navigation" />
@@ -120,7 +141,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center w-100 ml-5">
+                <div class="d-flex justify-content-between align-items-center w-100 ">
                     <div class="Popcorn d-inline-flex">
                         <h4 style="margin-top: 3px;">Food And Beverage</h4>
                     </div>
@@ -136,7 +157,7 @@
     </header>
     <div class="custom-container" style="position: relative; padding-right: 0; padding-left: 0">
         <div class="row mb-3">
-            <div class="col-lg-9 ml-5 mb-3 mt-3">
+            <div class="col-lg-9 mb-3 mt-3">
                 @if (Model?.Products != null && Model.Products.Any())
                 {
                     <div class="container">
@@ -150,7 +171,7 @@
                                     {
                                         var categoryProduct = categoryProducts[i];
 
-                                        <div class="col-12 mb-3">
+                                        <div class="col-lg-12 mb-3">
                                             <h5>@categoryProduct.Name</h5>
                                         </div>
 
@@ -158,7 +179,7 @@
                                         {
                                             foreach (var articleProduct in categoryProduct.Children)
                                             {
-                                                <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                                <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
                                                     <div class="card selectable-card">
                                                         <img src="@articleProduct?.Pictures?.FirstOrDefault()" class="card-img-top">
                                                         <div class="card-body" style="display: flex; flex-direction: column; align-items: center;">
@@ -170,11 +191,11 @@
                                                             <div class="quantity-control d-flex" style="margin-top: 5px; text-align: center; display: none !important;">
                                                                 <button class="btn btn-outline-danger btn-circle" style="padding: 6px; font-size: 12px;" onclick="decrementValue()">-</button>
                                                                 <p class="quantity" style="padding: 5px; font-size: 12px; margin: 0 ;">0</p>
-                                                                <button class="btn btn-outline-primary  btn-circle" style="padding: 6px; font-size: 12px; border-color: #28a745;" onclick="incrementValue()">+</button>
+                                                                <button class="btn btn-outline-primary btn-circle" style="padding: 6px; font-size: 12px; border-color: #28a745;" onclick="incrementValue()">+</button>
                                                             </div>
 
                                                             <!-- Show Button -->
-                                                            <button class="btn btn-sm btn-outline-primary " style="margin-top: 5px;" onclick="showQuantityControl(this)">Add to Cart</button>
+                                                            <button class="btn btn-sm btn-outline-primary" style="margin-top: 5px;" onclick="showQuantityControl(this)">Add to Cart</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -197,7 +218,7 @@
                     <p>No Products Available</p>
                 }
             </div>
-            <div class="col-lg col-md-2 mt-3 mr-5" style="margin-right: 50px;">
+            <div class="container col mt-3 mr-2" @*style="margin-right: 50px;" *@>
                 <div id="BillContainer" style="display:none;">
                     <partial name="_Bill" />
                 </div>
@@ -236,7 +257,6 @@
                     </div>
                 </div>
                 <div id="total-price-container" style="display: none">
-
                 </div>
                 <script>
                     $(document).ready(function () {
@@ -294,40 +314,40 @@
                         </div>
                     }
                 </div>
-                    @functions {
-                        public string GetFormattedDateWithDayOfWeek(string date)
+                @functions {
+                    public string GetFormattedDateWithDayOfWeek(string date)
+                    {
+                        DateTime parsedDate;
+                        if (DateTime.TryParse(date, out parsedDate))
                         {
-                            DateTime parsedDate;
-                            if (DateTime.TryParse(date, out parsedDate))
-                            {
-                                string dayOfWeek = parsedDate.ToString("ddd"); // Get abbreviated day of the week
-                                string formattedDate = parsedDate.ToString("dd-MM-yyyy"); // "dd-MM-yyyy" gives the desired format
-                                return $"{dayOfWeek} {formattedDate}";
-                            }
-
-                            return string.Empty;
+                            string dayOfWeek = parsedDate.ToString("ddd"); // Get abbreviated day of the week
+                            string formattedDate = parsedDate.ToString("dd-MM-yyyy"); // "dd-MM-yyyy" gives the desired format
+                            return $"{dayOfWeek} {formattedDate}";
                         }
 
-                        public string GetEthiopianTime(string? utcTimeString)
-                        {
-                            // Specify the expected format of the time string
-                            string format = "h.mm tt";
-
-                            if (DateTime.TryParseExact(utcTimeString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime utcTime))
-                            {
-                                // Convert UTC time to Ethiopia time
-                                DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
-
-                                // Adjust the time based on AM or PM
-                                ethiopianTime = ethiopianTime.AddHours(ethiopianTime.ToString("tt").Equals("AM") ? 6 : -6);
-
-                                return ethiopianTime.ToString("h.mm tt");
-                            }
-
-                            return "Invalid time format";
-                        }
+                        return string.Empty;
                     }
-                <button style="text-align: center" class="btn btn-sm btn-primary mt-2"id="showBillButton">Calculate Bill</button>
+
+                    public string GetEthiopianTime(string? utcTimeString)
+                    {
+                        // Specify the expected format of the time string
+                        string format = "h.mm tt";
+
+                        if (DateTime.TryParseExact(utcTimeString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime utcTime))
+                        {
+                            // Convert UTC time to Ethiopia time
+                            DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
+
+                            // Adjust the time based on AM or PM
+                            ethiopianTime = ethiopianTime.AddHours(ethiopianTime.ToString("tt").Equals("AM") ? 6 : -6);
+
+                            return ethiopianTime.ToString("h.mm tt");
+                        }
+
+                        return "Invalid time format";
+                    }
+                }
+                <button style="text-align: center" class="btn btn-sm btn-primary mt-2" id="showBillButton">Calculate Bill</button>
                 <button style="text-align: center; display: none" class="btn btn-sm btn-success mt-2" id="confirmButton">Confirm</button>
             </div>
         </div>
