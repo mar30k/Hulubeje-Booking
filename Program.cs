@@ -7,7 +7,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient();
-builder.Services.AddHttpClient("HotelBooking", httpClient =>
+builder.Services.AddHttpClient("CnetHulubeje", httpClient =>
 {
     httpClient.BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api");
 });
