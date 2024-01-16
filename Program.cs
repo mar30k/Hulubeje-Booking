@@ -28,7 +28,7 @@ builder.Services.AddHttpClient("MovieDb", httpClient =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<HotelListBuffer>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-
+ 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);

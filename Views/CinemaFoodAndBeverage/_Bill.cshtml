@@ -89,7 +89,8 @@
         AuthorizePaymentData: {
             UserMobileNumber: "0912141914",
             SupplierTin: '@Model?.CompanyTinNumber',
-            SupplierOUD: '@Model?.BranchCode'
+            SupplierOUD: '@Model?.BranchCode',
+            Amount: '@Model?.Bill?.TotalAmount'
         },
         CinemaDetailsData: {
             Consignee: "0912141914",

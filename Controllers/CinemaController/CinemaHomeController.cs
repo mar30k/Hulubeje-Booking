@@ -1,22 +1,18 @@
 ﻿using HulubejeBooking.Models.CInemaModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaHomeController : Controller
     {
-        private readonly HttpClient _httpClient;
         private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly string _tmdbApiBaseUrl = "https://api.themoviedb.org/3";
-        public CinemaHomeController()
+        private readonly IHttpClientFactory _httpClientFactory;
+        public CinemaHomeController(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
-            };
-
-            _httpClient.DefaultRequestHeaders.Add("Api-Key", "YourApiKey");
+            _httpClientFactory = httpClientFactory;
         }
         public async Task<List<MovieModel>> GetMoviesWithPosterUrls(List<MovieModel> movies)
         {
@@ -57,10 +53,11 @@ namespace HulubejeBooking.Controllers.CinemaController
         {
             try
             {
+                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
                 DateTime currentDate = DateTime.Now;
                 string formattedDate = currentDate.ToString("yyyy-MM-dd");
 
-                HttpResponseMessage response = await _httpClient.GetAsync($"Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
+                HttpResponseMessage response = await _client.GetAsync($"Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -88,11 +85,12 @@ namespace HulubejeBooking.Controllers.CinemaController
         {
             try
             {
+                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
                 // Format the selected date
                 string formattedDate = selectedDate.ToString("yyyy-MM-dd");
 
                 // Make an HTTP GET request with the selected date
-                HttpResponseMessage response = await _httpClient.GetAsync($"Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
+                HttpResponseMessage response = await _client.GetAsync($"Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
 
                 if (response.IsSuccessStatusCode)
                 {
