@@ -134,7 +134,8 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
-                Console.WriteLine($"PaymentDoneModel in session: {HttpContext.Session.GetString("PaymentDoneModel")}");
+
+                
 
 
                 //return Json(new { successcode = "Done"});
