@@ -403,24 +403,29 @@
                 roomsCount: roomsCount,
                 numberOfNights: numberOfNights
             };
+            var form = $('<form action="/HotelHome/HotelList" method="post"></form>');
 
-            $.ajax({
-                url: '/HotelHome/HotelList',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function () {
-                 
-                        window.location.href = '/FilteredHotels/Index';
-                    
+            form.append('<input type="hidden" name="city" value="' + city + '" />');
+            form.append('<input type="hidden" name="dateRange" value="' + dateRange + '" />');
+            form.append('<input type="hidden" name="adultCount" value="' + adultCount + '" />');
+            form.append('<input type="hidden" name="childrenCount" value="' + childrenCount + '" />');
+            form.append('<input type="hidden" name="roomsCount" value="' + roomsCount + '" />');
+            form.append('<input type="hidden" name="numberOfNights" value="' + numberOfNights + '" />');
+            // $.ajax({
+            //     url: '/HotelHome/HotelList',
+            //     type: 'POST',
+            //     contentType: 'application/json',
+            //     data: JSON.stringify(formData),
+            //     success: function () {
+            //             window.location.href = '/FilteredHotels/Index';
+            //     },
+            //     error: function (error) {   
+            //         console.error('Error:', error);
+            //     }
+            // });
+            $('body').append(form);
 
-
-
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
+            form.submit();
         });
 
     });

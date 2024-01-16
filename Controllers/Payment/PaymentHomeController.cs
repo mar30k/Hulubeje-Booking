@@ -71,8 +71,9 @@ namespace HulubejeBooking.Controllers.Payment
                             var parameters = new
                             {
                                 UserMobileNumber,
-                                SupplierTin ,
-                                SupplierOUD 
+                                SupplierTin,
+                                SupplierOUD,
+                                data.AuthorizePaymentData.Amount,
                             };
                             var paymentInfoJson = JsonConvert.SerializeObject(parameters);
 
@@ -173,7 +174,7 @@ namespace HulubejeBooking.Controllers.Payment
                             newParam.SupplierOUD,
                             TransactionId,
                             data.AuthorizePaymentData.PaymentProviderOUD,
-                            data.AuthorizePaymentData.Amount,
+                            newParam.Amount,
                             AdditionalParameters = new
                             {
                                 data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
@@ -200,7 +201,7 @@ namespace HulubejeBooking.Controllers.Payment
                                 newParam.SupplierOUD,
                                 TransactionId,
                                 data.AuthorizePaymentData.PaymentProviderOUD,
-                                data.AuthorizePaymentData.Amount,
+                                newParam.Amount,
                                 AdditionalParameters = new
                                 {
                                     data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
@@ -223,7 +224,7 @@ namespace HulubejeBooking.Controllers.Payment
                             newParam.SupplierOUD,
                             TransactionId,
                             data.TransactionData.PaymentProviderOUD,
-                            data.TransactionData.Amount,
+                            newParam.Amount,
                             data.TransactionData.Pin,
                             AdditionalParameters = new
                             {
@@ -235,14 +236,17 @@ namespace HulubejeBooking.Controllers.Payment
                         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
                         var transactionVerification = new
                         {
-                            data.TransactionData.SupplierOUD,
+                            newParam.SupplierOUD,
                             TransactionId,
-                            data.TransactionData.Amount,
+                            newParam.Amount
                         };
-                        var values = JsonConvert.SerializeObject(transactionVerification);
+                        var values = JsonConvert.SerializeObject(param);
+
                         HttpContext.Session.SetString("paymentValidation", values);
+
                         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                         HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
+                        string responseData = await response.Content.ReadAsStringAsync();
                         if (response.IsSuccessStatusCode)
                         {
 
@@ -260,7 +264,7 @@ namespace HulubejeBooking.Controllers.Payment
                             newParam.SupplierOUD,
                             TransactionId,
                             data.TransactionData.PaymentProviderOUD,
-                            data.TransactionData.Amount,
+                            newParam.Amount,
                             data.TransactionData.Pin,
                             Currency
 

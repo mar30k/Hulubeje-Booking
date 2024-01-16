@@ -23,13 +23,13 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var _client = _httpClientFactory.CreateClient("HotelBooking");
+            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
 
 
             HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/Industry/GetAllCompanies?industryType=LKUP000000451");
 
-            List<GetModel> hotels = new List<GetModel>();
-            List<CityData> country = new List<CityData>();
+            var hotels = new List<GetModel>();
+            var country = new List<CityData>();
             HotelListRequest viewModel = new HotelListRequest();
 
             if (response.IsSuccessStatusCode)
@@ -58,20 +58,20 @@ namespace HulubejeBooking.Controllers.HotelController
             return View(viewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> HotelList([FromBody] FormData formData)
+        public async Task<IActionResult> HotelList(string city, int roomsCount, int numberOfNights,int childrenCount,int adultCount, string dateRange)
         {
 
-            var _client = _httpClientFactory.CreateClient("HotelBooking");
-            List<GetModel> dataList = new List<GetModel>();
+            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var dataList = new List<GetModel>();
 
-            var cityName = formData.City;
-            var adultCount = formData.AdultCount;
-            var childCount = formData.ChildrenCount;
-            var roomCount = formData.RoomsCount;
-            var dt = DateRangeParser.parseDateRange(formData.DateRange);
+            var cityName = city;
+            var adultsCount = adultCount;
+            var childCount = childrenCount;
+            var roomCount = roomsCount;
+            var dt = DateRangeParser.parseDateRange(dateRange);
             var arrivalDate = dt.startDateString;
             var departureDate = dt.endDateString;
-            var numberOfDay = formData.numberOfNights;
+            var numberOfDay = numberOfNights;
 
             if (numberOfDay <= 0)
             {
@@ -92,7 +92,7 @@ namespace HulubejeBooking.Controllers.HotelController
                                     isSponsored = hotel.IsSponsored,
                                     code = hotel.Code,
                                     tradeName = hotel.TradeName,
-                                    brandName = hotel.BrandName,
+                                    brandName = hotel.BrandName ?? hotel.TradeName,
                                     industryType = hotel.IndustryType,
                                     rating = hotel.Rating,
                                     TIN = hotel.TIN,
@@ -111,7 +111,7 @@ namespace HulubejeBooking.Controllers.HotelController
 
                 var filteredHotel = new FilteredHotel
                 {
-                    adultCount = adultCount,
+                    adultCount = adultsCount,
                     childCount = childCount,
                     roomCount = roomCount,
                     numberOfDay = numberOfDay,
@@ -125,7 +125,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 string jsonBody = JsonConvert.SerializeObject(filteredHotel);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-                List<HotelModel> hotels = new List<HotelModel>();
+                var hotels = new List<HotelModel>();
 
                 HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Industry/GetHotelsFilteredByCity", content);
 
@@ -144,19 +144,19 @@ namespace HulubejeBooking.Controllers.HotelController
 
                 HttpContext.Session.SetString("HotelViewModel", viewModelJson);
 
-                return Json(new HotelViewModel());
+                return View(viewModel);
 
             }
             else
             {
-                return Json(new HotelViewModel());
+                return Ok();
             }
         }
 
         [HttpPost]
         public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
         {
-            var _client = _httpClientFactory.CreateClient("HotelBooking");
+            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var dt = DateRangeParser.parseDateRange(roomFormData.Date);
             var arrivalDate = dt.startDateString;
             var departureDate = dt.endDateString;

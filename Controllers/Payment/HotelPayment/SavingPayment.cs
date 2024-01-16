@@ -42,7 +42,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
         public async Task<IActionResult> PaymentCommonAsync()
         {
-            var _Hotel = _httpClientFactory.CreateClient("HotelBooking");
+            var _Hotel = _httpClientFactory.CreateClient("CnetHulubeje");
 
             var data = HttpContext.Session.GetString("Data");
             var paymentInfo = HttpContext.Session.GetString("PaymentInfo");
@@ -89,7 +89,6 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
-                return Json(new { successcode = "Done" });
 
             }
 

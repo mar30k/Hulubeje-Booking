@@ -9,7 +9,7 @@ namespace HulubejeBooking.Models.PaymentModels
         public string? SupplierTin { get; set; } 
         public string? SupplierOUD { get; set; } 
         public string? TransactionId { get; set; } 
-        public double? Amount { get; set; } = 0.1;
+        public double? Amount { get; set; } 
         public string? PaymentProviderOUD { get; set; }
         public AdditionalParametersModel AdditionalParameters { get; set; }
 

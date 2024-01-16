@@ -100,7 +100,7 @@ namespace HulubejeBooking.Controllers.Payment
                     var ValidationDataJson = JsonConvert.SerializeObject(paymentValidation);
 
                     HttpContext.Session.SetString("ValidationInfo", ValidationDataJson);
-
+                     
                     return RedirectToAction("PaymentCommon", "SHotelpayment");
                                                     
                 }
