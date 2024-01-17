@@ -34,7 +34,7 @@ namespace HulubejeBooking.Controllers.Payment
 
             if (!string.IsNullOrEmpty(param))
             {
-                PaymentValidation paymentValidation  = new PaymentValidation();
+                var paymentValidation  = new PaymentValidation();
                 var newParam = JsonConvert.DeserializeObject<TransactionModel>(param);
                 var SupplierTin = newParam.SupplierTin;
                 var TransactionId = newParam.TransactionId;
@@ -72,7 +72,10 @@ namespace HulubejeBooking.Controllers.Payment
                     var responseData = await response.Content.ReadAsStringAsync();
                     
                     pay = JsonConvert.DeserializeObject<PaymentResponseModel>(responseData);
-                    isSuccess = pay.IsFulfilled;
+                    if (pay != null )
+                    {
+                        isSuccess = pay.IsFulfilled;
+                    }
                     var isSuccessful = new
                     {
                         accessToken,
@@ -101,10 +104,10 @@ namespace HulubejeBooking.Controllers.Payment
 
                     HttpContext.Session.SetString("ValidationInfo", ValidationDataJson);
                      
-                    return RedirectToAction("PaymentCommon", "SHotelpayment");
                                                     
                 }
                 await Task.Delay(5000);
+                return RedirectToAction("PaymentCommon", "SHotelpayment");
             }
 
             return View(pay);
