@@ -30,7 +30,7 @@ namespace HulubejeBooking.Controllers.Payment
             var _client = _httpClientFactory.CreateClient("Payment");
             var param = HttpContext.Session.GetString("transactionDatas");
 
-            PaymentValidation paymentValidation = new PaymentValidation();
+            var paymentValidation = new PaymentValidation();
 
             if (!HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
             {

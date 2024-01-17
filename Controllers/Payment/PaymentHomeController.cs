@@ -147,15 +147,19 @@ namespace HulubejeBooking.Controllers.Payment
                 var synch = value.Synchronous;
                 var asynch = value.Asynchronous;
                 var Currency = "etb";
-                
+
                 var vCode = HttpContext.Session.GetString("VoucherCode");
-                var TransactionId = JsonConvert.DeserializeObject<string>(vCode);
+                var TransactionId = !string.IsNullOrWhiteSpace(vCode)
+                    ? JsonConvert.DeserializeObject<string>(vCode)
+                    : null;
 
                 var parameters = HttpContext.Session.GetString("paymentInfo");
-                var newParam = JsonConvert.DeserializeObject<AuthorizePayment>(parameters);
+                var newParam = !string.IsNullOrWhiteSpace(parameters)
+                    ? JsonConvert.DeserializeObject<AuthorizePayment>(parameters)
+                    : null;
 
 
-              
+
                 if (!HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
                 {
                     return Error();
