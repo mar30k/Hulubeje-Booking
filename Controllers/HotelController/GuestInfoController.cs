@@ -8,7 +8,7 @@ namespace HulubejeBooking.Controllers.HotelController
         {
             return View();
         }
-        public async Task<IActionResult> GuestInfo(string roomTypecode, string orgTin, string Date, int adultCount, int childCount, int roomCount, string oud)
+        public IActionResult GuestInfo(string roomTypecode, string orgTin, string Date, int adultCount, int childCount, int roomCount, string oud)
         {
 
             return View();
