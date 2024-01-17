@@ -36,9 +36,9 @@ namespace HulubejeBooking.Controllers.Payment.HotlePaymentModels
             if (!string.IsNullOrEmpty(param))
             {
                 var newParam = JsonConvert.DeserializeObject<TransactionModel>(param);
-                var SupplierTin = newParam.SupplierTin;
-                var TransactionId = newParam.TransactionId;
-                var Amount = newParam.Amount;
+                var SupplierTin = newParam?.SupplierTin;
+                var TransactionId = newParam?.TransactionId;
+                var Amount = newParam?.Amount;
 
                 var parameters = new
                 {
@@ -85,7 +85,10 @@ namespace HulubejeBooking.Controllers.Payment.HotlePaymentModels
                     {
                         var responseData = await response.Content.ReadAsStringAsync();
                         pay = JsonConvert.DeserializeObject<PaymentResponseModel>(responseData);
-                        isSuccess = pay.IsFulfilled; 
+                        if (pay != null)
+                        {
+                            isSuccess = pay.IsFulfilled;
+                        }
                     }
 
                     await Task.Delay(5000); 
