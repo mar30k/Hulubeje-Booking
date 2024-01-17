@@ -9,12 +9,18 @@ namespace HulubejeBooking.Controllers
     {
         private readonly string apiKey = "1ba83335ce22421020a77845254a578e";
         private readonly string baseUrl = "https://api.themoviedb.org/3/movie/";
+        private readonly IHttpClientFactory _httpClientFactory;
 
+        public CinemaMovieDetailsController(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
         public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, int movieId, string backdropPath)
         {
             try
             {
+                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
                 // Construct the API URL for videos
                 string videosApiUrl = $"{baseUrl}{movieId}/videos?api_key={apiKey}";
 
@@ -85,10 +91,7 @@ namespace HulubejeBooking.Controllers
                                 }
                             }
                         }
-
-
-                        string productsApiUrl = $"https://api-hulubeje.cnetcommerce.com/api/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={selectedDate:yyyy-MM-dd}";
-                        HttpResponseMessage productsResponse = await client.GetAsync(productsApiUrl);
+                        HttpResponseMessage productsResponse = await _client.GetAsync(_client.BaseAddress + $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={selectedDate:yyyy-MM-dd}");
                         if (productsResponse.IsSuccessStatusCode)
                         {
                             string productsResponseData = await productsResponse.Content.ReadAsStringAsync();
@@ -111,10 +114,10 @@ namespace HulubejeBooking.Controllers
                                     var retrievedBranchCode = movieInfo.BranchCode;
 
                                     // Use the retrieved information for the schedules API call
-                                    string schedulesApiUrl = $"https://api-hulubeje.cnetcommerce.com/api/cinema/cinemaSchedules?orgTin={retrievedCompanyTinNumber}&date={selectedDate:yyyy-MM-dd} 11:11:11.326116&branchCode={retrievedBranchCode}";
+                                    string schedulesApiUrl = $"/cinema/cinemaSchedules?orgTin={retrievedCompanyTinNumber}&date={selectedDate:yyyy-MM-dd} 11:11:11.326116&branchCode={retrievedBranchCode}";
 
 
-                                    HttpResponseMessage schedulesResponse = await client.GetAsync(schedulesApiUrl);
+                                    HttpResponseMessage schedulesResponse = await _client.GetAsync(_client.BaseAddress + schedulesApiUrl);
 
                                     if (schedulesResponse.IsSuccessStatusCode)
                                     {

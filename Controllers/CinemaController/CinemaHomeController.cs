@@ -57,7 +57,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                 DateTime currentDate = DateTime.Now;
                 string formattedDate = currentDate.ToString("yyyy-MM-dd");
 
-                HttpResponseMessage response = await _client.GetAsync($"Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
+                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -90,7 +90,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                 string formattedDate = selectedDate.ToString("yyyy-MM-dd");
 
                 // Make an HTTP GET request with the selected date
-                HttpResponseMessage response = await _client.GetAsync($"Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
+                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
 
                 if (response.IsSuccessStatusCode)
                 {
