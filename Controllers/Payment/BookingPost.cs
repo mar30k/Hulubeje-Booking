@@ -10,7 +10,7 @@ namespace HulubejeBooking.Controllers.Payment
         {
             var paymentDoneModelJson = HttpContext.Session.GetString("PaymentDoneModel");
             HttpContext.Session.Remove("PaymentDoneModel");
-            var paymentDoneModel = JsonConvert.DeserializeObject<PaymentValidation>(paymentDoneModelJson);
+            var paymentDoneModel = !string.IsNullOrWhiteSpace(paymentDoneModelJson) ? JsonConvert.DeserializeObject<PaymentValidation>(paymentDoneModelJson) : null;
 
             return View(paymentDoneModel);
         }
