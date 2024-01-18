@@ -335,11 +335,8 @@
 
                         if (DateTime.TryParseExact(utcTimeString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime utcTime))
                         {
-                            // Convert UTC time to Ethiopia time
-                            DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
 
-                            // Adjust the time based on AM or PM
-                            ethiopianTime = ethiopianTime.AddHours(ethiopianTime.ToString("tt").Equals("AM") ? 6 : -6);
+                            DateTime ethiopianTime = utcTime.AddHours(utcTime.ToString("tt").Equals("AM") ? 6 : -6);
 
                             return ethiopianTime.ToString("h.mm tt");
                         }

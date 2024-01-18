@@ -92,11 +92,10 @@
                                                 string formattedDate = schedule.DepartureDate.ToString("ddd, MMM d, yyyy");
                                                 string formattedTime = schedule.DepartureDate.ToString("h:mm tt");
                                                 <p class="scheduleDate mb-1"><span><i class="bi bi-calendar-date mr-1"></i></span> @formattedDate</p>
-                                                            @if (DateTime.TryParse(formattedTime, out DateTime utcTime))
+                                                @if (DateTime.TryParse(formattedTime, out DateTime utcTime))
                                                 {
-                                                    DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
-                                                    ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
-                                                                <p class="scheduleTime mb-1"><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
+                                                    DateTime ethiopianTime = utcTime.ToString("tt").Equals("AM") ? utcTime.AddHours(6) : utcTime.AddHours(-6);
+                                                    <p class="scheduleTime mb-1"><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
                                                 }
                                             }
                                             <p class="destinationCity" style="display: none">@schedule.DestCityName</p>

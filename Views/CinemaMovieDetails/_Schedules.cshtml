@@ -27,9 +27,7 @@
 
                                 if (DateTime.TryParse(utcTimeString, out DateTime utcTime))
                                 {
-                                    DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
-                                    // Add a 6-hour offset to match Ethiopia's local time interpretation
-                                    ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
+                                    DateTime ethiopianTime = utcTime.ToString("tt").Equals("AM") ? utcTime.AddHours(6) : utcTime.AddHours(-6);
                                     <p class="card-text" style="color: black; margin: 0;">@utcTime.ToString("h.mm tt")</p>
                                     <p class="card-text" style="color: black; margin: 0;">@ethiopianTime.ToString("h.mm tt") (Local)</p>
                                 }
