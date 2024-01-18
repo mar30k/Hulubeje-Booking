@@ -15,25 +15,22 @@ namespace HulubejeBooking.Controllers.BusController
         public async Task<IActionResult> Index()
         {
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
-            HttpResponseMessage response = await busSeatLayoutClient.GetAsync("operators/getalloperators");
+            HttpResponseMessage response = await busSeatLayoutClient.GetAsync(busSeatLayoutClient.BaseAddress + "operators/getalloperators");
             var busModel = new BusModel();
             if (response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
                 var companyData = JsonConvert.DeserializeObject<List<CompanyModel>>(responseData);
-                HttpResponseMessage routeResponse = await busSeatLayoutClient.GetAsync("routes/getallroutes");
-                if(routeResponse.IsSuccessStatusCode)
-                {
-                    string routeResponseData = await routeResponse.Content.ReadAsStringAsync();
-                    var routeData = JsonConvert.DeserializeObject<RouteConfiguration>(routeResponseData);
-                    busModel.RouteConfiguration = routeData;
-                }
                 busModel.Company = companyData;
-                return View(busModel);
             }
-
-            return View(null);
-
+            HttpResponseMessage routeResponse = await busSeatLayoutClient.GetAsync("routes/getallroutes");
+            if(routeResponse.IsSuccessStatusCode)
+            {
+                string routeResponseData = await routeResponse.Content.ReadAsStringAsync();
+                var routeData = JsonConvert.DeserializeObject<RouteConfiguration>(routeResponseData);
+                busModel.RouteConfiguration = routeData;
+            }
+            return View(busModel);
         }
 
     }
