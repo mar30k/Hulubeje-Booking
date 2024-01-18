@@ -200,13 +200,15 @@ public class CinemaSeatLayoutController : Controller
                     {
                         return PartialView("_SeatArrangementPartialView", null);
                     }
-                    updatedSeatModel.CompanyName = companyName;
-                    updatedSeatModel.Dimension = dimension; 
-                    updatedSeatModel.MovieName = movieName;
-                    updatedSeatModel.UtcTime = utcTime;
-                    updatedSeatModel.SelectedDate = selectedDate;
-                    updatedSeatModel.SpaceType = spaceType; 
-                    updatedSeatModel.HallName = hallName;
+                    if (updatedSeatModel is not null) {
+                        updatedSeatModel.CompanyName = companyName;
+                        updatedSeatModel.Dimension = dimension;
+                        updatedSeatModel.MovieName = movieName;
+                        updatedSeatModel.UtcTime = utcTime;
+                        updatedSeatModel.SelectedDate = selectedDate;
+                        updatedSeatModel.SpaceType = spaceType;
+                        updatedSeatModel.HallName = hallName;
+                    }
                 }
                 return PartialView("_SeatArrangementPartialView", updatedSeatModel);
             }
