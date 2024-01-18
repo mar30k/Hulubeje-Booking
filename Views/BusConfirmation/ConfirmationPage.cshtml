@@ -50,8 +50,7 @@
                     <p class="mb-0" style="color: white">@ViewBag.DestinationCity</p>
                     @if (DateTime.TryParse(formattedArrivalTime, out DateTime utcArrivalTime))
                     {
-                        DateTime ethiopianArrivalTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcArrivalTime, "Africa/Addis_Ababa");
-                        ethiopianArrivalTime = ethiopianArrivalTime.ToString("tt").Equals("AM") ? ethiopianArrivalTime.AddHours(6) : ethiopianArrivalTime.AddHours(-6);
+                        DateTime ethiopianArrivalTime = utcArrivalTime.ToString("tt").Equals("AM") ? utcArrivalTime.AddHours(6) : utcArrivalTime.AddHours(-6);
                         <p class="font-weight-bold mb-0" style="color: white">@formattedArrivalTime (@ethiopianArrivalTime.ToString("h.mm tt") LT)</p>
                     }
                 </div>
