@@ -59,10 +59,13 @@ namespace HulubejeBooking.Controllers.Payment
                     if (authResponse.IsSuccessStatusCode)
                     {
                         string authResponseData = await authResponse.Content.ReadAsStringAsync();
-                        AuthorizationAccessTokenModel accessToken = JsonConvert.DeserializeObject<AuthorizationAccessTokenModel>(authResponseData);
+                        var accessToken = JsonConvert.DeserializeObject<AuthorizationAccessTokenModel>(authResponseData);
 
-                        TempData["AccessToken"] = accessToken.accessToken;
-                        HttpContext.Session.SetString("AccessToken", accessToken.accessToken);
+                        var token = accessToken?.accessToken;
+                        if (token != null)
+                        {
+                            HttpContext.Session.SetString("AccessToken", token);
+                        }
 
                         // GetPaymentOptions request
                         if (HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
@@ -80,7 +83,7 @@ namespace HulubejeBooking.Controllers.Payment
                             HttpContext.Session.SetString("paymentInfo", paymentInfoJson);
 
 
-                            List<PaymentOptionModel> paymentOptions = new List<PaymentOptionModel>();
+                            var paymentOptions = new List<PaymentOptionModel>();
 
                             string queryString = string.Join("&", parameters.GetType().GetProperties()
                                 .Select(prop => $"{prop.Name}={Uri.EscapeDataString(prop.GetValue(parameters)?.ToString())}"));
@@ -98,7 +101,7 @@ namespace HulubejeBooking.Controllers.Payment
                             {
                                 string optionsResponseData = await optionsResponse.Content.ReadAsStringAsync();
                                 string codeResponseData = await codeResponse.Content.ReadAsStringAsync();
-                                string transactionId = JsonConvert.DeserializeObject<string>(codeResponseData);
+                                var transactionId = JsonConvert.DeserializeObject<string>(codeResponseData);
 
                                 HttpContext.Session.SetString("VoucherCode", JsonConvert.SerializeObject(transactionId));
 
@@ -173,12 +176,12 @@ namespace HulubejeBooking.Controllers.Payment
                     {
                         var param = new
                         {
-                            newParam.UserMobileNumber,
-                            newParam.SupplierTin,
-                            newParam.SupplierOUD,
+                            newParam?.UserMobileNumber,
+                            newParam?.SupplierTin,
+                            newParam?.SupplierOUD,
                             TransactionId,
                             data.AuthorizePaymentData.PaymentProviderOUD,
-                            newParam.Amount,
+                            newParam?.Amount,
                             AdditionalParameters = new
                             {
                                 data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
@@ -200,12 +203,12 @@ namespace HulubejeBooking.Controllers.Payment
 
                             var transactionModel = new
                             {
-                                newParam.UserMobileNumber,
-                                newParam.SupplierTin,
-                                newParam.SupplierOUD,
+                                newParam?.UserMobileNumber,
+                                newParam?.SupplierTin,
+                                newParam?.SupplierOUD,
                                 TransactionId,
                                 data.AuthorizePaymentData.PaymentProviderOUD,
-                                newParam.Amount,
+                                newParam?.Amount,
                                 AdditionalParameters = new
                                 {
                                     data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
@@ -223,12 +226,12 @@ namespace HulubejeBooking.Controllers.Payment
                     {
                         var param = new
                         {
-                            newParam.UserMobileNumber,
-                            newParam.SupplierTin,
-                            newParam.SupplierOUD,
+                            newParam?.UserMobileNumber,
+                            newParam?.SupplierTin,
+                            newParam?.SupplierOUD,
                             TransactionId,
                             data.TransactionData.PaymentProviderOUD,
-                            newParam.Amount,
+                            newParam?.Amount,
                             data.TransactionData.Pin,
                             AdditionalParameters = new
                             {
@@ -240,9 +243,9 @@ namespace HulubejeBooking.Controllers.Payment
                         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
                         var transactionVerification = new
                         {
-                            newParam.SupplierOUD,
+                            newParam?.SupplierOUD,
                             TransactionId,
-                            newParam.Amount
+                            newParam?.Amount
                         };
                         var values = JsonConvert.SerializeObject(param);
 
@@ -251,6 +254,11 @@ namespace HulubejeBooking.Controllers.Payment
                         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                         HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
                         string responseData = await response.Content.ReadAsStringAsync();
+
+                        //var paymentValidation = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+
+                        HttpContext.Session.SetString("ValidationInfo", responseData);
+
                         if (response.IsSuccessStatusCode)
                         {
 

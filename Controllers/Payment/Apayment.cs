@@ -36,10 +36,10 @@ namespace HulubejeBooking.Controllers.Payment
             {
                 var paymentValidation  = new PaymentValidation();
                 var newParam = JsonConvert.DeserializeObject<TransactionModel>(param);
-                var SupplierTin = newParam.SupplierTin;
-                var TransactionId = newParam.TransactionId;
-                var Amount = newParam.Amount;
-                var userMobile = newParam.UserMobileNumber;
+                var SupplierTin = newParam?.SupplierTin;
+                var TransactionId = newParam?.TransactionId;
+                var Amount = newParam?.Amount;
+                var userMobile = newParam?.UserMobileNumber;
 
                 var parameters = new
                 {
@@ -97,12 +97,9 @@ namespace HulubejeBooking.Controllers.Payment
                     var isSuccessfulJson = JsonConvert.SerializeObject(isSuccessful);
                     HttpContext.Session.SetString("PaymentInfo", isSuccessfulJson);
 
-                    paymentValidation = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+                    var ValidationDataJson = JsonConvert.SerializeObject(pay);
 
-
-                    var ValidationDataJson = JsonConvert.SerializeObject(paymentValidation);
-
-                    HttpContext.Session.SetString("ValidationInfo", ValidationDataJson);
+                    HttpContext.Session.SetString("mark", ValidationDataJson);
                      
                                                     
                 }

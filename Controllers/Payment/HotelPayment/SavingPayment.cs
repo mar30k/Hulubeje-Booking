@@ -57,12 +57,11 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
             var PaymentInfo = JsonConvert.DeserializeObject<PaymentInfoModel>(paymentInfo);
             var newValidationInfo = JsonConvert.DeserializeObject<PaymentValidation>(validationInfo);
             var PaymentMethod = "Telebirr OTP";
-            object param = null; 
 
-            if (newData.CinemaDetailsData != null)
+            if (newData?.CinemaDetailsData != null)
             {
                 var b = newData.CinemaDetailsData;
-                param = new
+                var param = new
                 {
                     b.Consignee,
                     b.GrandTotal,
@@ -70,7 +69,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.SeatsToBook,
                     b.OrgUnitDef,
                     b.OrgTin,
-                    newValidationInfo.transactionReference,
+                    newValidationInfo?.transactionReference,
                     b.CinemaArticles,
                     b.OnBookSuccess,
                     b.Latitude,
@@ -86,23 +85,23 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
                 var responseData = await response.Content.ReadAsStringAsync();
 
-                PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+                var PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
 
             }
 
-            else if (newData.GuestInfoData != null)
+            else if (newData?.GuestInfoData != null)
             {
                 var b = newData.GuestInfoData;
                 var dt = DateRangeParser.parseDateRange(b.date);
                 var arrivalDate = dt.startDateString;
                 var departureDate = dt.endDateString;
-                var cashRecieptVoucher = PaymentInfo.PaymentTransactionRequest.TransactionId;
-                param = new
+                var cashRecieptVoucher = PaymentInfo?.PaymentTransactionRequest.TransactionId;
+               var  param = new
                 {
                     b.orgTin,
-                    voucherCode = PaymentInfo.PaymentTransactionRequest.TransactionId,
+                    voucherCode = PaymentInfo?.PaymentTransactionRequest.TransactionId,
                     arrivalDate,
                     departureDate,
                     b.adult,
@@ -112,13 +111,13 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                     b.rateCodeDetail,
                     averageAmount = "0.1",
                     totalAmount = "0.1",
-                    paymentMethod = PaymentInfo.PaymentTransactionRequest.PaymentProviderOUD,
+                    paymentMethod = PaymentInfo?.PaymentTransactionRequest.PaymentProviderOUD,
                     b.roomCount,
                     b.guests,
                     b.oud,
                     b.specialRequirement,
                     cashRecieptVoucher,
-                    newValidationInfo.transactionReference,
+                    newValidationInfo?.transactionReference,
                     b.onHotelBookSuccess,
                     PaymentInfo
 
@@ -130,7 +129,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
                 var responseData = await response.Content.ReadAsStringAsync();
 
-                PaymentValidation PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+                var PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
 
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
