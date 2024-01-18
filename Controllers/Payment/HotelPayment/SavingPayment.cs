@@ -137,7 +137,6 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 
 
 
-                //return Json(new { successcode = "Done"});
             }
 
             return RedirectToAction("Index", "BookingPost");
@@ -145,10 +144,6 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
 
 
-        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        //public IActionResult Error()
-        //{
-        //    return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        //}
+  
     }
 }

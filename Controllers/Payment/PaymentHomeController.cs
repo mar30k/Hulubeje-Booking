@@ -271,12 +271,12 @@ namespace HulubejeBooking.Controllers.Payment
                     {
                         var param = new
                         {
-                            newParam.UserMobileNumber,
-                            newParam.SupplierTin,
-                            newParam.SupplierOUD,
+                            newParam?.UserMobileNumber,
+                            newParam?.SupplierTin,
+                            newParam?.SupplierOUD,
                             TransactionId,
                             data.TransactionData.PaymentProviderOUD,
-                            newParam.Amount,
+                            newParam?.Amount,
                             data.TransactionData.Pin,
                             Currency
 
