@@ -15,7 +15,7 @@ namespace HulubejeBooking.Controllers.BusController
         public async Task<IActionResult> Index()
         {
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
-            HttpResponseMessage response = await busSeatLayoutClient.GetAsync(busSeatLayoutClient.BaseAddress + "operators/getalloperators");
+            HttpResponseMessage response = await busSeatLayoutClient.GetAsync("operators/getalloperators");
             var busModel = new BusModel();
             if (response.IsSuccessStatusCode)
             {
