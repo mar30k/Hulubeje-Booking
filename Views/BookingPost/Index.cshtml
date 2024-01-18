@@ -1,4 +1,19 @@
 ﻿@model HulubejeBooking.Models.PaymentModels.PaymentValidation
 <partial name="_Navigation" />
-<p>hey nati</p>
+@if(Model != null)
+{
+    @if (Model.isSuccessful ?? false)
+    {
+        <p>booking successful</p>
+    }
+    else
+    {
+        <p>booking unseccessful</p>
+    }
+
+}
+else
+{
+    <p>Couldn't process your payment!</p>
+}
 <partial name="_Footer" />
