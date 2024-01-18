@@ -140,7 +140,16 @@ namespace HulubejeBooking.Controllers
                                                     CultureInfo cultureInfo = CultureInfo.InvariantCulture;
                                                     string format24Hours = "hh:mm:ss tt";
 
-                                                    movieDetails.Schedules = await Task.Run(() => schedules.OrderBy(e => DateTime.ParseExact(e.StartTime.ToString(), format24Hours, cultureInfo)).ToList());
+                                                    movieDetails.Schedules = await Task.Run(() =>
+                                                    {
+                                                        var orderedSchedules = schedules
+                                                            .Where(e => e.StartTime != null)
+                                                            .OrderBy(e => DateTime.ParseExact(e.StartTime!.ToString(), format24Hours, cultureInfo))
+                                                            .ToList();
+
+                                                        return orderedSchedules;
+                                                    });
+
                                                     movieDetails.PgRating = pgRating;
                                                 }
                                             }
