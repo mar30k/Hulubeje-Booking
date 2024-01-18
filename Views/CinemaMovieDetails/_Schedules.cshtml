@@ -1,76 +1,81 @@
-﻿@using System.Web
+﻿@model HulubejeBooking.Models.CInemaModels.MovieModel
+@using HulubejeBooking.Models.CInemaModels
+@using System.Web
 <div>
     <h2>Schedules</h2>
-    @foreach (var schedule in Model.Schedules)
+    @if (Model != null)
     {
-        <div class="card mb-3">
-            <div class="row g-0">
-                <div class="col-4" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                    <div class="card-body">
-                        <p class="card-title" style="color: black; margin-bottom: 0;">
-                            @schedule.HallName
-                            @if (@schedule.Dimension == "2D")
-                            {
-                                <span class="badge bg-primary">@schedule.Dimension</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger">@schedule.Dimension</span>
-                            }
-                        </p>
-                        @{
-                            string utcTimeString = schedule.StartTime;
+        @foreach (var schedule in Model.Schedules ?? Enumerable.Empty<MovieSchedule>())
+        {
+            <div class="card mb-3">
+                <div class="row g-0">
+                    <div class="col-4" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <div class="card-body">
+                            <p class="card-title" style="color: black; margin-bottom: 0;">
+                                @schedule.HallName
+                                @if (@schedule.Dimension == "2D")
+                                {
+                                    <span class="badge bg-primary">@schedule.Dimension</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@schedule.Dimension</span>
+                                }
+                            </p>
+                            @{
+                                string? utcTimeString = schedule.StartTime;
 
-                            if (DateTime.TryParse(utcTimeString, out DateTime utcTime))
-                            {
-                                DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
-                                // Add a 6-hour offset to match Ethiopia's local time interpretation
-                                ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
-                                <p class="card-text" style="color: black; margin: 0;">@utcTime.ToString("h.mm tt")</p>
-                                <p class="card-text" style="color: black; margin: 0;">@ethiopianTime.ToString("h.mm tt") (Local)</p>
+                                if (DateTime.TryParse(utcTimeString, out DateTime utcTime))
+                                {
+                                    DateTime ethiopianTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utcTime, "Africa/Addis_Ababa");
+                                    // Add a 6-hour offset to match Ethiopia's local time interpretation
+                                    ethiopianTime = ethiopianTime.ToString("tt").Equals("AM") ? ethiopianTime.AddHours(6) : ethiopianTime.AddHours(-6);
+                                    <p class="card-text" style="color: black; margin: 0;">@utcTime.ToString("h.mm tt")</p>
+                                    <p class="card-text" style="color: black; margin: 0;">@ethiopianTime.ToString("h.mm tt") (Local)</p>
+                                }
+                                else
+                                {
+                                    <p class="card-text" style="color: red; margin: 0;">Invalid date format</p>
+                                }
                             }
-                            else
-                            {
-                                <p class="card-text" style="color: red; margin: 0;">Invalid date format</p>
-                            }
-                        }
+                        </div>
                     </div>
-                </div>
-                <div class="col-4 mb-2 d-flex align-items-center justify-content-center">
-                    @if (schedule.Status == "CLOSED")
-                    {
-                        <button class="btn btn-danger" type="button" disabled>Closed</button>
-                    }
-                    else
-                    {
-                        var spaceType = "Regular";
-                        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model.MovieName);
-                        <button class="btn btn-success " onclick="onScheduleButtonClick('@schedule.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.BranchCode.ToString()','@Model.CompanyName','@santizedMovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
-                                            '@Model.SelectedDate.ToString()','@schedule.Code','@schedule.NPrice','@schedule.HallName','@utcTime.ToString("h.mm tt")')" type="button">
-                            Book Now <br> @schedule.NPrice ETB
-                        </button>
-                    }
-                </div>
-
-                @if (schedule.VIP != null)
-                {
-                    <div class="col-4 d-flex align-items-center justify-content-center">
-                        @if (schedule.VIP.Status == "CLOSED")
+                    <div class="col-4 mb-2 d-flex align-items-center justify-content-center">
+                        @if (schedule.Status == "CLOSED")
                         {
                             <button class="btn btn-danger" type="button" disabled>Closed</button>
                         }
                         else
                         {
-                            var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model.MovieName);
-                            var spaceType = "VIP";
-                            <button class="btn btn-warning" onclick="onScheduleButtonClick('@schedule.VIP.SpaceCode', '@Model.CompanyTinNumber.ToString()','@Model.BranchCode.ToString()','@Model.CompanyName','@santizedMovieName','@Model.MovieCode','@schedule.Dimension','@spaceType',
-                                            '@Model.SelectedDate.ToString()','@schedule.VIP.Code','@schedule.VIP.VPrice','@schedule.VIP.HallName','@utcTime.ToString("h.mm tt")')" type="button">
-                                Book Vip <br> @schedule.VIP.VPrice ETB
+                            var spaceType = "Regular";
+                            var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.MovieName);
+                            <button class="btn btn-success " onclick="onScheduleButtonClick('@schedule.SpaceCode', '@Model?.CompanyTinNumber?.ToString()','@Model?.BranchCode?.ToString()','@Model?.CompanyName','@santizedMovieName','@Model?.MovieCode','@schedule.Dimension','@spaceType',
+                                            '@Model?.SelectedDate?.ToString()','@schedule.Code','@schedule.NPrice','@schedule.HallName','@utcTime.ToString("h.mm tt")')" type="button">
+                                Book Now <br> @schedule.NPrice ETB
                             </button>
                         }
                     </div>
-                }
+
+                    @if (schedule.VIP != null)
+                    {
+                        <div class="col-4 d-flex align-items-center justify-content-center">
+                            @if (schedule.VIP.Status == "CLOSED")
+                            {
+                                <button class="btn btn-danger" type="button" disabled>Closed</button>
+                            }
+                            else
+                            {
+                                var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.MovieName);
+                                var spaceType = "VIP";
+                                <button class="btn btn-warning" onclick="onScheduleButtonClick('@schedule.VIP.SpaceCode', '@Model?.CompanyTinNumber?.ToString()','@Model?.BranchCode?.ToString()','@Model?.CompanyName','@santizedMovieName','@Model?.MovieCode','@schedule.Dimension','@spaceType',
+                                            '@Model?.SelectedDate?.ToString()','@schedule.VIP.Code','@schedule.VIP.VPrice','@schedule.VIP.HallName','@utcTime.ToString("h.mm tt")')" type="button">
+                                    Book Vip <br> @schedule.VIP.VPrice ETB
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
             </div>
-        </div>
-    }
+        }       }
+    
 </div>
