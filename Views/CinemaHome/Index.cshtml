@@ -59,41 +59,6 @@
     </div>
     @section Scripts {
         <script>
-            function onDateSelect() {
-                // Get the selected date value
-                var selectedDate = document.getElementById("selectedDate").value;
-
-                // Make an AJAX request to fetch movies based on the selected date
-                $.ajax({
-                    url: '@Url.Action("Index", "Home")',
-                    type: 'POST',
-                    data: { selectedDate: selectedDate },
-                    success: function (data) {
-                        // Update the movies container with the new partial view
-                        $('#moviesContainer').html(data);
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        // Handle errors more gracefully
-                        var errorMessage = "Error fetching movies.";
-
-                        if (xhr.status === 500) {
-                            // If it's a server error, parse the response JSON for details
-                            try {
-                                var responseJson = JSON.parse(xhr.responseText);
-                                if (responseJson.ExceptionMessage) {
-                                    errorMessage = responseJson.ExceptionMessage;
-                                }
-                            } catch (error) {
-                                // Ignore and use the default error message
-                            }
-                        }
-
-                        // Update an element on your page with the error message
-                        $('#errorContainer').text(errorMessage);
-                    }
-                });
-            }
-
             function filterByCompany() {
                 var companyFilterText = document.getElementById('companyFilter').value.trim().toLowerCase();
                 var moviesContainer = document.getElementById('moviesContainer');
