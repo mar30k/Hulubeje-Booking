@@ -22,7 +22,7 @@ builder.Services.AddHttpClient("BusBooking", httpClient =>
 });
 builder.Services.AddHttpClient("MovieDb", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("https://api.themoviedb.org/3/movie/");
+    httpClient.BaseAddress = new Uri("https://api.themoviedb.org/3/");
     httpClient.DefaultRequestHeaders.Add("x-api-key", "1ba83335ce22421020a77845254a578e");
 });
 builder.Services.AddControllersWithViews();
