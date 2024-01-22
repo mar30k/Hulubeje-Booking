@@ -1,106 +1,110 @@
 ﻿@model HulubejeBooking.Models.HotelModels.HotelListRequest
 <partial name="_Navigation" />
-<style>
-/*     @@import "bourbon";
- */
-    * {
-        box-sizing: border-box;
-    }
-
-    .login-form input {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 0;
-        outline: 0;
-        background: #f1f1f1;
-        font-weight: 300;
-        font-style: italic;
-        border-radius: 2px;
-    }
-
-    .login-wrapper {
-        width: 100%;
-    }
-
-    button {
-        padding: 8px 15px;
-        border: 0;
-        outline: 0;
-        color: #fff;
-        background: #063970;
-        font-size: 14px;
-        text-transform: uppercase;
-        border-radius: 4px;
-        box-shadow: 0 4px 0 darken(#063970, 5%);
-    }
-
-        button:active {
-            margin-top: 2px;
-            box-shadow: 0 2px 0 darken(#063970, 5%);
+<head>
+    <title>Hotel Home</title>
+    <style>
+        /*     @@import "bourbon";
+         */
+        * {
+            box-sizing: border-box;
         }
 
-    .login-container {
-        position: relative;
-        z-index: 1;
-    }
-
-    .login-form {
-        width: 100%;
-        display: none;
-        position: absolute;
-        padding: 20px;
-        margin-top: 10px;
-        background: #ddd;
-        border-radius: 4px;
-        box-shadow: 0 4px 0 darken(#ddd, 5%);
-    }
-
-        .login-form input:last-child {
-            margin-bottom: 0;
+        .login-form input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 0;
+            outline: 0;
+            background: #f1f1f1;
+            font-weight: 300;
+            font-style: italic;
+            border-radius: 2px;
         }
 
-    input[type="submit"] {
-        color: #fff;
-        background: gray;
-        font-style: normal;
-        box-shadow: 0 4px 0 darken(gray, 5%);
-    }
-
-    .login-form .dropdown-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-        .login-form .dropdown-content button {
-            margin: 0;
+        .login-wrapper {
+            width: 100%;
         }
 
-        .login-form .dropdown-content span {
-            margin: 0 10px;
+        button {
+            padding: 8px 15px;
+            border: 0;
+            outline: 0;
+            color: #fff;
+            background: #063970;
+            font-size: 14px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            box-shadow: 0 4px 0 darken(#063970, 5%);
         }
 
-    @@keyframes slide {
-        0% {
-            opacity: 0;
-            transform: translateY(20px);
+            button:active {
+                margin-top: 2px;
+                box-shadow: 0 2px 0 darken(#063970, 5%);
+            }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
         }
 
-        100% {
-            opacity: 1;
-            transform: translateY(0);
+        .login-form {
+            width: 100%;
+            display: none;
+            position: absolute;
+            padding: 20px;
+            margin-top: 10px;
+            background: #ddd;
+            border-radius: 4px;
+            box-shadow: 0 4px 0 darken(#ddd, 5%);
         }
-    }
 
-    .open {
-        animation: slide 1s;
-        display: block;
-    }
-</style>
+            .login-form input:last-child {
+                margin-bottom: 0;
+            }
+
+        input[type="submit"] {
+            color: #fff;
+            background: gray;
+            font-style: normal;
+            box-shadow: 0 4px 0 darken(gray, 5%);
+        }
+
+        .login-form .dropdown-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .login-form .dropdown-content button {
+                margin: 0;
+            }
+
+            .login-form .dropdown-content span {
+                margin: 0 10px;
+            }
+
+        @@keyframes slide {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .open {
+            animation: slide 1s;
+            display: block;
+        }
+    </style>
+</head>
+
 <div class="row" style="background-color:#063970;">
     <div class="container">
-        <header class="container-fluid" style="padding-top:5%">
+        <header class="container-fluid" style="padding-top: 2%" >
             <div>
                 <h1 style="color: white;">Find your next stay</h1>
                 <h4 style="color: white;">Search deals on hotels, homes, and much more...</h4>
@@ -114,10 +118,12 @@
             <div class="select" style="width:100%;">
                 <select class="form-select form form-control" id="city" data-tags="true" data-placeholder="Select an option" data-allow-clear="true" style="width:100%; height:60px; border-color:#FEBB02;">
                     <option>Choose a city </option>
-
-                    @foreach (var city in Model.CityNameList)
+                    @if (Model.CityNameList != null)
                     {
-                        <option value="@city.CityName">@city.CityName.ToUpper()</option>
+                        @foreach (var city in Model.CityNameList)
+                        {
+                            <option value="@city?.CityName">@city?.CityName?.ToUpper()</option>
+                        }
                     }
                 </select>
             </div>
@@ -187,7 +193,7 @@
         <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
         <label class="form-check-label" for="flexCheckDefault"> I'm traveling for work </label>
     </div>
-    <div class="row hotelInfo" hidden style=" display: none;">
+    @*<div class="row hotelInfo" hidden style=" display: none;">
         @foreach (var hotel in Model.HotelList)
         {
             <div class="col-md-6 mb-3">
@@ -205,32 +211,35 @@
                 </div>
             </div>
         }
-    </div>
+    </div>*@
 
     @{
         var random = new Random();
-        var shuffledHotels = Model.HotelList.OrderBy(x => random.Next()).Take(20).ToList();
+        var shuffledHotels = Model?.HotelList?.OrderBy(x => random.Next()).Take(20).ToList();
     }
 
     <div class="row mt-3">
-        @foreach (var hotel in shuffledHotels)
+        @if (shuffledHotels != null)
         {
-            <div class="col-md-6 mb-3">
-                <div class="card" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="@hotel.Attachments[0]" class="img-fluid rounded-start" alt="...">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">@hotel.BrandName</h5>
-                                <p class="card-text">The detail information will be posted here.</p>
-                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+            @foreach (var hotel in shuffledHotels)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@hotel?.Attachments[0]" class="img-fluid rounded-start" alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@hotel?.BrandName</h5>
+                                    <p class="card-text">The detail information will be posted here.</p>
+                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     </div>
 
@@ -478,6 +487,4 @@
 </script>
 
 
-@{
-    Html.RenderPartial("_Footer");
-}
+<partial name="_Footer" />
