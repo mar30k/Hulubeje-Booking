@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.CInemaModels;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Globalization;
@@ -7,10 +8,8 @@ namespace HulubejeBooking.Controllers
 {
     public class CinemaMovieDetailsController : Controller
     {
-        private readonly string apiKey = "1ba83335ce22421020a77845254a578e";
-        private readonly string baseUrl = "https://api.themoviedb.org/3/movie/";
+        private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly IHttpClientFactory _httpClientFactory;
-
         public CinemaMovieDetailsController(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -18,191 +17,136 @@ namespace HulubejeBooking.Controllers
         public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, int movieId, string backdropPath)
         {
-            try
+            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var _tmdbClient = _httpClientFactory.CreateClient("MovieDb");
+            var movieDetails = new MovieModel();
+            movieDetails.MovieCode = movieCode;
+            movieDetails.CompanyName = companyName;
+            movieDetails.Overview = sanitizedOverview;
+            movieDetails.PosterUrl = posterUrl;
+            movieDetails.MovieName = movieName;
+            movieDetails.BackdropPath = backdropPath;
+            movieDetails.SelectedDate = selectedDate;
+            var videosApiUrl = $"movie/{movieId}/videos?api_key={_tmdbApiKey}";
+            HttpResponseMessage videosResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + videosApiUrl);
+            if (videosResponse.IsSuccessStatusCode)
             {
-                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-                // Construct the API URL for videos
-                string videosApiUrl = $"{baseUrl}{movieId}/videos?api_key={apiKey}";
+                string videosResponseData = await videosResponse.Content.ReadAsStringAsync();
+                var videosResponseObj = JsonConvert.DeserializeObject<dynamic>(videosResponseData);
 
-                // Make the API call for videos
-                using HttpClient client = new();
-                HttpResponseMessage videosResponse = await client.GetAsync(videosApiUrl);
-
-                if (videosResponse.IsSuccessStatusCode)
+                string? trailerKey = null;
+                if (videosResponseObj != null)
                 {
-                    // Read and parse the videos response content
-                    string videosResponseData = await videosResponse.Content.ReadAsStringAsync();
-                    var videosResponseObj = JsonConvert.DeserializeObject<dynamic>(videosResponseData);
-
-                    // Extract the key of the first trailer
-                    string? trailerKey = null;
-                    if (videosResponseObj != null)
+                    foreach (var result in videosResponseObj.results)
                     {
-                        foreach (var result in videosResponseObj.results)
+                        if (result.type == "Trailer" && result.site == "YouTube")
                         {
-                            if (result.type == "Trailer" && result.site == "YouTube")
-                            {
-                                trailerKey = result.key.ToString();
-                                break;
-                            }
+                            trailerKey = result.key.ToString();
+                            break;
                         }
-
                     }
-                    // Construct the API URL for movie details
-                    string detailsApiUrl = $"{baseUrl}{movieId}?api_key={apiKey}&append_to_response=release_dates";
 
-                    // Make the API call for movie details
-                    HttpResponseMessage detailsResponse = await client.GetAsync(detailsApiUrl);
+                }
+                movieDetails.YoutubeKey = trailerKey;
+            }
+            string detailsApiUrl = $"movie/{movieId}?api_key={_tmdbApiKey}&append_to_response=release_dates";
+            HttpResponseMessage detailsResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + detailsApiUrl);
 
-                    if (detailsResponse.IsSuccessStatusCode)
+            if (detailsResponse.IsSuccessStatusCode)
+            {
+                // Read and parse the movie details response content
+                string detailsResponseData = await detailsResponse.Content.ReadAsStringAsync();
+                        
+                var movieDetail = JsonConvert.DeserializeObject<MovieModel>(detailsResponseData);
+                if (movieDetail != null)
+                {
+                    movieDetails.RunTime = movieDetail.RunTime;
+                    movieDetails.Genres = movieDetail.Genres;
+                }
+            }
+            string castApiUrl = $"movie/{movieId}/credits?api_key={_tmdbApiKey}";
+            HttpResponseMessage castResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + castApiUrl);
+
+            if (castResponse.IsSuccessStatusCode)
+            {
+                string castResponseData = await castResponse.Content.ReadAsStringAsync();
+                var castDetails = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(castResponseData);
+                if (castDetails != null)
+                {
+                    var castList = ((IEnumerable<dynamic>)castDetails["cast"])
+                    .Select(c => new CastMember
                     {
-                        // Read and parse the movie details response content
-                        string detailsResponseData = await detailsResponse.Content.ReadAsStringAsync();
-                        var movieDetails = JsonConvert.DeserializeObject<MovieModel>(detailsResponseData);
+                        Name = c["name"].ToString(),
+                        ProfilePath = "https://image.tmdb.org/t/p/w500" + c["profile_path"].ToString()
+                    })
+                    .ToList();
+                    movieDetails.Cast = castList;                                }
+            }
+            var productsApiUrl = $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={selectedDate:yyyy-MM-dd}";
+            HttpResponseMessage productsResponse = await _client.GetAsync(_client.BaseAddress + productsApiUrl);
+            if (productsResponse.IsSuccessStatusCode)
+            {
+                string productsResponseData = await productsResponse.Content.ReadAsStringAsync();
+                var movieList = JsonConvert.DeserializeObject<List<MovieModel>>(productsResponseData);
+                if (movieList != null)
+                {
+                    var movieInfo = movieList.FirstOrDefault(m =>
+                        string.Equals(m.MovieName, movieName, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(m.CompanyName, companyName, StringComparison.OrdinalIgnoreCase));
 
-                        // Set additional properties in your MovieModel
+                    if (movieInfo != null && movieDetails != null)
+                    {
+                        movieDetails.CompanyTinNumber = movieInfo?.CompanyTinNumber;
+                        movieDetails.BranchCode = movieInfo?.BranchCode;
+                        movieDetails.ArticleCode = movieInfo?.ArticleCode;
+                    }
+                }
+            }
+
+            var retrievedCompanyTinNumber = movieDetails?.CompanyTinNumber;
+            var retrievedBranchCode = movieDetails?.BranchCode;
+
+            string schedulesApiUrl = $"/cinema/cinemaSchedules?orgTin={retrievedCompanyTinNumber}&date={selectedDate:yyyy-MM-dd} 11:11:11.326116&branchCode={retrievedBranchCode}";
+
+
+            HttpResponseMessage schedulesResponse = await _client.GetAsync(_client.BaseAddress + schedulesApiUrl);
+
+            if (schedulesResponse.IsSuccessStatusCode)
+            {
+                // Read and parse the cinema schedules response content
+                string schedulesResponseData = await schedulesResponse.Content.ReadAsStringAsync();
+                var schedulesResponseObj = JsonConvert.DeserializeObject<dynamic>(schedulesResponseData);
+                // Find schedules for the selected movie using the movie name
+                if (schedulesResponseObj is not null)
+                {
+                    var selectedMovie = ((IEnumerable<dynamic>)schedulesResponseObj.movies)
+                                        .FirstOrDefault(m => m.movieName != null && m.movieName.ToString().Equals(movieName, StringComparison.OrdinalIgnoreCase));
+                    if (selectedMovie != null)
+                    {
+                        List<MovieSchedule> schedules = JsonConvert.DeserializeObject<List<MovieSchedule>>(selectedMovie.movieSchedules.ToString());
+                        var pgRating = selectedMovie.pgRating;
+
+
+                        CultureInfo cultureInfo = CultureInfo.InvariantCulture;
+                        string format24Hours = "hh:mm:ss tt";
                         if (movieDetails != null)
                         {
-                            movieDetails.MovieCode = movieCode;
-                            movieDetails.CompanyName = companyName;
-                            movieDetails.Overview = sanitizedOverview;
-                            movieDetails.PosterUrl = posterUrl;
-                            movieDetails.MovieName = movieName;
-                            movieDetails.BackdropPath = backdropPath;
-                            movieDetails.YoutubeKey = trailerKey; // Add the YoutubeKey property
-                            movieDetails.SelectedDate = selectedDate;
-                            string castApiUrl = $"{baseUrl}{movieId}/credits?api_key={apiKey}";
-                            HttpResponseMessage castResponse = await client.GetAsync(castApiUrl);
-
-                            if (castResponse.IsSuccessStatusCode)
+                            movieDetails.Schedules = await Task.Run(() =>
                             {
-                                string castResponseData = await castResponse.Content.ReadAsStringAsync();
-                                var castDetails = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(castResponseData);
-                                if (castDetails != null)
-                                {
-                                    var castList = ((IEnumerable<dynamic>)castDetails["cast"])
-                                    .Select(c => new CastMember
-                                    {
-                                        Name = c["name"].ToString(),
-                                        ProfilePath = "https://image.tmdb.org/t/p/w500" + c["profile_path"].ToString()
-                                    })
+                                var orderedSchedules = schedules
+                                    .Where(e => e.StartTime != null)
+                                    .OrderBy(e => DateTime.ParseExact(e.StartTime!.ToString(), format24Hours, cultureInfo))
                                     .ToList();
-                                    movieDetails.Cast = castList;
-                                }
-                            }
-                        }
-                        HttpResponseMessage productsResponse = await _client.GetAsync(_client.BaseAddress + $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={selectedDate:yyyy-MM-dd}");
-                        if (productsResponse.IsSuccessStatusCode)
-                        {
-                            string productsResponseData = await productsResponse.Content.ReadAsStringAsync();
-                            var movieList = JsonConvert.DeserializeObject<List<MovieModel>>(productsResponseData);
-                            if (movieList != null)
-                            {
-                                var movieInfo = movieList.FirstOrDefault(m => m.MovieName == movieName && m.CompanyName == companyName);
-                                if (movieInfo != null && movieDetails != null)
-                                {
-                                    movieDetails.CompanyTinNumber = movieInfo.CompanyTinNumber;
-                                    movieDetails.BranchCode = movieInfo.BranchCode; 
-                                    movieDetails.ArticleCode = movieInfo.ArticleCode;
-                                }
 
+                                return orderedSchedules;
+                            });
 
-                                if (movieInfo != null)
-                                {
-                                    // Retrieve company tin number and branch code
-                                    var retrievedCompanyTinNumber = movieInfo.CompanyTinNumber;
-                                    var retrievedBranchCode = movieInfo.BranchCode;
-
-                                    // Use the retrieved information for the schedules API call
-                                    string schedulesApiUrl = $"/cinema/cinemaSchedules?orgTin={retrievedCompanyTinNumber}&date={selectedDate:yyyy-MM-dd} 11:11:11.326116&branchCode={retrievedBranchCode}";
-
-
-                                    HttpResponseMessage schedulesResponse = await _client.GetAsync(_client.BaseAddress + schedulesApiUrl);
-
-                                    if (schedulesResponse.IsSuccessStatusCode)
-                                    {
-                                        // Read and parse the cinema schedules response content
-                                        string schedulesResponseData = await schedulesResponse.Content.ReadAsStringAsync();
-                                        var schedulesResponseObj = JsonConvert.DeserializeObject<dynamic>(schedulesResponseData);
-                                        // Find schedules for the selected movie using the movie name
-                                        if (schedulesResponseObj is not null)
-                                        {
-                                            var selectedMovie = ((IEnumerable<dynamic>)schedulesResponseObj.movies)
-                                                .FirstOrDefault(m => m.movieName == movieName); if (selectedMovie != null)
-                                            {
-                                                // Extract schedules from the response
-                                                List<MovieSchedule> schedules = JsonConvert.DeserializeObject<List<MovieSchedule>>(selectedMovie.movieSchedules.ToString());
-                                                var pgRating = selectedMovie.pgRating;
-
-                                                // Add schedules to the MovieModel
-                                                if (movieDetails is not null)
-                                                {
-                                                    CultureInfo cultureInfo = CultureInfo.InvariantCulture;
-                                                    string format24Hours = "hh:mm:ss tt";
-
-                                                    movieDetails.Schedules = await Task.Run(() =>
-                                                    {
-                                                        var orderedSchedules = schedules
-                                                            .Where(e => e.StartTime != null)
-                                                            .OrderBy(e => DateTime.ParseExact(e.StartTime!.ToString(), format24Hours, cultureInfo))
-                                                            .ToList();
-
-                                                        return orderedSchedules;
-                                                    });
-
-                                                    movieDetails.PgRating = pgRating;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                // Handle case where schedules for the selected movie are not found
-                                                return View(null);
-                                            }
-                                        }
-
-
-
-                                    }
-                                }
-                                else
-                                {
-                                    // Handle schedules API error
-                                    return View(null);
-                                }
-
-                                // Return the MovieDetails view with the combined model
-                                return View(movieDetails);
-                            }
-                            else
-                            {
-                                // Handle case where movie information is not found in the response
-                                return View(null);
-                            }
-
-                        }
-                        else
-                        {
-                            // Handle products API error
-                            return View(null);
+                            movieDetails.PgRating = pgRating;
                         }
                     }
-                    else
-                    {
-                        // Handle movie details API error
-                        return View(null);
-                    }
-                }
-                else
-                {
-                    // Handle videos API error
-                    return View(null);
                 }
             }
-            catch (Exception)
-            {
-                // Handle general exception
-                return View(null);
-            }
+            return View(movieDetails);   
         }
     }
 }
