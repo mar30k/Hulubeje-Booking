@@ -19,14 +19,16 @@ namespace HulubejeBooking.Controllers
         {
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var _tmdbClient = _httpClientFactory.CreateClient("MovieDb");
-            var movieDetails = new MovieModel();
-            movieDetails.MovieCode = movieCode;
-            movieDetails.CompanyName = companyName;
-            movieDetails.Overview = sanitizedOverview;
-            movieDetails.PosterUrl = posterUrl;
-            movieDetails.MovieName = movieName;
-            movieDetails.BackdropPath = backdropPath;
-            movieDetails.SelectedDate = selectedDate;
+            var movieDetails = new MovieModel
+            {
+                MovieCode = movieCode,
+                CompanyName = companyName,
+                Overview = sanitizedOverview,
+                PosterUrl = posterUrl,
+                MovieName = movieName,
+                BackdropPath = backdropPath,
+                SelectedDate = selectedDate
+            };
             var videosApiUrl = $"movie/{movieId}/videos?api_key={_tmdbApiKey}";
             HttpResponseMessage videosResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + videosApiUrl);
             if (videosResponse.IsSuccessStatusCode)
