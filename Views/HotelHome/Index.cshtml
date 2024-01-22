@@ -237,7 +237,55 @@
 </div>
 
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@* <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> *@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
 <script>
+    // jQuery(document).ready(function ($) {
+    //     $("#form").select2({
+    //         tags: true,
+    //         placeholder: "Select an option",
+    //         allowClear: true,
+    //     });
+
+    //     var datepicker = $('#date-range-picker');
+    //     datepicker.daterangepicker({
+    //         opens: 'left',
+    //         autoApply: true,
+    //         locale: {
+    //             format: 'MM/DD/YYYY',
+    //         },
+    //         startDate: moment().startOf('day'),
+    //         endDate: moment().startOf('day').add(1, 'days'),
+    //     });
+
+    //     datepicker.on('apply.daterangepicker', function (ev, picker) {
+    //         if (picker.startDate && picker.endDate) {
+    //             datepicker.attr('placeholder', "Checkin" + ' - ' + "Checkout");
+    //         } else {
+    //             datepicker.attr('placeholder', 'Checkin-Checkout');
+    //         }
+    //     });
+
+    //     $('#login-button').click(function (e) {
+    //         e.stopPropagation();
+    //         $('.login-form').toggleClass('open');
+    //     });
+
+    //     $(document).click(function () {
+    //         $('.login-form').removeClass('open');
+    //     });
+
+    //     $('.login-container').click(function (e) {
+    //         e.stopPropagation();
+    //     });
+    // });
     jQuery(document).ready(function ($) {
         $("#form").select2({
             tags: true,
@@ -277,6 +325,7 @@
             e.stopPropagation();
         });
     });
+
 
     function changeValue(category, action) {
         var countElement = $('#' + category + 'Count');
