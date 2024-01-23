@@ -66,6 +66,7 @@
         }
         @foreach (var passenger in Model)
         {
+
             <div class="mb-4">
                 <div class="card border-primary h-100 p-2">
                     <div class="card-body ">
@@ -78,10 +79,9 @@
                                 <p class="card-text mb-0"><strong>Age</strong>  <span class="float-right">@passenger.PassengerAge</span></p>
                                 <p class="card-text mb-0"><strong>Nationality:</strong>  <span class="float-right">@passenger.Nationality</span></p>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4" id="passenger-@count">
                                 <p class="card-text mb-0"><strong>Gender:</strong>  <span class="float-right">@passenger.Gender</span></p>
-                                <p class="card-text mb-0"><strong>Phone Number:</strong>  <span class="float-right">@passenger.PhoneNumber</span></p>
-
+                                <p class="card-text mb-0"><strong>Phone Number:</strong>  <span class="float-right " >@passenger.PhoneNumber </span></p>
                             </div>
                             <div class="col-md-4">
                                 <p class="card-text mb-0"><strong>ID Number </strong>  <span class="float-right">@passenger.PassengerId</span></p>
@@ -97,5 +97,43 @@
             count += 1;
         }
     </div>
+    <div style="display: flex;
+            justify-content: center;
+            align-items: center;">
+        <button type="submit" id="confirmButton" class="btn btn-success mb-2">Confirm</button>
+
+    </div>
 </div>
 <partial name="_Footer" />
+<script>
+    var Tarrif = "@ViewBag.Tariff";
+    var index = Tarrif.indexOf(' ');
+    var result = (index > 0) ? Tarrif.substring(0, index) : Tarrif;
+    var passengerId = '#passenger-1';
+    var userMobileNumber = $(passengerId + ' .float-right').eq(1).text();
+    console.log("userMobileNumber: " + userMobileNumber);
+
+    $('#confirmButton').on('click', function () {
+        var data = {
+            AuthorizePaymentData: {
+                UserMobileNumber: userMobileNumber,
+                SupplierTin: '0058055734',
+                SupplierOUD: 'OUD000000049',
+                Amount: result
+            },
+        };
+        console.log("data" ,data)
+        $.ajax({
+            url: '/PaymentHome/Index',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (/* response */) {
+                window.location.href = "/PaymentOptions/PaymentOption";
+            },
+            error: function (error) {
+                console.error('Error:', error);  
+            }
+        });
+    });
+</script>
