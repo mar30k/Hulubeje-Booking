@@ -252,7 +252,7 @@
                                 <input id="filter-max-value" type="range" class="max-price" value="5000" min="10" max="5000" step="10" />
                             </div>
                         </div>
-                        <div class=" col-md-6 " style="border: 1px solid #928F63;">
+                        <div class=" col-md-6  filter" style="border: 1px solid #928F63;">
                             <div>
                                 <input type="checkbox" id="default" name="default" value=" ">
                                 <label for="default">Default</label>
@@ -389,13 +389,14 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZwT" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@* <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> *@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 
 <script>
     $(document).ready(function () {
@@ -571,32 +572,69 @@
         });
     });
 
+    $(document).ready(function () {
+        // Use event delegation for dynamically added elements
+        $(document).on('change', '.filter input[type="checkbox"]', function () {
+            $('.filter input[type="checkbox"]').not(this).prop('checked', false);
+
+            if ($(this).is(':checked')) {
+                var sortBy = $(this).attr('id');
+                sortCards(sortBy);
+            }
+        });
+
+        function sortCards(sortBy) {
+            var $cardsContainer = $('.filter');
+            var $cards = $cardsContainer.children('.cardH');
+
+            $cards.sort(function (cardA, cardB) {
+                var valueA = parseFloat($(cardA).data('min-room-value')) || 0;
+                var valueB = parseFloat($(cardB).data('min-room-value')) || 0;
+
+                return sortBy === 'lowToHigh' ? valueA - valueB : valueB - valueA;
+            });
+
+            $cards.detach().appendTo($cardsContainer);
+        }
+    });
+
+
+
     // $(document).ready(function () {
-    //     $('.viewAvailabilityBtn').click(function () {
-    //         var orgTin = $(this).data('org-tin');
-    //         var oud = $(this).data('oud');
-    //         sessionStorage.setItem('hotelName', $(this).data('hotel'));
-    //         sessionStorage.setItem('branchName', $(this).data('branch'));
-    //         sessionStorage.setItem('orgTin', orgTin);
-    //         sessionStorage.setItem('oud', oud);
+    //     // Use event delegation for dynamically added elements
+    //     $(document).on('change', '.filter input[type="checkbox"]', function () {
+    //         $('.filter input[type="checkbox"]').not(this).prop('checked', false);
 
-    //         var Date = sessionStorage.getItem('Date');
-    //         var adultCount = sessionStorage.getItem('adultCount');
-    //         var childCount = sessionStorage.getItem('childCount');
-    //         var roomCount = sessionStorage.getItem('roomCount');
-
-    //         var form = $('<form action="/Home/Availability" method="post">' +
-    //             '<input type="hidden" name="orgTin" value="' + orgTin + '" />' +
-    //             '<input type="hidden" name="Date" value="' + Date + '" />' +
-    //             '<input type="hidden" name="adultCount" value="' + adultCount + '" />' +
-    //             '<input type="hidden" name="childCount" value="' + childCount + '" />' +
-    //             '<input type="hidden" name="roomCount" value="' + roomCount + '" />' +
-    //             '<input type="hidden" name="oud" value="' + oud + '" />' +
-    //             '</form>');
-    //         $('body').append(form);
-    //         form.submit();
+    //         if ($(this).is(':checked')) {
+    //             var sortBy = $(this).attr('id');
+    //             sortCards(sortBy);
+    //         }
     //     });
+
+    //     function sortCards(sortBy) {
+    //         var $cardsContainer = $('.filter');
+    //         var $cards = $cardsContainer.children('.cardH');
+
+    //         $cards.sort(function (cardA, cardB) {
+    //             var valueA = parseFloat($(cardA).data('min-room-value')) || 0;
+    //             var valueB = parseFloat($(cardB).data('min-room-value')) || 0;
+
+    //             if (sortBy === 'lowToHigh') {
+    //                 return valueA - valueB;
+    //             } else if (sortBy === 'highToLow') {
+    //                 return valueB - valueA;
+    //             } else {
+    //                 // Default sorting (no specific checkbox selected)
+    //                 return 0;
+    //             }
+    //         });
+
+    //         $cards.detach().appendTo($cardsContainer);
+    //     }
     // });
+
+
+   
 
 
 </script>
