@@ -1,0 +1,93 @@
+﻿<partial name="_Navigation" />
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="mb-3">
+                <h5 class="h5">Signup</h5>
+            </div>
+            <section class="vh-100 ">
+                <div class="mask d-flex align-items-center gradient-custom-3">
+                    <form id="guestForm">
+
+                        <div class="form-group">
+                            <label for="name">First Name</label>
+                            <input type="text" class="form-control" id="name" placeholder=" First Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="middle">Middle Name</label>
+                            <input type="text" class="form-control" id="middle" placeholder=" Middle Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="last">Last Name</label>
+                            <input type="text" class="form-control" id="last" placeholder=" Last Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="Phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Email">
+                        </div>
+                        <div class="form-group">
+                            <label for="date">Date of birth</label>
+                            <input type="date" class="form-control" id="date" placeholder=" Your birth date">
+                        </div>
+                        <div class="form-row" >
+                            <div class="form-group col-md-6">
+                                <label>Gender</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="male" name="gender" value="Male">
+                                    <label class="form-check-label" for="male">Male</label>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6" >
+                                <label>&nbsp;</label>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="female" name="gender" value="Female">
+                                    <label class="form-check-label" for="female">Female</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="idType">Id type</label>
+                            <select class="form-select operator" id="idType">
+                                <option selected>...</option>
+                                <option>Passport</option>
+                                <option>Driver's license</option>
+                                <option>Kebele Id</option>
+                                <option>Student Id</option>
+
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="idNo">Id Number</label>
+                            <input type="text" class="form-control" id="idNo" placeholder="Id Number">
+                        </div>
+                        <div class="form-group">
+                            <label for="idPic">Identification Photo</label>
+                            <input type="file" class="form-control" id="idPic" accept=".png, .jpg, .jpeg, .bmp, .webp, .svg, .tiff, .ico" placeholder="Identification Photo">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Choose password">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-2">
+                            Submit
+                        </button>
+
+                    </form>
+                </div>
+            </section>
+        </div>
+</div>
+</div>
+<script>
+
+</script>
+
+<partial name="_Footer" />
