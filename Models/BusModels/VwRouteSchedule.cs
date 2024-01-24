@@ -1,10 +1,11 @@
-﻿namespace HulubejeBooking.Models.BusModels
+﻿using HulubejeBooking.Models.BusModels;
+namespace HulubejeBooking.Models.BusModels
 {
     public class VwRouteSchedule
     {
         public int Id { get; set; }
 
-        public DateTime Date { get; set; }
+        public string? Date { get; set; }
 
         public int Route { get; set; }
 
@@ -124,6 +125,12 @@
         public string? DestCityName { get; set; }
         public string? DestinationTerminalName { get; set; }
         public string? DepatureCity { get; set; }
-
+        public string? OperatorName { get; set; }
+        public string? Terminal { get; set; } 
+    }
+    public class Wrap
+    {
+        public VwRouteSchedule? VwRouteScheduleData { get; set; }
+        public List<PassengerModel>? PassengerModelData { get; set; }
     }
 }
