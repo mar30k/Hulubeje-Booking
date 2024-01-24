@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using Payment.Controllers;
 using HulubejeBooking.Models.HotelModels;
 using HulubejeBooking.Controllers.HotelController;
+using HulubejeBooking.Models.PaymentModels.BusPaymentModel;
 
 namespace HulubejeBooking.Controllers.Payment.HotlePayment
 {
@@ -32,7 +33,8 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
             var validation = new RequestWrapper 
             {
                 GuestInfoData = data.GuestInfoData,
-                CinemaDetailsData = data.CinemaDetailsData
+                CinemaDetailsData = data.CinemaDetailsData,
+                PassengerInfoData = data.PassengerInfoData
             };
             var validationJson = JsonConvert.SerializeObject(validation);
             HttpContext.Session.SetString("Data", validationJson);
