@@ -6,7 +6,7 @@
         public int? Agent { get; set; }
         public List<TicketDetail>? TicketDetail { get; set; }
         public int? RouteSchedule { get; set; }
-        public DateTime RouteScheduleDate { get; set; }
+        public string? RouteScheduleDate { get; set; }
         public int? PaymentMethod { get; set; }
         public int? PaymentProcessor { get; set; }
         public string? Payer { get; set; }

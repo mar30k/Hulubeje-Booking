@@ -156,7 +156,7 @@
             if (selectedButtonsCount >= 1) {
                 var form = $('<form action="/BusPassengerInfo/PassengerInfo" method="Post"></form>');
                 selectedButtons.forEach(function (seatName) {
-                    form.append('<input type="hidden" name="selectedButtons" value="' + seatName + '">');
+                    form.append('<input type="hidden" name="seatName" value="' + seatName + '">');
                 });
 
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');

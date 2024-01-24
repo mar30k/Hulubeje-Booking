@@ -1,5 +1,6 @@
 ﻿using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
 using HulubejeBooking.Models.PaymentModels.CinemaPaymentModel;
+using HulubejeBooking.Models.PaymentModels.BusPaymentModel;
 namespace HulubejeBooking.Models.PaymentModels
 {
     public class AuthorizePayment
@@ -25,7 +26,7 @@ namespace HulubejeBooking.Models.PaymentModels
         public TransactionModel TransactionData { get; set; }
         public GuestInfoModel GuestInfoData { get; set; }
         public CinemaDetails CinemaDetailsData { get; set; }
-
+        public PassengerInfo PassengerInfoData { get; set; }
     }
 
 }
