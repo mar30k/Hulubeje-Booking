@@ -193,29 +193,10 @@
         <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
         <label class="form-check-label" for="flexCheckDefault"> I'm traveling for work </label>
     </div>
-    @*<div class="row hotelInfo" hidden style=" display: none;">
-        @foreach (var hotel in Model.HotelList)
-        {
-            <div class="col-md-6 mb-3">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="@hotel.Attachments[0]" class="img-fluid rounded-start" alt="...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">@hotel.BrandName</h5>
-                            <p class="card-text">The detail information will be posted here.</p>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>*@
 
     @{
         var random = new Random();
-        var shuffledHotels = Model?.HotelList?.OrderBy(x => random.Next()).Take(20).ToList();
+        var shuffledHotels = Model?.filteredCompany?.OrderBy(x => random.Next()).Take(20).ToList();
     }
 
     <div class="row mt-3">
@@ -223,24 +204,26 @@
         {
             @foreach (var hotel in shuffledHotels)
             {
-                <div class="col-md-6 mb-3">
-                    <div class="card" 
-                        
-                        style="max-width: 540px;">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="@hotel?.Attachments[0]" class="img-fluid rounded-start" alt="...">
+
+                <!-- Add an "id" attribute to uniquely identify each card -->
+                <div class="card clickable-card" style="max-width: 540px;" data-bs-toggle="modal" data-bs-target="#hotelModal">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="@hotel?.attachments[0]" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@hotel?.brandName</h5>
+                                <p class="card-text">@* The detail information will be posted here. *@ @hotel?.oud and @hotel?.TIN</p>
+                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
                             </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">@hotel?.BrandName</h5>
-                                    <p class="card-text">The detail information will be posted here.</p>
-                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                                </div>
-                            </div>
+                            <button class="btn btn-primary btn-sm" id="cardB"
+                            data-oud="@hotel?.oud"
+                            data-org-tin="@hotel?.TIN">check this hotel</button>
                         </div>
                     </div>
                 </div>
+
             }
         }
     </div>
@@ -258,45 +241,7 @@
 
 
 <script>
-    // jQuery(document).ready(function ($) {
-    //     $("#form").select2({
-    //         tags: true,
-    //         placeholder: "Select an option",
-    //         allowClear: true,
-    //     });
 
-    //     var datepicker = $('#date-range-picker');
-    //     datepicker.daterangepicker({
-    //         opens: 'left',
-    //         autoApply: true,
-    //         locale: {
-    //             format: 'MM/DD/YYYY',
-    //         },
-    //         startDate: moment().startOf('day'),
-    //         endDate: moment().startOf('day').add(1, 'days'),
-    //     });
-
-    //     datepicker.on('apply.daterangepicker', function (ev, picker) {
-    //         if (picker.startDate && picker.endDate) {
-    //             datepicker.attr('placeholder', "Checkin" + ' - ' + "Checkout");
-    //         } else {
-    //             datepicker.attr('placeholder', 'Checkin-Checkout');
-    //         }
-    //     });
-
-    //     $('#login-button').click(function (e) {
-    //         e.stopPropagation();
-    //         $('.login-form').toggleClass('open');
-    //     });
-
-    //     $(document).click(function () {
-    //         $('.login-form').removeClass('open');
-    //     });
-
-    //     $('.login-container').click(function (e) {
-    //         e.stopPropagation();
-    //     });
-    // });
     jQuery(document).ready(function ($) {
         $("#form").select2({
             tags: true,
@@ -468,21 +413,35 @@
             form.append('<input type="hidden" name="childrenCount" value="' + childrenCount + '" />');
             form.append('<input type="hidden" name="roomsCount" value="' + roomsCount + '" />');
             form.append('<input type="hidden" name="numberOfNights" value="' + numberOfNights + '" />');
-            // $.ajax({
-            //     url: '/HotelHome/HotelList',
-            //     type: 'POST',
-            //     contentType: 'application/json',
-            //     data: JSON.stringify(formData),
-            //     success: function () {
-            //             window.location.href = '/FilteredHotels/Index';
-            //     },
-            //     error: function (error) {   
-            //         console.error('Error:', error);
-            //     }
-            // });
+            
             $('body').append(form);
 
             form.submit();
+        });
+
+    });
+
+    $(document).ready(function () {
+        $('#cardB').on('click', function () {
+            var data = 
+            {
+                oud: $(this).data('oud'),
+                orgTin: $(this).data('orgTin')
+            }; 
+
+            $.ajax({
+                url: '/HotelHome/Hoteldetail',
+                 type: 'POST',
+                 contentType: 'application/json',
+                 data: JSON.stringify(data),
+                 success: function () {
+                    console.log('the data has been sent successfully');
+                    window.location.href = "/HotelHome/HoteldetailView";
+                 },
+                 error: function (error) {
+                     console.error('Error:', error);
+                 }
+             });
         });
 
     });

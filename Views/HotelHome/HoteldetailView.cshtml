@@ -1,0 +1,50 @@
+﻿<partial name="_Navigation" />
+@model HulubejeBooking.Models.HotelModels.HotelDetailModel
+<div class="container">
+	@if (Model is not null)
+	{
+		<div class="row g-1">
+			<div class="d-flex flex-wrap">
+				<p>@Model.note</p>
+                @foreach (var paymentMethod in Model.paymentOptions)
+                {
+                    <div class="col-md-6 mb-3">
+                        <div class="card" style="max-width: 540px;">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="@paymentMethod.PaymentMethodImage" class="img-fluid rounded-start" alt="PaymentProviderOrganizationName">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@paymentMethod.PaymentMethodName</h5>
+                                        <p class="card-text price">@paymentMethod.PaymentMethodName</p>
+                                        <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                      @*   <button class="btn btn-primary btn-sm payment" id="payment"
+                                                data-operation-mode="@paymentMethod.operationMode"
+                                                data-payment-provider-org-unit-def="@paymentMethod.paymentProviderOrgUnitDef">
+                                            Pay
+                                        </button> *@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                }
+				@foreach (var amenity in Model?.aminities)
+				{
+					<div class="col-lg-2 col-md-3 col-sm-4 mb-2" style="padding-left: 5px; padding-right: 5px;">
+						<div class="border">
+							<div class="d-flex align-items-center">
+								<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+								<span>@amenity.Name</span>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	}
+</div>
+
+<partial name="_Footer" />

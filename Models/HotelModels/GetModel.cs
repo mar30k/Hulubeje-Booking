@@ -47,5 +47,6 @@
         public List<GetModel> HotelList { get; set; }
         public List<CityData> cityName { get; set; }
         public List<CityData>? CityNameList { get; internal set; }
+        public List<FilteredCompany> filteredCompany { get; set; }
     }
 }

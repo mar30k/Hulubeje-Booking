@@ -36,7 +36,7 @@ namespace HulubejeBooking.Controllers.HotelController
             {
                 string data = await response.Content.ReadAsStringAsync();
                 hotels = JsonConvert.DeserializeObject<List<GetModel>>(data);
-
+                
 
                 HttpResponseMessage response2 = await _client.GetAsync(_client.BaseAddress + "/Industry/GetCitiesForHotelFilter");
                 if (response2.IsSuccessStatusCode)
@@ -45,15 +45,52 @@ namespace HulubejeBooking.Controllers.HotelController
                     country = JsonConvert.DeserializeObject<List<CityData>>(data2);
                 }
 
-
-                viewModel = new HotelListRequest
-                {
-                    HotelList = hotels,
-                    CityNameList = country
-                };
+                
             }
 
             _hotelListBuffer._hotels = hotels;
+
+            var dataList = new List<GetModel>();
+            dataList = _hotelListBuffer._hotels;
+
+            if (dataList != null)
+            {
+                var filteredCompanies = dataList
+                    .SelectMany(hotel =>
+                        hotel.Branches
+                            .Select(branch =>
+                                new FilteredCompany
+                                {
+                                    isSponsored = hotel.IsSponsored,
+                                    code = hotel.Code,
+                                    tradeName = hotel.TradeName,
+                                    brandName = hotel.BrandName ?? hotel.TradeName,
+                                    industryType = hotel.IndustryType,
+                                    rating = hotel.Rating,
+                                    TIN = hotel.TIN,
+                                    attachments = hotel.Attachments,
+                                    registerDate = hotel.RegisterDate,
+                                    isTaxInclusive = hotel.IsTaxInclusive,
+                                    termsAndConditionUrl = hotel.TermsAndConditionsUrl,
+                                    ratingCount = (int)hotel.RatingCount,
+                                    oud = branch.Code,
+                                    branchName = branch.BranchName,
+                                    branchCategory = branch.Category
+                                }
+                            )
+                    )
+                    .ToList();
+
+                        viewModel = new HotelListRequest
+                        {
+                            filteredCompany = filteredCompanies,
+                            CityNameList = country
+                        };
+            }
+            
+
+
+
 
             return View(viewModel);
         }
@@ -205,5 +242,62 @@ namespace HulubejeBooking.Controllers.HotelController
                 return Json(new AvailabilityViewModel());
             }
         }
+
+        public async Task<IActionResult> Hoteldetail([FromBody] RoomFormData roomFormData)
+        {
+            try
+            {
+                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+
+                var orgTin = roomFormData.orgTin;
+                var oud = roomFormData.oud;
+
+                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Industry/GetCompanyBranchDetail?orgTin={orgTin}&branchCode={oud}&industryType=LKUP000000451");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Assuming you have a model to represent the data received from the API
+                    string content = await response.Content.ReadAsStringAsync();
+                   var hotel = JsonConvert.DeserializeObject<HotelDetailModel>(content);
+
+                    var viewModelJson = JsonConvert.SerializeObject(hotel);
+
+                    HttpContext.Session.SetString("hotelDetail", viewModelJson);
+
+
+                    return Json(new HotelDetailModel());
+                }
+                else
+                {
+                    
+                    return View(); // Replace "ErrorView" with the name of your error view
+                }
+            }
+            catch (Exception ex)
+            {
+               return View("ErrorView");
+            }
+        }
+
+        public IActionResult HoteldetailView()
+        {
+
+            var value = HttpContext.Session.GetString("hotelDetail");
+            if (!string.IsNullOrEmpty(value))
+            {
+                HttpContext.Session.Remove("HotelViewModel");
+
+                var viewModel = JsonConvert.DeserializeObject<HotelDetailModel>(value);
+
+                return View(viewModel);
+            }
+            else
+            {
+                return View("Error View");
+            }
+        }
+
+
+
     }
 }
