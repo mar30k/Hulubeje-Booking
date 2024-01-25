@@ -217,7 +217,7 @@
                                 <p class="card-text">@* The detail information will be posted here. *@ @hotel?.oud and @hotel?.TIN</p>
                                 <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
                             </div>
-                            <button class="btn btn-primary btn-sm" id="cardB"
+                            <button class="btn cardB btn-primary btn-sm" id="cardB"
                             data-oud="@hotel?.oud"
                             data-org-tin="@hotel?.TIN">check this hotel</button>
                         </div>
@@ -422,7 +422,7 @@
     });
 
     $(document).ready(function () {
-        $('#cardB').on('click', function () {
+        $('.cardB').on('click', function () {
             var data = 
             {
                 oud: $(this).data('oud'),
