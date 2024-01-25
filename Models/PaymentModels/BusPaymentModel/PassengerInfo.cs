@@ -6,7 +6,7 @@
         public int? Agent { get; set; }
         public List<TicketDetail>? TicketDetail { get; set; }
         public int? RouteSchedule { get; set; }
-        public string? RouteScheduleDate { get; set; }
+        public DateTime? RouteScheduleDate { get; set; }
         public int? PaymentMethod { get; set; }
         public int? PaymentProcessor { get; set; }
         public string? Payer { get; set; }
@@ -29,7 +29,7 @@
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
-        public int? Gender { get; set; }
+        public string? Gender { get; set; }
         public int? MaritalStatus { get; set; }
         public DateTime? Dob { get; set; }
         public string? PhoneNumber { get; set; }

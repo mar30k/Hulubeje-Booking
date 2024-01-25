@@ -127,6 +127,10 @@ namespace HulubejeBooking.Models.BusModels
         public string? DepatureCity { get; set; }
         public string? OperatorName { get; set; }
         public string? Terminal { get; set; } 
+        public string? Amount { get; set; } 
+        public List<string>? SeatName { get; set; } 
+        public DateTime? Time { get; set; } 
+        public List<string>? SeatId { get; set; } 
     }
     public class Wrap
     {

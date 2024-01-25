@@ -10,7 +10,7 @@ namespace HulubejeBooking.Controllers.BusController
         {
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,
+        public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule,
             string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId)
         {
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
@@ -30,6 +30,7 @@ namespace HulubejeBooking.Controllers.BusController
                 ArrivialDate = arrivalDate,
                 DepartureDate = departureDate,
                 VehicleOperatorId = vehicleOperatorId,
+                RouteScheduleId = routeSchedule,
             };
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={6915}");
             if (response.IsSuccessStatusCode) { 

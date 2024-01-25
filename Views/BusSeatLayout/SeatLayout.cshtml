@@ -59,24 +59,24 @@
 
                                 for (int y = 1; y <= maxY; y++)
                                 {
-                                    <tr>
-                                        @for (int x = 1; x <= maxX; x++)
+                                        <tr>
+                                            @for (int x = 1; x <= maxX; x++)
                                         {
                                             var seat = seats.FirstOrDefault(s => s.X == x && s.Y == y && (s.Type == "Seat" || s.Type == "Driver Seat"));
 
                                             if (seat != null)
                                             {
-                                                <td style="height: 30px !important; width: 30px !important">
-                                                    <button style="background-color: @(seat.Type == "Driver Seat" ? "Black" : ""); border-color:@(seat.Type == "Driver Seat" ? "black" : "")" class="buttons" onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
-                                                </td>
+                                                    <td style="height: 30px !important; width: 30px !important">
+                                                        <button id="@seat.Id" style="background-color: @(seat.Type == "Driver Seat" ? "Black" : ""); border-color:@(seat.Type == "Driver Seat" ? "black" : "")" class="buttons" onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
+                                                    </td>
                                             }
                                             else
                                             {
-                                                <td style="height: 30px !important; width: 30px !important">
-                                                </td>
+                                                    <td style="height: 30px !important; width: 30px !important">
+                                                    </td>
                                             }
                                         }
-                                    </tr>
+                                        </tr>
                                 }
                             }
                         }
@@ -125,11 +125,14 @@
 </div>
 <script>
     var plateNumber = "@Model?.PlateNumber";
+    var vehicleOperatorId = "@Model?.VehicleOperatorId";
+    var routeScheduleId = "@Model?.RouteScheduleId";
     var terminal = " @Model?.Terminal";
     var level = "@Model?.Level";
     var distance = "@Model?.Distance";
     var tariff = "@Model?.Tariff";
     var route = "@Model?.Route";
+    console.log("route " + route);
     var operatorName = "@Model?.OperatorName";
     var scheduleDate = "@Model?.Date";
     var scheduleTime = "@Model?.Time";
@@ -138,18 +141,23 @@
     var arrivialDate = "@Model?.ArrivialDate";
     var departureDate = "@Model?.DepartureDate";
     var selectedButtons = [];
+    var selectedButtonsId = [];
     var selectedButtonsCount = 0;
     function toggleButton(button) {
         var index = selectedButtons.indexOf(button.innerText);
+        var idIndex = selectedButtonsId.indexOf(button.id);
         if (index === -1) {
             selectedButtons.push(button.innerText);
+            selectedButtonsId.push(button.id);
             button.classList.add('selected');
         } else {
             selectedButtons.splice(index, 1);
+            selectedButtonsId.splice(idIndex, 1);
             button.classList.remove('selected');
         }
         selectedButtonsCount = selectedButtons.length;
         console.log(selectedButtons);
+        console.log(selectedButtonsId);
     }
     $(document).ready(function () {
         $("#continue").click(function () {
@@ -158,13 +166,16 @@
                 selectedButtons.forEach(function (seatName) {
                     form.append('<input type="hidden" name="seatName" value="' + seatName + '">');
                 });
-
+                selectedButtonsId.forEach(function (seatId) {
+                    form.append('<input type="hidden" name="seatId" value="' + seatId + '">');
+                }); 
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
                 form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
                 form.append('<input type="hidden" name="level" value="' + level + '">');
                 form.append('<input type="hidden" name="distance" value="' + distance + '">');
                 form.append('<input type="hidden" name="tariff" value="' + tariff + '">');
                 form.append('<input type="hidden" name="route" value="' + route + '">');
+                form.append('<input type="hidden" name="routeScheduleId" value="' + routeScheduleId + '">');
                 form.append('<input type="hidden" name="operatorName" value="' + operatorName + '">');
                 form.append('<input type="hidden" name="scheduleDate" value="' + scheduleDate + '">');
                 form.append('<input type="hidden" name="scheduleTime" value="' + scheduleTime + '">');
@@ -172,6 +183,7 @@
                 form.append('<input type="hidden" name="depatureCity" value="' + depatureCity + '">');
                 form.append('<input type="hidden" name="arrivialDate" value="' + arrivialDate + '">');
                 form.append('<input type="hidden" name="departureDate" value="' + departureDate + '">');
+                form.append('<input type="hidden" name="vehicleOperatorId" value="' + vehicleOperatorId + '">');
                 form.append('<input type="hidden" name="selectedButtonsCount" value="' + selectedButtonsCount + '">');
                 $("body").append(form);
                 form.submit();

@@ -99,6 +99,8 @@
                                                 }
                                             }
                                             <p class="destinationCity" style="display: none">@schedule.DestCityName</p>
+                                            <p class="routeSchedule" style="display: none">@schedule.Id</p>
+                                            <p class="vehicleOperatorId" style="display: none">@schedule.VehicleOperatorId</p>
                                             <p class="departureDate" style="display: none">@schedule.DepartureDate</p>
                                             <p class="depatureCity" style="display: none">@schedule.DepatureCity</p>
                                             <p class="arrivalDate" style="display: none">@schedule.ArrivalDate</p>
@@ -136,10 +138,12 @@
                 var plateNumber = $(this).closest('.card-body').find('.plateNumber').text().trim();
                 var terminal = $(this).closest('.card-body').find('.terminal').text().trim();
                 var distance = $(this).closest('.card-body').find('.distance').text().trim();
+                var routeSchedule = $(this).closest('.card-body').find('.routeSchedule').text().trim();
                 var tariff = $(this).closest('.card-body').find('.tariff').text().trim();
                 var level = $(this).closest('.card-body').find('.level').text().trim();
                 var route = $(this).closest('.card-body').find('.route').text().trim();
                 var operatorName = $(this).closest('.card-body').find('.operatorName').text().trim();
+                var vehicleOperatorId = $(this).closest('.card-body').find('.vehicleOperatorId').text().trim();
                 var scheduleDate = $(this).closest('.card-body').find('.scheduleDate').text().trim();
                 var scheduleTime = $(this).closest('.card-body').find('.scheduleTime').text().trim();
                 var destinationCity = $(this).closest('.card-body').find('.destinationCity').text().trim();
@@ -153,6 +157,7 @@
                 form.append('<input type="hidden" name="distance" value="' + distance + '">');
                 form.append('<input type="hidden" name="tariff" value="' + tariff + '">');
                 form.append('<input type="hidden" name="route" value="' + route + '">');
+                form.append('<input type="hidden" name="routeSchedule" value="' + routeSchedule + '">');
                 form.append('<input type="hidden" name="operatorName" value="' + operatorName + '">');
                 form.append('<input type="hidden" name="scheduleDate" value="' + scheduleDate + '">');
                 form.append('<input type="hidden" name="scheduleTime" value="' + scheduleTime + '">');
@@ -160,6 +165,7 @@
                 form.append('<input type="hidden" name="depatureCity" value="' + depatureCity + '">');
                 form.append('<input type="hidden" name="arrivalDate" value="' + arrivalDate + '">');
                 form.append('<input type="hidden" name="departureDate" value="' + departureDate + '">');
+                form.append('<input type="hidden" name="vehicleOperatorId" value="' + vehicleOperatorId + '">');
                 $("body").append(form);
                 form.submit();
             });

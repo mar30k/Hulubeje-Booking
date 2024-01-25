@@ -112,17 +112,59 @@
     </div>
 </div>
 <partial name="_Footer" />
+@{
+    var passengerData = Model?.PassengerModelData;
+}
 <script>
-    var Tarrif = "@Model.VwRouteScheduleData.Tariff";
-    var RouteScheduleDate = "@Model.VwRouteScheduleData.Date";
-    var index = Tarrif.indexOf(' ');
-    var result = (index > 0) ? Tarrif.substring(0, index) : Tarrif;
+    var tarrif = "@Model?.VwRouteScheduleData.Tariff";
+    var vehicleOperatorId = "@Model?.VwRouteScheduleData.VehicleOperatorId";
+    var routeScheduleId = "@Model?.VwRouteScheduleData.Id";
+    var routeScheduleDate = "@Model?.VwRouteScheduleData.Date";
+    var index = tarrif.indexOf(' ');
+    var result = (index > 0) ? tarrif.substring(0, index) : tarrif;
     var resultAsDouble = parseFloat(result);
+    var passengerCount = parseFloat("@Model?.PassengerModelData.Count");
+    var amount = resultAsDouble * passengerCount;
+    console.log(amount);
     var passengerId = '#passenger-1';
     var userMobileNumber = $(passengerId + ' .float-right').eq(1).text();
     var discount = 0;
     var addtionalCharge = 0;
     var grandtotal = resultAsDouble + addtionalCharge - discount;
+    var ticketDetail = [];
+
+    @if (passengerData != null)
+    {
+        @for (var i = 0; i < passengerData.Count; i++)
+        {
+            var passenger = passengerData[i];
+
+            <text>
+                var ticketDetailObject = {
+                PhoneNumber: '@passenger.PhoneNumber',
+                Gender: '@passenger.Gender',
+                Dob: '@passenger.DOB',
+                Email: '@passenger.Email',
+                IdNumber: '@passenger.PassengerId',
+                FirstName: '@passenger.PassengerName',
+                SeatLayout: '@passenger.SeatId',
+                SubTotal: resultAsDouble,
+                Discount: discount,
+                AdditionalCharge: addtionalCharge,
+                GrandTotal: grandtotal,
+                IsAutoAssigned: false,
+                Longitude: 0,
+                Latitude: 0,
+                Note: '',
+            };
+
+            ticketDetail.push(ticketDetailObject);
+            </text>
+        }
+    }
+
+    console.log(typeof ticketDetail);
+    console.log( ticketDetail);
 
     $('#confirmButton').on('click', function () {
         var data = {
@@ -130,45 +172,33 @@
                 UserMobileNumber: userMobileNumber,
                 SupplierTin: '0000017872',
                 SupplierOUD: 'OUD000000048',
-                Amount: resultAsDouble
+                Amount: amount,
             },
             PassengerInfoData: {
-                PaymentAmount: resultAsDouble,
-                RouteScheduleDate: RouteScheduleDate,
+                RouteSchedule: routeScheduleId,
+                Operator: vehicleOperatorId,
+                PaymentAmount: amount,
+                RouteScheduleDate: routeScheduleDate,
                 Platform: 'Web',
                 IpAddress: '',
                 Longitude: 0,
                 Latitude: 0,
-                TicketDetail: [
-                    {
-                        PhoneNumber: userMobileNumber,
-                        SubTotal: resultAsDouble,
-                        Discount: discount,
-                        AdditionalCharge: addtionalCharge,
-                        GrandTotal: grandtotal,
-                        IsAutoAssigned: false,
-                        Longitude: 0,
-                        Latitude: 0, 
-                        Note: '',
-                        AppId: '',
-
-                    }
-                ],
+                TicketDetail: ticketDetail,
             },
         };
         console.log("data", data);
 
-        $.ajax({
-            url: '/PaymentHome/Index',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function (/* response */) {
-                window.location.href = "/PaymentOptions/PaymentOption";
-            },
-            error: function (error) {
-                console.error('Error:', error);
-            }
-        });
+        // $.ajax({
+        //     url: '/PaymentHome/Index',
+        //     type: 'POST',
+        //     contentType: 'application/json',
+        //     data: JSON.stringify(data),
+        //     success: function (/* response */) {
+        //         window.location.href = "/PaymentOptions/PaymentOption";
+        //     },
+        //     error: function (error) {
+        //         console.error('Error:', error);
+        //     }
+        // });
     });
 </script>
