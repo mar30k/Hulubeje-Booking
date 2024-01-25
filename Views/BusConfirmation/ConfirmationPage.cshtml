@@ -188,17 +188,17 @@
         };
         console.log("data", data);
 
-        // $.ajax({
-        //     url: '/PaymentHome/Index',
-        //     type: 'POST',
-        //     contentType: 'application/json',
-        //     data: JSON.stringify(data),
-        //     success: function (/* response */) {
-        //         window.location.href = "/PaymentOptions/PaymentOption";
-        //     },
-        //     error: function (error) {
-        //         console.error('Error:', error);
-        //     }
-        // });
+        $.ajax({
+            url: '/PaymentHome/Index',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (/* response */) {
+                window.location.href = "/PaymentOptions/PaymentOption";
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
     });
 </script>

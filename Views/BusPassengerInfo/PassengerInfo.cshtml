@@ -108,7 +108,11 @@
 
                                         <div class="form-group mb-1">
                                             <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required value="0912141914">
+                                            @if(i==1){
+                                                <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required value="0912141914"> <small style="color: darkred">Will be used in payment</small>
+                                            }else{
+                                                <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required value="0912141914">
+                                            }
                                         </div>
 
                                         <div class="form-group mb-1">
