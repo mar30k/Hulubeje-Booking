@@ -1,11 +1,108 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HulubejeBooking.Controllers.HotelController;
+using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Models.HotelModels;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 
 namespace HulubejeBooking.Controllers.Authentication
 {
     public class Signup : Controller
     {
+        private readonly ILogger<Signup> _logger;
+        private readonly object JsonRequestBehavior;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly HotelListBuffer _hotelListBuffer;
+
+        public Signup(ILogger<Signup> logger,
+            IHttpClientFactory httpClientFactory,
+             HotelListBuffer hotelListBuffer)
+        {
+            _logger = logger;
+            _httpClientFactory = httpClientFactory;
+            _hotelListBuffer = hotelListBuffer;
+        }
+
         public IActionResult Index()
         {
+
+            return View();
+        }
+        public async Task<IActionResult> SignUpVerificationAsync(PersonModel person)
+        {
+            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+
+            person.personCode = person.phoneNumber;
+            var param = new
+            {
+                userId = person.phoneNumber
+            };
+            string jsonBody = JsonConvert.SerializeObject(param);
+            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            var suthResponse = new List<UserResponse>();
+
+            HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/OauthAuthenticateUser", content);
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+
+                suthResponse = JsonConvert.DeserializeObject<List<UserResponse>>(data);
+
+                object statusCodeAtIndexZero = (object)suthResponse[0].userInformation;
+
+                if (statusCodeAtIndexZero != null)
+                {
+                    return RedirectToAction("Loginpage", "Login");
+                }
+                else
+                {
+                    return PartialView("");
+                    var phone = person.phoneNumber;
+                    HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phone}");
+                    if (otpResponse.IsSuccessStatusCode)
+                    {
+                        string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
+                        var messageResponse= JsonConvert.DeserializeObject<MessageResponse>(dataRespponse);
+
+                        var toPhone = messageResponse?.to;
+                        var vc = messageResponse?.verificationId;
+                        var code = messageResponse?.code;
+                        person.messageResponse = messageResponse;
+
+                        var values = new PersonModel
+                        {
+                           personCode = person.personCode,
+                            firstName=person.firstName,
+                            middleName= person.middleName,
+                            lastName=  person.lastName,
+                            phoneNumber = person.phoneNumber,
+                            emailAddress = person.emailAddress,
+                            gender = person.gender,
+                            dob = person.dob,
+                            password= person.password,
+                            idType = person.idType,
+                           id= person.id,idPhoto = person.idPhoto,
+                            personalPhoto = person.personalPhoto,
+
+                            messageResponse = new MessageResponse
+                            {
+                               to = toPhone,
+                               verificationId = vc,
+                               code =code
+                            }
+
+                        };
+
+
+                    }
+
+
+
+
+                }
+            }
             return View();
         }
     }
