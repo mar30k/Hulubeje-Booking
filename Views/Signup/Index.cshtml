@@ -1,96 +1,181 @@
 ﻿<partial name="_Navigation" />
+<head>
+    <style>
+        .custom-container{
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px; 
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <div class="mb-3">
+        label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="password"],
+        select
+            {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        .form-check-label {
+            margin-left: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<div class="container custom-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 pt-3" >
+            <div class="mb-3 text-center">
                 <h5 class="h5">Signup</h5>
             </div>
-            <section class="vh-100 ">
+            <section class="pb-5">
                 <div class="mask d-flex align-items-center gradient-custom-3">
                     <form id="guestForm" method="post" action="/signup/SignUpVerification">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="name">First Name</label>
+                                    <input name="firstName" type="text" class="form-control" id="name" placeholder="First Name">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="middle">Middle Name</label>
+                                    <input name="middleName" type="text" class="form-control" id="middle" placeholder="Middle Name">
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="last">Last Name</label>
+                                    <input name="lastName" type="text" class="form-control" id="last" placeholder="Last Name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input name="phoneNumber" type="tel" class="form-control" id="phone" placeholder="Phone">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="" for="email">Email</label>
+                                    <input name="emailAddress" type="email" class="form-control" id="email" placeholder="Email">
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="form-group">
-                            <label for="name">First Name</label>
-                            <input name="firstName" type="text" class="form-control" id="name" placeholder=" First Name">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="date">Date of Birth</label>
+                                        <input name="dob" type="date" class="form-control" id="date" placeholder="Your birth date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="password">Password</label>
+                                        <input type="password" name="password" class="form-control" id="password" placeholder="Choose password">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="middle">Middle Name</label>
-                            <input name="middleName" type="text" class="form-control" id="middle" placeholder=" Middle Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="last">Last Name</label>
-                            <input name="lastName" type="text" class="form-control" id="last" placeholder=" Last Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input name="phoneNumber" type="tel" class="form-control" id="phone" placeholder="Phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input name="emailAddress" type="email" class="form-control" id="email" placeholder="Email">
-                        </div>
-                        <div class="form-group">
-                            <label for="date">Date of birth</label>
-                            <input name="dob" type="date" class="form-control" id="date" placeholder=" Your birth date">
-                        </div>
-                        <div class="form-row" >
-                            <div class="form-group col-md-6">
-                                <label>Gender</label>
+
+                        <div class="row">
+                            <label class="col-md-2" for="gender">Gender</label>
+                            <div class="col-4">
                                 <div class="form-check">
                                     <input type="radio" class="form-check-input" id="male" name="gender" value="Male">
                                     <label class="form-check-label" for="male">Male</label>
                                 </div>
                             </div>
-                            <div class="form-group col-md-6" >
-                                <label>&nbsp;</label>
+                            <div class="col-4">
                                 <div class="form-check">
                                     <input type="radio" class="form-check-input" id="female" name="gender" value="Female">
                                     <label class="form-check-label" for="female">Female</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="idType">Id type</label>
-                            <select name="idType" class="form-select operator" id="idType">
-                                <option selected>...</option>
-                                <option>Passport</option>
-                                <option>Driver's license</option>
-                                <option>Kebele Id</option>
-                                <option>Student Id</option>
 
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="idNo">Id Number</label>
-                            <input name="id" type="text" class="form-control" id="idNo" placeholder="Id Number">
-                        </div>
-                        <div class="form-group">
-                            <label for="idPic">Identification Photo</label>
-                            <input name="idPhoto" type="file" class="form-control" id="idPic" accept=".png" placeholder="Identification Photo">
-                        </div>
-                        <div class="form-group">
-                            <label for="idPic">Identification Photo</label>
-                            <input name="personalPhoto" type="file" class="form-control" id="perPic" accept=".png" placeholder="Personal Photo">
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" name="password" class="form-control" id="password" placeholder="Choose password">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label for="idType">Id type</label>
+                                <select name="idType" class="form-select" id="idType">
+                                    <option selected>...</option>
+                                    <option>Passport</option>
+                                    <option>Driver's license</option>
+                                    <option>Kebele Id</option>
+                                    <option>Student Id</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="idNo">Id Number</label>
+                                    <input name="id" type="text" class="form-control" id="idNo" placeholder="Id Number">
+                                </div>
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary mt-2 submit" >
-                            Submit
-                        </button>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perPic">Personal Photo</label>
+                                    <input name="personalPhoto" type="file" class="form-control" id="perPic" accept=".png" placeholder="Personal Photo">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="idPic">Identification Photo</label>
+                                    <input name="idPhoto" type="file" class="form-control" id="idPic" accept=".png" placeholder="Identification Photo">
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary mt-2 submit">
+                                Submit
+                            </button>
+                        </div>
                     </form>
                 </div>
             </section>
         </div>
+    </div>
 </div>
-</div>
-<script>
-
-</script>
-
 <partial name="_Footer" />
