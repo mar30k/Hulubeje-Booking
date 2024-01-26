@@ -16,6 +16,13 @@
                 font-size: 10px;
             }
         }
+
+        #selectedDate{
+            width: 100%;
+            border-color: #FEBB02;
+            height: 60px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <html>
@@ -25,8 +32,9 @@
             <div class="pt-2" style="display: grid; grid-template-columns: repeat(3, 1fr);">
                 <div class="calendar">
                     <form asp-action="Index" method="post">
-                        <input id="selectedDate" type="date" name="selectedDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" onchange="this.form.submit()"
-                                style="width: 100%; border-color: #FEBB02; height: 60px; border-radius: 5px;" />
+                        <div class="calendar">
+                            @Html.TextBox("selectedDate", DateTime.Now.ToString("yyyy-MM-dd"), new { @class = "form-control", @type = "date", @onchange = "this.form.submit()" })
+                        </div>
                     </form>
                 </div>
                 <div class="CompanyFilter">
