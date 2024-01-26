@@ -1,6 +1,191 @@
 ﻿<partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.HotelDetailModel
+<style>
+    /*     @@import "bourbon";
+             */
+    * {
+        box-sizing: border-box;
+    }
+
+    .login-form input {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 0;
+        outline: 0;
+        background: #f1f1f1;
+        font-weight: 300;
+        font-style: italic;
+        border-radius: 2px;
+    }
+
+    .login-wrapper {
+        width: 100%;
+    }
+
+    button {
+        padding: 8px 15px;
+        border: 0;
+        outline: 0;
+        color: #fff;
+        background: #063970;
+        font-size: 14px;
+        text-transform: uppercase;
+        border-radius: 4px;
+        box-shadow: 0 4px 0 darken(#063970, 5%);
+    }
+
+        button:active {
+            margin-top: 2px;
+            box-shadow: 0 2px 0 darken(#063970, 5%);
+        }
+
+    .login-container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .login-form {
+        width: 100%;
+        display: none;
+        position: absolute;
+        padding: 20px;
+        margin-top: 10px;
+        background: #ddd;
+        border-radius: 4px;
+        box-shadow: 0 4px 0 darken(#ddd, 5%);
+    }
+
+        .login-form input:last-child {
+            margin-bottom: 0;
+        }
+
+    input[type="submit"] {
+        color: #fff;
+        background: gray;
+        font-style: normal;
+        box-shadow: 0 4px 0 darken(gray, 5%);
+    }
+
+    .login-form .dropdown-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .login-form .dropdown-content button {
+            margin: 0;
+        }
+
+        .login-form .dropdown-content span {
+            margin: 0 10px;
+        }
+
+    @@keyframes slide {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .open {
+        animation: slide 1s;
+        display: block;
+    }
+</style>
+
+<div class="row" style="background-color:#063970;">
+    <div class="container">
+        <header class="container-fluid" style="padding-top: 2%">
+            <div>
+                <h1 style="color: white;">Find your next stay</h1>
+                <h4 style="color: white;">Search deals on hotels, homes, and much more...</h4>
+            </div>
+        </header>
+    </div>
+    <div class="container mt-5">
+
+        <div class="d-flex">
+
+            
+
+
+            <div style="width:40%">
+                <input class="form-control" type="text" id="date-range-picker" placeholder="Checkin-Checkout" style="border-color:#FEBB02; height:60px;">
+            </div>
+
+            <div class="login-wrapper">
+                <input class="login-wrapper form-control" id="login-button" value="Submit" style="border-color:#FEBB02; height:60px;">
+                <div class="login-container">
+                    <form class="login-form container" id="searchForm">
+                        <div class="form-group">
+                            <div class="row mb-3">
+                                <div class="col container">
+                                    <label for="adultCount">Adults:</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="changeValue('adult', 'decrement')">-</button>
+                                        <span class="input-group-text w-50 d-flex justify-content-center align-items-center" id="adultCount">1</span>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="changeValue('adult', 'increment')">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col container">
+                                    <label for="childrenCount">Children:</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="changeValue('children', 'decrement')">-</button>
+                                        <span class="input-group-text w-50 d-flex justify-content-center align-items-center" id="childrenCount">0</span>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="changeValue('children', 'increment')">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col container">
+                                    <label for="roomsCount">Rooms:</label>
+                                    <div class="input-group">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="changeValue('rooms', 'decrement')">-</button>
+                                        <span class="input-group-text w-50 d-flex justify-content-center align-items-center" id="roomsCount">1</span>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="changeValue('rooms', 'increment')">+</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="submitForm()">Done</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+          
+            <div class="select" style="width:100%;">
+                @*  <select class="form-select form form-control" id="city" data-tags="true" data-placeholder="Select an option" data-allow-clear="true" style="width:100%; height:60px; border-color:#FEBB02;">
+                <option>Choose a city </option>
+                @if (Model.CityNameList != null)
+                {
+                @foreach (var city in Model.CityNameList)
+                {
+                <option value="@city?.CityName">@city?.CityName?.ToUpper()</option>
+                }
+                }
+                </select> *@
+            </div>
+
+        </div>
+    </div>
+</div>
 <div class="container">
+@* 
 	@if (Model is not null)
 	{
 		<div class="row g-1">
@@ -19,11 +204,6 @@
                                         <h5 class="card-title">@paymentMethod.PaymentMethodName</h5>
                                         <p class="card-text price">@paymentMethod.PaymentMethodName</p>
                                         <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                                      @*   <button class="btn btn-primary btn-sm payment" id="payment"
-                                                data-operation-mode="@paymentMethod.operationMode"
-                                                data-payment-provider-org-unit-def="@paymentMethod.paymentProviderOrgUnitDef">
-                                            Pay
-                                        </button> *@
                                     </div>
                                 </div>
                             </div>
@@ -42,9 +222,255 @@
 						</div>
 					</div>
 				}
+                <div>
+                    <button class="btn btn-primary mb-2" type="button" style="  height:60px;" id="searchButton"> <span>Book</span> </button>
+                </div>
 			</div>
 		</div>
-	}
+
+
+	} *@
+
+    @if (Model != null)
+    {
+        <div class="row g-3">
+            <div class="col-md-6">
+                <p>@Model.note</p>
+            </div>
+            <div class="col-md-6">
+                <div class="row g-3">
+                    @foreach (var paymentMethod in Model.paymentOptions)
+                    {
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <img src="@paymentMethod.PaymentMethodImage" class="img-fluid rounded-start" alt="paymentMethod PaymentProviderOrganizationName">
+                                    <h5 class="card-title">@paymentMethod.PaymentMethodName</h5>
+                                    <p class="card-text price">@paymentMethod.PaymentMethodName</p>
+                                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            @foreach (var amenity in Model?.aminities)
+            {
+                <div class="col-lg-2 col-md-3 col-sm-4">
+                    <div class="border p-2">
+                        <img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="rounded me-2">
+                        <span>@amenity.Name</span>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 offset-md-3 text-center">
+                <button class="btn btn-primary mt-3" type="button" id="searchButton" style="height: 60px; width: 100%;">Book</button>
+            </div>
+        </div>
+    }
+
 </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+    <script>
+
+        jQuery(document).ready(function ($) {
+            $("#form").select2({
+                tags: true,
+                placeholder: "Select an option",
+                allowClear: true,
+            });
+
+            var datepicker = $('#date-range-picker');
+            datepicker.daterangepicker({
+                opens: 'left',
+                autoApply: true,
+                locale: {
+                    format: 'MM/DD/YYYY',
+                },
+                startDate: moment().startOf('day'),
+                endDate: moment().startOf('day').add(1, 'days'),
+            });
+
+            datepicker.on('apply.daterangepicker', function (ev, picker) {
+                if (picker.startDate && picker.endDate) {
+                    datepicker.attr('placeholder', "Checkin" + ' - ' + "Checkout");
+                } else {
+                    datepicker.attr('placeholder', 'Checkin-Checkout');
+                }
+            });
+
+            $('#login-button').click(function (e) {
+                e.stopPropagation();
+                $('.login-form').toggleClass('open');
+            });
+
+            $(document).click(function () {
+                $('.login-form').removeClass('open');
+            });
+
+            $('.login-container').click(function (e) {
+                e.stopPropagation();
+            });
+        });
+
+
+        function changeValue(category, action) {
+            var countElement = $('#' + category + 'Count');
+            var currentCount = parseInt(countElement.text());
+            if (action === 'increment') {
+                countElement.text(currentCount + 1);
+            } else if (action === 'decrement' && currentCount > 1) {
+                countElement.text(currentCount - 1);
+            }
+            updateLoginButtonValue();
+        }
+        function updateLoginButtonValue() {
+            var adultCount = parseInt($('#adultCount').text());
+            var childrenCount = parseInt($('#childrenCount').text());
+            var roomsCount = parseInt($('#roomsCount').text());
+
+            var defaultValue = 'Adults: ' + adultCount + ', Children: ' + childrenCount + ', Rooms: ' + roomsCount;
+            $('#login-button').val(defaultValue).attr('placeholder', defaultValue);
+        }
+        function hideForm() {
+            $('.login-container').removeClass('.login-form');
+        }
+
+        function submitForm() {
+            var adultCount = parseInt($('#adultCount').text());
+            var childrenCount = parseInt($('#childrenCount').text());
+            var roomsCount = parseInt($('#roomsCount').text());
+
+            updateLoginButtonValue();
+            hideForm();
+
+        }
+        updateLoginButtonValue();
+
+
+        function getFormData() {
+            var selectedDestination = $('.form-select').val();
+            var dateRange = $('#date-range-picker').attr('placeholder');
+            var adultCount = parseInt($('#adultCount').text());
+            var childrenCount = parseInt($('#childrenCount').text());
+            var roomsCount = parseInt($('#roomsCount').text());
+
+            return {
+                destination: selectedDestination,
+                dateRange: dateRange,
+                adults: adultCount,
+                children: childrenCount,
+                rooms: roomsCount
+            };
+        }
+
+        // function storeFormData() {
+        //     var formData = getFormData();
+        //     localStorage.setItem('formData', JSON.stringify(formData));
+        // }
+
+        // function retrieveFormData() {
+        //     var storedFormData = localStorage.getItem('formData');
+        //     return storedFormData ? JSON.parse(storedFormData) : null;
+        // }
+
+        $(document).ready(function () {
+            var storedData = retrieveFormData();
+            if (storedData) {
+                // $('.form-select').val(storedData.destination);
+                $('#date-range-picker').attr('placeholder', storedData.dateRange);
+                $('#adultCount').text(storedData.adults);
+                $('#childrenCount').text(storedData.children);
+                $('#roomsCount').text(storedData.rooms);
+            }
+        });
+
+        // $(document).ready(function () {
+        //     $('#searchButton').click(function () {
+
+        //         var form = $('#searchForm');
+        //         form.submit();
+        //     });
+        // });
+
+        $(document).ready(function () {
+            $('#searchButton').on('click', function () {
+                var dateRange = $('#date-range-picker').val();
+                var adultCount = parseInt($('#adultCount').text(), 10);
+                var childrenCount = parseInt($('#childrenCount').text(), 10);
+                var roomsCount = parseInt($('#roomsCount').text(), 10);
+
+
+
+                var dateParts = dateRange.split(' - ');
+
+                var arrivalDate = new Date(Date.parse(dateParts[0]));
+                var departureDate = new Date(Date.parse(dateParts[1]));
+
+
+
+
+                function calculateNumberOfNights(arrivalDate, departureDate) {
+                    var timeDifference = departureDate.getTime() - arrivalDate.getTime();
+                    var numberOfNights = Math.round(timeDifference / (1000 * 3600 * 24));
+                    return numberOfNights;
+                }
+
+                var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
+
+                sessionStorage.setItem('dateRange', dateRange);
+                sessionStorage.setItem('adultCount', adultCount);
+                sessionStorage.setItem('childrenCount', childrenCount);
+                sessionStorage.setItem('roomsCount', roomsCount);
+                sessionStorage.setItem('numberOfNights', numberOfNights);
+
+
+
+                var formData = {
+                    orgTin:'@Model?.orgTin',
+                    Date: dateRange,
+                    adultCount: adultCount,
+                    childrenCount: childrenCount,
+                    roomsCount: roomsCount,
+                    numberOfNights: numberOfNights,
+                    oud:'@Model?.branchCode'
+                };
+
+                $.ajax({
+                    url: '../HotelHome/Availability',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function () {
+                        window.location.href = '../FilteredRoom/Index';
+                    },
+                    error: function (error) {
+                        console.error('Error:', error);
+                    }
+                });
+
+            });
+
+        });
+
+
+    </script>
+
 
 <partial name="_Footer" />
