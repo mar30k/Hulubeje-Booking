@@ -219,7 +219,11 @@
                             </div>
                             <button class="btn cardB btn-primary btn-sm" id="cardB"
                             data-oud="@hotel?.oud"
-                            data-org-tin="@hotel?.TIN">check this hotel</button>
+                            data-org-tin="@hotel?.TIN"
+                            data-hotel-name="@hotel?.brandName"
+                            data-branch-name="@hotel?.branchName"
+                            data-city="">check this hotel
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -423,6 +427,13 @@
 
     $(document).ready(function () {
         $('.cardB').on('click', function () {
+            sessionStorage.setItem("oud", $(this).data('oud'));
+            sessionStorage.setItem('orgTin', $(this).data('orgTin'));
+            sessionStorage.setItem("branchName", $(this).data('hotel-name'));
+            sessionStorage.setItem("hotelName", $(this).data('branch-name'));
+
+
+
             var data = 
             {
                 oud: $(this).data('oud'),
