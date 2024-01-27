@@ -1,21 +1,25 @@
 ﻿using HulubejeBooking.Controllers.HotelController;
 using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.HotelModels;
+using HulubejeBooking.Models.PaymentModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.Data;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Text;
 
 namespace HulubejeBooking.Controllers.Authentication
 {
-    public class Signup : Controller
+    public class SignupController : Controller
     {
-        private readonly ILogger<Signup> _logger;
+        private readonly ILogger<SignupController> _logger;
         private readonly object JsonRequestBehavior;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HotelListBuffer _hotelListBuffer;
 
-        public Signup(ILogger<Signup> logger,
+        public SignupController(ILogger<SignupController> logger,
             IHttpClientFactory httpClientFactory,
              HotelListBuffer hotelListBuffer)
         {
@@ -50,7 +54,7 @@ namespace HulubejeBooking.Controllers.Authentication
 
                 suthResponse = JsonConvert.DeserializeObject<List<UserResponse>>(data);
 
-                object statusCodeAtIndexZero = (object)suthResponse[0].userInformation;
+                object statusCodeAtIndexZero = (object)suthResponse[0]  .userInformation;
 
                 if (statusCodeAtIndexZero != null)
                 {
@@ -58,7 +62,6 @@ namespace HulubejeBooking.Controllers.Authentication
                 }
                 else
                 {
-                    return PartialView("");
                     var phone = person.phoneNumber;
                     HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phone}");
                     if (otpResponse.IsSuccessStatusCode)
@@ -66,44 +69,17 @@ namespace HulubejeBooking.Controllers.Authentication
                         string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
                         var messageResponse= JsonConvert.DeserializeObject<MessageResponse>(dataRespponse);
 
-                        var toPhone = messageResponse?.to;
-                        var vc = messageResponse?.verificationId;
-                        var code = messageResponse?.code;
+                        //var toPhone = messageResponse?.to;
+                        //var vc = messageResponse?.verificationId;
+                        //var code = messageResponse?.code;
                         person.messageResponse = messageResponse;
-
-                        var values = new PersonModel
-                        {
-                           personCode = person.personCode,
-                            firstName=person.firstName,
-                            middleName= person.middleName,
-                            lastName=  person.lastName,
-                            phoneNumber = person.phoneNumber,
-                            emailAddress = person.emailAddress,
-                            gender = person.gender,
-                            dob = person.dob,
-                            password= person.password,
-                            idType = person.idType,
-                           id= person.id,idPhoto = person.idPhoto,
-                            personalPhoto = person.personalPhoto,
-
-                            messageResponse = new MessageResponse
-                            {
-                               to = toPhone,
-                               verificationId = vc,
-                               code =code
-                            }
-
-                        };
-
+                        var PersonJson = JsonConvert.SerializeObject(person);
+                        HttpContext.Session.SetString("UserInfo", PersonJson);
 
                     }
-
-
-
-
                 }
             }
-            return View();
+            return RedirectToAction("Index", "Otp");
         }
     }
 }

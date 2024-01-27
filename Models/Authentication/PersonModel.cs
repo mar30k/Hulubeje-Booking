@@ -49,4 +49,9 @@
         public string? verificationId { get; set; }
         public List<string>? errors { get; set; }
     }
+    public class VerifyResponse
+    {
+        public bool? isVerified { get; set; }
+        public List<string>? errors { get; set; }
+    }
 }
