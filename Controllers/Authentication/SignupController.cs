@@ -58,7 +58,7 @@ namespace HulubejeBooking.Controllers.Authentication
 
                 if (statusCodeAtIndexZero != null)
                 {
-                    return RedirectToAction("Loginpage", "Login");
+                    return RedirectToAction("Index", "SignIn");
                 }
                 else
                 {
@@ -68,10 +68,6 @@ namespace HulubejeBooking.Controllers.Authentication
                     {
                         string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
                         var messageResponse= JsonConvert.DeserializeObject<MessageResponse>(dataRespponse);
-
-                        //var toPhone = messageResponse?.to;
-                        //var vc = messageResponse?.verificationId;
-                        //var code = messageResponse?.code;
                         person.messageResponse = messageResponse;
                         var PersonJson = JsonConvert.SerializeObject(person);
                         HttpContext.Session.SetString("UserInfo", PersonJson);
