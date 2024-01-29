@@ -139,7 +139,7 @@
                         window.location.href = "/Home/Index";
                     }
                     else if (userInformation === 'error') {
-                            window.location.href = "/Home/Index";
+                            showBootstrapAlert('Incorrect password. Please try again.', 'alert-danger');
                     }
                 },
                 error: function (error) {
@@ -147,7 +147,21 @@
                 }
             });
         });
+        function showBootstrapAlert(message, alertClass) {
+            // Remove any existing alerts
+            $('.bootstrap-alert').remove();
+
+            // Create and append the alert element
+            var alert = $('<div class="alert ' + alertClass + ' bootstrap-alert" role="alert">' + message + '</div>');
+            $('.create-account').before(alert);
+
+            // Automatically close the alert after 5 seconds (5000 milliseconds)
+            setTimeout(function () {
+                alert.remove();
+            }, 1000);
+        }
     });
+
 </script>
 
 </body>
