@@ -212,39 +212,38 @@
         var random = new Random();
         var shuffledHotels = Model?.filteredCompany?.OrderBy(x => random.Next()).Take(20).ToList();
     }
-
     <div class="row mt-3">
         @if (shuffledHotels != null)
         {
             @foreach (var hotel in shuffledHotels)
             {
-
-                <!-- Add an "id" attribute to uniquely identify each card -->
-                <div class="card clickable-card" style="max-width: 540px;" data-bs-toggle="modal" data-bs-target="#hotelModal">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="@hotel?.attachments[0]" class="img-fluid rounded-start" alt="...">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">@hotel?.brandName</h5>
-                                <p class="card-text">@* The detail information will be posted here. *@ @hotel?.oud and @hotel?.TIN</p>
-                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                <div class="col-md-6 mb-3">
+                    <!-- Adjust the column width based on your layout -->
+                    <a class="card cardB clickable-card" style="max-width: 100%;"
+                       data-oud="@hotel?.oud"
+                       data-org-tin="@hotel?.TIN"
+                       data-hotel-name="@hotel?.brandName"
+                       data-branch-name="@hotel?.branchName"
+                       data-city="">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@hotel?.attachments[0]" class="img-fluid rounded-start" alt="...">
                             </div>
-                            <button class="btn cardB btn-primary btn-sm" id="cardB"
-                            data-oud="@hotel?.oud"
-                            data-org-tin="@hotel?.TIN"
-                            data-hotel-name="@hotel?.brandName"
-                            data-branch-name="@hotel?.branchName"
-                            data-city="">check this hotel
-                            </button>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@hotel?.brandName</h5>
+                                    <p class="card-text">The detail information will be posted here. @* @hotel?.oud and @hotel?.TIN *@</p>
+                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
-
             }
         }
     </div>
+
+
 
 </div>
 
