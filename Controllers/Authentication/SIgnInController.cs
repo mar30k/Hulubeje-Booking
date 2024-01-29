@@ -1,11 +1,38 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HulubejeBooking.Models.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace HulubejeBooking.Controllers.Authentication
 {
-    public class SIgnInController : Controller
+    public class SignInController : Controller
     {
+        private readonly ILogger<SignInController> _logger;
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public SignInController(ILogger<SignInController> logger, IHttpClientFactory httpClientFactory)
+        {
+            _logger = logger;
+            _httpClientFactory = httpClientFactory;
+        }
         public IActionResult Index()
         {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index([FromBody] LoginInformation data)
+        {
+            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var param = new
+            {
+                username = data.Phone,
+                password = data.Password,
+            };
+            string jsonBody = JsonConvert.SerializeObject(param);
+            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/authenticateUser", content);
+            string responseData = await response.Content.ReadAsStringAsync();
+            var userInformation = JsonConvert.DeserializeObject<List<UserResponse>>(responseData);
             return View();
         }
     }

@@ -99,22 +99,18 @@
             <form id="signInForm" method="post" action="/signin">
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
-                    <input name="phoneNumber" type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
+                    <input name="Phone" type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
+                    <input type="password" name="Password" class="form-control" id="password" placeholder="Password" required>
                 </div>
-
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                    <input type="checkbox" class="form-check-input" id="rememberMe" name="RememberMe">
                     <label class="form-check-label" for="rememberMe">Remember Me</label>
                 </div>
-
-                <button type="submit" class="btn btn-primary submit">
-                    Sign In
-                </button>
+                <button type="submit" class="btn btn-primary submit">Sign In</button>
             </form>
             <div class="forgot-password">
                 <a href="/forgotpassword">Forgot Password?</a>
@@ -124,5 +120,40 @@
             </div>
         </section>
     </div>
+    <script>
+    $(document).ready(function () {
+        $('.submit').on('click', function () {
+            var data = {
+                Password: $('#password').val(),
+                Phone: $('#phone').val(),
+                RememberMe: $('#rememberMe').is(':checked')
+            };
+            $.ajax({
+                url: '/SignIn/Index',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (/* response */) {
+                    // var cardText = response.cardText;
+
+                    window.location.href = "/PaymentOptions/PaymentOption";
+                    // if (cardText === 'telebirr SMS OTP') {
+                    //     window.location.href = '/Spayment/index';
+                    // } else if (cardText === 'telebirr USSD Push') {
+                    //     window.location.href = '/Apayment/index';
+                    // }
+                    // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
+                    //     window.open(response.redirectUrl, '_blank');
+                    // }
+
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 <partial name="_Footer" />
