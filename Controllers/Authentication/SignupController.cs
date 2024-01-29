@@ -58,6 +58,7 @@ namespace HulubejeBooking.Controllers.Authentication
 
                 if (statusCodeAtIndexZero != null)
                 {
+                    TempData["InfoMessage"] = "Account already exists. Please sign in.";
                     return RedirectToAction("Index", "SignIn");
                 }
                 else
