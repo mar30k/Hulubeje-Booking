@@ -21,17 +21,23 @@ namespace HulubejeBooking.Controllers.Authentication
         }
         public async Task<IActionResult> VerifyOtp(string otpCode)
         {
+            string? trimmedCode = "";
+            if (otpCode !=null){
+                 trimmedCode = otpCode.Trim();
+            }
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var data = HttpContext.Session.GetString("UserInfo");
             var newData = JsonConvert.DeserializeObject<PersonModel>(data);
             var code = newData?.messageResponse?.code;
             var to = newData?.messageResponse?.to;
             var vc = newData?.messageResponse?.verificationId;
-            if (otpCode == code)
+
+            if (trimmedCode == code)
             {
                 HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Messaging/VerifyOTP?to={to}&vc={vc}&code={code}");
                 string responseData = await response.Content.ReadAsStringAsync();
                 var verificationData = JsonConvert.DeserializeObject<VerifyResponse>(responseData);
+
                 if (verificationData?.isVerified == true)
                 {
                     return RedirectToAction("Index", "RegisterUser");
@@ -41,7 +47,12 @@ namespace HulubejeBooking.Controllers.Authentication
                     return RedirectToAction("Index", "Otp");
                 }
             }
-            return View();
+            else
+            {
+                TempData["ErrorMessage"] = "Incorrect OTP. Please try again.";
+                return RedirectToAction("Index", "Otp");
+            }
         }
+
     }
 }
