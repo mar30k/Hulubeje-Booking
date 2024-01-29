@@ -15,9 +15,7 @@ namespace HulubejeBooking.Controllers.Authentication
     public class SignupController : Controller
     {
         private readonly ILogger<SignupController> _logger;
-        private readonly object JsonRequestBehavior;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly HotelListBuffer _hotelListBuffer;
 
         public SignupController(ILogger<SignupController> logger,
             IHttpClientFactory httpClientFactory,
@@ -25,7 +23,6 @@ namespace HulubejeBooking.Controllers.Authentication
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
-            _hotelListBuffer = hotelListBuffer;
         }
 
         public IActionResult Index()
@@ -45,18 +42,17 @@ namespace HulubejeBooking.Controllers.Authentication
             string jsonBody = JsonConvert.SerializeObject(param);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            var suthResponse = new List<UserResponse>();
 
             HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/OauthAuthenticateUser", content);
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
 
-                suthResponse = JsonConvert.DeserializeObject<List<UserResponse>>(data);
+                var suthResponse = JsonConvert.DeserializeObject<List<UserResponse>>(data);
 
-                object statusCodeAtIndexZero = (object)suthResponse[0]  .userInformation;
+                var userInformation = suthResponse?[0].userInformation;
 
-                if (statusCodeAtIndexZero != null)
+                if (userInformation != null)
                 {
                     TempData["InfoMessage"] = "Account already exists. Please sign in.";
                     return RedirectToAction("Index", "SignIn");

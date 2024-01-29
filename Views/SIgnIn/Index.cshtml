@@ -96,7 +96,7 @@
             <h5 class="h5">Sign In</h5>
         </div>
         <section>
-            <form id="signInForm" method="post" action="/signin">
+            <form id="signInForm">
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
                     <input name="Phone" type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
@@ -104,7 +104,7 @@
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" name="Password" class="form-control" id="password" placeholder="Password" required>
+                    <input type="password" name="Password" class="form-control" id="password" placeholder="Password" autocomplete="off" required>
                 </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="rememberMe" name="RememberMe">
@@ -120,7 +120,7 @@
             </div>
         </section>
     </div>
-    <script>
+<script>
     $(document).ready(function () {
         $('.submit').on('click', function () {
             var data = {
@@ -133,19 +133,12 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
-                success: function (/* response */) {
-                    // var cardText = response.cardText;
-
-                    window.location.href = "/PaymentOptions/PaymentOption";
-                    // if (cardText === 'telebirr SMS OTP') {
-                    //     window.location.href = '/Spayment/index';
-                    // } else if (cardText === 'telebirr USSD Push') {
-                    //     window.location.href = '/Apayment/index';
-                    // }
-                    // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
-                    //     window.open(response.redirectUrl, '_blank');
-                    // }
-
+                success: function (response) {
+                    console.log(response);
+                    var userInformation = response.userInformation; 
+                    if (userInformation === "OK") {
+                        window.location.href = "/Home/Index";
+                    }
                 },
                 error: function (error) {
                     console.error('Error:', error);

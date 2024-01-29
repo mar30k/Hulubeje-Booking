@@ -32,8 +32,13 @@ namespace HulubejeBooking.Controllers.Authentication
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/authenticateUser", content);
             string responseData = await response.Content.ReadAsStringAsync();
-            var userInformation = JsonConvert.DeserializeObject<List<UserResponse>>(responseData);
-            return View();
+            var userInformationResponse = JsonConvert.DeserializeObject<List<UserResponse>>(responseData);
+            var userInformation = userInformationResponse?[0].userInformation;
+            if (userInformation != null)
+            {
+                return Json(new { userInformation = "OK" });
+            }
+            return Json(new { userInformation = "error" });
         }
     }
 }
