@@ -96,7 +96,7 @@
             <h5 class="h5">Sign In</h5>
         </div>
         <section>
-            <form id="signInForm">
+            <div id="signInForm">
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
                     <input name="Phone" type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
@@ -110,8 +110,8 @@
                     <input type="checkbox" class="form-check-input" id="rememberMe" name="RememberMe">
                     <label class="form-check-label" for="rememberMe">Remember Me</label>
                 </div>
-                <button type="submit" class="btn btn-primary submit">Sign In</button>
-            </form>
+                <button class="btn btn-primary submit">Sign In</button>
+            </div>
             <div class="forgot-password">
                 <a href="/forgotpassword">Forgot Password?</a>
             </div>
@@ -129,15 +129,17 @@
                 RememberMe: $('#rememberMe').is(':checked')
             };
             $.ajax({
-                url: '/SignIn/Index',
+                url: '/SignIn/AuthenticateUser',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function (response) {
-                    console.log(response);
-                    var userInformation = response.userInformation; 
-                    if (userInformation === "OK") {
+                    var userInformation = response.userInformation;
+                    if (userInformation === 'OK') {
                         window.location.href = "/Home/Index";
+                    }
+                    else if (userInformation === 'error') {
+                            window.location.href = "/Home/Index";
                     }
                 },
                 error: function (error) {

@@ -20,7 +20,7 @@ namespace HulubejeBooking.Controllers.Authentication
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Index([FromBody] LoginInformation data)
+        public async Task<IActionResult> AuthenticateUser([FromBody] LoginInformation data)
         {
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var param = new
