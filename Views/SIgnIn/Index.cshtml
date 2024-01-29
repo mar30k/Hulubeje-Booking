@@ -98,7 +98,24 @@
         </div>
         <section>
             <div id="signInForm">
-                <form asp-action="AuthenticateUser" asp-controller="SignIn" method="post" autocomplete="off">
+                <form asp-action="Index" asp-controller="SignIn" method="post" autocomplete="off">
+                    @{
+                        var firstError = ViewData.ModelState?.FirstOrDefault(m => m.Value.Errors.Any());
+                        var errorMessage = firstError?.Value?.Errors?.FirstOrDefault()?.ErrorMessage ?? string.Empty;
+                    }
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            @errorMessage
+                        </div>
+
+                        <script>
+                            setTimeout(function () {
+                                document.querySelector('.alert').style.display = 'none';
+                            }, 2000);
+                        </script>
+                    }
                     <div class="form-group has-feedback">
                         <input asp-for="Phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
@@ -109,16 +126,6 @@
                         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                         <span asp-validation-for="Password"></span>
                     </div>
-                    @{
-                        var errors = ViewData.ModelState.Where(s => s.Value?.Errors.Count > 0).ToList();
-                        if (errors != null && errors.Count > 0)
-                        {
-                            foreach (var item in errors)
-                            {
-                                <p class="text-red">@item.Value?.Errors?.FirstOrDefault()?.ErrorMessage</p>
-                            }
-                        }
-                    }
                     <div class="checkbox icheck">
                         <input asp-for="RememberMe" />
                         <label asp-for="RememberMe"></label>
@@ -137,7 +144,7 @@
 
         </section>
     </div>
-<script>
+@* <script>
     $(document).ready(function () {
         $('.submit').on('click', function () {
             var data = {
@@ -174,7 +181,8 @@
         }
     });
 
-</script>
+</script> *@
+    
 
 </body>
 <partial name="_Footer" />
