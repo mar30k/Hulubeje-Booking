@@ -20,7 +20,7 @@ namespace HulubejeBooking.Controllers.Authentication
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AuthenticateUser(LoginInformation data)
+        public async Task<IActionResult> Index(LoginInformation data)
         { 
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var param = new
@@ -40,7 +40,7 @@ namespace HulubejeBooking.Controllers.Authentication
             }
             else {
                 ModelState.AddModelError("", "Incorrect Username or Password!");
-                return RedirectToAction("Index", "SignIn");
+                return View("Index");
             }
         }
     }
