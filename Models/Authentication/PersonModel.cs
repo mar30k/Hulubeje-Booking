@@ -54,4 +54,10 @@
         public bool? isVerified { get; set; }
         public List<string>? errors { get; set; }
     }
+    public class LoginInformation
+    {
+        public string? Password { get; set; }
+        public string? Phone { get; set; }
+        public bool RememberMe { get; set; }
+    }
 }

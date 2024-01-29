@@ -1,11 +1,39 @@
 ﻿<partial name="_Navigation" />
+<head>
+    <title>Enter OTP</title>
+    <style>
+        #errorAlert {
+            position: fixed;
+            left: 50%;
+            margin-top: 10px;
+            transform: translateX(-50%);
+            z-index: 1000; 
+            max-width: 90%;
+            padding: 10px;
+        }
+    </style>
+</head>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert" id="errorAlert">
+        @TempData["ErrorMessage"]
+    </div>
+
+    <!-- JavaScript to hide the alert after 2 seconds -->
+    <script>
+        setTimeout(function () {
+            document.getElementById('errorAlert').style.display = 'none';
+        }, 2000);
+    </script>
+}
+
 <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
     <div class="d-flex align-items-center">
         <div class="row mt-3">
             <div class="col">
                 <form method="post" action="/Otp/VerifyOtp">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="otpCode" placeholder="Enter OTP Code">
+                        <input type="text" class="form-control" name="otpCode" placeholder="Enter OTP Code" required> 
                         <button class="btn btn-dark">Send Code</button>
                     </div>
                 </form>
