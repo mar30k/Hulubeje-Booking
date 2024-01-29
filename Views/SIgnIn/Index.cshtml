@@ -1,4 +1,5 @@
 ﻿<partial name="_Navigation" />
+@model HulubejeBooking.Models.Authentication.LoginInformation
 <head>
     <title>Login</title>
     <style>
@@ -79,7 +80,7 @@
 </head>
 <body>
     
-    <div class="container login-container mb-3">
+    <div class="container login-container mt-5 mb-5">
         @if (TempData["InfoMessage"] != null)
         {
             <div class="alert alert-success" role="alert" id="errorAlert">
@@ -97,20 +98,35 @@
         </div>
         <section>
             <div id="signInForm">
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input name="Phone" type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="Password" class="form-control" id="password" placeholder="Password" autocomplete="off" required>
-                </div>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe" name="RememberMe">
-                    <label class="form-check-label" for="rememberMe">Remember Me</label>
-                </div>
-                <button class="btn btn-primary submit">Sign In</button>
+                <form asp-action="AuthenticateUser" asp-controller="SignIn" method="post" autocomplete="off">
+                    <div class="form-group has-feedback">
+                        <input asp-for="Phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                        <span asp-validation-for="Phone"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="off" />
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                        <span asp-validation-for="Password"></span>
+                    </div>
+                    @{
+                        var errors = ViewData.ModelState.Where(s => s.Value?.Errors.Count > 0).ToList();
+                        if (errors != null && errors.Count > 0)
+                        {
+                            foreach (var item in errors)
+                            {
+                                <p class="text-red">@item.Value?.Errors?.FirstOrDefault()?.ErrorMessage</p>
+                            }
+                        }
+                    }
+                    <div class="checkbox icheck">
+                        <input asp-for="RememberMe" />
+                        <label asp-for="RememberMe"></label>
+                    </div>
+                    <div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Login</button>
+                    </div>
+                </form>
             </div>
             <div class="forgot-password">
                 <a href="/forgotpassword">Forgot Password?</a>
@@ -118,6 +134,7 @@
             <div class="create-account">
                 <span>Don't have an account? <a href="/signup">Create New Account</a></span>
             </div>
+
         </section>
     </div>
 <script>
@@ -139,7 +156,7 @@
                         window.location.href = "/Home/Index";
                     }
                     else if (userInformation === 'error') {
-                            showBootstrapAlert('Incorrect password. Please try again.', 'alert-danger');
+                            showAlert('Incorrect password. Please try again.', 'alert-danger');
                     }
                 },
                 error: function (error) {
@@ -147,18 +164,13 @@
                 }
             });
         });
-        function showBootstrapAlert(message, alertClass) {
-            // Remove any existing alerts
+        function showAlert(message, alertClass) {
             $('.bootstrap-alert').remove();
-
-            // Create and append the alert element
             var alert = $('<div class="alert ' + alertClass + ' bootstrap-alert" role="alert">' + message + '</div>');
             $('.create-account').before(alert);
-
-            // Automatically close the alert after 5 seconds (5000 milliseconds)
             setTimeout(function () {
                 alert.remove();
-            }, 1000);
+            }, 5000);
         }
     });
 

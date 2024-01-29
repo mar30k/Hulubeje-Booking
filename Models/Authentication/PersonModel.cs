@@ -1,4 +1,7 @@
-﻿namespace HulubejeBooking.Models.Authentication
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+
+namespace HulubejeBooking.Models.Authentication
 {
     public class PersonModel
     {
@@ -56,8 +59,17 @@
     }
     public class LoginInformation
     {
+
+        [Required(ErrorMessage = "Password is required!")]
+        [DataType(DataType.Password)]
+        //[NoTrim]
+        [DisplayName("Password")]
         public string? Password { get; set; }
+        [Required(ErrorMessage = "Phone Number is required!")]
+        [DataType(DataType.Text)]
+        [DisplayName("Phone Number")]
         public string? Phone { get; set; }
+        [DisplayName("Remember Me")]
         public bool RememberMe { get; set; }
     }
 }

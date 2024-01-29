@@ -20,8 +20,8 @@ namespace HulubejeBooking.Controllers.Authentication
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AuthenticateUser([FromBody] LoginInformation data)
-        {
+        public async Task<IActionResult> AuthenticateUser(LoginInformation data)
+        { 
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var param = new
             {
@@ -36,9 +36,12 @@ namespace HulubejeBooking.Controllers.Authentication
             var userInformation = userInformationResponse?[0].userInformation;
             if (userInformation != null)
             {
-                return Json(new { userInformation = "OK" });
+                return RedirectToAction("Index", "Home");
             }
-            return Json(new { userInformation = "error" });
+            else {
+                ModelState.AddModelError("", "Incorrect Username or Password!");
+                return RedirectToAction("Index", "SignIn");
+            }
         }
     }
 }
