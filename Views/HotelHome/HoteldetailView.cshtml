@@ -184,8 +184,8 @@
         </div>
     </div>
 </div>
-<div class="container">
-@* 
+@* <div class="container">
+ *@@* 
 	@if (Model is not null)
 	{
 		<div class="row g-1">
@@ -233,49 +233,51 @@
 
     @if (Model != null)
     {
-        <div class="row g-3">
-            <div class="col-md-6">
-                <p>@Model.note</p>
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-md-12 m-2">
+                    <p>@Model.note</p>
+                </div>
             </div>
-            <div class="col-md-6">
-                <div class="row g-3">
-                    @foreach (var paymentMethod in Model.paymentOptions)
-                    {
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-body">
-                                    <img src="@paymentMethod.PaymentMethodImage" class="img-fluid rounded-start" alt="paymentMethod PaymentProviderOrganizationName">
-                                    <h5 class="card-title">@paymentMethod.PaymentMethodName</h5>
-                                    <p class="card-text price">@paymentMethod.PaymentMethodName</p>
-                                    <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="row g-3">
+                        @foreach (var paymentMethod in Model?.paymentOptions)
+                        {
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 shadow-sm rounded-3 border-0">
+                                    <div class="card-body">
+                                        <img src="@paymentMethod.PaymentMethodImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentMethodName">
+                                        <h5 class="card-title">@paymentMethod?.PaymentMethodName</h5>
+                                        <p class="card-text price">@paymentMethod?.PaymentMethodName</p>
+                                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-3">
-            @foreach (var amenity in Model?.aminities)
-            {
-                <div class="col-lg-2 col-md-3 col-sm-4">
-                    <div class="border p-2">
-                        <img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="rounded me-2">
-                        <span>@amenity.Name</span>
+                        }
                     </div>
                 </div>
-            }
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 offset-md-3 text-center">
-                <button class="btn btn-primary mt-3" type="button" id="searchButton" style="height: 60px; width: 100%;">Book</button>
+            </div>
+            <div class="row mb-4">
+                @foreach (var amenity in Model?.aminities)
+                {
+                    <div class="col-lg-2 col-md-3 col-sm-4 mb-3">
+                        <div class="border p-2">
+                            <img src="@amenity.ImageUrl" alt="Amenity Image" class="img-fluid rounded me-2" style="max-height: 20px;">
+                            <span>@amenity.Name</span>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="row">
+                <div class="col-md-6 offset-md-3 text-center">
+                    <button class="btn btn-primary btn-lg m-3" type="button" id="searchButton">Book Now</button>
+                </div>
             </div>
         </div>
     }
 
-</div>
+
 
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
