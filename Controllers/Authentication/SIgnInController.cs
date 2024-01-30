@@ -1,6 +1,7 @@
 ﻿using HulubejeBooking.Models.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Reflection;
 using System.Text;
 
 namespace HulubejeBooking.Controllers.Authentication
@@ -10,9 +11,12 @@ namespace HulubejeBooking.Controllers.Authentication
         private readonly ILogger<SignInController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public SignInController(ILogger<SignInController> logger, IHttpClientFactory httpClientFactory)
+        private readonly AuthenticationManager _authenticationManager;
+        public SignInController(ILogger<SignInController> logger, IHttpClientFactory httpClientFactory,
+            AuthenticationManager authenticationManager)
         {
             _logger = logger;
+            _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
         }
         public IActionResult Index()
@@ -36,6 +40,7 @@ namespace HulubejeBooking.Controllers.Authentication
             var userInformation = userInformationResponse?[0].userInformation;
             if (userInformation != null)
             {
+                _authenticationManager.SignIn(userInformation, data.RememberMe);
                 return RedirectToAction("Index", "Home");
             }
             else {

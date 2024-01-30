@@ -1,21 +1,17 @@
 ﻿using System.Security.Claims;
-using CNET_ERP_V7.WebConstants;
-using CNET_V7_Domain.Domain.SecuritySchema;
-using CNET_V7_Domain.Misc;
-using DeliveryMonitoring.Models;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
+using HulubejeBooking.Models.Authentication;
 
-
-namespace DeliveryMonitoring.Controllers
+namespace HulubejeBooking.Controllers.Authentication
 {
     public class AuthenticationManager
     {
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        private UserDTO _cachedUser;
+        private UserInformation _cachedUser;
         public AuthenticationManager(
                 IHttpContextAccessor httpContextAccessor,
                 IHttpClientFactory httpClientFactory
@@ -26,37 +22,8 @@ namespace DeliveryMonitoring.Controllers
         }
 
 
-        public async Task<ResponseModel<LoginResponse>> AuthenticateUser(string userName, string password)
-        {
-            var _client = _httpClientFactory.CreateClient("DeliveryLogin");
-            var _s = new ResponseModel<LoginResponse>();
-            if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
-            {
-                //return AuthenticationErrorType.IncorrectUserNamePassword;
-                return _s;
-            }
-            else
-            {
-                var endpoint = "/SysInitialize/authenticate";
-                string queryString = $"?userName={userName}&password={password}&tin=0076217301";
-                string requestUrl = $"{endpoint}{queryString}";
-
-                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + requestUrl);
-
-                string juservalidation = await response.Content.ReadAsStringAsync();
-                var userValidation = JsonConvert.DeserializeObject<ResponseModel<LoginResponse>>(juservalidation);
-
-                if (!response.IsSuccessStatusCode)
-                    return userValidation;
-
-                if (userValidation.Success)
-                    return userValidation;
-                else
-                    return userValidation;
-            }
-        }
-
-        public virtual async void SignIn(UserDTO user, bool isPersistent)
+        
+        public virtual async void SignIn(UserInformation user, bool isPersistent)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -64,12 +31,12 @@ namespace DeliveryMonitoring.Controllers
             //create claims for customer's username and email
             var claims = new List<Claim>();
 
-            if (!string.IsNullOrEmpty(user.UserName))
-                claims.Add(new Claim(ClaimTypes.Name, user.UserName, ClaimValueTypes.String, CNET_WebConstantes.ClaimsIssuer));
+            if (!string.IsNullOrEmpty(user.phoneNumber))
+                claims.Add(new Claim(ClaimTypes.Name, user.phoneNumber, ClaimValueTypes.String, "cnetERP"));
 
 
             //create principal for the current authentication scheme
-            var userIdentity = new ClaimsIdentity(claims, CNET_WebConstantes.CookieScheme);
+            var userIdentity = new ClaimsIdentity(claims, "cnet.erp.v6");
             var userPrincipal = new ClaimsPrincipal(userIdentity);
 
             //set value indicating whether session is persisted and the time at which the authentication was issued
@@ -80,7 +47,7 @@ namespace DeliveryMonitoring.Controllers
             };
 
             //sign in
-            await _httpContextAccessor.HttpContext.SignInAsync(CNET_WebConstantes.CookieScheme, userPrincipal, authenticationProperties);
+            await _httpContextAccessor.HttpContext.SignInAsync("cnet.erp.v6", userPrincipal, authenticationProperties);
 
             //cache authenticated customer
             _cachedUser = user;
@@ -111,7 +78,7 @@ namespace DeliveryMonitoring.Controllers
             //reset cached customer
             _cachedUser = null;
             //and sign out from the current authentication scheme
-            await _httpContextAccessor.HttpContext.SignOutAsync(CNET_WebConstantes.CookieScheme);
+            await _httpContextAccessor.HttpContext.SignOutAsync("cnet.erp.v6");
         }
     }
 }

@@ -72,4 +72,8 @@ namespace HulubejeBooking.Models.Authentication
         [DisplayName("Remember Me")]
         public bool RememberMe { get; set; }
     }
+    public class cookieValidation
+    {
+        public bool isValid { get; set; }
+    }
 }
