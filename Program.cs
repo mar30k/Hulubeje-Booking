@@ -1,4 +1,6 @@
 using HulubejeBooking.Models.HotelModels;
+using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,6 +23,12 @@ builder.Services.AddHttpClient("BusBooking", httpClient =>
     httpClient.BaseAddress = new Uri("http://192.168.1.25:8092/api/");
     httpClient.DefaultRequestHeaders.Add("x-api-key", "9BE090F9-7F52-4297-93A1-32D03D361DE9");
 });
+builder.Services.AddAuthentication("cnet.erp.v6")
+     .AddCookie("cnet.erp.v6", options =>
+     {
+         options.AccessDeniedPath = "/account/denied";
+         options.LoginPath = "/login";
+     });
 builder.Services.AddHttpClient("MovieDb", httpClient =>
 {
     httpClient.BaseAddress = new Uri("https://api.themoviedb.org/3/");
@@ -34,6 +42,8 @@ builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AuthenticationManager>();
 
 var app = builder.Build();
 
