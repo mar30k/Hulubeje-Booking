@@ -41,7 +41,38 @@ namespace HulubejeBooking.Controllers.Authentication
             if (userInformation != null)
             {
                 _authenticationManager.SignIn(userInformation, data.RememberMe);
-                return RedirectToAction("Index", "Home");
+                var signInInformation = HttpContext.Session.GetString("SignInInformation");
+                var signin = "";
+                var isLoggedIn = true;
+                string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
+
+                HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
+
+                if (signInInformation != null)
+                {
+                    signin = JsonConvert.DeserializeObject<string>(signInInformation);
+                }
+                HttpContext.Session.Remove("SignInInformation");
+
+                if (signin == "Hotel")
+                {
+                    string validation = "Yes";
+                    var validationJson = JsonConvert.SerializeObject(validation);
+                    HttpContext.Session.SetString("IsLogin", validationJson);
+                    return RedirectToAction("Index", "FilteredRoom");
+                }
+
+                else if (signin == "Cinema")
+                {
+                    string validation = "Yes";
+                    var validationJson = JsonConvert.SerializeObject(validation);
+                    HttpContext.Session.SetString("IsLogin", validationJson);
+                    return RedirectToAction("SeatArrangement", "CinemaSeatLayout");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
             else {
                 ModelState.AddModelError("", "Incorrect Username or Password!");

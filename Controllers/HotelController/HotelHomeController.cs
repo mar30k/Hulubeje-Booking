@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.HotelModels;
+using HulubejeBooking.Controllers.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
@@ -11,11 +12,13 @@ namespace HulubejeBooking.Controllers.HotelController
         private readonly object JsonRequestBehavior;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HotelListBuffer _hotelListBuffer;
+        private readonly AuthenticationManager _authenticationManager;
 
         public HotelHomeController(ILogger<HotelHomeController> logger,
-            IHttpClientFactory httpClientFactory,
+            IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager,
              HotelListBuffer hotelListBuffer)
         {
+            _authenticationManager = authenticationManager;
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _hotelListBuffer = hotelListBuffer;
@@ -180,8 +183,10 @@ namespace HulubejeBooking.Controllers.HotelController
                 var viewModelJson = JsonConvert.SerializeObject(viewModel);
 
                 HttpContext.Session.SetString("HotelViewModel", viewModelJson);
-
                 return View(viewModel);
+
+                
+                
 
             }
             else

@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using HulubejeBooking.Controllers;
 using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
 using HulubejeBooking.Models.Authentication;
@@ -32,11 +33,11 @@ namespace HulubejeBooking.Controllers.Authentication
             var claims = new List<Claim>();
 
             if (!string.IsNullOrEmpty(user.phoneNumber))
-                claims.Add(new Claim(ClaimTypes.Name, user.phoneNumber, ClaimValueTypes.String, "cnetERP"));
+                claims.Add(new Claim(ClaimTypes.Name, user.phoneNumber, ClaimValueTypes.String, CNET_WebConstants.ClaimsIssuer));
 
 
             //create principal for the current authentication scheme
-            var userIdentity = new ClaimsIdentity(claims, "cnet.erp.v6");
+            var userIdentity = new ClaimsIdentity(claims, CNET_WebConstants.CookieScheme);
             var userPrincipal = new ClaimsPrincipal(userIdentity);
 
             //set value indicating whether session is persisted and the time at which the authentication was issued
@@ -47,7 +48,7 @@ namespace HulubejeBooking.Controllers.Authentication
             };
 
             //sign in
-            await _httpContextAccessor.HttpContext.SignInAsync("cnet.erp.v6", userPrincipal, authenticationProperties);
+            await _httpContextAccessor.HttpContext.SignInAsync(CNET_WebConstants.CookieScheme, userPrincipal, authenticationProperties);
 
             //cache authenticated customer
             _cachedUser = user;
@@ -55,7 +56,15 @@ namespace HulubejeBooking.Controllers.Authentication
         public virtual async Task<cookieValidation> identificationValid()
         {
             var validinfo = new cookieValidation();
+            var validation = new cookieValidation();
 
+            var loginChecker = false;
+            var loggedInCheckerJson = _httpContextAccessor.HttpContext.Session.GetString("isLoggedIn");
+            if (loggedInCheckerJson != null) {
+                string isLoggedInJson = _httpContextAccessor.HttpContext.Session.GetString("isLoggedIn");
+                 loginChecker = JsonConvert.DeserializeObject<bool>(isLoggedInJson);
+
+            }
             var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
 
             if (authenticateResult.Succeeded)
@@ -64,21 +73,30 @@ namespace HulubejeBooking.Controllers.Authentication
 
                 if (authenticationProperties?.IsPersistent == true)
                 {
-                    validinfo.isValid = true;  // User is authenticated and the authentication is persistent
-                    return validinfo;
+                    validinfo.isValid = true;
+                    validation = new cookieValidation{
+                        isValid = validinfo.isValid,
+                        isLoggedIn = loginChecker,
+                    };
+
+                    return validation;
                 }
             }
 
             validinfo.isValid = false;
-            return validinfo;
+             validation = new cookieValidation
+            {
+                isValid = validinfo.isValid,
+                isLoggedIn = loginChecker,
+            };
+
+            return validation;
         }
 
         public virtual async void SignOut()
         {
-            //reset cached customer
             _cachedUser = null;
-            //and sign out from the current authentication scheme
-            await _httpContextAccessor.HttpContext.SignOutAsync("cnet.erp.v6");
+            await _httpContextAccessor.HttpContext.SignOutAsync(CNET_WebConstants.CookieScheme);
         }
     }
 }

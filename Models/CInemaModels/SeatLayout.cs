@@ -3,6 +3,7 @@
     public class SeatLayout
     {
         public string? SpaceCode { get; set; }
+        public string? MovieCode { get; set; }
         public string? CompanyTinNumber { get; set; }
         public string? CompanyName { get; set; }
         public string? MovieName { get; set; }

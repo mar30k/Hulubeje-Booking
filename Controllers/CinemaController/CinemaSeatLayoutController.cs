@@ -1,6 +1,7 @@
 ﻿using HulubejeBooking.Models.CInemaModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using HulubejeBooking.Controllers.Authentication;
 namespace CinemaSeatBooking.Controllers;
 using System.Net.Http;
 using System.Text;
@@ -8,16 +9,79 @@ using System.Threading.Tasks;
 
 public class CinemaSeatLayoutController : Controller
 {
+    private readonly AuthenticationManager _authenticationManager;
     private readonly HttpClient _httpClient;
-    public CinemaSeatLayoutController()
+    public CinemaSeatLayoutController(AuthenticationManager authenticationManager)
     {
         _httpClient = new HttpClient
         {
             BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
         };
+         _authenticationManager = authenticationManager;
     }
-    public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string branchCode, string companyName, string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
+
+    public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string branchCode, string companyName,
+        string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
     {
+        var loginInfo = HttpContext.Session.GetString("IsLogin");
+        var login = "";
+        if (loginInfo != null)
+        {
+            login = JsonConvert.DeserializeObject<string>(loginInfo);
+        }
+        HttpContext.Session.Remove("IsLogin");
+        if (login != "Yes")
+        {
+            var param = new SeatLayout
+            {
+                SpaceCode = spacecode,
+                CompanyTinNumber = companyTinNumber,
+                BranchCode = branchCode,
+                CompanyName = companyName,
+                MovieName = movieName,
+                MovieCode = movieCode,
+                Dimension = dimension,
+                HallName = hallName,
+                SpaceType = spaceType,
+                SelectedDate = selectedDate,
+                Price = price,
+                UtcTime = utcTime,
+                MovieScheduleCode = code
+
+            };
+            var paramJson = JsonConvert.SerializeObject(param);
+            HttpContext.Session.SetString("cinmaValues", paramJson);
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (!identificationResult.isValid && true)
+            {
+                string validation = "Cinema";
+                var validationJson = JsonConvert.SerializeObject(validation);
+                HttpContext.Session.SetString("SignInInformation", validationJson);
+                return RedirectToAction("Index", "SignIn");
+
+            }
+
+        }
+        var seatValuesJson = HttpContext.Session.GetString("cinmaValues");
+        HttpContext.Session.Remove("cinmaValues");
+        if (seatValuesJson != null )
+         {
+                var seatValues = JsonConvert.DeserializeObject<SeatLayout>(seatValuesJson);
+                spacecode = seatValues.SpaceCode;
+                companyTinNumber = seatValues.CompanyTinNumber;
+                branchCode = seatValues.BranchCode;
+                companyName = seatValues.CompanyName;
+                movieName = seatValues.MovieName;
+                movieCode = seatValues.MovieCode;
+                hallName = seatValues.HallName;
+                utcTime = seatValues.UtcTime;
+                dimension = seatValues.Dimension;
+                code = seatValues.MovieScheduleCode;
+                spaceType = seatValues.SpaceType;
+                selectedDate = seatValues.SelectedDate;
+                price = seatValues.Price;
+
+         }
         HttpResponseMessage response = await _httpClient.GetAsync($"cinema/getCinemaSeatArrangment?orgTin={companyTinNumber}&spaceCode={spacecode}");
 
         if (response.IsSuccessStatusCode)
@@ -116,12 +180,11 @@ public class CinemaSeatLayoutController : Controller
                 seatArrangement.SpaceType = spaceType;
                 seatArrangement.ArticleCode = movieCode;
             }
-            // Pass the updated SeatLayout instance to the view
+            // Pass the updated SeatLayout instance to the view\
+
             return View(seatArrangement);
         }
-
-        // Handle the case when the first API call fails
-        return View("Error");
+        return View(null);
     }
     public async Task<IActionResult> GetUpdatedSeatInfo(string spacecode, string companyTinNumber, string code, string movieName, string companyName, string utcTime, string selectedDate, string hallName,
         string spaceType, string dimension)

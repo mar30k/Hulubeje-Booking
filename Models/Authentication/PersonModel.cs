@@ -75,5 +75,6 @@ namespace HulubejeBooking.Models.Authentication
     public class cookieValidation
     {
         public bool isValid { get; set; }
+        public bool isLoggedIn { get; set; }   
     }
 }
