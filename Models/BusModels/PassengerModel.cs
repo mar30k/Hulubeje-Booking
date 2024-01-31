@@ -2,7 +2,9 @@
 {
     public class PassengerModel
     {
-        public string? PassengerName { get; set; }
+        public string? FirstName { get; set; }
+        public string? MiddleName { get; set; }
+        public string? LastName { get; set; }
         public string? PassengerId { get; set; }
         public int? PassengerAge { get; set; }
         public string? Nationality { get; set; }
