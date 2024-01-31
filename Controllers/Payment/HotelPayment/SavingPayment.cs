@@ -45,7 +45,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
         public async Task<IActionResult> PaymentCommonAsync()
         {
             var _Hotel = _httpClientFactory.CreateClient("CnetHulubeje");
-
+            var _Bus = _httpClientFactory.CreateClient("BusBooking");
             var data = HttpContext.Session.GetString("Data");
             var paymentInfo = HttpContext.Session.GetString("PaymentInfo");
             var validationInfo = HttpContext.Session.GetString("ValidationInfo");
@@ -100,7 +100,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 var arrivalDate = dt.startDateString;
                 var departureDate = dt.endDateString;
                 var cashRecieptVoucher = PaymentInfo?.PaymentTransactionRequest.TransactionId;
-               var  param = new
+                var  param = new
                 {
                     b.orgTin,
                     voucherCode = PaymentInfo?.PaymentTransactionRequest.TransactionId,
@@ -135,10 +135,21 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
+            }
+            else if(newData?.PassengerInfoData is not null)
+            {
+                var savetichketdata =newData.PassengerInfoData;
+                savetichketdata.PaymentRefNumber = newValidationInfo?.transactionReference;
+                savetichketdata.MaturityDate = DateTime.Now;
+                savetichketdata.PaymentIssueDate = DateTime.Now;
 
-                
+                var savetichketjson = JsonConvert.SerializeObject(savetichketdata);
+                var content = new StringContent(savetichketjson, Encoding.UTF8, "application/json");
+                var response = await _Bus.PostAsync(_Bus.BaseAddress + "tickets/saveTickets", content);
+                var responseData = await response.Content.ReadAsStringAsync();
 
-
+                var PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+                HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
             }
 
             return RedirectToAction("Index", "BookingPost");
