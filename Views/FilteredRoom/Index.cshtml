@@ -1,7 +1,14 @@
 ﻿<partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.AvailabilityViewModel
 
-
+@{
+	var isVaild = ViewBag.isVaild;
+	var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+	sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+	sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 
 <div class="container">
 

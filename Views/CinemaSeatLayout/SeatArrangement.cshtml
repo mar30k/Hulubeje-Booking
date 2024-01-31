@@ -4,6 +4,14 @@
 @{
     string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
 }
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 <partial name="_Navigation" />
 <head>
     <title>Seat Layout</title>

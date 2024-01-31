@@ -23,6 +23,9 @@ public class CinemaSeatLayoutController : Controller
     public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string branchCode, string companyName,
         string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
     {
+        var b = await _authenticationManager.identificationValid();
+        ViewBag.isVaild = b.isValid;
+        ViewBag.isLoggedIn = b.isLoggedIn;
         var loginInfo = HttpContext.Session.GetString("IsLogin");
         var login = "";
         if (loginInfo != null)
@@ -52,7 +55,7 @@ public class CinemaSeatLayoutController : Controller
             var paramJson = JsonConvert.SerializeObject(param);
             HttpContext.Session.SetString("cinmaValues", paramJson);
             var identificationResult = await _authenticationManager.identificationValid();
-            if (!identificationResult.isValid && true)
+            if (!identificationResult.isValid && !identificationResult.isLoggedIn)
             {
                 string validation = "Cinema";
                 var validationJson = JsonConvert.SerializeObject(validation);

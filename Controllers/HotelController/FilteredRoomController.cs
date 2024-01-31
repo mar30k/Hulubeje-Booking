@@ -24,7 +24,10 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
+
             var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var loginInfo = HttpContext.Session.GetString("IsLogin");
             var login = "";
             if (loginInfo != null)
