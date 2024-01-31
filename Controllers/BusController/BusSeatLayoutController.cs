@@ -1,22 +1,97 @@
 ﻿using HulubejeBooking.Models.BusModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.CInemaModels;
+using HulubejeBooking.Models.HotelModels;
+using Tweetinvi.Models;
+
 namespace HulubejeBooking.Controllers.BusController
 {
     public class BusSeatLayoutController : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private readonly IHttpClientFactory _httpClientFactory;
-        public BusSeatLayoutController(IHttpClientFactory httpClientFactory)
+        public BusSeatLayoutController(IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
+            _authenticationManager = authenticationManager;
         }
         public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule,
             string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId , int vehicle)
         {
+            var b = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = b.isValid;
+            ViewBag.isLoggedIn = b.isLoggedIn;
+            var loginInfo = HttpContext.Session.GetString("IsLogin");
+            var login = "";
+            if (loginInfo != null)
+            {
+                login = JsonConvert.DeserializeObject<string>(loginInfo);
+            }
+            HttpContext.Session.Remove("IsLogin");
+            if (login != "Yes")
+            {
+                var param = new BusSeatLayout
+                {
+                    Vehicle = vehicle,
+                    Distance = distance,
+                    Level = level,
+                    Route = route,
+                    PlateNumber = plateNumber,
+                    Terminal = terminal,
+                    Tariff = tariff,
+                    OperatorName = operatorName,
+                    Date = scheduleDate,
+                    Time = scheduleTime,
+                    DestinationCity = destinationCity,
+                    DepatureCity = depatureCity,
+                    ArrivialDate = arrivalDate,
+                    DepartureDate = departureDate,
+                    VehicleOperatorId = vehicleOperatorId,
+                    RouteScheduleId = routeSchedule,
+                };
+                var paramJson = JsonConvert.SerializeObject(param);
+                HttpContext.Session.SetString("BusValues", paramJson);
+                var identificationResult = await _authenticationManager.identificationValid();
+                if (!identificationResult.isValid && !identificationResult.isLoggedIn)
+                {
+                    string validation = "Bus";
+                    var validationJson = JsonConvert.SerializeObject(validation);
+                    HttpContext.Session.SetString("SignInInformation", validationJson);
+                    return RedirectToAction("Index", "SignIn");
+
+                }
+
+            }
+            var seatValuesJson = HttpContext.Session.GetString("BusValues");
+            HttpContext.Session.Remove("BusValues");
+            if (seatValuesJson != null)
+            {
+                var seatValues = JsonConvert.DeserializeObject<BusSeatLayout>(seatValuesJson);
+                plateNumber = seatValues.PlateNumber;
+                terminal = seatValues.Terminal;
+                level = seatValues.Level;
+                route = seatValues.Route;
+                tariff = seatValues.Tariff;
+                operatorName = seatValues.OperatorName;
+                scheduleDate = seatValues.Date;
+                scheduleTime = seatValues.Time;
+                destinationCity = seatValues.DestinationCity;
+                depatureCity = seatValues.DepatureCity;
+                distance = seatValues.Distance;
+                vehicleOperatorId = seatValues.VehicleOperatorId;
+                arrivalDate = seatValues.ArrivialDate;
+                departureDate = seatValues.DepartureDate;
+                routeSchedule = seatValues.RouteScheduleId;
+                vehicle = (int)seatValues.Vehicle;
+            }
+
+
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
             var schedueleInfo = new BusSeatLayout
             {
-                
+                Vehicle = vehicle,
                 Distance = distance,
                 Level = level,
                 Route = route,
@@ -36,7 +111,7 @@ namespace HulubejeBooking.Controllers.BusController
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={vehicle}");
             if (response.IsSuccessStatusCode) { 
                string resopnseData = await response.Content.ReadAsStringAsync();
-               var seatLayout = JsonConvert.DeserializeObject<SeatLayout>(resopnseData);
+               var seatLayout = JsonConvert.DeserializeObject<SeatLayoutStructure>(resopnseData);
                schedueleInfo.SeatLayout = seatLayout;
             }
             

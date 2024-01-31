@@ -1,4 +1,12 @@
 ﻿@model HulubejeBooking.Models.BusModels.BusSeatLayout
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 <partial name="_Navigation" />
 <style>
     @@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap'); 

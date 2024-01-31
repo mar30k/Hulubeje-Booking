@@ -16,11 +16,12 @@
         public string? ArrivialDate {  get; set; }
         public string? DepartureDate {  get; set; }
         public string? VehicleOperatorId {  get; set; }
+        public int? Vehicle {  get; set; }
         public string? RouteScheduleId {  get; set; }
-        public SeatLayout? SeatLayout { get; set; }
+        public SeatLayoutStructure? SeatLayout { get; set; }
 
     }
-    public class SeatLayout
+    public class SeatLayoutStructure
     {
         public int? Id { get; set; }
         public int? MaxX { get; set; }

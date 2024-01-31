@@ -69,7 +69,14 @@ namespace HulubejeBooking.Controllers.Authentication
                     HttpContext.Session.SetString("IsLogin", validationJson);
                     return RedirectToAction("SeatArrangement", "CinemaSeatLayout");
                 }
-                else
+                else if (signin == "Bus")
+                {
+                    string validation = "Yes";
+                    var validationJson = JsonConvert.SerializeObject(validation);
+                    HttpContext.Session.SetString("IsLogin", validationJson);
+                    return RedirectToAction("SeatLayout", "BusSeatLayout");
+                }
+                else 
                 {
                     return RedirectToAction("Index", "Home");
                 }
