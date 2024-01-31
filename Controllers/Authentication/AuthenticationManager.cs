@@ -56,7 +56,6 @@ namespace HulubejeBooking.Controllers.Authentication
         public virtual async Task<cookieValidation> identificationValid()
         {
             var validinfo = new cookieValidation();
-            var validation = new cookieValidation();
 
             var loginChecker = false;
             var loggedInCheckerJson = _httpContextAccessor.HttpContext.Session.GetString("isLoggedIn");
@@ -74,23 +73,16 @@ namespace HulubejeBooking.Controllers.Authentication
                 if (authenticationProperties?.IsPersistent == true)
                 {
                     validinfo.isValid = true;
-                    validation = new cookieValidation{
-                        isValid = validinfo.isValid,
-                        isLoggedIn = loginChecker,
-                    };
+                    validinfo.isLoggedIn = loginChecker;
 
-                    return validation;
+                    return validinfo;
                 }
             }
 
             validinfo.isValid = false;
-             validation = new cookieValidation
-            {
-                isValid = validinfo.isValid,
-                isLoggedIn = loginChecker,
-            };
+            validinfo.isLoggedIn = loginChecker;
 
-            return validation;
+            return validinfo;
         }
 
         public virtual async void SignOut()
