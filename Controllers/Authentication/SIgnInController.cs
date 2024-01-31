@@ -86,5 +86,13 @@ namespace HulubejeBooking.Controllers.Authentication
                 return View("Index");
             }
         }
+        public async Task<IActionResult> Logout()
+        {
+            var isLoggedIn = false;
+            string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
+            HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
+            _authenticationManager.SignOut();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
