@@ -1,6 +1,6 @@
 ﻿@model HulubejeBooking.Models.BusModels.Wrap
 
-<partial name="_Navigation" />
+@* <partial name="_Navigation" /> *@
 <head>
     <title>Confirmation</title>
 </head>
@@ -78,7 +78,7 @@
                 <div class="card border-primary h-100 p-2">
                     <div class="card-body ">
                         <div style=""> 
-                            <h5 class="card-title text-primary">@passenger.PassengerName</h5>
+                            <h5 class="card-title text-primary">@passenger.FirstName</h5>
                         </div>
                         <hr>
                         <div class="row p-2" style="background-color: #e0b300; border-radius: 5px;">
@@ -132,7 +132,8 @@
     var addtionalCharge = 0;
     var grandtotal = resultAsDouble + addtionalCharge - discount;
     var ticketDetail = [];
-
+    var intMale = 1;
+    var intFemale = 2;
     @if (passengerData != null)
     {
         @for (var i = 0; i < passengerData.Count; i++)
@@ -146,7 +147,9 @@
                 Dob: '@passenger.DOB',
                 Email: '@passenger.Email',
                 IdNumber: '@passenger.PassengerId',
-                FirstName: '@passenger.PassengerName',
+                FirstName: '@passenger.FirstName',
+                LastName: '@passenger.LastName',
+                MiddleName: '@passenger.MiddleName',
                 SeatLayout: '@passenger.SeatId',
                 SubTotal: resultAsDouble,
                 Discount: discount,
@@ -157,7 +160,11 @@
                 Latitude: 0,
                 Note: '',
             };
-
+            if ('@passenger.Gender' === 'Male') {
+                ticketDetailObject.Gender = intMale;
+            } else if ('@passenger.Gender' === 'Female') {
+                ticketDetailObject.Gender = intFemale;
+            }
             ticketDetail.push(ticketDetailObject);
             </text>
         }
@@ -172,7 +179,7 @@
                 UserMobileNumber: userMobileNumber,
                 SupplierTin: '0000017872',
                 SupplierOUD: 'OUD000000048',
-                Amount: amount,
+                Amount: 0.1,
             },
             PassengerInfoData: {
                 RouteSchedule: routeScheduleId,
