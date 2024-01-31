@@ -62,12 +62,13 @@
                                         <tr>
                                             @for (int x = 1; x <= maxX; x++)
                                         {
-                                            var seat = seats.FirstOrDefault(s => s.X == x && s.Y == y && (s.Type == "Seat" || s.Type == "Driver Seat"));
+                                            var seat = seats.FirstOrDefault(s => s.X == x && s.Y == y && (s.Type == "Seat" || s.Type == "Driver Seat" || s.Type == "OOO"));
 
                                             if (seat != null)
                                             {
                                                     <td style="height: 30px !important; width: 30px !important">
-                                                        <button id="@seat.Id" style="background-color: @(seat.Type == "Driver Seat" ? "Black" : ""); border-color:@(seat.Type == "Driver Seat" ? "black" : "")" class="buttons" onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
+                                                    <button class="buttons rounded" id="@seat.Id" style="background-color: @(seat.Type == "Driver Seat" ? "yellow" : "");background-color: @(seat.Type == "OOO" ? "black" : ""); color: @(seat.Type == "OOO" ? "white" : ""); border-color:@(seat.Type == "OOO" ? "Black" : "")"
+                                                            onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
                                                     </td>
                                             }
                                             else
