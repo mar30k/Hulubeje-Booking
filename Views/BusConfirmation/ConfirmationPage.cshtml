@@ -6,9 +6,15 @@
 </head>
 <div class="container mt-4">
     @{
-        string formattedArrivalTime = Model.VwRouteScheduleData.ArrivalDate.ToString("h:mm tt");
-        string formattedDepartTime = Model.VwRouteScheduleData.DepartureDate.ToString("h:mm tt");
-        string formattedDate = Model.VwRouteScheduleData.Date;
+        string formattedArrivalTime = "";
+        string formattedDepartTime = "";
+        string formattedDate = "";
+        if (Model?.VwRouteScheduleData != null)
+        {
+            formattedArrivalTime = Model.VwRouteScheduleData.ArrivalDate.ToString("h:mm tt");
+            formattedDepartTime = Model.VwRouteScheduleData.DepartureDate.ToString("h:mm tt");
+        }
+        formattedDate = Model?.VwRouteScheduleData.Date;
     }
     <div class="row border rounded mb-4 pt-3 bg-dark">
         <div class="col-md-4 text-center">
@@ -116,14 +122,14 @@
     var passengerData = Model?.PassengerModelData;
 }
 <script>
-    var tarrif = "@Model?.VwRouteScheduleData.Tariff";
-    var vehicleOperatorId = "@Model?.VwRouteScheduleData.VehicleOperatorId";
-    var routeScheduleId = "@Model?.VwRouteScheduleData.Id";
-    var routeScheduleDate = "@Model?.VwRouteScheduleData.Date";
+    var tarrif = "@Model?.VwRouteScheduleData?.Tariff";
+    var vehicleOperatorId = "@Model?.VwRouteScheduleData?.VehicleOperatorId";
+    var routeScheduleId = "@Model?.VwRouteScheduleData?.Id";
+    var routeScheduleDate = "@Model?.VwRouteScheduleData?.Date";
     var index = tarrif.indexOf(' ');
     var result = (index > 0) ? tarrif.substring(0, index) : tarrif;
     var resultAsDouble = parseFloat(result);
-    var passengerCount = parseFloat("@Model?.PassengerModelData.Count");
+    var passengerCount = parseFloat("@Model?.PassengerModelData?.Count");
     var amount = resultAsDouble * passengerCount;
     console.log(amount);
     var passengerId = '#passenger-1';
@@ -159,6 +165,11 @@
                 Longitude: 0,
                 Latitude: 0,
                 Note: '',
+                PickupLocation: 1,
+                Region: 1,
+                City: 14,
+                SubCity: 15,
+                MaritalStatus: 183,
             };
             if ('@passenger.Gender' === 'Male') {
                 ticketDetailObject.Gender = intMale;
@@ -182,6 +193,7 @@
                 Amount: 0.1,
             },
             PassengerInfoData: {
+                Payer: userMobileNumber,
                 RouteSchedule: routeScheduleId,
                 Operator: vehicleOperatorId,
                 PaymentAmount: amount,

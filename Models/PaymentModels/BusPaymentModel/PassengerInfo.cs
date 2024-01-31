@@ -17,9 +17,9 @@
         public int? PaymentStatus { get; set; }
         public string? IpAddress { get; set; }
         public string? Platform { get; set; }
-        public double? Latitude { get; set; }
-        public double? Longitude { get; set; }
-        public string? AppId { get; set; }
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        public int? AppId { get; set; }
     }
     public class TicketDetail
     {
@@ -41,8 +41,8 @@
         public string? Woreda { get; set; }
         public string? HouseNumber { get; set; }
         public string? SpecificAddress { get; set; }
-        public double? Longitude { get; set; }
-        public double? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        public decimal? Latitude { get; set; }
         public string? ImageUrl { get; set; }
         public int? SeatLayout { get; set; }
         public bool? IsAutoAssigned { get; set; }
