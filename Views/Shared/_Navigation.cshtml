@@ -41,6 +41,31 @@
                 margin-right: 5px;
             }
     </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var retrievedIsValid = sessionStorage.getItem("isValid");
+            var retrievedIsLoggedIn = sessionStorage.getItem("isLoggedIn");
+
+            // Convert the retrieved strings to boolean values
+            retrievedIsValid = JSON.parse(retrievedIsValid);
+            retrievedIsLoggedIn = JSON.parse(retrievedIsLoggedIn);
+
+            // Conditionally render HTML based on the values
+            if (retrievedIsValid === true || retrievedIsLoggedIn === true) {
+                document.getElementById("conditionalButtons").innerHTML = `
+                                        <a href="/SignIn" class="btn btn-light">LogOut</a>
+                                    `;
+            } else {
+                document.getElementById("conditionalButtons").innerHTML = `
+                                        <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
+                                        <a class="btn" style="color: white;">List your property</a>
+                                        <a href="/SignUp" class="btn btn-light">Register</a>
+                                        <a href="/SignIn" class="btn btn-light">Login</a>
+                                    `;
+            }
+        });
+
+    </script>
 </head>
 <body>
     <div class="container-fluid pb-2" style="background-color:#063970;">
@@ -56,15 +81,10 @@
                     </nav>
                 </div>
                 <div class="col-md-5">
-                    <div class="ml-4" style="margin-left:auto">
-                        <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
-                        <a class="btn" style="color: white;">List your property</a>
-                        <a asp-controller="SignUp" asp-action="Index" class="btn btn-light">Register</a>
-                        <a asp-controller="SignIn" asp-action="Index" class="btn btn-light">Login</a>
+                    <div class="ml-4" id="conditionalButtons" style="margin-left:auto">
                     </div>
                 </div>
             </div>
-
             <div class="container-fluid">
                 <div class="tabscontainer ms-0 ml-lg-4">
                     <a asp-action="Index" asp-controller="HotelHome" type="button" class="tabs btn btn-outline-primary rounded" style="color: white; border-radius: 50%"><span style="display: inline-block"><i class="bi bi-house"></i></span> Hotels</a>
