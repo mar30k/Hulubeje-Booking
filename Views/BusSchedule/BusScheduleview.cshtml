@@ -99,6 +99,7 @@
                                                 }
                                             }
                                             <p class="destinationCity" style="display: none">@schedule.DestCityName</p>
+                                            <p class="vehicle" style="display: none">@schedule.Vehicle</p>
                                             <p class="routeSchedule" style="display: none">@schedule.Id</p>
                                             <p class="vehicleOperatorId" style="display: none">@schedule.VehicleOperatorId</p>
                                             <p class="departureDate" style="display: none">@schedule.DepartureDate</p>
@@ -150,6 +151,7 @@
                 var depatureCity = $(this).closest('.card-body').find('.depatureCity').text().trim();
                 var arrivalDate = $(this).closest('.card-body').find('.arrivalDate').text().trim();
                 var departureDate = $(this).closest('.card-body').find('.departureDate').text().trim();
+                var vehicle = $(this).closest('.card-body').find('.vehicle').text().trim();
 
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
                 form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
@@ -166,6 +168,7 @@
                 form.append('<input type="hidden" name="arrivalDate" value="' + arrivalDate + '">');
                 form.append('<input type="hidden" name="departureDate" value="' + departureDate + '">');
                 form.append('<input type="hidden" name="vehicleOperatorId" value="' + vehicleOperatorId + '">');
+                form.append('<input type="hidden" name="vehicle" value="' + vehicle + '">');
                 $("body").append(form);
                 form.submit();
             });
