@@ -64,7 +64,7 @@
                                             var backgroundColor = isBooked ? (isSold ? "red" : "blue") : (isTaken ? "orange" : "");
                                             var textColor = isTaken || isBooked || (isBooked && isSold) ? "white" : "";
 
-                                            <button id="@seat.Code" class="buttons" onclick="return false" @(isBooked || isSold || isTaken ? "disabled" : "") style="background-color: @(backgroundColor); color: @(textColor); ">
+                                            <button id="@seat.Code" class="buttons rounded" onclick="return false" @(isBooked || isSold || isTaken ? "disabled" : "") style="background-color: @(backgroundColor); color: @(textColor); ">
                                                 @seat.Name
                                             </button>
                                         }
