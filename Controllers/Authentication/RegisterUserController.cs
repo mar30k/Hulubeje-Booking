@@ -10,9 +10,10 @@ namespace HulubejeBooking.Controllers.Authentication
     {
         private readonly ILogger<RegisterUserController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-
-        public RegisterUserController(ILogger<RegisterUserController> logger, IHttpClientFactory httpClientFactory)
+        private readonly AuthenticationManager _authenticationManager;
+        public RegisterUserController(ILogger<RegisterUserController> logger, IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager)
         {
+            _authenticationManager = authenticationManager;
             _logger = logger;
             _httpClientFactory = httpClientFactory;
         }
@@ -42,6 +43,16 @@ namespace HulubejeBooking.Controllers.Authentication
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/createUser", content);
             string responseData = await response.Content.ReadAsStringAsync();
+            var isLoggedIn = true;
+            string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
+            HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
+
+            var userInformation = new UserInformation()
+            {
+                code = newData?.phoneNumber,
+            };
+            _authenticationManager.SignIn(userInformation, true);
+
             return RedirectToAction("Index", "Home");
         }
     }

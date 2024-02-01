@@ -44,6 +44,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 }
                 else
                 {
+                    TempData["ErrorMessage"] = "Coundn't verify code";
                     return RedirectToAction("Index", "Otp");
                 }
             }
