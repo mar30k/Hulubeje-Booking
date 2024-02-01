@@ -27,8 +27,8 @@ namespace HulubejeBooking.Controllers.BusController
             if(routeResponse.IsSuccessStatusCode)
             {
                 string routeResponseData = await routeResponse.Content.ReadAsStringAsync();
-                var routeData = JsonConvert.DeserializeObject<RouteConfiguration>(routeResponseData);
-                busModel.RouteConfiguration = routeData;
+                var routeData = JsonConvert.DeserializeObject<List<RouteModel>>(routeResponseData);
+                busModel.Routes = routeData;
             }
             return View(busModel);
         }
