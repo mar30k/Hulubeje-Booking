@@ -21,6 +21,7 @@ namespace HulubejeBooking.Controllers.Authentication
         }
         public IActionResult Index()
         {
+
             return View();
         }
         [HttpPost]

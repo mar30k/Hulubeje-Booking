@@ -56,7 +56,7 @@
                                         <strong> <span style="color:lightgreen">E</span><span style="color:yellow">T</span><span style="color:red">H</span></strong>
                                         <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
                                         <a class="btn" style="color: white;">List your property</a>
-                                        <a href="/SignIn/Logout" class="btn btn-light">LogOut</a>   
+                                        <a href="/SignIn/Logout" class="btn btn-light logout">LogOut</a>   
                                     `;
             } else {
                 document.getElementById("conditionalButtons").innerHTML = `
@@ -66,6 +66,10 @@
                                         <a href="/SignIn" class="btn btn-light">Login</a>
                                     `;
             }
+            $('.logout').on('click', function () {
+                localStorage.removeItem("phone");
+                sessionStorage.removeItem("phone");
+            });
         });
 
     </script>

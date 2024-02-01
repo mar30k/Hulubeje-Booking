@@ -50,27 +50,39 @@
     </div>
     <div class="container mt-5">
         @{
-            List<Routes> allRoutes = Model?.RouteConfiguration?.Routes ?? new List<Routes>();
+            List<RouteModel> allRoutes = Model?.Routes;
+            List<RouteModel> toCity = Model?.Routes;
             List<City> allCities = Model?.RouteConfiguration?.Cities ?? new List<City>();
             List<int?> fromCities = Model?.RouteConfiguration?.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
             List<string> fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
         }
         <div class="d-flex" style="">
             <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>
-                <option value="">Select a Departure City</option>
-                @if (fromCityNames is not null)
+                @if (allRoutes is not null)
                 {
-                    @foreach (var city in fromCityNames)
+                    @foreach (var city in allRoutes)
                     {
-                        <option value="@city">@city</option>
+                        <option value="@city.OriginCityName">@city.OriginCityName</option>
                     }
                 }
             </select>
             <select class="selectCity" style="width:100%; border-color:#FEBB02; height:60px; border-radius:5px;" id="destination" required>
                 <option value="" disabled selected>Select a Destination City</option>
+                @if (allRoutes is not null)
+                {
+                    @foreach (var city in allRoutes)
+                    {
+                        foreach (var destCity in city.Routes.OrderBy(c=> c.DestinationCityName).ToList())
+                        {
+
+                            <option value="@destCity.RouteId">@destCity.DestinationCityName  Via:   @destCity.ViaName - Origin Terminal:   @destCity.OriginTerminalName</option>
+                        }
+                    }
+                }
             </select>
-            <input style="width:50%; border-color:#FEBB02; height:60px;border-radius:5px;" class="select" type="date" value="@minDate" min="@minDate" id="travelDate" required>
-            <button id="searchButton" class="btn btn-outline-primary">Search</button>
+            <input style="width:50%; border-color:#FEBB02; height:60px;border-radius:5px;" class="select" type="date" value="@minDate"  id="travelDate" required>
+            <button id="searchButton" style="color: white" class="btn btn-outline-primary mr-1 ml-1">Search</button>
+            <button id="history" style="color: white" class="btn btn-outline-primary">History</button>
         </div> 
     </div>
 </div>
@@ -163,6 +175,20 @@
             });
             var initialDepartureCity = $('#departure').val();
             populateDestinationDropdown(initialDepartureCity);
+        });
+        $('#history').click(function (e) {
+            e.preventDefault();
+            var phoneNumber = localStorage.getItem("phone");
+            var sessionPhone = sessionStorage.getItem("phone");
+            if (phoneNumber != null || sessionPhone !=null) {
+                var form = $('<form action="/History/Index" method="post"></form>');
+                form.append('<input type="hidden" name="phoneNumber" value="' + phoneNumber + '">');
+                $('body').append(form);
+                form.submit();
+            }
+            else {
+                alert('Please Login First');
+            }
         });
     });
 </script>

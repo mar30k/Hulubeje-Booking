@@ -19,7 +19,7 @@
         public string? Platform { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public int? AppId { get; set; }
+        public int AppId { get; set; } = 5;
     }
     public class TicketDetail
     {

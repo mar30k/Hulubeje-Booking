@@ -138,8 +138,8 @@
     var addtionalCharge = 0;
     var grandtotal = resultAsDouble + addtionalCharge - discount;
     var ticketDetail = [];
-    var intMale = 1;
-    var intFemale = 2;
+    var intMale = 181;
+    var intFemale = 182;
     @if (passengerData != null)
     {
         @for (var i = 0; i < passengerData.Count; i++)
@@ -170,6 +170,7 @@
                 City: 14,
                 SubCity: 15,
                 MaritalStatus: 183,
+                Pnr: "",
             };
             if ('@passenger.Gender' === 'Male') {
                 ticketDetailObject.Gender = intMale;
@@ -193,15 +194,18 @@
                 Amount: 0.1,
             },
             PassengerInfoData: {
+                PaymentStatus: 86,
                 Payer: userMobileNumber,
                 RouteSchedule: routeScheduleId,
                 Operator: vehicleOperatorId,
                 PaymentAmount: amount,
                 RouteScheduleDate: routeScheduleDate,
                 Platform: 'Web',
-                IpAddress: '',
-                Longitude: 0,
-                Latitude: 0,
+                IpAddress: '192.168.1.1',
+                Longitude: 9.016595,
+                Latitude: 38.7657617,
+                PaymentMethod: 144,
+
                 TicketDetail: ticketDetail,
             },
         };

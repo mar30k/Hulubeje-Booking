@@ -29,22 +29,24 @@ namespace HulubejeBooking.Controllers
 			var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
-			var busPics = new List<Images>();
-			var bus = "wbus";
-			//var hotel = "wbus";
-			//var spa = "wbus";
-			//var events = "wbus";
-			//var cinema = "wbus";
+			var busPics = new Images();
+			var bus = "whotel";
+            //var hotel = "wbus";
+            //var spa = "wbus";
+            //var events = "wbus";
+            //var cinema = "wbus";
 
-			HttpResponseMessage busResponse = await _client.GetAsync(_client.BaseAddress + $"/Industry/GetAllCompanies?industryType={bus}");
-			if ( busResponse.IsSuccessStatusCode ) 
-			{
-				string busData = await busResponse.Content.ReadAsStringAsync();
-				busPics = JsonConvert.DeserializeObject<List<Images>>(busData);
+            HttpResponseMessage busResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={bus}");
 
-			}
+            if (busResponse.IsSuccessStatusCode)
+            {
+                string busData = await busResponse.Content.ReadAsStringAsync();
+                var busImages = JsonConvert.DeserializeObject<List<string>>(busData);
+                busPics.Bus = busImages;
+            }
 
-			return View(busPics);
+
+            return View(busPics);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

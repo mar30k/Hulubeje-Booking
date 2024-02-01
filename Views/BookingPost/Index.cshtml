@@ -1,19 +1,57 @@
 ﻿@model HulubejeBooking.Models.PaymentModels.PaymentValidation
 <partial name="_Navigation" />
-@if(Model != null)
-{
-    @if (Model.isSuccessful ?? false)
-    {
-        <p>booking successful</p>
-    }
-    else
-    {
-        <p>booking unseccessful</p>
-    }
+<head>
+    <style>
 
-}
-else
-{
-    <p>Couldn't process your payment!</p>
-}
+        .center-content {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        .success-message {
+            color: #28a745;
+        }
+        .error-message {
+            color: #dc3545;
+        }
+        .info-message {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="center-content">
+        @if(Model != null)
+        {
+            @if (Model.isSuccessful ?? false)
+            {
+                <div style="height: 50vh">
+                   
+                    <h1 class ="success-message" >Booking Successful!</h1>
+                    <image src="https://i.gifer.com/7efs.gif"   frameBorder="0"></image>
+                    <p>Your booking has been successfully processed. Thank you!</p>
+                    <a href="/">Back to Home</a>
+                </div>
+            }
+            else
+            {
+                <div style="height: 50vh">
+
+                    <h1 class="success-message">Booking Successful!</h1>
+                    <img src="https://icon-library.com/images/gif-icon/gif-icon-27.jpg" style="height: 300px; width: 500px" alt="Payment Successful GIF" />
+                    <p>Couldn't process your payment!</p>
+                    <a href="/">Back to Home</a>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="info-message">Couldn't process your payment!</p>
+        }
+    </div>
+
+</body>
 <partial name="_Footer" />

@@ -112,9 +112,21 @@ namespace HulubejeBooking.Controllers.BusController
             if (response.IsSuccessStatusCode) { 
                string resopnseData = await response.Content.ReadAsStringAsync();
                var seatLayout = JsonConvert.DeserializeObject<SeatLayoutStructure>(resopnseData);
+                
                schedueleInfo.SeatLayout = seatLayout;
             }
-            
+            else
+            {
+                HttpResponseMessage defaultResponse = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={239}");
+                if (defaultResponse.IsSuccessStatusCode)
+                {
+                    string resopnseData = await defaultResponse.Content.ReadAsStringAsync();
+                    var seatLayout = JsonConvert.DeserializeObject<SeatLayoutStructure>(resopnseData);
+
+                    schedueleInfo.SeatLayout = seatLayout;
+                }
+            }
+
             return View(schedueleInfo);
         }
     }

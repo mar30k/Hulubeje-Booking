@@ -117,7 +117,7 @@
                         </script>
                     }
                     <div class="form-group has-feedback">
-                        <input asp-for="Phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
+                        <input asp-for="Phone" id="phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
                         <span asp-validation-for="Phone"></span>
                     </div>
@@ -131,7 +131,7 @@
                         <label asp-for="RememberMe"></label>
                     </div>
                     <div class="col-xs-4">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">Login</button>
+                        <button type="submit" class="btn submit btn-primary btn-block btn-flat">Login</button>
                     </div>
                 </form>
             </div>
@@ -144,7 +144,7 @@
 
         </section>
     </div>
-@* <script>
+<script>
     $(document).ready(function () {
         $('.submit').on('click', function () {
             var data = {
@@ -152,36 +152,17 @@
                 Phone: $('#phone').val(),
                 RememberMe: $('#rememberMe').is(':checked')
             };
-            $.ajax({
-                url: '/SignIn/AuthenticateUser',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function (response) {
-                    var userInformation = response.userInformation;
-                    if (userInformation === 'OK') {
-                        window.location.href = "/Home/Index";
-                    }
-                    else if (userInformation === 'error') {
-                            showAlert('Incorrect password. Please try again.', 'alert-danger');
-                    }
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
+            if (data.RememberMe) {
+                    localStorage.setItem("phone", data.Phone);
+            }
+            else{
+                    sessionStorage.setItem("phone", data.Phone);
+            }
         });
-        function showAlert(message, alertClass) {
-            $('.bootstrap-alert').remove();
-            var alert = $('<div class="alert ' + alertClass + ' bootstrap-alert" role="alert">' + message + '</div>');
-            $('.create-account').before(alert);
-            setTimeout(function () {
-                alert.remove();
-            }, 5000);
-        }
+        
     });
 
-</script> *@
+</script>
     
 
 </body>

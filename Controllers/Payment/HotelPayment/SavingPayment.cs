@@ -142,13 +142,34 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 savetichketdata.PaymentRefNumber = newValidationInfo?.transactionReference;
                 savetichketdata.MaturityDate = DateTime.Now;
                 savetichketdata.PaymentIssueDate = DateTime.Now;
+                savetichketdata.AppId = 5;
+                savetichketdata.PaymentProcessor = 111;
+                savetichketdata.TicketDetail.ForEach(e=>e.Pnr = "");
+                savetichketdata.TicketDetail.ForEach(e => e.IdNumber = "");
+                savetichketdata.TicketDetail.ForEach(e => e.NationalId = "");
+                savetichketdata.TicketDetail.ForEach(e => e.EmergencyContact = "");
+                savetichketdata.TicketDetail.ForEach(e => e.Woreda = "");
+                savetichketdata.TicketDetail.ForEach(e => e.HouseNumber = "");
+                savetichketdata.TicketDetail.ForEach(e => e.SpecificAddress = "");
+                savetichketdata.TicketDetail.ForEach(e => e.ImageUrl = "");
+                savetichketdata.TicketDetail.ForEach(e => e.PickupLocation = 1);
+                savetichketdata.TicketDetail.ForEach(e => e.BillToTin = "");
 
                 var savetichketjson = JsonConvert.SerializeObject(savetichketdata);
                 var content = new StringContent(savetichketjson, Encoding.UTF8, "application/json");
                 var response = await _Bus.PostAsync(_Bus.BaseAddress + "tickets/saveTickets", content);
                 var responseData = await response.Content.ReadAsStringAsync();
-
-                var PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+                var PaymentDone = new PaymentValidation
+                {
+                    isSuccessful = false,
+                    additionalParameters = null,
+                    errorMessages = null,
+                };
+                if (responseData != null && Convert.ToBoolean(responseData))
+                {
+                    PaymentDone.isSuccessful = true;
+                }
+                
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
             }
 
