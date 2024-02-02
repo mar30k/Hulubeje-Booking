@@ -79,6 +79,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 }
                 else 
                 {
+                    TempData["InfoMessage"] = "Welcome! You have successfully logged in.";
                     return RedirectToAction("Index", "Home");
                 }
             }
