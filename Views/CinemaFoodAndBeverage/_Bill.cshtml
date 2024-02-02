@@ -82,18 +82,19 @@
 } *@
 <script>
     $('#confirmButton').on('click', function () {
+    var phoneNumber = localStorage.getItem("phone") || sessionStorage.getItem("phone");
     var cinemaArticles = @Html.Raw(Json.Serialize(Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT")));
     var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
     var selectedSeatNames = JSON.parse(sessionStorage.getItem('selectedSeatNames')) || [];
     var data = {
         AuthorizePaymentData: {
-            UserMobileNumber: "0912141914",
+            UserMobileNumber: phoneNumber,
             SupplierTin: '@Model?.CompanyTinNumber',
             SupplierOUD: '@Model?.BranchCode',
             Amount: '@Model?.Bill?.TotalAmount'
         },
         CinemaDetailsData: {
-            Consignee: "0912141914",
+            Consignee: phoneNumber,
             MovieSchedule: '@Model?.MovieScheduleCode',
             GrandTotal: '@Model?.Bill?.TotalAmount',
             OrgTin: '@Model?.CompanyTinNumber',
