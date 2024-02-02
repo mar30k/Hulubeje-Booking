@@ -43,17 +43,26 @@ namespace HulubejeBooking.Controllers.Authentication
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/createUser", content);
             string responseData = await response.Content.ReadAsStringAsync();
-            var isLoggedIn = true;
-            string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
-            HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
-
-            var userInformation = new UserInformation()
+            if (responseData != null && Convert.ToBoolean(responseData))
             {
-                code = newData?.phoneNumber,
-            };
-            _authenticationManager.SignIn(userInformation, true);
+                var isLoggedIn = true;
+                string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
+                HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
 
-            return RedirectToAction("Index", "Home");
+                var userInformation = new UserInformation()
+                {
+                    code = newData?.phoneNumber,
+                };
+                _authenticationManager.SignIn(userInformation, true);
+                TempData["InfoMessage"] = "Welcome! You Have Successfully Created Hulubeje Account";
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "It seems like this phone number is already registered. Please use a different number or sign in.";
+                return RedirectToAction("Index", "Home");
+            }
+
         }
     }
 }
