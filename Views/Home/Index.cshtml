@@ -43,7 +43,7 @@
     <div class="container " style="background-color:rgba(255, 255, 255, 0)">
         @if (TempData["InfoMessage"] != null)
         {
-            <div class="alert alert-success" role="alert" id="errorAlert">
+            <div class="alert alert-success mt-2" role="alert" id="errorAlert">
                 <p style="margin: 0;">@TempData["InfoMessage"]</p>
             </div>
 
@@ -55,7 +55,7 @@
         }
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="alert alert-danger" role="alert" id="errorAlert">
+            <div class="alert alert-danger mt-2" role="alert" id="errorAlert">
                 <p style="margin: 0;">@TempData["ErrorMessage"]</p>
             </div>
 
