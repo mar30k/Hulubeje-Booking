@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
 
-namespace HulubejeBooking.Controllers.BusController
+namespace HulubejeBooking.Controllers
 {
     public class History : Controller
     {
@@ -13,7 +13,11 @@ namespace HulubejeBooking.Controllers.BusController
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<IActionResult> IndexAsync(string phoneNumber)
+        public IActionResult Index(string phoneNumber)
+        {
+            return View();
+        }
+        public async Task<IActionResult> BusHistory(string phoneNumber)
         {
             var busClient = _httpClientFactory.CreateClient("BusBooking");
             HttpResponseMessage response = await busClient.GetAsync($"history/gethistorybyphoneNumber?PhoneNumber={phoneNumber}");
@@ -28,5 +32,6 @@ namespace HulubejeBooking.Controllers.BusController
                 return View(null);
             }
         }
+
     }
 }
