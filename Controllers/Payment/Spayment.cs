@@ -54,7 +54,7 @@ namespace HulubejeBooking.Controllers.Payment
                     data.Pin,
                     AdditionalParameters = new
                     {
-                        newParam.AdditionalParameters?.ReferenceNumber
+                        newParam?.AdditionalParameters?.ReferenceNumber
                     }
 
                 };
