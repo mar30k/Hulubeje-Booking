@@ -1,0 +1,76 @@
+﻿@model HulubejeBooking.Models.OrdersModel;
+<partial name="_Navigation" />
+<title>Cinema & Hotel History</title>
+<style>
+    .customContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .card {
+        width: calc(33.33% - 20px);
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-sizing: border-box;
+        margin-bottom: 20px;
+        padding: 10px 0 10px 10px;
+    }
+
+    .card img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    @@media (max-width: 992px) {
+        .card {
+            width: calc(50% - 20px);
+        }
+    }
+
+    @@media (max-width: 500px) {
+        .card {
+            width: 100%;
+        }
+    }
+</style>
+<div class="container mt-5">
+    <h2>History</h2>
+</div>
+<div class="container mt-3 mb-3">
+    @if (Model != null && Model.Orders != null && Model.Orders.Any())
+    {
+        <div class="customContainer">
+            @foreach (var order in Model.Orders)
+            {
+                <div class="card mb-3">
+                    <div class="row">
+                        <div class="col-4">
+                            <img src="@order?.OrgPreviewImage" class="img-fluid" alt="Supplier Logo" />
+                        </div>
+                        <div class="col-8">
+                            <div>
+                                <p style="margin: 2px; font-size: 14px;">@order?.SupplierBrandName</p>
+                                <small style="color: blue">@order?.BranchName</small>
+                                <p style="margin: 2px; font-size: 14px;">Voucher Code: @order?.VoucherCode</p>
+                                <p style="margin: 2px; font-size: 14px;">Date: @order?.IssuedDate</p>
+                                <p style="margin: 2px; font-size: 14px;">Grand Total: @order?.GrandTotal</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    }
+    else
+    {
+        <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
+                <p class="mt-2">We apologize, but it seems there is no available history.</p>
+            </div>
+        </div>
+    }
+</div>
+<partial name="_Footer" />
