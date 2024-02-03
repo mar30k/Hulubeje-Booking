@@ -1,4 +1,6 @@
-﻿namespace HulubejeBooking.Models
+﻿using HulubejeBooking.Models.BusModels;
+
+namespace HulubejeBooking.Models
 {
     public class Orders
     {
@@ -22,5 +24,10 @@
     {
         public int? NextPage { get; set; }
         public List<Orders>? Orders { get; set; }
+    }
+    public class HistoryWrapper
+    {
+        public OrdersModel? OrdersModel { get; set; }
+        public List<HistoryModel>? HistoryModel { get; set; }
     }
 }
