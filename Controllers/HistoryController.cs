@@ -14,38 +14,26 @@ namespace HulubejeBooking.Controllers
             _httpClientFactory = httpClientFactory;
         }
 
-        public IActionResult Index(string phoneNumber)
+        public async Task<IActionResult> IndexAsync(string phoneNumber)
         {
-            return View();
-        }
-        public async Task<IActionResult> BusHistory(string phoneNumber)
-        {
+            var historyWrapper = new HistoryWrapper();
             var busClient = _httpClientFactory.CreateClient("BusBooking");
+            var hulubejeClient = _httpClientFactory.CreateClient("CnetHulubeje");
             HttpResponseMessage response = await busClient.GetAsync($"history/gethistorybyphoneNumber?PhoneNumber={phoneNumber}");
             if (response.IsSuccessStatusCode)
             {
-                string responseData = await response.Content.ReadAsStringAsync();
-                var history = JsonConvert.DeserializeObject<List<HistoryModel>>(responseData);
-                return View(history);
+                string busresponseData = await response.Content.ReadAsStringAsync();
+                var busHistory = JsonConvert.DeserializeObject<List<HistoryModel>>(busresponseData);
+                historyWrapper.HistoryModel = busHistory;
             }
-            else
+            HttpResponseMessage historyResponse = await hulubejeClient.GetAsync(hulubejeClient.BaseAddress + $"/order/GetOrdersByConsigneeCode?consigneeCode={phoneNumber}&page=1");
+            if (historyResponse.IsSuccessStatusCode)
             {
-                return View(null);
-            }
-        }
-        public async Task<IActionResult> CinemaHotelHistory(string phoneNumber)
-        {
-            var hulubejeClient = _httpClientFactory.CreateClient("CnetHulubeje");
-            HttpResponseMessage response = await hulubejeClient.GetAsync(hulubejeClient.BaseAddress + $"/order/GetOrdersByConsigneeCode?consigneeCode={phoneNumber}&page=1" );
-            if (response.IsSuccessStatusCode)
-            {
-                string responseData = await response.Content.ReadAsStringAsync();
+                string responseData = await historyResponse.Content.ReadAsStringAsync();
                 var history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
-                return View(history);
-            }else
-            {
-                return View(null);
+                historyWrapper.OrdersModel = history;
             }
+            return View(historyWrapper);
         }
     }
 }

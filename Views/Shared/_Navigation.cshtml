@@ -55,7 +55,7 @@
                 document.getElementById("conditionalButtons").innerHTML = `
                                         <strong> <span style="color:lightgreen">E</span><span style="color:yellow">T</span><span style="color:red">H</span></strong>
                                         <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
-                                        <a href="/History" class="btn btn-light">History</a>
+                                        <a id="history" class="btn btn-light">History</a>
                                         <a href="/SignIn/Logout" class="btn btn-light logout">LogOut</a>   
                                     `;
             } else {
@@ -70,7 +70,16 @@
                 localStorage.removeItem("phone");
                 sessionStorage.removeItem("phone");
             });
-            
+            $('#history').click(function (e) {
+                e.preventDefault();
+                var phoneNumber = localStorage.getItem("phone") || sessionStorage.getItem("phone");
+                if (phoneNumber != null) {
+                    var form = $('<form action="/History" method="post"></form>');
+                    form.append('<input type="hidden" name="phoneNumber" value="' + phoneNumber + '">');
+                    $('body').append(form);
+                    form.submit();
+                }
+            });
         });
 
     </script>
