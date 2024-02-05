@@ -5,6 +5,7 @@ using HulubejeBooking.Controllers.Authentication;
 using HulubejeBooking.Models.CInemaModels;
 using HulubejeBooking.Models.HotelModels;
 using Tweetinvi.Models;
+using HulubejeBooking.Models.Authentication;
 
 namespace HulubejeBooking.Controllers.BusController
 {
@@ -12,14 +13,33 @@ namespace HulubejeBooking.Controllers.BusController
     {
         private readonly AuthenticationManager _authenticationManager;
         private readonly IHttpClientFactory _httpClientFactory;
-        public BusSeatLayoutController(IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager)
+        private IHttpContextAccessor? _httpContextAccessor;
+
+        public BusSeatLayoutController(IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager, IHttpContextAccessor? httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
             _authenticationManager = authenticationManager;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule,
             string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId , int vehicle)
         {
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
+            }
             var b = await _authenticationManager.identificationValid();
             ViewBag.isVaild = b.isValid;
             ViewBag.isLoggedIn = b.isLoggedIn;
