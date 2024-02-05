@@ -8,6 +8,7 @@ using System.Text;
 using System.Net.Http.Headers;
 using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
 using Microsoft.AspNetCore.Http;
+using HulubejeBooking.Models.Authentication;
 
 namespace HulubejeBooking.Controllers.Payment
 {
@@ -15,14 +16,26 @@ namespace HulubejeBooking.Controllers.Payment
     {
         private readonly ILogger<Spayment> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private IHttpContextAccessor? _httpContextAccessor;
 
-        public Spayment(ILogger<Spayment> logger, IHttpClientFactory httpClientFactory)
+        public Spayment(ILogger<Spayment> logger, IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
         public IActionResult Index()
         {
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.Email = user?.emailAddress;
+            }
             return View();
         }
         public async Task<IActionResult> PaymentAsync([FromBody] TransactionModel data) 

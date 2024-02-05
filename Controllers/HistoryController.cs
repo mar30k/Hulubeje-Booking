@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models;
+using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.BusModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -9,13 +10,26 @@ namespace HulubejeBooking.Controllers
     public class HistoryController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        public HistoryController(IHttpClientFactory httpClientFactory)
+        private IHttpContextAccessor? _httpContextAccessor;
+
+        public HistoryController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<IActionResult> IndexAsync(string phoneNumber)
         {
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.Email = user?.emailAddress;
+            }
             var historyWrapper = new HistoryWrapper();
             var busClient = _httpClientFactory.CreateClient("BusBooking");
             var hulubejeClient = _httpClientFactory.CreateClient("CnetHulubeje");
