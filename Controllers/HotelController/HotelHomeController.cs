@@ -3,6 +3,7 @@ using HulubejeBooking.Controllers.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
+using HulubejeBooking.Models.Authentication;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
@@ -13,22 +14,38 @@ namespace HulubejeBooking.Controllers.HotelController
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HotelListBuffer _hotelListBuffer;
         private readonly AuthenticationManager _authenticationManager;
+        private IHttpContextAccessor? _httpContextAccessor;
 
         public HotelHomeController(ILogger<HotelHomeController> logger,
             IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager,
-             HotelListBuffer hotelListBuffer)
+             HotelListBuffer hotelListBuffer, IHttpContextAccessor? httpContextAccessor)
         {
             _authenticationManager = authenticationManager;
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _hotelListBuffer = hotelListBuffer;
+            _httpContextAccessor = httpContextAccessor;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
+            }
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-
-
             HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/Industry/GetAllCompanies?industryType=LKUP000000451");
 
             var hotels = new List<GetModel>();
@@ -100,7 +117,22 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpPost]
         public async Task<IActionResult> HotelList(string city, int roomsCount, int numberOfNights,int childrenCount,int adultCount, string dateRange)
         {
-
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
+            }
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var dataList = new List<GetModel>();
 
@@ -286,7 +318,22 @@ namespace HulubejeBooking.Controllers.HotelController
 
         public IActionResult HoteldetailView()
         {
-
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
+            }
             var value = HttpContext.Session.GetString("hotelDetail");
             if (!string.IsNullOrEmpty(value))
             {

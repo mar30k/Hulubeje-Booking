@@ -1,16 +1,39 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HulubejeBooking.Models.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
     public class GuestInfoController : Controller
     {
+        private IHttpContextAccessor? _httpContextAccessor;
+
+        public GuestInfoController(IHttpContextAccessor? httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
         public IActionResult Index()
         {
             return View();
         }
         public IActionResult GuestInfo(string roomTypecode, string orgTin, string Date, int adultCount, int childCount, int roomCount, string oud)
         {
-
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
+            }
             return View();
         }
     }
