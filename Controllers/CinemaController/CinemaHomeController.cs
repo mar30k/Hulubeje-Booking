@@ -26,7 +26,13 @@ namespace HulubejeBooking.Controllers.CinemaController
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
                 ViewBag.Image = user?.personalattachment;
-                ViewBag.Email = user?.emailAddress;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
             }
             var moviesWithPosterUrls = new List<MovieModel>();
             foreach (var movie in movies)

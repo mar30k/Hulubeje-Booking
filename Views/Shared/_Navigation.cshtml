@@ -110,7 +110,7 @@
             });
             $('#history').click(function (e) {
                 e.preventDefault();
-                var phoneNumber = localStorage.getItem("phone") || sessionStorage.getItem("phone");
+                var phoneNumber = "@ViewBag.PhoneNumber";
                 if (phoneNumber != null) {
                     var form = $('<form action="/History" method="post"></form>');
                     form.append('<input type="hidden" name="phoneNumber" value="' + phoneNumber + '">');

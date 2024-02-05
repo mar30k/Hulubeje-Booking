@@ -31,7 +31,13 @@ namespace CinemaSeatBooking.Controllers
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
                 ViewBag.Image = user?.personalattachment;
-                ViewBag.Email = user?.emailAddress;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
             }
             HttpResponseMessage response = await _httpClient.GetAsync($"Product/GetProducts?orgTin={companyTinNumber}&type=Restaurant&consignee=0912141914&platform=Web&longitude=0");
 
