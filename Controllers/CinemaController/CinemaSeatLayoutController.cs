@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using HulubejeBooking.Controllers.Authentication;
 namespace CinemaSeatBooking.Controllers;
+using HulubejeBooking.Controllers;
+
+using HulubejeBooking.Models.Authentication;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,18 +14,31 @@ public class CinemaSeatLayoutController : Controller
 {
     private readonly AuthenticationManager _authenticationManager;
     private readonly HttpClient _httpClient;
-    public CinemaSeatLayoutController(AuthenticationManager authenticationManager)
+    private IHttpContextAccessor? _httpContextAccessor;
+
+    public CinemaSeatLayoutController(AuthenticationManager authenticationManager, IHttpContextAccessor? httpContextAccessor)
     {
         _httpClient = new HttpClient
         {
             BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
         };
          _authenticationManager = authenticationManager;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string branchCode, string companyName,
         string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
     {
+        var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+        if (!string.IsNullOrEmpty(userDataCookie))
+        {
+            var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+            ViewBag.UserName = user?.firstName;
+            ViewBag.LastName = user?.lastName;
+            ViewBag.MiddleName = user?.middleName;
+            ViewBag.Image = user?.personalattachment;
+            ViewBag.Email = user?.emailAddress;
+        }
         var b = await _authenticationManager.identificationValid();
         ViewBag.isVaild = b.isValid;
         ViewBag.isLoggedIn = b.isLoggedIn;

@@ -1,4 +1,5 @@
-﻿using HulubejeBooking.Models.CInemaModels;
+﻿using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Models.CInemaModels;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -10,13 +11,26 @@ namespace HulubejeBooking.Controllers
     {
         private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly IHttpClientFactory _httpClientFactory;
-        public CinemaMovieDetailsController(IHttpClientFactory httpClientFactory)
+        private IHttpContextAccessor? _httpContextAccessor;
+
+        public CinemaMovieDetailsController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, int movieId, string backdropPath)
         {
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.Email = user?.emailAddress;
+            }
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var _tmdbClient = _httpClientFactory.CreateClient("MovieDb");
             var movieDetails = new MovieModel

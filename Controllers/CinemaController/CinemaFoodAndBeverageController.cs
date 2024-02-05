@@ -2,22 +2,37 @@
 using Newtonsoft.Json;
 using HulubejeBooking.Models.CInemaModels;
 using System.Text;
+using HulubejeBooking.Controllers;
+using HulubejeBooking.Models.Authentication;
 namespace CinemaSeatBooking.Controllers
 {
     public class CinemaFoodAndBeverageController : Controller
     {
         private readonly HttpClient _httpClient;
-        public CinemaFoodAndBeverageController()
+        private IHttpContextAccessor? _httpContextAccessor;
+
+        public CinemaFoodAndBeverageController(IHttpContextAccessor? httpContextAccessor)
         {
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
             };
+            _httpContextAccessor = httpContextAccessor;
         }
         [HttpPost]
         public async Task<IActionResult> Products([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string branchCode, [FromForm] string companyName, [FromForm] string movieName,
                     [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType, [FromForm] string articleCode, [FromForm] string numberOfElements)
         {
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.Email = user?.emailAddress;
+            }
             HttpResponseMessage response = await _httpClient.GetAsync($"Product/GetProducts?orgTin={companyTinNumber}&type=Restaurant&consignee=0912141914&platform=Web&longitude=0");
 
             var viewModel = new ProductsViewModel
