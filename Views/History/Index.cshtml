@@ -15,7 +15,8 @@
         }
 
         .companyimage {
-            height: 150px;
+            object-fit: contain;
+            max-height: 150px; 
             width: 100%;
         }
 
@@ -29,13 +30,15 @@
 
         @@media (max-width: 992px) {
             .companyimage {
-                height: 100px;
+                object-fit: contain;
+                max-height: 100px; /* Set the maximum height as needed */
             }
         }
 
         @@media (max-width: 500px) {
             .companyimage {
-                height: 80px;
+                object-fit: contain;
+                max-height: 80px; /* Set the maximum height as needed */
             }
 
             .customcard {
