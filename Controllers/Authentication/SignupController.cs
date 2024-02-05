@@ -32,47 +32,55 @@ namespace HulubejeBooking.Controllers.Authentication
         }
         public async Task<IActionResult> SignUpVerificationAsync(PersonModel person)
         {
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-
-            person.personCode = person.phoneNumber;
-            var param = new
+            if (ModelState.IsValid)
             {
-                userId = person.phoneNumber
-            };
-            string jsonBody = JsonConvert.SerializeObject(param);
-            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
 
-
-            HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/OauthAuthenticateUser", content);
-            if (response.IsSuccessStatusCode)
-            {
-                string data = await response.Content.ReadAsStringAsync();
-
-                var suthResponse = JsonConvert.DeserializeObject<List<UserResponse>>(data);
-
-                var userInformation = suthResponse?[0].userInformation;
-
-                if (userInformation != null)
+                person.personCode = person.phoneNumber;
+                var param = new
                 {
-                    TempData["InfoMessage"] = "Account already exists. Please sign in.";
-                    return RedirectToAction("Index", "SignIn");
-                }
-                else
+                    userId = person.phoneNumber
+                };
+                string jsonBody = JsonConvert.SerializeObject(param);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+
+                HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/OauthAuthenticateUser", content);
+                if (response.IsSuccessStatusCode)
                 {
-                    var phone = person.phoneNumber;
-                    HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phone}");
-                    if (otpResponse.IsSuccessStatusCode)
+                    string data = await response.Content.ReadAsStringAsync();
+
+                    var suthResponse = JsonConvert.DeserializeObject<List<UserResponse>>(data);
+
+                    var userInformation = suthResponse?[0].userInformation;
+
+                    if (userInformation != null)
                     {
-                        string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
-                        var messageResponse= JsonConvert.DeserializeObject<MessageResponse>(dataRespponse);
-                        person.messageResponse = messageResponse;
-                        var PersonJson = JsonConvert.SerializeObject(person);
-                        HttpContext.Session.SetString("UserInfo", PersonJson);
+                        TempData["InfoMessage"] = "Account already exists. Please sign in.";
+                        return RedirectToAction("Index", "SignIn");
+                    }
+                    else
+                    {
+                        var phone = person.phoneNumber;
+                        HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phone}");
+                        if (otpResponse.IsSuccessStatusCode)
+                        {
+                            string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
+                            var messageResponse = JsonConvert.DeserializeObject<MessageResponse>(dataRespponse);
+                            person.messageResponse = messageResponse;
+                            var PersonJson = JsonConvert.SerializeObject(person);
+                            HttpContext.Session.SetString("UserInfo", PersonJson);
 
+                        }
                     }
                 }
+                return RedirectToAction("Index", "Otp");
             }
-            return RedirectToAction("Index", "Otp");
+            else
+            {
+                return View("Index", person);
+            }
+            
         }
     }
 }
