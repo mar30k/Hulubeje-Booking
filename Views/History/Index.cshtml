@@ -116,7 +116,7 @@
                                         <p class="card-text">Departure Date: @route?.DepartureDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
                                         <p class="card-text">Distance: @route?.Distance km</p>
 
-                                        @if (route?.Tickets.Count > 0)
+                                        @if (route != null && route.Tickets != null && route.Tickets.Count > 0)
                                         {
                                             <div class="ticket-details">
                                                 <table class="table table-bordered mt-3">
