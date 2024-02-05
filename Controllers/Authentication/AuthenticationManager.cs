@@ -50,8 +50,19 @@ namespace HulubejeBooking.Controllers.Authentication
             //sign in
             await _httpContextAccessor.HttpContext.SignInAsync(CNET_WebConstants.CookieScheme, userPrincipal, authenticationProperties);
 
-            //cache authenticated customer
             _cachedUser = user;
+            var userData = JsonConvert.SerializeObject(user);
+
+            var cookieOptions = new CookieOptions
+            {
+                IsEssential = true,
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = isPersistent ? DateTime.UtcNow.AddMinutes(CNET_WebConstants.IdentificationCookieLifeTime) : DateTime.UtcNow.AddMinutes(CNET_WebConstants.IdentificationCookieDailyLifeTime)
+            };
+
+            _httpContextAccessor.HttpContext.Response.Cookies.Append(CNET_WebConstants.IdentificationCookie, userData, cookieOptions);
         }
         public virtual async Task<cookieValidation> identificationValid()
         {

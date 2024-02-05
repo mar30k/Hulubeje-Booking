@@ -5,16 +5,18 @@ using HulubejeBooking.Controllers.Authentication;
 using System.Net.Http;
 using HulubejeBooking.Models.HotelModels;
 using Newtonsoft.Json;
+using HulubejeBooking.Models.Authentication;
 namespace HulubejeBooking.Controllers
 {
     public class HomeController : Controller
     {
-
-		private readonly IHttpClientFactory _httpClientFactory;
+        private IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpClientFactory _httpClientFactory;
 		private readonly ILogger<HomeController> _logger;
         private readonly AuthenticationManager _authenticationManager;
-		public HomeController(ILogger<HomeController> logger, AuthenticationManager authenticationManager, IHttpClientFactory httpClientFactory)
+		public HomeController(ILogger<HomeController> logger, AuthenticationManager authenticationManager, IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
 		{
+            _httpContextAccessor = httpContextAccessor;
 			_authenticationManager = authenticationManager;
 			_logger = logger;
 			_httpClientFactory = httpClientFactory;
@@ -25,8 +27,14 @@ namespace HulubejeBooking.Controllers
         {
 			var _client = _httpClientFactory.CreateClient("CnetHulubeje");
 
+            var userDataCookie = _httpContextAccessor.HttpContext.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                ViewBag.UserName = user.firstName;
+            }
 
-			var identificationResult = await _authenticationManager.identificationValid();
+            var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
 			var busPics = new Images();
