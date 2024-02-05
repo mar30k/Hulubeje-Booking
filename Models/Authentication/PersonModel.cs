@@ -26,6 +26,7 @@ namespace HulubejeBooking.Models.Authentication
     {
         public string? code { get; set; }
         public string? firstName { get; set; }
+        public string? middleName { get; set; }
         public int? successCode { get; set; }
         public string? lastName { get; set; }
         public string? phoneNumber { get; set; }

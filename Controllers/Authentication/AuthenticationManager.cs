@@ -69,11 +69,10 @@ namespace HulubejeBooking.Controllers.Authentication
             var validinfo = new cookieValidation();
 
             var loginChecker = false;
-            var loggedInCheckerJson = _httpContextAccessor.HttpContext.Session.GetString("isLoggedIn");
+            var loggedInCheckerJson = _httpContextAccessor?.HttpContext?.Session.GetString("isLoggedIn");
             if (loggedInCheckerJson != null) {
                 string isLoggedInJson = _httpContextAccessor.HttpContext.Session.GetString("isLoggedIn");
                  loginChecker = JsonConvert.DeserializeObject<bool>(isLoggedInJson);
-
             }
             var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
 

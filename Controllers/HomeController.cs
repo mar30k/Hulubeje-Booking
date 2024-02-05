@@ -27,11 +27,15 @@ namespace HulubejeBooking.Controllers
         {
 			var _client = _httpClientFactory.CreateClient("CnetHulubeje");
 
-            var userDataCookie = _httpContextAccessor.HttpContext.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.UserName = user.firstName;
+                ViewBag.UserName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Image = user?.personalattachment;
+                ViewBag.Email = user?.emailAddress;
             }
 
             var identificationResult = await _authenticationManager.identificationValid();
@@ -50,7 +54,7 @@ namespace HulubejeBooking.Controllers
             {
                 string busData = await busResponse.Content.ReadAsStringAsync();
                 var busImages = JsonConvert.DeserializeObject<List<string>>(busData);
-                busPics.Bus = busImages;
+                busPics.Bus = busImages ?? new List<string>();
             }
 
 

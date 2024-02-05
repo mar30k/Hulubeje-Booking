@@ -1,6 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    @{
+        var userName = ViewBag.UserName;
+        var lastName = ViewBag.LastName;
+    }
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     @*<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>*@
@@ -40,6 +44,10 @@
             .tabs i {
                 margin-right: 5px;
             }
+
+        #history:hover{
+            cursor: pointer;
+        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -53,11 +61,24 @@
             // Conditionally render HTML based on the values
             if (retrievedIsValid === true || retrievedIsLoggedIn === true) {
                 document.getElementById("conditionalButtons").innerHTML = `
-                                        <strong> <span style="color:lightgreen">E</span><span style="color:yellow">T</span><span style="color:red">H</span></strong>
-                                        <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
-                                        <a id="history" class="btn btn-light">History</a>
-                                        <a href="/SignIn/Logout" class="btn btn-light logout">LogOut</a>   
-                                    `;
+                  <strong> <span style="color:lightgreen">E</span><span style="color:yellow">T</span><span style="color:red">H</span></strong>
+                  <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary" style="color: white" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="@ViewBag.Image" class="mr-2 rounded-circle" alt="User Image" style="width: 30px; height: 30px;">
+                        <span>@ViewBag.UserName @ViewBag.MiddleName</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end ">
+                      <li><a class="dropdown-item" href="/SignIn/Logout">Logout</a></li>
+                      <li><a class="dropdown-item" id="history">History</a></li>
+                      <li><a class="dropdown-item" href="#">Delete Account</a></li>
+                      <li><a class="dropdown-item" href="#">Change Password</a></li>
+                      <li><hr class="dropdown-divider"></li>
+                      <li><a class="dropdown-item" href="#">Privacy Policy</a></li>
+                      <li><a class="dropdown-item" href="#">About</a></li>
+                    </ul>
+                  </div>
+                `;
             } else {
                 document.getElementById("conditionalButtons").innerHTML = `
                                         <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
