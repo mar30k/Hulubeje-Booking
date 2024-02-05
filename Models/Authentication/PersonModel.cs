@@ -6,14 +6,30 @@ namespace HulubejeBooking.Models.Authentication
     public class PersonModel
     {
         public string? personCode { get; set; }
+        [Required(ErrorMessage = "First Name is required")]
         public string? firstName { get; set; }
+
+        [Required(ErrorMessage = "Middle Name is required")]
         public string? middleName { get; set; }
+
+        [Required(ErrorMessage = "Last Name is required")]
         public string? lastName { get; set; }
+
+        [Required(ErrorMessage = "Phone Number is required")]
+        [Phone(ErrorMessage = "Invalid Phone Number")]
         public string? phoneNumber { get; set; }
-        public string? emailAddress { get; set; }
-        public string? gender { get; set; }
+
+        [Required(ErrorMessage = "Date of Birth is required")]
+        [DataType(DataType.Date, ErrorMessage = "Invalid Date of Birth")]
         public string? dob { get; set; }
+
+        [Required(ErrorMessage = "Password is required")]
         public string? password { get; set; }
+
+        [Required(ErrorMessage = "Gender is required")]
+        public string? gender { get; set; }
+
+        public string? emailAddress { get; set; }
         public string? idType { get; set; }
         public string? id { get; set; }
         public string? idPhoto { get; set; }
@@ -51,12 +67,12 @@ namespace HulubejeBooking.Models.Authentication
         public string? to { get; set; }
         public string? code { get; set; }
         public string? verificationId { get; set; }
-        public List<string>? errors { get; set; }
+        public List<string?>? errors { get; set; }
     }
     public class VerifyResponse
     {
         public bool? isVerified { get; set; }
-        public List<string>? errors { get; set; }
+        public List<string?>? errors { get; set; }
     }
     public class LoginInformation
     {
