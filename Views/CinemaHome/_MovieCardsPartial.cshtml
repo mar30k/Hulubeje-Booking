@@ -51,7 +51,7 @@ else
         sessionStorage.setItem('selectedMovieName', movieName);
         sessionStorage.setItem('selectedCompanyName ', companyName);
         sessionStorage.setItem('selectedDate', selectedDate);
-        var form = $('<form action="/CinemaMovieDetails/Details" method="post"></form>');
+        var form = $('<form action="/cinemamoviedetails" method="post"></form>');
         // Append hidden input fields for the parameters
         form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '">');
         form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');

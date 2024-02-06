@@ -131,7 +131,6 @@
 
             <div class="select" style="width:100%;">
                 <select class="form-select form form-control" id="city" data-tags="true" data-placeholder="Select an option" data-allow-clear="true" style="width:100%; height:60px; border-color:#FEBB02;">
-                    <option>Choose a city </option>
                     @if (Model.CityNameList != null)
                     {
                         @foreach (var city in Model.CityNameList)
@@ -227,7 +226,7 @@
                        data-city="">
                         <div class="row g-0">
                             <div class="col-md-4">
-                                <img src="@hotel?.attachments[0]" class="img-fluid rounded-start" alt="...">
+                                <img src="@hotel?.attachments?[0]" class="img-fluid rounded-start" alt="...">
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">

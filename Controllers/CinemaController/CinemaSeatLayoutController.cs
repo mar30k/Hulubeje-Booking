@@ -26,7 +26,7 @@ public class CinemaSeatLayoutController : Controller
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<IActionResult> SeatArrangement(string spacecode, string companyTinNumber, string branchCode, string companyName,
+    public async Task<IActionResult> IndexAsync(string spacecode, string companyTinNumber, string branchCode, string companyName,
         string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
     {
         var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];

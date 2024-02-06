@@ -1,5 +1,6 @@
 ﻿<partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.HotelDetailModel
+<title>Hotel Detail</title>
 <style>
     /*     @@import "bourbon";
              */
@@ -115,7 +116,7 @@
             
 
 
-            <div style="width:40%">
+            <div style="width:50%">
                 <input class="form-control" type="text" id="date-range-picker" placeholder="Checkin-Checkout" style="border-color:#FEBB02; height:60px;">
             </div>
 
@@ -233,40 +234,46 @@
 
     @if (Model != null)
     {
-        <div class="container">
+        <div class="container mt-2">
             <div class="row mb-4">
                 <div class="col-md-12 m-2">
-                    <p>@Model.note</p>
+                    <p>@Model?.note</p>
                 </div>
             </div>
             <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="row g-3">
-                        @foreach (var paymentMethod in Model?.paymentOptions)
+                        @if (Model?.paymentOptions is not null)
                         {
-                            <div class="col-md-4 mb-3">
-                                <div class="card h-100 shadow-sm rounded-3 border-0">
-                                    <div class="card-body">
-                                        <img src="@paymentMethod.PaymentMethodImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentMethodName">
+                            @foreach (var paymentMethod in Model.paymentOptions)
+                            {
+                                var image = paymentMethod.PaymentMethodImage;
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 shadow-sm rounded-3 border-0">
+                                        <div class="card-body">
+                                        <img src="@Html.Raw(image)" class="img-fluid mb-2" alt="@paymentMethod?.PaymentMethodName">
                                         <h5 class="card-title">@paymentMethod?.PaymentMethodName</h5>
                                         <p class="card-text price">@paymentMethod?.PaymentMethodName</p>
-                                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         }
                     </div>
                 </div>
             </div>
             <div class="row mb-4">
-                @foreach (var amenity in Model?.aminities)
+                @if (Model?.aminities != null)
                 {
-                    <div class="col-lg-2 col-md-3 col-sm-4 mb-3">
-                        <div class="border p-2">
-                            <img src="@amenity.ImageUrl" alt="Amenity Image" class="img-fluid rounded me-2" style="max-height: 20px;">
-                            <span>@amenity.Name</span>
+                    @foreach (var amenity in Model.aminities)
+                    {
+                        <div class="col-lg-2 col-md-3 col-sm-4 mb-3">
+                            <div class="border p-2">
+                                <img src="@amenity.ImageUrl" alt="Amenity Image" class="img-fluid rounded me-2" style="max-height: 20px;">
+                                <span>@amenity.Name</span>
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
             </div>
             <div class="row">

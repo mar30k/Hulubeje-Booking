@@ -18,7 +18,7 @@ namespace HulubejeBooking.Controllers
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<IActionResult> Details(string selectedDate, string movieCode, string companyName, string sanitizedOverview,
+        public async Task<IActionResult> Index(string selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, int movieId, string backdropPath)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];

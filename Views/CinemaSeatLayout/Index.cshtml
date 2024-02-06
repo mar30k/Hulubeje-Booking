@@ -60,7 +60,7 @@
 
     </style>
     @{
-        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model.MovieName);
+        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.MovieName);
     }
     <script>
         var selectedSeats = [];
@@ -100,15 +100,15 @@
 
             function updateSeatInfo() {
                 var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
-                var companyTinNumber = "@Model.CompanyTinNumber";
-                var code = "@Model.MovieScheduleCode";
-                var spacecode = "@Model.SpaceCode";
-                var companyName = "@Model.CompanyName";
-                var utcTime = "@Model.UtcTime";
-                var selectedDate = "@Model.SelectedDate";
-                var hallName = "@Model.HallName";
-                var dimension = "@Model.Dimension";
-                var spaceType = "@Model.SpaceType";
+                var companyTinNumber = "@Model?.CompanyTinNumber";
+                var code = "@Model?.MovieScheduleCode";
+                var spacecode = "@Model?.SpaceCode";
+                var companyName = "@Model?.CompanyName";
+                var utcTime = "@Model?.UtcTime";
+                var selectedDate = "@Model?.SelectedDate";
+                var hallName = "@Model?.HallName";
+                var dimension = "@Model?.Dimension";
+                var spaceType = "@Model?.SpaceType";
 
                 // Use AJAX to fetch updated seat information
                 $.get("/CinemaSeatLayout/GetUpdatedSeatInfo", {
@@ -147,18 +147,18 @@
                 if (button) {
                     button.addEventListener('click', function () {
                         var selectedSeats = retrieveSelectedSeatsFromStorage();
-                        var companyTinNumber = "@Model.CompanyTinNumber";
-                        var movieScheduleCode = "@Model.MovieScheduleCode";
-                        var articleCode = "@Model.ArticleCode";
+                        var companyTinNumber = "@Model?.CompanyTinNumber";
+                        var movieScheduleCode = "@Model?.MovieScheduleCode";
+                        var articleCode = "@Model?.ArticleCode";
                         var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
-                        var companyName = "@Model.CompanyName";
-                        var utcTime = "@Model.UtcTime";
-                        var selectedDate = "@Model.SelectedDate";
-                        var hallName = "@Model.HallName";
-                        var price = "@Model.Price";
-                        var dimension = "@Model.Dimension";
-                        var spaceType = "@Model.SpaceType";
-                        var branchCode = "@Model.BranchCode";
+                        var companyName = "@Model?.CompanyName";
+                        var utcTime = "@Model?.UtcTime";
+                        var selectedDate = "@Model?.SelectedDate";
+                        var hallName = "@Model?.HallName";
+                        var price = "@Model?.Price";
+                        var dimension = "@Model?.Dimension";
+                        var spaceType = "@Model?.SpaceType";
+                        var branchCode = "@Model?.BranchCode";
 
                         var remainingTime = countdown ?? 0;
 
@@ -172,7 +172,7 @@
                             sessionStorage.setItem('countdownStarted', true);
                         }
 
-                        var form = $('<form action="/CinemaFoodAndBeverage/Products" method="post"></form>');
+                        var form = $('<form action="/cinemafoodandbeverage" method="post"></form>');
 
                         form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />');
                         form.append('<input type="hidden" name="movieScheduleCode" value="' + movieScheduleCode + '" />');
@@ -244,7 +244,7 @@
                     if (seatCount === 0) {
                         skipButton.innerText = "Skip";
                     } else {
-                        skipButton.innerText = "You Will Pay " + (seatCount * parseFloat("@Model.Price")).toFixed(2) + " ETB for " + seatCount + " seats";
+                        skipButton.innerText = "You Will Pay " + (seatCount * parseFloat("@Model?.Price")).toFixed(2) + " ETB for " + seatCount + " seats";
                     }
 
                 } else {
@@ -254,6 +254,7 @@
 
             $('#cancelButton').click(function () {
                 $('#bookingModal').modal('hide');
+                sessionStorage.removeItem("selectedSeatNames");
                 resetBooking();
                 selectedSeatsCountUpdate();
             });
@@ -266,8 +267,8 @@
 
             function resetBooking() {
                 clearInterval(countdownInterval);
-                var companyTinNumber = "@Model.CompanyTinNumber";
-                var movieScheduleCode = "@Model.MovieScheduleCode";
+                var companyTinNumber = "@Model?.CompanyTinNumber";
+                var movieScheduleCode = "@Model?.MovieScheduleCode";
 
                 selectedSeats.forEach(function (selectedSeat) {
                     var button = document.getElementById(selectedSeat);
@@ -304,10 +305,10 @@
             }
             function toggleSeatSelection(seatCode, isDisabled) {
                 console.log("isDisabled" + isDisabled);
-                var maxSeats = parseInt("@Model.MaxSeats", 10);
+                var maxSeats = parseInt("@Model?.MaxSeats", 10);
                 var index = selectedSeats.indexOf(seatCode);
-                var companyTinNumber = "@Model.CompanyTinNumber";
-                var movieScheduleCode = "@Model.MovieScheduleCode";
+                var companyTinNumber = "@Model?.CompanyTinNumber";
+                var movieScheduleCode = "@Model?.MovieScheduleCode";
                 var consignee = "0912141914"; // Keep the consignee same, as you mentioned
                 var urlAdd = 'https://api-hulubeje.cnetcommerce.com/api/ManageSeatCache/SetCachedSeatsForSchedule' +
                     `?schedule=${movieScheduleCode}&seat=${seatCode}&consignee=${consignee}&orgTin=${companyTinNumber}`;
@@ -432,7 +433,7 @@
         </nav>
     </header>
     <div id="seatLimitAlert" class="alert alert-danger fixed-bottom mb-3" role="alert" style="display: none; position: fixed; bottom: 20px; left: 20px; width: 300px;">
-        You can't select more than @Model.MaxSeats seats
+        You can't select more than @Model?.MaxSeats seats
     </div>
     <div class="container-xl">
         <div id="seatInfoContainer">
