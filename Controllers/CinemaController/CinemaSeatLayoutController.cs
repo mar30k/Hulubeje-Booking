@@ -25,7 +25,7 @@ public class CinemaSeatLayoutController : Controller
          _authenticationManager = authenticationManager;
         _httpContextAccessor = httpContextAccessor;
     }
-
+    [HttpPost]
     public async Task<IActionResult> IndexAsync(string spacecode, string companyTinNumber, string branchCode, string companyName,
         string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
     {

@@ -141,7 +141,6 @@
     var distance = "@Model?.Distance";
     var tariff = "@Model?.Tariff";
     var route = "@Model?.Route";
-    console.log("route " + route);
     var operatorName = "@Model?.OperatorName";
     var scheduleDate = "@Model?.Date";
     var scheduleTime = "@Model?.Time";
@@ -165,8 +164,6 @@
             button.classList.remove('selected');
         }
         selectedButtonsCount = selectedButtons.length;
-        console.log(selectedButtons);
-        console.log(selectedButtonsId);
     }
     $(document).ready(function () {
         $("#continue").click(function () {

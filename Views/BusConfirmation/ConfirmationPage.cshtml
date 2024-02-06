@@ -131,7 +131,6 @@
     var resultAsDouble = parseFloat(result);
     var passengerCount = parseFloat("@Model?.PassengerModelData?.Count");
     var amount = resultAsDouble * passengerCount;
-    console.log(amount);
     var passengerId = '#passenger-1';
     var userMobileNumber = "@ViewBag.PhoneNumber";
     var discount = 0;
@@ -182,9 +181,6 @@
         }
     }
 
-    console.log(typeof ticketDetail);
-    console.log( ticketDetail);
-
     $('#confirmButton').on('click', function () {
         var data = {
             AuthorizePaymentData: {
@@ -209,8 +205,6 @@
                 TicketDetail: ticketDetail,
             },
         };
-        console.log("data", data);
-
         $.ajax({
             url: '/PaymentHome/Index',
             type: 'POST',

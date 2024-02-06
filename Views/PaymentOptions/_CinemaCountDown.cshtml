@@ -65,16 +65,12 @@
                 contentType: 'application/json',
                 data: JSON.stringify(payload),
                 success: function (response) {
-                    console.log('Success:', response);
                 },
                 error: function (error) {
-                    console.error('Error:', error);
                 }
             });
         }
-        else {
-            console.log("already extended cache time");
-        }
+
     }
     function formatTime(seconds) {
         var min = Math.floor(seconds / 60);

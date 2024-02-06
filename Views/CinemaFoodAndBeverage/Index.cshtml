@@ -367,7 +367,6 @@
 
         var secondsAdded = sessionStorage.getItem('secondsAdded');
 
-        console.log("at the start secondsAdded " + secondsAdded)
         var companyTin = "@Model?.CompanyTinNumber";
         var movieScheduleCode = "@Model?.MovieScheduleCode";
 
@@ -393,15 +392,12 @@
                     contentType: 'application/json',
                     data: JSON.stringify(payload),
                     success: function (response) {
-                        console.log('Success:', response);
                     },
                     error: function (error) {
-                        console.error('Error:', error);
                     }
                 });
             }
             else {
-                console.log("already extended cache time");
             }
         }
         const showBillButton = document.getElementById('showBillButton');
@@ -485,7 +481,6 @@
             return min + ":" + (sec < 10 ? "0" : "") + sec;
         }
 
-        console.log("Updated Remaining Time: " + updatedRemainingTime);
 
         document.addEventListener('DOMContentLoaded', function () {
             // Use event delegation to handle clicks on dynamically generated cards
@@ -512,7 +507,6 @@
             quantityControl.style.display = quantityControl.style.display === 'flex' ? 'none' : 'flex';
 
             button.style.display = quantityControl.style.display === 'none' ? 'inline-block' : 'none';
-            console.log ("Add to cart")
         }
 
         function incrementValue(button) {
@@ -574,7 +568,6 @@
                     selectedItems.splice(selectedItems.findIndex(item => item.articleName === itemName), 1);
             }
             renderSelectedItems();
-            console.log(selectedItems);
         }
 
         function renderSelectedItems() {
@@ -637,7 +630,6 @@
 
                 totalPrice += item.price;
                 totalCount += item.quantity;
-                console.log(totalAmount);
                 totalAmount += item.unitPrice;   //unit price is used for total amount for a specific item i.e item.price * item.quantity
             });
             var totalDiv = document.createElement('div');

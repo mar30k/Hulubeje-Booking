@@ -446,8 +446,6 @@
             var selectedHotelAmenities = getSelectedValues('roomAmenities');
             var selectedRoomAmenities = getSelectedValues('hotelAmenities');
 
-            console.log('Selected Hotel Amenities:', selectedHotelAmenities);
-            console.log('Selected Room Amenities:', selectedRoomAmenities);
 
             $('.cardH').each(function () {
                 var card = $(this);
@@ -456,11 +454,6 @@
 
                 var cardMinValue = parseFloat(card.data('minRoomValue'));
                 var priceRangeMismatch = cardMinValue < userMinPrice || cardMinValue > userMaxPrice;
-
-                console.log('Card Amenities:', {
-                    HotelAmenities: cardHotelAmenities,
-                    RoomAmenities: cardRoomAmenities
-                });
 
                 var showCard =
                     (selectedHotelAmenities.length === 0 ||

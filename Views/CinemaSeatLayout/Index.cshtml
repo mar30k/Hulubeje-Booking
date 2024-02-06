@@ -122,8 +122,6 @@
                     selectedSeatsCountUpdate();
                     applyEventListenersSkip();
                 });
-
-                console.log("updated the data");
             }
 
             function selectedSeatsCountUpdate() {
@@ -165,8 +163,6 @@
                         var selectedSeatsJson = sessionStorage.getItem('selectedSeats');
                         var selectedSeatsArray = selectedSeatsJson ? JSON.parse(selectedSeatsJson) : [];
                         var numberOfElements = selectedSeatsArray.length;
-                        console.log("numberOfElements: " + numberOfElements);
-
                         sessionStorage.setItem('remainingTime', remainingTime);
                         if (remainingTime != 0) {
                             sessionStorage.setItem('countdownStarted', true);
@@ -197,7 +193,6 @@
                 }
             }
             function startBooking() {
-                console.log("isThereSelectedSeat " + isThereSelectedSeat);
                 if (!isThereSelectedSeat) {
                     $('#bookingModal').modal('show');
                     // Handle "OK" button click
@@ -232,11 +227,7 @@
                 var remainingTime = parseInt(sessionStorage.getItem('remainingTime'));
                 countdown = remainingTime;
                 startCountdownTimer();
-            } else {
-                console.log("Countdown has not started.");
-            }
-
-            // Periodically fetch and update seat information
+            } 
             function updateButtonStatus() {
                 var skipButton = document.getElementById('skipButton');
                 if (isBookingStarted) {
@@ -288,12 +279,8 @@
                         orgTin: companyTinNumber
                     }),
                     success: function (response) {
-                        // Handle success
-                        console.log(response);
                     },
                     error: function (error) {
-                        // Handle error
-                        console.error(error);
                     }
                 });
 
@@ -304,7 +291,6 @@
                 isBookingStarted = false; // Reset booking flag
             }
             function toggleSeatSelection(seatCode, isDisabled) {
-                console.log("isDisabled" + isDisabled);
                 var maxSeats = parseInt("@Model?.MaxSeats", 10);
                 var index = selectedSeats.indexOf(seatCode);
                 var companyTinNumber = "@Model?.CompanyTinNumber";
@@ -328,12 +314,9 @@
                             url: urlAdd,
                             type: 'POST',
                             success: function (response) {
-                                // Handle success
-                                console.log(response);
                             },
                             error: function (error) {
-                                // Handle error
-                                console.error(error);
+
                             }
                         });
                     } else {
@@ -347,7 +330,6 @@
                 } else if (!isDisabled) {
                     selectedSeats.splice(index, 1);
                     var updatedSeatNames = selectedSeats.map(function (code) {
-                        console.log("seat code: " + code);
                         return document.getElementById(code).innerText;
                     });
                     sessionStorage.setItem('selectedSeatNames', JSON.stringify(updatedSeatNames));
@@ -362,12 +344,8 @@
                             orgTin: companyTinNumber
                         }),
                         success: function (response) {
-                            // Handle success
-                            console.log(response);
                         },
                         error: function (error) {
-                            // Handle error
-                            console.error(error);
                         }
                     });
                 }
@@ -376,8 +354,6 @@
                     button.style.backgroundColor = index === -1 ? "green" : "";
                 }
                 updateButtonStatus();
-                console.log("Selected Seats: ", selectedSeats);
-
                 saveSelectedSeatsToStorage();
                 updateSelectedSeatsUI();
                 selectedSeatsCountUpdate()
