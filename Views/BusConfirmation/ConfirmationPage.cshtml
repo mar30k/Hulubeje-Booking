@@ -1,6 +1,6 @@
 ﻿@model HulubejeBooking.Models.BusModels.Wrap
-
-@* <partial name="_Navigation" /> *@
+@using HulubejeBooking.Models.BusModels;
+<partial name="_Navigation" />
 <head>
     <title>Confirmation</title>
 </head>
@@ -75,10 +75,14 @@
         @{
             var count = 1;
         }
-        @foreach (var passenger in Model.PassengerModelData)
+        @foreach (var passenger in Model?.PassengerModelData ?? new List<PassengerModel>())
         {
+            DateTime originalDate = DateTime.MinValue;
 
-            DateTime originalDate = DateTime.ParseExact(passenger.DOB, "yyyy-MM-dd", null);
+            if (passenger.DOB != null)
+            {
+             originalDate = DateTime.ParseExact(passenger.DOB, "yyyy-MM-dd", null);
+            }
             string formattedDateString = originalDate.ToString("MMM-dd-yyyy");
             <div class="mb-4">
                 <div class="card border-primary h-100 p-2">
