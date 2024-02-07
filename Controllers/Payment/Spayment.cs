@@ -26,6 +26,10 @@ namespace HulubejeBooking.Controllers.Payment
         }
         public IActionResult Index()
         {
+            var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
+            var value = HttpContext.Session.GetString("cinema");
+            HttpContext.Session.Remove("cinema");
+            ViewBag.CoutDown = value;
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {

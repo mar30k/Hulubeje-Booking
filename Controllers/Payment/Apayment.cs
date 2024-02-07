@@ -99,7 +99,7 @@ namespace HulubejeBooking.Controllers.Payment
 
                     var ValidationDataJson = JsonConvert.SerializeObject(pay);
 
-                    HttpContext.Session.SetString("mark", ValidationDataJson);
+                    HttpContext.Session.SetString("AsyncPaymentInfo", ValidationDataJson);
                      
                                                     
                 }

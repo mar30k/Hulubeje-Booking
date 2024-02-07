@@ -39,7 +39,6 @@ namespace Payment.Controllers
             }
             var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
             var value = HttpContext.Session.GetString("cinema");
-            HttpContext.Session.Remove("cinema");
             ViewBag.CoutDown= value;
             if (!string.IsNullOrEmpty(paymentOptionsJson))
             {
@@ -53,7 +52,7 @@ namespace Payment.Controllers
             }
             else
             {
-                return View(new PaymentOptionModel());
+                return View(new Wrapper());
             }
         }
 
