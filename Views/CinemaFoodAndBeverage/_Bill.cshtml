@@ -57,44 +57,24 @@
         <span style="text-align: right; margin-right: 10px">Total Amount: @(Model?.Bill?.TotalAmount.ToString("F2") ?? "N/A")</span>
     </div>
 </div>
-@* @{
-    var specialFlagItems = Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT");
-
-    if (specialFlagItems != null && specialFlagItems.Any())
-    {
-        foreach (var taxinfo in specialFlagItems)
-        {
-            var TaxAmount = taxinfo.TaxAmount;
-            var TotalAmount = taxinfo.TotalAmount;
-            var TaxType = taxinfo.TaxType;
-            var TaxableAmount = taxinfo.TaxableAmount;
-            var UnitPrice = taxinfo.UnitPrice;
-            var Quantity = taxinfo.Quantity;
-            var LineItemNote = taxinfo.LineItemNote;
-            var SpecialFlag = taxinfo.SpecialFlag;
-            var Code = taxinfo.Code;
-        }   
-    }
-    var Schedule = Model?.MovieScheduleCode;
-    var GrandTotal = Model?.Bill?.Extras?.SubTotal;
-    var OrgTin = Model?.CompanyTinNumber;
-    var OrgUnitDef = Model?.BranchCode;
-} *@
 <script>
+    var userMobileNumber = "@ViewBag.PhoneNumber";
+    console.log("phoneNumber dadaadbadb" + userMobileNumber);
     $('#confirmButton').on('click', function () {
+    console.log("phoneNumber " + userMobileNumber);
     var phoneNumber = localStorage.getItem("phone") || sessionStorage.getItem("phone");
     var cinemaArticles = @Html.Raw(Json.Serialize(Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT")));
     var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
     var selectedSeatNames = JSON.parse(sessionStorage.getItem('selectedSeatNames')) || [];
     var data = {
         AuthorizePaymentData: {
-            UserMobileNumber: phoneNumber,
+            UserMobileNumber: userMobileNumber,
             SupplierTin: '@Model?.CompanyTinNumber',
             SupplierOUD: '@Model?.BranchCode',
             Amount: '@Model?.Bill?.TotalAmount'
         },
         CinemaDetailsData: {
-            Consignee: phoneNumber,
+            Consignee: userMobileNumber,
             MovieSchedule: '@Model?.MovieScheduleCode',
             GrandTotal: '@Model?.Bill?.TotalAmount',
             OrgTin: '@Model?.CompanyTinNumber',
