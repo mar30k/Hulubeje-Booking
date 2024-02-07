@@ -223,7 +223,10 @@ namespace HulubejeBooking.Controllers.Payment
                             HttpContext.Session.SetString("transactionDatas", values);
 
                             return Json(new { cardText = "telebirr SMS OTP" });
-
+                        }
+                        else
+                        {
+                            return Json(new { cardText = "telebirr SMS OTP" });
                         }
                     }
                     if (asynch)
