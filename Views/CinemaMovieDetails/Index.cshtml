@@ -275,6 +275,8 @@
             sessionStorage.removeItem("secondsAdded");
             sessionStorage.removeItem("selectedSeatNames");
             sessionStorage.removeItem("selectedSeats");
+            sessionStorage.removeItem("secondsAddedInPayement");
+            sessionStorage.removeItem("secondsAddedInOtp");
             var form = $('<form action="/cinemaseatlayout" method="post"></form>');
             form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
             form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '">');
