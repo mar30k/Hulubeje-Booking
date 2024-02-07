@@ -270,9 +270,11 @@
 
     <script>
         function onScheduleButtonClick(spacecode, companyTinNumber, branchCode, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, price, hallName, utcTime) {
-            var selectedSeats = [];
-            sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
-            sessionStorage.setItem('selectedSeatNames', JSON.stringify(selectedSeats));
+            sessionStorage.removeItem("remainingTime");
+            sessionStorage.removeItem("countdownStarted");
+            sessionStorage.removeItem("secondsAdded");
+            sessionStorage.removeItem("selectedSeatNames");
+            sessionStorage.removeItem("selectedSeats");
             var form = $('<form action="/cinemaseatlayout" method="post"></form>');
             form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
             form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '">');
