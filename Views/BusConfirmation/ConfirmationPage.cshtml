@@ -8,13 +8,12 @@
     @{
         string formattedArrivalTime = "";
         string formattedDepartTime = "";
-        string formattedDate = "";
         if (Model?.VwRouteScheduleData != null)
         {
             formattedArrivalTime = Model.VwRouteScheduleData.ArrivalDate.ToString("h:mm tt");
             formattedDepartTime = Model.VwRouteScheduleData.DepartureDate.ToString("h:mm tt");
         }
-        formattedDate = Model?.VwRouteScheduleData.Date;
+        var formattedDate = Model?.VwRouteScheduleData?.Date;
     }
     <div class="row border rounded mb-4 pt-3 bg-dark">
         <div class="col-md-4 text-center">
