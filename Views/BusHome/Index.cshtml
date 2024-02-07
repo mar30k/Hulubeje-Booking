@@ -50,11 +50,10 @@
     </div>
     <div class="container mt-5">
         @{
-            List<RouteModel> allRoutes = Model?.Routes;
-            List<RouteModel> toCity = Model?.Routes;
-            List<City> allCities = Model?.RouteConfiguration?.Cities ?? new List<City>();
-            List<int?> fromCities = Model?.RouteConfiguration?.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
-            List<string> fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
+            var allRoutes = Model?.RouteModel;
+            var allCities = Model?.RouteModel?.Select(route => route.Routes).ToList();
+            // var fromCities = Model?.RouteConfiguration?.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
+            // var fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
         }
         <div class="d-flex" style="">
             <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>
@@ -68,17 +67,6 @@
             </select>
             <select class="selectCity" style="width:100%; border-color:#FEBB02; height:60px; border-radius:5px;" id="destination" required>
                 <option value="" disabled selected>Select a Destination City</option>
-                @if (allRoutes is not null)
-                {
-                    @foreach (var city in allRoutes)
-                    {
-                        foreach (var destCity in city.Routes.OrderBy(c=> c.DestinationCityName).ToList())
-                        {
-
-                            <option value="@destCity.RouteId">@destCity.DestinationCityName  Via:   @destCity.ViaName - Origin Terminal:   @destCity.OriginTerminalName</option>
-                        }
-                    }
-                }
             </select>
             <input style="width:50%; border-color:#FEBB02; height:60px;border-radius:5px;" class="select" type="date" value="@minDate"  id="travelDate" required>
             <button id="searchButton" style="color: white" class="btn btn-outline-primary">Search</button>
@@ -117,36 +105,22 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         function populateDestinationDropdown(selectedDepartureCity) {
-            var allCities = @Html.Raw(Json.Serialize(Model?.RouteConfiguration?.Cities));
-            var selectedDepartureCityObject = allCities.find(city => city.cityName === selectedDepartureCity);
             var destinationSelect = $('#destination');
+            var allCities = @Html.Raw(Json.Serialize(Model?.RouteModel));
+            var selectedDepartureCityObject = allCities.find(city => city.originCityName === selectedDepartureCity);
+            var destinationCitiesList = selectedDepartureCityObject.routes;
 
-            // Clear existing options
-            destinationSelect.html('<option value="" disabled selected>Select a Destination City</option>');
+            destinationCitiesList.sort((a, b) => a.destinationCityName.localeCompare(b.destinationCityName));
 
-            if (selectedDepartureCityObject) {
-                var allRoutes = @Html.Raw(Json.Serialize(Model?.RouteConfiguration?.Routes));
-                var selectedDepartureCityCode = selectedDepartureCityObject.cityCode;
-                var selectedRouteObject = allRoutes.find(route => route.fromCity === selectedDepartureCityCode);
-
-                if (selectedRouteObject && selectedRouteObject.toCity) {
-                    selectedRouteObject.toCity
-                        .map(toCity => ({
-                            city: allCities.find(city => city.cityCode === toCity.cityCode),
-                            toCity
-                        }))
-                        .filter(mappedCity => mappedCity.city)
-                        .sort((a, b) => a.city.cityName.localeCompare(b.city.cityName, undefined, { sensitivity: 'base' }))
-                        .forEach(mappedCity => {
-                            destinationSelect.append($('<option>', {
-                                value: mappedCity.toCity.routeId,
-                                text: mappedCity.city.cityName
-                            }));
-                        });
-                }
+            if (destinationCitiesList) {
+                destinationCitiesList.forEach(city => {
+                    destinationSelect.append($('<option>', {
+                        value: city.routeId,
+                        text: city.destinationCityName + " Via: " + city.viaName + " - From: " + city.originTerminalName
+                    }));
+                });
             }
         }
-
         $('#departure').change(function () {
             var selectedDepartureCity = this.value;
             populateDestinationDropdown(selectedDepartureCity);
@@ -154,7 +128,6 @@
         $(document).ready(function () {
             $('#searchButton').click(function () {
                 var selectedDestination = $('#destination').val();
-                var selectedDestinationName = $('#destination').text();
                 var selectedDeparture = $('#departure').val();
                 var selectedTravelDate = $('#travelDate').val();
                 if (!selectedDestination || !selectedTravelDate) {
@@ -174,20 +147,6 @@
             });
             var initialDepartureCity = $('#departure').val();
             populateDestinationDropdown(initialDepartureCity);
-        });
-        $('#history').click(function (e) {
-            e.preventDefault();
-            var phoneNumber = localStorage.getItem("phone");
-            var sessionPhone = sessionStorage.getItem("phone");
-            if (phoneNumber != null || sessionPhone !=null) {
-                var form = $('<form action="/History/Index" method="post"></form>');
-                form.append('<input type="hidden" name="phoneNumber" value="' + phoneNumber + '">');
-                $('body').append(form);
-                form.submit();
-            }
-            else {
-                alert('Please Login First');
-            }
         });
     });
 </script>
