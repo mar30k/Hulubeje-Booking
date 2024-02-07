@@ -144,16 +144,16 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
                 savetichketdata.PaymentIssueDate = DateTime.Now;
                 savetichketdata.AppId = 5;
                 savetichketdata.PaymentProcessor = 111;
-                savetichketdata.TicketDetail.ForEach(e=>e.Pnr = "");
-                savetichketdata.TicketDetail.ForEach(e => e.IdNumber = "");
-                savetichketdata.TicketDetail.ForEach(e => e.NationalId = "");
-                savetichketdata.TicketDetail.ForEach(e => e.EmergencyContact = "");
-                savetichketdata.TicketDetail.ForEach(e => e.Woreda = "");
-                savetichketdata.TicketDetail.ForEach(e => e.HouseNumber = "");
-                savetichketdata.TicketDetail.ForEach(e => e.SpecificAddress = "");
-                savetichketdata.TicketDetail.ForEach(e => e.ImageUrl = "");
-                savetichketdata.TicketDetail.ForEach(e => e.PickupLocation = 1);
-                savetichketdata.TicketDetail.ForEach(e => e.BillToTin = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.Pnr = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.IdNumber = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.NationalId = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.EmergencyContact = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.Woreda = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.HouseNumber = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.SpecificAddress = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.ImageUrl = "");
+                savetichketdata?.TicketDetail?.ForEach(e => e.PickupLocation = 1);
+                savetichketdata?.TicketDetail?.ForEach(e => e.BillToTin = "");
 
                 var savetichketjson = JsonConvert.SerializeObject(savetichketdata);
                 var content = new StringContent(savetichketjson, Encoding.UTF8, "application/json");
