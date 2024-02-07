@@ -38,10 +38,36 @@
         background-color: blue;
         color: white;
     }
+    .screen-container {
+        width: 80%;
+        height: 200px;
+        border-radius: 10px;
+        overflow: hidden;
+        perspective: 800px;
+        text-align: center;
+        margin-left: 10%;
+    }
+
+    .screen {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom , #bbb, #444);
+        transform-origin: bottom;
+        transform: translate(-50%, -50%) rotateX(80deg);
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 24px;
+    }
 </style>
 <div class="row mt-3">
     <div class="col-lg-10 mb-3">
-        <div style="background: lightgrey; padding: 20px;" class="mr-2 mb-4">
+        <div style="background: lightgrey; padding: 20px;" class="mr-2">
             @if (Model != null && Model.Seats != null && Model.Seats.Any())
             {
                 <div style="display: flex;justify-content:safe center; align-items: center; overflow-x: auto; margin-top: 30px;">
@@ -92,7 +118,11 @@
                 </div>
             }
         </div>
+        <div class="screen-container">
+            <div class="screen"></div>
+        </div>
         <div id="priceContainer" style="text-align: center; position: relative;  margin-top:30px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
+            <p class="text">All eyes this way please!</p>
             <button id="skipButton" class="btn btn-outline-primary">Skip</button>
         </div>
     </div>
