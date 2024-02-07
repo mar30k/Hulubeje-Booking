@@ -18,11 +18,16 @@
             font-family: 'Montserrat', sans-serif;
         }
 
+        .custom-container {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
         .tabscontainer {
             overflow-x: auto;
             white-space: nowrap;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            margin-left:10px;
         }
 
             .tabscontainer::-webkit-scrollbar {
@@ -63,11 +68,10 @@
             if (retrievedIsValid === true || retrievedIsLoggedIn === true) {
                 document.getElementById("conditionalButtons").innerHTML = `
                   <strong> <span style="color:lightgreen">E</span><span style="color:yellow">T</span><span style="color:red">H</span></strong>
-                  <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
                     <div class="dropdown-container">
-                        <button type="button" class="btn btn-light" style="color: black">
+                        <button type="button" class="btn btn-light ml-2 mr-1" style="color: black;">
                         <img src="@ViewBag.Image" class="mr-2 rounded-circle" alt="User Image" style="width: 30px; height: 30px;">
-                        <span>@ViewBag.UserName @ViewBag.MiddleName</span>
+                        <span style="padding: 5px; ">@ViewBag.UserName @ViewBag.MiddleName</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" id="history">History</a></li>
@@ -83,8 +87,6 @@
                 `;
             } else {
                 document.getElementById("conditionalButtons").innerHTML = `
-                                        <a class="btn" style="color: white;"><span><i class="bi bi-question"></i></span></a>
-                                        <a class="btn" style="color: white;">List your property</a>
                                         <a href="/SignUp" class="btn btn-light">Register</a>
                                         <a href="/SignIn" class="btn btn-light">Login</a>
                                     `;
@@ -108,10 +110,10 @@
     </script>
 </head>
 <body>
-    <div class="container-fluid pb-2" style="background-color:#063970;">
+    <div class="container-fluid custom-container pb-2" style="background-color:#063970;">
         <div class="container pt-3">
-            <div class="row">
-                <div class="col-md-7">
+            <div class="row" style="display: flex; justify-content: space-between !important">
+                <div class="col-5">
                     <nav class="navbar navbar-light">
                         <div class="container">
                             <a class="navbar-brand" asp-controller="Home" asp-action="Index" style="color: white;">
@@ -120,8 +122,9 @@
                         </div>
                     </nav>
                 </div>
-                <div class="col-md-5">
-                    <div class="ml-4 pt-2" id="conditionalButtons" style="margin-left:auto">
+                <div class="col-7" style="display: flex; justify-content: end !important">
+                    <div class="pt-2" id="conditionalButtons" style="margin-left:auto;">
+                        <!-- Your content here -->
                     </div>
                 </div>
             </div>
