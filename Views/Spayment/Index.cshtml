@@ -1,7 +1,24 @@
 ﻿<partial name="_Navigation" />
-
-
-
+@{
+    if (ViewBag.CoutDown is not null)
+    {
+        <partial name="_CountDownInOtp" />
+    }
+}
+@* <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
+    <div class="d-flex align-items-center">
+        <div class="row mt-3">
+            <div class="col">
+                <form method="post" action="/Otp/VerifyOtp">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="otpCode" placeholder="Enter OTP Code" required>
+                        <button class="btn btn-dark">Send Code</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> *@
 <div class="container justify-content-center align-items-center vh-100 d-flex mt-5">
     Enter the code from your phone
     <input type="text" class="form-control" id="passcode" aria-label="Text input with checkbox">
