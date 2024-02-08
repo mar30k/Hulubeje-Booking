@@ -47,12 +47,12 @@ namespace HulubejeBooking.Controllers
             var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
-			var busPics = new Images();
-			var bus = "whotel";
-            //var hotel = "wbus";
-            //var spa = "wbus";
-            //var events = "wbus";
-            //var cinema = "wbus";
+			var Picures = new Images();
+			var bus = "wbus";
+            var hotel = "whotel";
+            var spa = "wspa";
+            var events = "wevent";
+            var cinema = "wmovie";
 
             HttpResponseMessage busResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={bus}");
 
@@ -60,11 +60,41 @@ namespace HulubejeBooking.Controllers
             {
                 string busData = await busResponse.Content.ReadAsStringAsync();
                 var busImages = JsonConvert.DeserializeObject<List<string>>(busData);
-                busPics.Bus = busImages ?? new List<string>();
+                Picures.Bus = busImages ?? new List<string>();
             }
+            HttpResponseMessage cinemaResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={cinema}");
 
+            if (cinemaResponse.IsSuccessStatusCode)
+            {
+                string cinemaData = await cinemaResponse.Content.ReadAsStringAsync();
+                var cinemaImages = JsonConvert.DeserializeObject<List<string>>(cinemaData);
+                Picures.Cinema = cinemaImages ?? new List<string>();
+            }
+            HttpResponseMessage spaResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={spa}");
 
-            return View(busPics);
+            if (spaResponse.IsSuccessStatusCode)
+            {
+                string spaData = await spaResponse.Content.ReadAsStringAsync();
+                var spaImages = JsonConvert.DeserializeObject<List<string>>(spaData);
+                Picures.Spa = spaImages ?? new List<string>();
+            }
+            HttpResponseMessage eventResposne = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={events}");
+
+            if (eventResposne.IsSuccessStatusCode)
+            {
+                string eventData = await eventResposne.Content.ReadAsStringAsync();
+                var eventImages = JsonConvert.DeserializeObject<List<string>>(eventData);
+                Picures.Event = eventImages ?? new List<string>();
+            }
+            HttpResponseMessage hotelResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={hotel}");
+
+            if (hotelResponse.IsSuccessStatusCode)
+            {
+                string hotelData = await hotelResponse.Content.ReadAsStringAsync();
+                var hotelImages = JsonConvert.DeserializeObject<List<string>>(hotelData);
+                Picures.Hotel = hotelImages ?? new List<string>();
+            }
+            return View(Picures);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
