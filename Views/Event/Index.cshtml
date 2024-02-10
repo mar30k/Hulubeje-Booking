@@ -1,0 +1,66 @@
+﻿<partial name="_Navigation" />
+<title>Event </title>
+<style>
+    .message-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .coming-soon-message {
+        font-size: 24px;
+        color: #333;
+        margin: 20px 0;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease;
+    }
+
+        .coming-soon-message:hover {
+            background-color: #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .coming-soon-message::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: #ccc;
+            margin-top: 20px;
+        }
+</style>
+<div class="container mt-5 mb-5">
+    <div id="message-container" class="message-container m-4 rounded-2" style="display: flex; align-items: center; justify-content: center; height: 50vh; background-size:contain;">
+        <div class="d-flex align-items-center">
+            <main>
+                <section class="coming-soon-section">
+                    <p class="coming-soon-message rounded-2">Sorry, this feature is currently under development. Stay tuned!</p>
+                </section>
+            </main>
+        </div>
+    </div>
+</div>
+<script>
+    const images = ["url('https://images.unsplash.com/photo-1574672009742-218e990bec89?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8c21hbGwlMjBjb25jZXJ0fGVufDB8fDB8fHww')",
+        "url('https://images.unsplash.com/photo-1578559284795-c9e0d7f3198a?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"];
+    const intervalInMinutes = 0.1;
+    let currentIndex = 0;
+    const messageContainer = document.getElementById('message-container');
+
+    function changeBackgroundImage() {
+        messageContainer.style.backgroundImage = images[currentIndex];
+        currentIndex = (currentIndex + 1) % images.length;
+    }
+
+    changeBackgroundImage();
+
+    setInterval(changeBackgroundImage, intervalInMinutes * 60 * 1000);
+</script>
+
+<partial name="_Footer" />
