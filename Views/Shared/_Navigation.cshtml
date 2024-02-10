@@ -18,7 +18,7 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        .custom-container {
+        .custom {
             padding-left: 0px;
             padding-right: 0px;
         }
@@ -87,7 +87,7 @@
                 `;
             } else {
                 document.getElementById("conditionalButtons").innerHTML = `
-                                        <a href="/SignUp" class="btn btn-light">Register</a>
+                                        <a href="/PhoneNumber" class="btn btn-light">Register</a>
                                         <a href="/SignIn" class="btn btn-light">Login</a>
                                     `;
             }
@@ -110,7 +110,7 @@
     </script>
 </head>
 <body>
-    <div class="container-fluid custom-container pb-2" style="background-color:#063970;">
+    <div class="container-fluid custom pb-2" style="background-color:#063970;">
         <div class="container pt-3">
             <div class="row" style="display: flex; justify-content: space-between !important">
                 <div class="col-5">
@@ -132,9 +132,9 @@
                 <a asp-action="Index" asp-controller="hotelhome" type="button" class="tabs btn mt-2 btn-outline-primary rounded" style="color: white; border-radius: 50%"><span style="display: inline-block"><i class="bi bi-house"></i></span> Hotels</a>
                 <a asp-action="Index" asp-controller="cinemahome" type="button" class="tabs mt-2 btn btn-outline-primary rounded" style="color: white;"><span> <i class="bi bi-film"></i></span> Cinema</a>
                 <a asp-controller="BusHome" asp-action="Index" type="button" class="tabs btn  mt-2 btn-outline-primary rounded" style="color: white;"><span><i class="bi bi-bus-front"></i></span> Bus</a>
-                <a href="/CommingSoon" type="button" class="tabs btn btn-outline-primary mt-2 rounded" style="color: white;"><span><i class="fa-solid fa-theater-masks"></i></span> Event</a>
-                <a href="/CommingSoon" type="button" class="tabs btn btn-outline-primary mt-2 rounded" style="color: white;"><span><i class="fas fa-spa"></i></span> Spa</a>
-                <a href="/CommingSoon" type="button" class="tabs btn btn-outline-primary mt-2 rounded" style="color: white;"><span><i class="fa fa-ticket"></i></span> Stadium Ticket</a>
+                <a href="/event" type="button" class="tabs btn btn-outline-primary mt-2 rounded" style="color: white;"><span><i class="fa-solid fa-theater-masks"></i></span> Event</a>
+                <a href="/spa" type="button" class="tabs btn btn-outline-primary mt-2 rounded" style="color: white;"><span><i class="fas fa-spa"></i></span> Spa</a>
+                <a href="/stadium" type="button" class="tabs btn btn-outline-primary mt-2 rounded" style="color: white;"><span><i class="fa fa-ticket"></i></span> Stadium Ticket</a>
             </div>
         </div>
     </div>
