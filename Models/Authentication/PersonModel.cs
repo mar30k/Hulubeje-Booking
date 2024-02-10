@@ -5,37 +5,35 @@ namespace HulubejeBooking.Models.Authentication
 {
     public class PersonModel
     {
-        public string? personCode { get; set; }
+        public string? PersonCode { get; set; }
         [Required(ErrorMessage = "First Name is required")]
-        public string? firstName { get; set; }
+        public string? FirstName { get; set; }
 
         [Required(ErrorMessage = "Middle Name is required")]
-        public string? middleName { get; set; }
+        public string? MiddleName { get; set; }
 
         [Required(ErrorMessage = "Last Name is required")]
-        public string? lastName { get; set; }
+        public string? LastName { get; set; }
 
-        [Required(ErrorMessage = "Phone Number is required")]
-        [Phone(ErrorMessage = "Invalid Phone Number")]
-        public string? phoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Date of Birth is required")]
         [DataType(DataType.Date, ErrorMessage = "Invalid Date of Birth")]
-        public string? dob { get; set; }
+        public string? Dob { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        public string? password { get; set; }
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long.")]
+        public string? Password { get; set; }
 
+        public string? ConfirmPassword { get; set; }
         [Required(ErrorMessage = "Gender is required")]
-        public string? gender { get; set; }
+        public string? Gender { get; set; }
 
-        public string? emailAddress { get; set; }
-        public string? idType { get; set; }
-        public string? id { get; set; }
-        public string? idPhoto { get; set; }
-        public string? personalPhoto { get; set; }
-        public UserResponse? signUpAuth { get; set; }
-        public MessageResponse? messageResponse { get; set; }
+        public string? EmailAddress { get; set; }
+        public string? IdType { get; set; }
+        public string? Id { get; set; }
+        public string? IdPhoto { get; set; }
+        public string? PersonalPhoto { get; set; }
 
     }
     public class UserInformation
