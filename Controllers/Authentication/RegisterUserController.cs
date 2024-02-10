@@ -21,23 +21,25 @@ namespace HulubejeBooking.Controllers.Authentication
         {
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var data = HttpContext.Session.GetString("UserInfo");
-            var newData = JsonConvert.DeserializeObject<PersonModel>(data);
-
+            var newData = new PersonModel();
+            if (data != null) {
+                newData = JsonConvert.DeserializeObject<PersonModel>(data);
+            }
             var param = new
             {
-                personCode = newData?.phoneNumber,
-                firstName = newData?.firstName,
-                lastName = newData?.lastName,
-                middleName = newData?.middleName,
-                emailAddress = newData?.emailAddress,
-                phoneNumber = newData?.phoneNumber,
-                gender = newData?.gender,
-                dob = newData?.dob,
-                password = newData?.password,
-                idType = newData?.idType,
-                id = newData?.id,
-                personalPhoto = newData?.personalPhoto,
-                idPhoto = newData?.idPhoto,
+                personCode = newData?.PhoneNumber,
+                firstName = newData?.FirstName,
+                lastName = newData?.LastName,
+                middleName = newData?.MiddleName,
+                emailAddress = newData?.EmailAddress,
+                phoneNumber = newData?.PhoneNumber,
+                gender = newData?.Gender,
+                dob = newData?.Dob,
+                password = newData?.Password,
+                idType = newData?.IdType,
+                id = newData?.Id,
+                personalPhoto = newData?.PersonalPhoto,
+                idPhoto = newData?.IdPhoto,
             };
             string jsonBody = JsonConvert.SerializeObject(param);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -51,7 +53,7 @@ namespace HulubejeBooking.Controllers.Authentication
 
                 var userInformation = new UserInformation()
                 {
-                    code = newData?.phoneNumber,
+                    code = newData?.PhoneNumber,
                 };
                 _authenticationManager.SignIn(userInformation, true);
                 TempData["InfoMessage"] = "Welcome! You Have Successfully Created Hulubeje Account";
