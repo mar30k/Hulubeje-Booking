@@ -26,11 +26,11 @@ namespace HulubejeBooking.Controllers.Authentication
                  trimmedCode = otpCode.Trim();
             }
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-            var data = HttpContext.Session.GetString("UserInfo");
-            var newData = JsonConvert.DeserializeObject<PersonModel>(data);
-            var code = newData?.messageResponse?.code;
-            var to = newData?.messageResponse?.to;
-            var vc = newData?.messageResponse?.verificationId;
+            var data = HttpContext.Session.GetString("OtpMessageResponse");
+            var newData = JsonConvert.DeserializeObject<MessageResponse>(data);
+            var code = newData?.code;
+            var to = newData?.to;
+            var vc = newData?.verificationId;
 
             if (trimmedCode == code)
             {
@@ -40,7 +40,7 @@ namespace HulubejeBooking.Controllers.Authentication
 
                 if (verificationData?.isVerified == true)
                 {
-                    return RedirectToAction("Index", "RegisterUser");
+                    return RedirectToAction("Index", "Signup");
                 }
                 else
                 {
