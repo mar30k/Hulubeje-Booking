@@ -1,4 +1,5 @@
-﻿@model HulubejeBooking.Models.HotelModels.HotelListRequest
+﻿@using HulubejeBooking.Models.HotelModels
+@model HulubejeBooking.Models.HotelModels.HotelListRequest
 <partial name="_Navigation" />
 <head>
     <title>Hotel Home</title>
@@ -131,13 +132,10 @@
 
             <div class="select" style="width:100%;">
                 <select class="form-select form form-control" id="city" data-tags="true" data-placeholder="Select an option" data-allow-clear="true" style="width:100%; height:60px; border-color:#FEBB02;">
-                    @if (Model.CityNameList != null)
-                    {
-                        @foreach (var city in Model.CityNameList)
+                        @foreach (var city in Model?.CityNameList ?? new List<CityData>())
                         {
                             <option value="@city?.CityName">@city?.CityName?.ToUpper()</option>
                         }
-                    }
                 </select>
             </div>
 
@@ -212,33 +210,30 @@
         var shuffledHotels = Model?.filteredCompany?.OrderBy(x => random.Next()).Take(20).ToList();
     }
     <div class="row mt-3">
-        @if (shuffledHotels != null)
+        @foreach (var hotel in shuffledHotels ?? new List<FilteredCompany>())
         {
-            @foreach (var hotel in shuffledHotels)
-            {
-                <div class="col-md-6 mb-3">
-                    <!-- Adjust the column width based on your layout -->
-                    <a class="card cardB clickable-card" style="max-width: 100%;"
-                       data-oud="@hotel?.oud"
-                       data-org-tin="@hotel?.TIN"
-                       data-hotel-name="@hotel?.brandName"
-                       data-branch-name="@hotel?.branchName"
-                       data-city="">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="@hotel?.attachments?[0]" class="img-fluid rounded-start" alt="...">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">@hotel?.brandName</h5>
-                                    <p class="card-text">The detail information will be posted here. @* @hotel?.oud and @hotel?.TIN *@</p>
-                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                                </div>
+            <div class="col-md-6 mb-3">
+                <!-- Adjust the column width based on your layout -->
+                <a class="card cardB clickable-card" style="max-width: 100%;"
+                    data-oud="@hotel?.oud"
+                    data-org-tin="@hotel?.TIN"
+                    data-hotel-name="@hotel?.brandName"
+                    data-branch-name="@hotel?.branchName"
+                    data-city="">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="@hotel?.attachments?[0]" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@hotel?.brandName</h5>
+                                <p class="card-text">The detail information will be posted here. @* @hotel?.oud and @hotel?.TIN *@</p>
+                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
                             </div>
                         </div>
-                    </a>
-                </div>
-            }
+                    </div>
+                </a>
+            </div>
         }
     </div>
 
