@@ -3,14 +3,6 @@
 <head>
     <title>SignUp</title>
     <style>
-        .custom-container{
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-top: 20px;
-            margin-bottom: 20px; 
-        }
         .form-group {
             margin-bottom: 15px;
         }
@@ -41,19 +33,16 @@
             margin-left: 5px;
         }
 
-        .btn-primary {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
+        .register{
+            min-width: 140px;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            background-color: #4ab2f1;
+            padding: 10px 30px;
+            text-align: center;
+            font-size: 15px;
+            color: #fff;
+            text-transform: uppercase;
         }
-
-            .btn-primary:hover {
-                background-color: #0056b3;
-            }
-
         .custom-password-input {
             position: relative;
         }
@@ -67,152 +56,242 @@
         }
     </style>
 </head>
-<div class="container custom-container">
+<div class="container  mt-2">
     <div class="row justify-content-center">
         <div class="col-md-8 pt-3" >
-            <div class="mb-3 text-center">
-                <h5 class="h5">Signup</h5>
-            </div>
-            <section class="pb-5">
+            <section class="pb-3">
                 <div class="mask d-flex align-items-center gradient-custom-3">
-                    <form id="guestForm" method="post" action="/signup/SignUpVerification">
+                    <div id="guestForm">
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="name">First Name</label>
-                                    <input name="firstName" type="text" class="form-control" id="name" placeholder="First Name" required>
-                                    @Html.ValidationMessageFor(model => model.firstName, "", new { @class = "text-danger" })
-                                </div>
+                        <div class="personalDetails" style="display: flex; flex-direction: column;">
+                            <div class="d-flex justify-content-center align-items-center mb-1">
+                                <h5>Your Personal Details</h5>
                             </div>
+                            <div class="pl-5 pr-5 pt-2 pb-1 " style="background-color: #f9f9f9; border-top: 1.5px solid #ddd;">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="name">First Name</label>
+                                            <input name="firstName" type="text" class="form-control" id="first" placeholder="First Name" >
+                                            @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="middle">Middle Name</label>
-                                    <input name="middleName" type="text" class="form-control" id="middle" placeholder="Middle Name" required>
-                                    @Html.ValidationMessageFor(model => model.middleName, "", new { @class = "text-danger" })
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="middle">Middle Name</label>
+                                            <input name="middleName" type="text" class="form-control" id="middle" placeholder="Middle Name" required>
+                                            @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="last">Last Name</label>
+                                            <input name="lastName" type="text" class="form-control" id="last" placeholder="Last Name" required>
+                                            @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="phone">Phone</label>
+                                            <p id ="phoneNumber" class="p-2 rounded mb-2 mt-1" style="margin-bottom: 0; border: 1px solid black;">@Model?.PhoneNumber</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="" for="email">Email</label>
+                                            <input name="emailAddress" type="email" class="form-control" id="email" placeholder="Email">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="form-group">
-                                    <label for="last">Last Name</label>
-                                    <input name="lastName" type="text" class="form-control" id="last" placeholder="Last Name" required>
-                                    @Html.ValidationMessageFor(model => model.lastName, "", new { @class = "text-danger" })
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="date">Date of Birth</label>
+                                                <input name="dob" type="date" class="form-control" id="date" placeholder="Your birth date" required>
+                                                @Html.ValidationMessageFor(model => model.Dob, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div>
+                                                <label for="gender">Gender</label>
+                                            </div>
+                                            <div class="row mt-2">
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input type="radio" class="form-check-input" id="male" name="gender" value="Male" required>
+                                                        <label class="form-check-label" for="male">Male</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-check">
+                                                        <input type="radio" class="form-check-input" id="female" name="gender" value="Female" required>
+                                                        <label class="form-check-label" for="female">Female</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="phone">Phone</label>
-                                    <input name="phoneNumber" type="tel" class="form-control" id="phone" placeholder="Phone" required>
-                                    @Html.ValidationMessageFor(model => model.phoneNumber, "", new { @class = "text-danger" })
-                                </div>
+                        @* <div class="personalDetails mt-2" style="display: flex; flex-direction: column;">
+                            <div class="d-flex justify-content-center align-items-center mb-1">
+                                <h5>Your Identification Details</h5>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="" for="email">Email</label>
-                                    <input name="emailAddress" type="email" class="form-control" id="email" placeholder="Email">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="date">Date of Birth</label>
-                                        <input name="dob" type="date" class="form-control" id="date" placeholder="Your birth date" required>
-                                        @Html.ValidationMessageFor(model => model.dob, "", new { @class = "text-danger" })
+                            <div class="pl-5 pr-5 pt-2 pb-1 " style="background-color: #f9f9f9; border-top: 1.5px solid #ddd;">
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label for="idType">Id type</label>
+                                        <select name="idType" class="form-select" id="idType">
+                                            <option selected>...</option>
+                                            <option>Passport</option>
+                                            <option>Driver's license</option>
+                                            <option>Kebele Id</option>
+                                            <option>Student Id</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="idNo">Id Number</label>
+                                            <input name="id" type="text" class="form-control" id="idNo" placeholder="Id Number">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input type="password" name="password" class="form-control" id="password" placeholder="Choose password" required>
-                                        <span class="toggle-password" onclick="togglePasswordVisibility()">
-                                            <i id="eyeIcon" class="bi bi-eye"></i>
-                                        </span>
-                                        @Html.ValidationMessageFor(model => model.password, "", new { @class = "text-danger" })
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="perPic">Personal Photo</label>
+                                            <input name="personalPhoto" type="file" class="form-control" id="perPic" accept=".png" placeholder="Personal Photo">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="idPic">Identification Photo</label>
+                                            <input name="idPhoto" type="file" class="form-control" id="idPic" accept=".png" placeholder="Identification Photo">
+                                        </div>
                                     </div>
                                 </div>
-                                <script>
-                                    function togglePasswordVisibility() {
-                                        var passwordInput = document.getElementById("password");
-                                        var eyeIcon = document.getElementById("eyeIcon");
+                            </div>
+                        </div> *@
+                        <div class="personalDetails mt-2" style="display: flex; flex-direction: column;">
+                            <div class="d-flex justify-content-center align-items-center mb-1">
+                                <h5>Your Password</h5>
+                            </div>
+                            <div class="pl-5 pr-5 pt-2 pb-1 " style="background-color: #f9f9f9; border-top: 1.5px solid #ddd;">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="password">Password</label>
+                                            <input type="password" name="password" class="form-control" id="password" placeholder="Choose password" required>
+                                            <span class="toggle-password" onclick="togglePasswordVisibility('password', 'eyeIcon')">
+                                                <i id="eyeIcon" class="bi bi-eye"></i>
+                                            </span>
+                                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="confirmPassword">Confirm Password</label>
+                                            <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm password" required>
+                                            <span class="toggle-password" onclick="togglePasswordVisibility('confirmPassword', 'confirmeyeIcon')">
+                                                <i id="confirmeyeIcon" class="bi bi-eye"></i>
+                                            </span>
+                                        </div>
+                                    </div>
 
-                                        if (passwordInput.type === "password") {
-                                            passwordInput.type = "text";
-                                            eyeIcon.classList.remove("bi-eye");
-                                            eyeIcon.classList.add("bi-eye-slash");
-                                        } else {
-                                            passwordInput.type = "password";
-                                            eyeIcon.classList.remove("bi-eye-slash");
-                                            eyeIcon.classList.add("bi-eye");
+                                    <script>
+                                        function togglePasswordVisibility(inputId, eyeIconId) {
+                                            var passwordInput = document.getElementById(inputId);
+                                            var eyeIcon = document.getElementById(eyeIconId);
+
+                                            if (passwordInput.type === "password") {
+                                                passwordInput.type = "text";
+                                                eyeIcon.classList.remove("bi-eye");
+                                                eyeIcon.classList.add("bi-eye-slash");
+                                            } else {
+                                                passwordInput.type = "password";
+                                                eyeIcon.classList.remove("bi-eye-slash");
+                                                eyeIcon.classList.add("bi-eye");
+                                            }
                                         }
-                                    }
-                                </script>
+                                        function validatePasswords() {
+                                            var password = document.getElementById("password").value;
+                                            var confirmPassword = document.getElementById("confirmPassword").value;
+
+                                            if (password.length < 6) {
+                                                displayAlert("Password Length must be greater than 6", "alert-danger");
+                                                setTimeout(removeAlert, 1500);
+                                                return false;
+                                            }
+
+                                            if (password !== confirmPassword) {
+                                                displayAlert("Passwords do not match!", "alert-danger");
+                                                setTimeout(removeAlert, 1500);
+                                                return false;
+                                            }
+
+                                            submitForm();
+                                            return true;
+                                        }
+                                        function submitForm() {
+                                            var first = $('#first').val();
+                                            var middle = $('#middle').val();
+                                            var last = $('#last').val();
+                                            var email = $('#email').val();
+                                            var date = $('#date').val();
+                                            var password = $('#password').val();
+                                            var selectedGender = $('input[name="gender"]:checked').val() || null;
+
+                                            if (!first || !middle || !last || !email || !date || !password || !selectedGender) {
+                                                return;
+                                            }
+                                            console.log("first" + first);
+                                            var form = $('<form  method="post" action="/signup/RegisterUser"></form>');
+                                            form.append('<input type="hidden" name="FirstName" value="' + first + '">');
+                                            form.append('<input type="hidden" name="MiddleName" value="' + middle + '">');
+                                            form.append('<input type="hidden" name="LastName" value="' + last + '">');
+                                            form.append('<input type="hidden" name="EmailAddress" value="' + email + '">');
+                                            form.append('<input type="hidden" name="Dob" value="' + date + '">');
+                                            form.append('<input type="hidden" name="Gender" value="' + selectedGender + '">');
+                                            form.append('<input type="hidden" name="Password" value="' + password + '">');
+                                            $('body').append(form);
+                                            form.submit();
+                                        }
+
+
+                                        function displayAlert(message, className) {
+                                            var alertDiv = document.createElement("div");
+                                            alertDiv.classList.add("alert", className);
+                                            alertDiv.textContent = message;
+                                            var alertPlaceholder = document.getElementById("alertPlaceholder");
+                                            alertPlaceholder.appendChild(alertDiv);
+                                        }
+
+                                        function removeAlert() {
+                                            var alertDiv = document.querySelector(".alert");
+                                            if (alertDiv) {
+                                                alertDiv.remove();
+                                            }
+                                        }
+                                    </script>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <label class="col-md-2" for="gender">Gender</label>
-                            <div class="col-4">
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="male" name="gender" value="Male" required>
-                                    <label class="form-check-label" for="male">Male</label>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="female" name="gender" value="Female" required>
-                                    <label class="form-check-label" for="female">Female</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                <label for="idType">Id type</label>
-                                <select name="idType" class="form-select" id="idType">
-                                    <option selected>...</option>
-                                    <option>Passport</option>
-                                    <option>Driver's license</option>
-                                    <option>Kebele Id</option>
-                                    <option>Student Id</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="idNo">Id Number</label>
-                                    <input name="id" type="text" class="form-control" id="idNo" placeholder="Id Number">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="perPic">Personal Photo</label>
-                                    <input name="personalPhoto" type="file" class="form-control" id="perPic" accept=".png" placeholder="Personal Photo">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="idPic">Identification Photo</label>
-                                    <input name="idPhoto" type="file" class="form-control" id="idPic" accept=".png" placeholder="Identification Photo">
-                                </div>
-                            </div>
-                        </div>
-
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary mt-2 submit">
-                                Submit
+                            <div class="mt-1"style="margin-bottom: 0!important" id="alertPlaceholder"></div>
+                            <button onclick="validatePasswords()"  class="register mt-1">
+                                Register
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </section>
         </div>
