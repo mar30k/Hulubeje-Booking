@@ -16,71 +16,75 @@ namespace HulubejeBooking.Controllers.Authentication
     {
         private readonly ILogger<SignupController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly AuthenticationManager _authenticationManager;
 
         public SignupController(ILogger<SignupController> logger,
-            IHttpClientFactory httpClientFactory,
-             HotelListBuffer hotelListBuffer)
+            IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager)
         {
+            _authenticationManager = authenticationManager;
             _logger = logger;
             _httpClientFactory = httpClientFactory;
         }
 
         public IActionResult Index()
         {
+            var data = HttpContext.Session.GetString("UserPohneNumber");
 
-            return View();
+            if (!string.IsNullOrEmpty(data) && data.StartsWith('"') && data.EndsWith('"'))
+            {
+                data = data.Substring(1, data.Length - 2);
+            }
+
+            var person = new PersonModel
+            {
+                PhoneNumber = data
+            };
+
+            return View(person);
         }
-        public async Task<IActionResult> SignUpVerificationAsync(PersonModel person)
+
+        public async Task<IActionResult> RegisterUser(PersonModel person)
         {
             if (ModelState.IsValid)
             {
                 var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-
-                person.personCode = person.phoneNumber;
-                var param = new
-                {
-                    userId = person.phoneNumber
-                };
-                string jsonBody = JsonConvert.SerializeObject(param);
+                person.ConfirmPassword = "";
+                string jsonBody = JsonConvert.SerializeObject(person);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-
-                HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/OauthAuthenticateUser", content);
-                if (response.IsSuccessStatusCode)
+                HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/createUser", content);
+                string responseData = await response.Content.ReadAsStringAsync();
+                if (responseData != null && Convert.ToBoolean(responseData))
                 {
-                    string data = await response.Content.ReadAsStringAsync();
+                    var isLoggedIn = true;
+                    string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
+                    HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
 
-                    var suthResponse = JsonConvert.DeserializeObject<List<UserResponse>>(data);
-
-                    var userInformation = suthResponse?[0].userInformation;
-
-                    if (userInformation != null)
+                    var userInformation = new UserInformation()
                     {
-                        TempData["InfoMessage"] = "Account already exists. Please sign in.";
-                        return RedirectToAction("Index", "SignIn");
-                    }
-                    else
-                    {
-                        var phone = person.phoneNumber;
-                        HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phone}");
-                        if (otpResponse.IsSuccessStatusCode)
-                        {
-                            string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
-                            var messageResponse = JsonConvert.DeserializeObject<MessageResponse>(dataRespponse);
-                            person.messageResponse = messageResponse;
-                            var PersonJson = JsonConvert.SerializeObject(person);
-                            HttpContext.Session.SetString("UserInfo", PersonJson);
-
-                        }
-                    }
+                        code = person?.PhoneNumber,
+                    };
+                    _authenticationManager.SignIn(userInformation, true);
+                    TempData["InfoMessage"] = "Welcome! You Have Successfully Created Hulubeje Account";
+                    return RedirectToAction("Index", "Home");
                 }
-                return RedirectToAction("Index", "Otp");
+                else
+                {
+                    TempData["ErrorMessage"] = "It seems like this phone number is already registered. Please use a different number or sign in.";
+                    return RedirectToAction("Index", "Home");
+                }
             }
             else
             {
+                var data = HttpContext.Session.GetString("UserPohneNumber");
+
+                if (!string.IsNullOrEmpty(data) && data.StartsWith('"') && data.EndsWith('"'))
+                {
+                    data = data.Substring(1, data.Length - 2);
+                }
+                person.PhoneNumber = data;
                 return View("Index", person);
             }
-            
+
         }
     }
 }
