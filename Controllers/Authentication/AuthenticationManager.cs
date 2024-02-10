@@ -10,16 +10,13 @@ namespace HulubejeBooking.Controllers.Authentication
     public class AuthenticationManager
     {
         private IHttpContextAccessor _httpContextAccessor;
-        private readonly IHttpClientFactory _httpClientFactory;
 
         private UserInformation _cachedUser;
         public AuthenticationManager(
-                IHttpContextAccessor httpContextAccessor,
-                IHttpClientFactory httpClientFactory
+                IHttpContextAccessor httpContextAccessor
                 )
         {
             _httpContextAccessor = httpContextAccessor;
-            _httpClientFactory = httpClientFactory;
         }
 
 
