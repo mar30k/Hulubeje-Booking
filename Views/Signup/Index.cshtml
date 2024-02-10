@@ -72,7 +72,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="name">First Name</label>
-                                            <input name="firstName" type="text" class="form-control" id="first" placeholder="First Name" >
+                                            <input name="firstName" type="text" class="form-control" id="first" placeholder="First Name" value="@Model?.FirstName">
                                             @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
@@ -80,7 +80,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="middle">Middle Name</label>
-                                            <input name="middleName" type="text" class="form-control" id="middle" placeholder="Middle Name" required>
+                                            <input name="middleName" type="text" class="form-control" id="middle" placeholder="Middle Name" required value="@Model?.MiddleName">
                                             @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
@@ -88,7 +88,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="last">Last Name</label>
-                                            <input name="lastName" type="text" class="form-control" id="last" placeholder="Last Name" required>
+                                            <input name="lastName" type="text" class="form-control" id="last" placeholder="Last Name" required value="@Model?.LastName">
                                             @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
@@ -104,7 +104,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="" for="email">Email</label>
-                                            <input name="emailAddress" type="email" class="form-control" id="email" placeholder="Email">
+                                            <input name="emailAddress" type="email" class="form-control" id="email" placeholder="Email" value="@Model?.EmailAddress">
                                         </div>
                                     </div>
                                 </div>
@@ -114,7 +114,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="date">Date of Birth</label>
-                                                <input name="dob" type="date" class="form-control" id="date" placeholder="Your birth date" required>
+                                                <input name="dob" type="date" class="form-control" id="date" placeholder="Your birth date" required value="@Model?.Dob">
                                                 @Html.ValidationMessageFor(model => model.Dob, "", new { @class = "text-danger" })
                                             </div>
                                         </div>
@@ -125,17 +125,18 @@
                                             <div class="row mt-2">
                                                 <div class="col-md-3">
                                                     <div class="form-check">
-                                                        <input type="radio" class="form-check-input" id="male" name="gender" value="Male" required>
+                                                        <input type="radio" class="form-check-input" id="male" name="gender" value="Male" required @Html.Raw(@Model?.Gender == "Male" ? "checked" : "")>
                                                         <label class="form-check-label" for="male">Male</label>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="form-check">
-                                                        <input type="radio" class="form-check-input" id="female" name="gender" value="Female" required>
+                                                        <input type="radio" class="form-check-input" id="female" name="gender" value="Female" required @Html.Raw(@Model?.Gender == "Female" ? "checked" : "")>
                                                         <label class="form-check-label" for="female">Female</label>
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -190,7 +191,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="password">Password</label>
-                                            <input type="password" name="password" class="form-control" id="password" placeholder="Choose password" required>
+                                            <input type="password" name="password" class="form-control" id="password" placeholder="Choose password" required value="@Model?.Password">
                                             <span class="toggle-password" onclick="togglePasswordVisibility('password', 'eyeIcon')">
                                                 <i id="eyeIcon" class="bi bi-eye"></i>
                                             </span>
@@ -200,7 +201,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="confirmPassword">Confirm Password</label>
-                                            <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm password" required>
+                                            <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Confirm password" required value="@Model?.Password">
                                             <span class="toggle-password" onclick="togglePasswordVisibility('confirmPassword', 'confirmeyeIcon')">
                                                 <i id="confirmeyeIcon" class="bi bi-eye"></i>
                                             </span>
@@ -250,7 +251,7 @@
                                             var password = $('#password').val();
                                             var selectedGender = $('input[name="gender"]:checked').val() || null;
 
-                                            if (!first || !middle || !last || !email || !date || !password || !selectedGender) {
+                                            if (!first || !last || !email || !date || !password || !selectedGender) {
                                                 return;
                                             }
                                             console.log("first" + first);
