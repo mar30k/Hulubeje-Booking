@@ -149,6 +149,7 @@
     var arrivialDate = "@Model?.ArrivialDate";
     var departureDate = "@Model?.DepartureDate";
     var destinationTermianl = "@Model?.DestinationTermianl";
+    var originTerminalName = "@Model?.OriginTerminalName";
     var selectedButtons = [];
     var selectedButtonsId = [];
     var selectedButtonsCount = 0;
@@ -193,6 +194,7 @@
                 form.append('<input type="hidden" name="vehicleOperatorId" value="' + vehicleOperatorId + '">');
                 form.append('<input type="hidden" name="selectedButtonsCount" value="' + selectedButtonsCount + '">');
                 form.append('<input type="hidden" name="destinationTermianl" value="' + destinationTermianl + '">');
+                form.append('<input type="hidden" name="originTerminalName" value="' + originTerminalName + '">');
                 $("body").append(form);
                 form.submit();
             }
