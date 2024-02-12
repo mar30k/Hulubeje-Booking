@@ -63,8 +63,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 }
                 else
                 {
-                    var phone = phoneNumber;
-                    HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phone}");
+                    HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phoneNumber}");
                     if (otpResponse.IsSuccessStatusCode)
                     {
                         string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
