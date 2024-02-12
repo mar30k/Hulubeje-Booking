@@ -19,7 +19,7 @@ namespace HulubejeBooking.Controllers.BusController
         }
         [HttpPost]
         public IActionResult ConfirmationPage(List<PassengerModel> passengers, List <string> seatId,string tariff, string depatureCity, string destinationCity, string terminal, string operatorName,
-            string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId)
+            string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId, string destinationTermianl)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -51,6 +51,7 @@ namespace HulubejeBooking.Controllers.BusController
             }
             var schedule = new VwRouteSchedule()
             {
+                DestinationTerminalName = destinationTermianl,
                 DestCityName = destinationCity,
                 Tariff = tarrifDecimal,
                 DepatureCity = depatureCity,

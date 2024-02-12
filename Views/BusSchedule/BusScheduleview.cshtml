@@ -82,12 +82,12 @@
                                     <div class="row align-items-start bg-light p-2 pl-3">
                                         <div class="col-sm-10 col-12">
                                             <a href="#">
-                                                <h5 class="card-title operatorName">@schedule.VehicleOperator</h5>
+                                                <h5 class="card-title operatorName">@schedule?.VehicleOperator</h5>
                                             </a>
                                             <p class="mb-1">
-                                                <span><i class="fas fa-route"></i></span><span class="route ml-2">@schedule.RouteDescription </span><span><i class="fas fa-highway"></i></span>
+                                                <span><i class="fas fa-route"></i></span><span class="route ml-2">@schedule?.RouteDescription </span><span><i class="fas fa-highway"></i></span>
                                             </p>
-                                            <p class="level mb-1"><span><i class="fas fa-star mr-2"></i></span>@schedule.LevelDesc</p>
+                                            <p class="level mb-1"><span><i class="fas fa-star mr-2"></i></span>@schedule?.LevelDesc</p>
                                             @{
                                                 string formattedDate = schedule.DepartureDate.ToString("ddd, MMM d, yyyy");
                                                 string formattedTime = schedule.DepartureDate.ToString("h:mm tt");
@@ -98,16 +98,17 @@
                                                     <p class="scheduleTime mb-1"><span><i class="fas fa-stopwatch mr-1"></i></span> @formattedTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
                                                 }
                                             }
-                                            <p class="destinationCity" style="display: none">@schedule.DestCityName</p>
-                                            <p class="vehicle" style="display: none">@schedule.Vehicle</p>
-                                            <p class="routeSchedule" style="display: none">@schedule.Id</p>
-                                            <p class="vehicleOperatorId" style="display: none">@schedule.VehicleOperatorId</p>
-                                            <p class="departureDate" style="display: none">@schedule.DepartureDate</p>
-                                            <p class="depatureCity" style="display: none">@schedule.DepatureCity</p>
-                                            <p class="arrivalDate" style="display: none">@schedule.ArrivalDate</p>
-                                            <p class="plateNumber mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule.VehiclePlateNumber (@schedule.SideNumber)</p>
-                                            <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule.OriginTerminalName</p>
-                                            <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
+                                            <p class="destinationCity" style="display: none">@schedule?.DestCityName</p>
+                                            <p class="destinationTermianl" style="display: none">@schedule?.DestinationTerminalName</p>
+                                            <p class="vehicle" style="display: none">@schedule?.Vehicle</p>
+                                            <p class="routeSchedule" style="display: none">@schedule?.Id</p>
+                                            <p class="vehicleOperatorId" style="display: none">@schedule?.VehicleOperatorId</p>
+                                            <p class="departureDate" style="display: none">@schedule?.DepartureDate</p>
+                                            <p class="depatureCity" style="display: none">@schedule?.DepatureCity</p>
+                                            <p class="arrivalDate" style="display: none">@schedule?.ArrivalDate</p>
+                                            <p class="plateNumber mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule?.VehiclePlateNumber (@schedule?.SideNumber)</p>
+                                            <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule?.OriginTerminalName</p>
+                                            <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule?.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <p class="tariff"><span><i class="fas fa-dollar-sign mr-2 mt-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
                                                 <button class="book btn btn-sm btn-primary">Book</button>
@@ -152,6 +153,7 @@
                 var arrivalDate = $(this).closest('.card-body').find('.arrivalDate').text().trim();
                 var departureDate = $(this).closest('.card-body').find('.departureDate').text().trim();
                 var vehicle = $(this).closest('.card-body').find('.vehicle').text().trim();
+                var destinationTermianl = $(this).closest('.card-body').find('.destinationTermianl').text().trim();
 
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
                 form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
@@ -169,6 +171,7 @@
                 form.append('<input type="hidden" name="departureDate" value="' + departureDate + '">');
                 form.append('<input type="hidden" name="vehicleOperatorId" value="' + vehicleOperatorId + '">');
                 form.append('<input type="hidden" name="vehicle" value="' + vehicle + '">');
+                form.append('<input type="hidden" name="destinationTermianl" value="' + destinationTermianl + '">');
                 $("body").append(form);
                 form.submit();
             });

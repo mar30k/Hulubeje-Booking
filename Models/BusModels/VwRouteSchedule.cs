@@ -1,5 +1,4 @@
-﻿using HulubejeBooking.Models.BusModels;
-namespace HulubejeBooking.Models.BusModels
+﻿namespace HulubejeBooking.Models.BusModels
 {
     public class VwRouteSchedule
     {

@@ -52,8 +52,6 @@
         @{
             var allRoutes = Model?.RouteModel;
             var allCities = Model?.RouteModel?.Select(route => route.Routes).ToList();
-            // var fromCities = Model?.RouteConfiguration?.Routes?.Select(route => route.FromCity).ToList() ?? new List<int?>();
-            // var fromCityNames = fromCities.Select(cityCode => allCities.FirstOrDefault(city => city.CityCode == cityCode)?.CityName ?? "Unknown").ToList();
         }
         <div class="d-flex" style="">
             <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>

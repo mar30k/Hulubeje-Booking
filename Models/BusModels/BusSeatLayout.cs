@@ -12,6 +12,7 @@
         public string? Time {  get; set; }  
         public string? Date {  get; set; }  
         public string? DestinationCity {  get; set; }  
+        public string? DestinationTermianl {  get; set; }  
         public string? DepatureCity {  get; set; }
         public string? ArrivialDate {  get; set; }
         public string? DepartureDate {  get; set; }

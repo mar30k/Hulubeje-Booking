@@ -22,7 +22,7 @@ namespace HulubejeBooking.Controllers.BusController
             _httpContextAccessor = httpContextAccessor;
         }
         public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule,
-            string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId , int vehicle)
+            string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId , int vehicle, string destinationTermianl)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -70,6 +70,7 @@ namespace HulubejeBooking.Controllers.BusController
                     DepartureDate = departureDate,
                     VehicleOperatorId = vehicleOperatorId,
                     RouteScheduleId = routeSchedule,
+                    DestinationTermianl=  destinationTermianl,
                 };
                 var paramJson = JsonConvert.SerializeObject(param);
                 HttpContext.Session.SetString("BusValues", paramJson);
@@ -127,7 +128,8 @@ namespace HulubejeBooking.Controllers.BusController
                 DepartureDate = departureDate,
                 VehicleOperatorId = vehicleOperatorId,
                 RouteScheduleId = routeSchedule,
-            };
+                DestinationTermianl = destinationTermianl,
+            };  
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={vehicle}");
             if (response.IsSuccessStatusCode) { 
                string resopnseData = await response.Content.ReadAsStringAsync();
