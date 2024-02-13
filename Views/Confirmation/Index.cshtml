@@ -1,0 +1,310 @@
+﻿@model HulubejeBooking.Models.BusModels.Wrap
+@using HulubejeBooking.Models.BusModels;
+@using System.Globalization
+<partial name="_Navigation" />
+<head>
+    <title>Confirmation</title>
+</head>
+@{
+    string formattedArrivalTime = "";
+    string formattedDepartTime = "";
+    if (Model?.VwRouteScheduleData != null)
+    {
+        formattedArrivalTime = Model.VwRouteScheduleData.ArrivalDate.ToString("h:mm tt");
+        formattedDepartTime = Model.VwRouteScheduleData.DepartureDate.ToString("h:mm tt");
+    }
+    var date = Model?.VwRouteScheduleData?.Date?.ToString();
+    DateTime inputDate = DateTime.MinValue;
+    string formattedDate = "";
+
+    if (date != null)
+    {
+        inputDate = DateTime.ParseExact(date, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        formattedDate = inputDate.ToString("ddd, MMM dd, yyyy");
+    }
+
+}
+<div class="container mt-5 mb-5">
+    
+    @* <div class="row border rounded mb-4 pt-3 bg-dark">
+        <div class="col-md-4 text-center">
+            <div class="row">
+                <div class="col-3 d-flex justify-content-end align-items-center">
+                    <p><span style="color: white;"><i class="fas fa-bus fa-3x ml-2"></i></span></p>
+                </div>
+                <div class="col-9">
+                    <h5 class="text-primary mb-0">@Model?.VwRouteScheduleData?.OperatorName</h5>
+                    <p class="mb-0" style="color: white"><small>@Model?.VwRouteScheduleData?.PlateNumber</small></p>
+                    @if (DateTime.TryParse(formattedDate, out DateTime dateTime))
+                    {
+                        string date = dateTime.ToString("ddd, MMM d, yyyy");
+                        <p class="font-weight-bold mb-0" style="color: white">@date</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="row"> 
+                <div class="row">
+                    <div class="col-3">
+                        <p><span style="color: white;"><i class="fas fa-map-marker-alt fa-2x ml-2 mt-2"></i></span></p>
+                    </div>
+                    <div class="col-9">
+                        <h6 class="text-success mb-0">Departure</h6>
+                        <p class="mb-0" style="color: white">@Model?.VwRouteScheduleData?.DepatureCity</p>
+                        @if (DateTime.TryParse(formattedDepartTime, out DateTime utcDepartTime))
+                        {
+                            DateTime ethiopianTime = utcDepartTime.ToString("tt").Equals("AM") ? utcDepartTime.AddHours(6) : utcDepartTime.AddHours(-6);
+                            <p class="font-weight-bold mb-0" style="color: white">@formattedDepartTime (@ethiopianTime.ToString("h.mm tt") LT)</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="row">
+                <div class="col-3 d-flex justify-content-end align-items-center">
+                    <p><span style="color: white;"><i class="fas fa-arrow-right fa-4x ml-2"></i></span></p>
+                </div>
+                <div class="col-9">
+                    <h6 class="text-danger mb-0">Arrival</h6>
+                    <p class="mb-0" style="color: white">@Model?.VwRouteScheduleData?.DestCityName</p>
+                    @if (DateTime.TryParse(formattedArrivalTime, out DateTime utcArrivalTime))
+                    {
+                        DateTime ethiopianArrivalTime = utcArrivalTime.ToString("tt").Equals("AM") ? utcArrivalTime.AddHours(6) : utcArrivalTime.AddHours(-6);
+                        <p class="font-weight-bold mb-0" style="color: white">@formattedArrivalTime (@ethiopianArrivalTime.ToString("h.mm tt") LT)</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header text-center text-dark py-3">
+        <h3 class="mb-0"><i class="fas fa-user-friends  mr-2"></i> Passengers</h3>
+    </div>
+    <div class="row pt-3 mb-3 bg-light">
+        @{
+            var count = 1;
+        }
+        @foreach (var passenger in Model?.PassengerModelData ?? new List<PassengerModel>())
+        {
+            DateTime originalDate = DateTime.MinValue;
+
+            if (passenger.DOB != null)
+            {
+             originalDate = DateTime.ParseExact(passenger.DOB, "yyyy-MM-dd", null);
+            }
+            string formattedDateString = originalDate.ToString("MMM-dd-yyyy");
+            <div class="mb-4">
+                <div class="card border-primary h-100 p-2">
+                    <div class="card-body ">
+                        <div style=""> 
+                            <h5 class="card-title text-primary">@passenger.FirstName</h5>
+                        </div>
+                        <hr>
+                        <div class="row p-2" style="background-color: #e0b300; border-radius: 5px;">
+                            <div class="col-md-4 ">
+                                <p class="card-text mb-0"><strong>Date of Birth</strong>  <span class="float-right">@formattedDateString</span></p>
+                                <p class="card-text mb-0"><strong>Nationality:</strong>  <span class="float-right">@passenger.Nationality</span></p>
+                            </div>
+                            <div class="col-md-4" id="passenger-@count">
+                                <p class="card-text mb-0"><strong>Gender:</strong>  <span class="float-right">@passenger.Gender</span></p>
+                                <p class="card-text mb-0"><strong>Phone Number:</strong>  <span class="float-right " >@passenger.PhoneNumber</span></p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="card-text mb-0"><strong>ID Number </strong>  <span class="float-right">@passenger.PassengerId</span></p>
+                                @if (passenger.Email is not null)
+                                {
+                                    <p class="card-text mb-0"><strong>Email:</strong>  <span class="float-right">@passenger.Email</span></p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            count += 1;
+        }
+    </div>*@
+    <div style="height: auto;" class="mb-2 pb-0">
+        @foreach (var passenger in Model?.PassengerModelData ?? new List<PassengerModel>())
+        {
+            <div class="row border-bottom mb-3">
+                <div class="col-sm-3 bg-light p-2">
+                    <h2 class="m-2">
+                        @Model?.VwRouteScheduleData?.OperatorName?.ToUpper()
+                        <strong style="display: block; font-size: large;">@Model?.VwRouteScheduleData?.PlateNumber</strong>
+                    </h2>
+                    <p class="m-2"><strong>Duration:</strong> @((Model?.VwRouteScheduleData?.TravelDuration != null) ? Model.VwRouteScheduleData.TravelDuration.ToString() : " not available")</p>
+                    <p class="m-2"><strong>Tariff:</strong> @((Model?.VwRouteScheduleData?.Tariff != null) ? Model.VwRouteScheduleData.Tariff.ToString() + " Birr" : " not available")</p>
+                    <p class="m-2 " ><strong >Distance:</strong> @((Model?.VwRouteScheduleData?.Distance != null) ? Model.VwRouteScheduleData.Distance.ToString() + "Km" : " not available")</p>
+                    <p class="m-2"><strong >Departure Date:</strong> @formattedDate</p>
+                    <p class="m-2"><strong class="mr-2"> Seat Number:</strong>@passenger.SeatName</p>
+                </div>
+                <div class="col-sm-9 border-left border-top  border-right ">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="row border-bottom">
+                                <h3 class="justify-content-center d-flex align-items-center m-2">
+                                    @Model?.VwRouteScheduleData?.DepatureCity
+                                    <i class="fas fa-arrow-right m-2"></i>
+                                    @Model?.VwRouteScheduleData?.DestCityName
+                                </h3>
+                            </div>
+                            <div class="row p-2">
+                                <div class="col-sm-6 d-flex border-right">
+                                    <div class="ml-lg-2 ">
+                                        <h5 style="font-size: 14px">
+                                            Departing At:
+                                            @if (DateTime.TryParse(formattedDepartTime, out DateTime utcDepartTime))
+                                            {
+                                                DateTime ethiopianTime = utcDepartTime.ToString("tt").Equals("AM") ? utcDepartTime.AddHours(6) : utcDepartTime.AddHours(-6);
+                                                <strong class="ml-lg-1" style="display: block; font-size: 19px; ">@formattedDepartTime (@ethiopianTime.ToString("h.mm tt") LT)</strong>
+                                            }
+                                        </h5>
+                                        <h5 style="font-size: 14px">
+                                            Destination Terminal:
+                                            <strong class="ml-lg-1" style="display: block; font-size: 20px">@Model?.VwRouteScheduleData?.OriginTerminalName</strong>
+                                        </h5>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="ml-lg-2">
+                                        <h5 style="font-size: 14px">
+                                            Arriving At:
+                                            @if (DateTime.TryParse(formattedArrivalTime, out DateTime utcArrivalTime))
+                                            {
+                                                DateTime ethiopianTime = utcArrivalTime.ToString("tt").Equals("AM") ? utcArrivalTime.AddHours(6) : utcArrivalTime.AddHours(-6);
+                                                <strong class="ml-lg-1" style="display: block; font-size: 19px;">@formattedArrivalTime (@ethiopianTime.ToString("h.mm tt") LT)</strong>
+                                            }
+                                        </h5>
+                                        <h5 style="font-size: 14px">
+                                            Destination Terminal:
+                                            <strong class="ml-lg-1" style="display: block; font-size: 20px">@Model?.VwRouteScheduleData?.DestinationTerminalName</strong>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5 border-left border-3 bg-light p-2 d-block justify-content-center">
+                            <h5 style="display: flex; justify-content: center"><strong>Passenger Information </strong> <i class="fas fa-user-friends  ml-2"></i></h5>
+                            <div>
+                                <p class="pl-2 pt-2 mb-1"> <strong>Name:</strong> @passenger?.FirstName?.ToUpper() @passenger?.MiddleName?.ToUpper()</p>
+                                <p class="pl-2 pt-2 mb-1"> <strong>PhoneNumber:</strong> @passenger?.PhoneNumber </p>
+                                <p class="pl-2 pt-2 mb-1"> <strong>Gender:</strong> @passenger?.Gender </p>
+                                <p class="pl-2 pt-2 mb-1"> <strong>Nationality:</strong>: @passenger?.Nationality </p>
+                                <p class="pl-2 pt-2 mb-1"> <strong>Date of Birth:</strong> @passenger?.DOB </p>
+                                <p class="pl-2 pt-2 mb-1"> <strong>Email:</strong> @(passenger?.Email ?? "not available")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div style="display: flex;justify-content: center;align-items: center;">
+        <button type="submit" id="confirmButton" class="btn btn-success mb-2">Confirm</button>
+    </div>
+</div>
+<partial name="_Footer" />
+@{
+    var passengerData = Model?.PassengerModelData;
+}
+<script>
+    var tarrif = "@Model?.VwRouteScheduleData?.Tariff";
+    var vehicleOperatorId = "@Model?.VwRouteScheduleData?.VehicleOperatorId";
+    var routeScheduleId = "@Model?.VwRouteScheduleData?.Id";
+    var routeScheduleDate = "@Model?.VwRouteScheduleData?.Date";
+    var index = tarrif.indexOf(' ');
+    var result = (index > 0) ? tarrif.substring(0, index) : tarrif;
+    var resultAsDouble = parseFloat(result);
+    var passengerCount = parseFloat("@Model?.PassengerModelData?.Count");
+    var amount = resultAsDouble * passengerCount;
+    var passengerId = '#passenger-1';
+    var userMobileNumber = "@ViewBag.PhoneNumber";
+    var discount = 0;
+    var addtionalCharge = 0;
+    var grandtotal = resultAsDouble + addtionalCharge - discount;
+    var ticketDetail = [];
+    var intMale = 181;
+    var intFemale = 182;
+    @if (passengerData != null)
+    {
+        @for (var i = 0; i < passengerData.Count; i++)
+        {
+            var passenger = passengerData[i];
+
+            <text>
+                var ticketDetailObject = {
+                PhoneNumber: '@passenger.PhoneNumber',
+                Gender: '@passenger.Gender',
+                Dob: '@passenger.DOB',
+                Email: '@(passenger.Email ?? "")',
+                IdNumber: '@passenger.PassengerId',
+                FirstName: '@passenger.FirstName',
+                LastName: '@passenger.LastName',
+                MiddleName: '@passenger.MiddleName',
+                SeatLayout: '@passenger.SeatId',
+                SubTotal: resultAsDouble,
+                Discount: discount,
+                AdditionalCharge: addtionalCharge,
+                GrandTotal: grandtotal,
+                IsAutoAssigned: false,
+                Longitude: 0,
+                Latitude: 0,
+                Note: '',
+                PickupLocation: 1,
+                Region: 1,
+                City: 14,
+                SubCity: 15,
+                MaritalStatus: 183,
+                Pnr: "",
+            };
+            if ('@passenger.Gender' === 'Male') {
+                ticketDetailObject.Gender = intMale;
+            } else if ('@passenger.Gender' === 'Female') {
+                ticketDetailObject.Gender = intFemale;
+            }
+            ticketDetail.push(ticketDetailObject);
+            </text>
+        }
+    }
+
+    $('#confirmButton').on('click', function () {
+        var data = {
+            AuthorizePaymentData: {
+                UserMobileNumber: userMobileNumber,
+                SupplierTin: '0000017872',
+                SupplierOUD: 'OUD000000048',
+                Amount: 0.1,
+            },
+            PassengerInfoData: {
+                PaymentStatus: 86,
+                Payer: userMobileNumber,
+                RouteSchedule: routeScheduleId,
+                Operator: vehicleOperatorId,
+                PaymentAmount: amount,
+                RouteScheduleDate: routeScheduleDate,
+                Platform: 'Web',
+                IpAddress: '192.168.1.1',
+                Longitude: 9.016595,
+                Latitude: 38.7657617,
+                PaymentMethod: 144,
+
+                TicketDetail: ticketDetail,
+            },
+        };
+        $.ajax({
+            url: '/PaymentHome/Index',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (/* response */) {
+                window.location.href = "/PaymentOptions/PaymentOption";
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+</script>
