@@ -79,7 +79,7 @@
                                         <div class="form-group mb-1">
                                             <label for="dob">Date of Birth<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
                                             <input type="date" name="Passengers[@(i - 1)].DOB" required value="2000-07-07">
-                                        </div>0
+                                        </div>
                                         <div class="form-group mb-1">
                                             <label for="nationality">Nationality</label>
                                             <select class="form-select" name="Passengers[@(i - 1)].Nationality" id="nationality">
@@ -132,20 +132,24 @@
                                 }
                             }
                         }
-                        <input type="hidden" name="Tariff" value="@Model.Amount">
-                        <input type="hidden" name="Distance" value="@Model.Distance">
-                        <input type="hidden" name="OriginTerminalName" value="@Model.OriginTerminalName">
-                        <input type="hidden" name="vehicleOperatorId" value="@Model.VehicleOperatorId">
-                        <input type="hidden" name="routeScheduleId" value="@Model.Id">
-                        <input type="hidden" name="DepatureCity" value="@Model.DepatureCity">
-                        <input type="hidden" name="DestinationCity" value="@Model.DestCityName">
-                        <input type="hidden" name="Terminal" value="@Model.Terminal">
-                        <input type="hidden" name="OperatorName" value="@Model.OperatorName">
-                        <input type="hidden" name="Date" value="@Model.Date">
-                        <input type="hidden" name="PlateNumber" value="@Model.PlateNumber">
-                        <input type="hidden" name="ArrivalDate" value="@Model.ArrivalDate">
-                        <input type="hidden" name="DepartureDate" value="@Model.DepartureDate">
-                        <input type="hidden" name="DestinationTermianl" value="@Model.DestinationTerminalName">
+                        <input type="hidden" name="Tariff" value="@Model?.Amount">
+                        @for (int i = 0; i < Model?.SeatName?.Count; i++)
+                        {
+                            <input type="hidden" name="seatName[@i]" value="@Model.SeatName[i]" />
+                        }
+                        <input type="hidden" name="Distance" value="@Model?.Distance">
+                        <input type="hidden" name="OriginTerminalName" value="@Model?.OriginTerminalName">
+                        <input type="hidden" name="vehicleOperatorId" value="@Model?.VehicleOperatorId">
+                        <input type="hidden" name="routeScheduleId" value="@Model?.Id">
+                        <input type="hidden" name="DepatureCity" value="@Model?.DepatureCity">
+                        <input type="hidden" name="DestinationCity" value="@Model?.DestCityName">
+                        <input type="hidden" name="Terminal" value="@Model?.Terminal">
+                        <input type="hidden" name="OperatorName" value="@Model?.OperatorName">
+                        <input type="hidden" name="Date" value="@Model?.Date">
+                        <input type="hidden" name="PlateNumber" value="@Model?.PlateNumber">
+                        <input type="hidden" name="ArrivalDate" value="@Model?.ArrivalDate">
+                        <input type="hidden" name="DepartureDate" value="@Model?.DepartureDate">
+                        <input type="hidden" name="DestinationTermianl" value="@Model?.DestinationTerminalName">
                         <button class="btn btn-primary" type="submit">Submit</button>
                     </form>
                 </div>

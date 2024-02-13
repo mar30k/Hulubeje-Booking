@@ -13,5 +13,6 @@
         public string? Email { get; set; }
         public string? DOB { get; set; }
         public string? SeatId { get; set; }
+        public string? SeatName { get; set; }
     }
 }

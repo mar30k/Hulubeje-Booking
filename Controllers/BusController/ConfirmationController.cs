@@ -19,7 +19,7 @@ namespace HulubejeBooking.Controllers.BusController
         }
         [HttpPost]
         public IActionResult Index(List<PassengerModel> passengers, List <string> seatId,string tariff, string depatureCity, string destinationCity, string terminal, string operatorName, int distance,
-            string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId, string destinationTermianl, string originTerminalName)
+            string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId, string destinationTermianl, string originTerminalName, List<string> seatName)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -47,6 +47,10 @@ namespace HulubejeBooking.Controllers.BusController
                 for (int i = 0; i < passengers.Count; i++)
                 {
                     passengers[i].SeatId = seatId[i];
+                }
+                for (int i = 0; i < passengers.Count; i++)
+                {
+                    passengers[i].SeatName = seatName[i];
                 }
             }
             var schedule = new VwRouteSchedule()
