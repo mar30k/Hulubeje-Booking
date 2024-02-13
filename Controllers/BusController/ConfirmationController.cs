@@ -18,7 +18,7 @@ namespace HulubejeBooking.Controllers.BusController
             _httpContextAccessor = httpContextAccessor;
         }
         [HttpPost]
-        public IActionResult Index(List<PassengerModel> passengers, List <string> seatId,string tariff, string depatureCity, string destinationCity, string terminal, string operatorName,
+        public IActionResult Index(List<PassengerModel> passengers, List <string> seatId,string tariff, string depatureCity, string destinationCity, string terminal, string operatorName, int distance,
             string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId, string destinationTermianl, string originTerminalName)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
@@ -65,6 +65,7 @@ namespace HulubejeBooking.Controllers.BusController
                 SeatId = seatId,
                 VehicleOperatorId = vehicleOperatorId,
                 Id = routeScheduleId,
+                Distance = distance
             };
             var wrap = new Wrap()
             {
