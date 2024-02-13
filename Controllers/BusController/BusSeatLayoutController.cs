@@ -21,7 +21,7 @@ namespace HulubejeBooking.Controllers.BusController
             _authenticationManager = authenticationManager;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule, string originTerminalName,
+        public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule, string originTerminalName, string via,
             string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId , int vehicle, string destinationTermianl)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
@@ -72,6 +72,7 @@ namespace HulubejeBooking.Controllers.BusController
                     RouteScheduleId = routeSchedule,
                     DestinationTermianl=  destinationTermianl,
                     OriginTerminalName = originTerminalName,
+                    Via = via,
                 };
                 var paramJson = JsonConvert.SerializeObject(param);
                 HttpContext.Session.SetString("BusValues", paramJson);
@@ -107,6 +108,9 @@ namespace HulubejeBooking.Controllers.BusController
                 departureDate = seatValues.DepartureDate;
                 routeSchedule = seatValues.RouteScheduleId;
                 vehicle = (int)seatValues.Vehicle;
+                via = seatValues.Via;
+                originTerminalName = seatValues.OriginTerminalName;
+                destinationTermianl = seatValues.DestinationTermianl;
             }
 
 
@@ -131,6 +135,7 @@ namespace HulubejeBooking.Controllers.BusController
                 RouteScheduleId = routeSchedule,
                 DestinationTermianl = destinationTermianl,
                 OriginTerminalName = originTerminalName,
+                Via = via,
             };  
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={vehicle}");
             if (response.IsSuccessStatusCode) { 

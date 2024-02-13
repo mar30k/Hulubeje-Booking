@@ -18,6 +18,7 @@
         public string? ArrivialDate {  get; set; }
         public string? DepartureDate {  get; set; }
         public string? VehicleOperatorId {  get; set; }
+        public string? Via {  get; set; }
         public int? Vehicle {  get; set; }
         public string? RouteScheduleId {  get; set; }
         public SeatLayoutStructure? SeatLayout { get; set; }

@@ -19,7 +19,7 @@ namespace HulubejeBooking.Controllers.BusController
         }
         [HttpPost]
         public IActionResult Index(List<PassengerModel> passengers, List <string> seatId,string tariff, string depatureCity, string destinationCity, string terminal, string operatorName, int distance,
-            string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId, string destinationTermianl, string originTerminalName, List<string> seatName)
+            string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId, string destinationTermianl, string originTerminalName, List<string> seatName, string via)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -69,7 +69,8 @@ namespace HulubejeBooking.Controllers.BusController
                 SeatId = seatId,
                 VehicleOperatorId = vehicleOperatorId,
                 Id = routeScheduleId,
-                Distance = distance
+                Distance = distance,
+                ViaDescription = via
             };
             var wrap = new Wrap()
             {

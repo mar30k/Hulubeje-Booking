@@ -150,6 +150,7 @@
     var departureDate = "@Model?.DepartureDate";
     var destinationTermianl = "@Model?.DestinationTermianl";
     var originTerminalName = "@Model?.OriginTerminalName";
+    var via = "@Model?.Via";
     var selectedButtons = [];
     var selectedButtonsId = [];
     var selectedButtonsCount = 0;
@@ -195,6 +196,7 @@
                 form.append('<input type="hidden" name="selectedButtonsCount" value="' + selectedButtonsCount + '">');
                 form.append('<input type="hidden" name="destinationTermianl" value="' + destinationTermianl + '">');
                 form.append('<input type="hidden" name="originTerminalName" value="' + originTerminalName + '">');
+                form.append('<input type="hidden" name="via" value="' + via + '">');
                 $("body").append(form);
                 form.submit();
             }

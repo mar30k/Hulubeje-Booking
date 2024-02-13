@@ -13,7 +13,7 @@ namespace HulubejeBooking.Controllers.BusController
             _httpContextAccessor = httpContextAccessor;
         }
         public IActionResult PassengerInfo(int selectedButtonsCount, List<string> seatName, string plateNumber, string terminal, int distance, List<string> seatId, int vehicleOperatorId, int routeScheduleId, string destinationTermianl,
-            string tariff, string level, string route, string operatorName, string scheduleDate, DateTime scheduleTime, string destinationCity, string depatureCity, DateTime arrivialDate, DateTime departureDate, string originTerminalName)
+            string tariff, string level, string route, string operatorName, string scheduleDate, DateTime scheduleTime, string destinationCity, string depatureCity, DateTime arrivialDate, DateTime departureDate, string originTerminalName, string via)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -53,6 +53,7 @@ namespace HulubejeBooking.Controllers.BusController
                 SeatName = seatName,
                 DestinationTerminalName = destinationTermianl,
                 OriginTerminalName = originTerminalName,
+                ViaDescription = via,
             };
           return View(schedule);
         }
