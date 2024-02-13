@@ -99,6 +99,7 @@
                                                 }
                                             }
                                             <p class="destinationCity" style="display: none">@schedule?.DestCityName</p>
+                                            <p class="distance" style="display: none">@schedule?.Distance</p>
                                             <p class="originTerminalName" style="display: none">@schedule?.OriginTerminalName</p>
                                             <p class="destinationTermianl" style="display: none">@schedule?.DestinationTerminalName</p>
                                             <p class="vehicle" style="display: none">@schedule?.Vehicle</p>
@@ -109,7 +110,7 @@
                                             <p class="arrivalDate" style="display: none">@schedule?.ArrivalDate</p>
                                             <p class="plateNumber mb-1"><span><i class="fas fa-bus-alt mr-2"></i></span>@schedule?.VehiclePlateNumber (@schedule?.SideNumber)</p>
                                             <p class="terminal mb-1"><span><i class="fas fa-map-marker-alt mr-2"></i></span>@schedule?.OriginTerminalName</p>
-                                            <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distance">@schedule?.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
+                                            <p class="mb-1"><span><i class="fas fa-road mr-2"></i></span>Distance<span class="distances">@schedule?.Distance KM</span>, Duration @* @schedule.TravelDuration *@</p>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <p class="tariff"><span><i class="fas fa-dollar-sign mr-2 mt-2"></i></span>@Math.Round(@schedule.Tariff, 2) ETB</p>
                                                 <button class="book btn btn-sm btn-primary">Book</button>
