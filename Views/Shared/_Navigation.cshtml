@@ -1,6 +1,6 @@
 ﻿<head>
     @{
-        var userName = ViewBag.UserName;
+        var userName = ViewBag.FirstName;
         var lastName = ViewBag.LastName;
     }
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -68,8 +68,8 @@
                   <strong> <span style="color:lightgreen">E</span><span style="color:yellow">T</span><span style="color:red">H</span></strong>
                     <div class="dropdown-container">
                         <button type="button" class="btn btn-light ml-2 mr-1" style="color: black;">
-                        <img src="@ViewBag.Image" class="mr-2 rounded-circle" alt="User Image" style="width: 30px; height: 30px;">
-                        <span style="padding: 5px; ">@ViewBag.UserName @ViewBag.MiddleName</span>
+                        <img src="@ViewBag.Personalattachment" class="mr-2 rounded-circle" alt="User Image" style="width: 30px; height: 30px;">
+                        <span style="padding: 5px; ">@ViewBag.FirstName @ViewBag.MiddleName</span>
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" id="history">History</a></li>

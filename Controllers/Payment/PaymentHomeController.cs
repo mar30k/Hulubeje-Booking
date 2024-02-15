@@ -51,92 +51,90 @@ namespace HulubejeBooking.Controllers.Payment
                 }
 
 
-                using (var _client = _httpClientFactory.CreateClient("Payment"))
+                using HttpClient _client = _httpClientFactory.CreateClient("Payment");
+                // Authentication request
+                var authRequestData = new { password };
+                var authJsonContent = JsonConvert.SerializeObject(authRequestData);
+                var authContent = new StringContent(authJsonContent, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage authResponse = await _client.PostAsync(_client.BaseAddress + "payment/authentication", authContent);
+
+                if (authResponse.IsSuccessStatusCode)
                 {
-                    // Authentication request
-                    var authRequestData = new { password };
-                    var authJsonContent = JsonConvert.SerializeObject(authRequestData);
-                    var authContent = new StringContent(authJsonContent, Encoding.UTF8, "application/json");
+                    string authResponseData = await authResponse.Content.ReadAsStringAsync();
+                    var accessToken = JsonConvert.DeserializeObject<AuthorizationAccessTokenModel>(authResponseData);
 
-                    HttpResponseMessage authResponse = await _client.PostAsync(_client.BaseAddress + "payment/authentication", authContent);
-
-                    if (authResponse.IsSuccessStatusCode)
+                    var token = accessToken?.accessToken;
+                    if (token != null)
                     {
-                        string authResponseData = await authResponse.Content.ReadAsStringAsync();
-                        var accessToken = JsonConvert.DeserializeObject<AuthorizationAccessTokenModel>(authResponseData);
+                        HttpContext.Session.SetString("AccessToken", token);
+                    }
 
-                        var token = accessToken?.accessToken;
-                        if (token != null)
+                    // GetPaymentOptions request
+                    if (HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
+                    {
+                        string accessTokenValue = Encoding.UTF8.GetString(accessTokenBytes);
+                        var parameters = new
                         {
-                            HttpContext.Session.SetString("AccessToken", token);
-                        }
+                            UserMobileNumber,
+                            SupplierTin,
+                            SupplierOUD,
+                            data.AuthorizePaymentData.Amount,
+                        };
+                        var paymentInfoJson = JsonConvert.SerializeObject(parameters);
 
-                        // GetPaymentOptions request
-                        if (HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
+                        HttpContext.Session.SetString("paymentInfo", paymentInfoJson);
+
+
+                        var paymentOptions = new List<PaymentOptionModel>();
+
+                        string queryString = string.Join("&", parameters.GetType().GetProperties()
+                            .Select(prop => $"{prop.Name}={Uri.EscapeDataString(prop.GetValue(parameters)?.ToString())}"));
+
+                        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenValue);
+                        var baseUri = "https://api-hulubeje.cnetcommerce.com/api";
+
+                        string apiUrl = $"{_client.BaseAddress}payment/options?{queryString}";
+                        HttpResponseMessage optionsResponse = await _client.GetAsync(apiUrl);
+
+                        string requestUrl = $"{baseUri}/Ecommerce/generateVoucherCode?voucherCodeBase={data.AuthorizePaymentData.UserMobileNumber}";
+                        HttpResponseMessage codeResponse = await _client.GetAsync(requestUrl);
+
+                        if (optionsResponse.IsSuccessStatusCode && codeResponse.IsSuccessStatusCode)
                         {
-                            string accessTokenValue = Encoding.UTF8.GetString(accessTokenBytes);
-                            var parameters = new
-                            {
-                                UserMobileNumber,
-                                SupplierTin,
-                                SupplierOUD,
-                                data.AuthorizePaymentData.Amount,
-                            };
-                            var paymentInfoJson = JsonConvert.SerializeObject(parameters);
+                            string optionsResponseData = await optionsResponse.Content.ReadAsStringAsync();
+                            string codeResponseData = await codeResponse.Content.ReadAsStringAsync();
+                            var transactionId = JsonConvert.DeserializeObject<string>(codeResponseData);
 
-                            HttpContext.Session.SetString("paymentInfo", paymentInfoJson);
+                            HttpContext.Session.SetString("VoucherCode", JsonConvert.SerializeObject(transactionId));
 
+                            paymentOptions = JsonConvert.DeserializeObject<List<PaymentOptionModel>>(optionsResponseData);
 
-                            var paymentOptions = new List<PaymentOptionModel>();
-
-                            string queryString = string.Join("&", parameters.GetType().GetProperties()
-                                .Select(prop => $"{prop.Name}={Uri.EscapeDataString(prop.GetValue(parameters)?.ToString())}"));
-
-                            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessTokenValue);
-                            var baseUri = "https://api-hulubeje.cnetcommerce.com/api";
-
-                            string apiUrl = $"{_client.BaseAddress}payment/options?{queryString}";
-                            HttpResponseMessage optionsResponse = await _client.GetAsync(apiUrl);
-
-                            string requestUrl = $"{baseUri}/Ecommerce/generateVoucherCode?voucherCodeBase={data.AuthorizePaymentData.UserMobileNumber}";
-                            HttpResponseMessage codeResponse = await _client.GetAsync(requestUrl);
-
-                            if (optionsResponse.IsSuccessStatusCode && codeResponse.IsSuccessStatusCode)
-                            {
-                                string optionsResponseData = await optionsResponse.Content.ReadAsStringAsync();
-                                string codeResponseData = await codeResponse.Content.ReadAsStringAsync();
-                                var transactionId = JsonConvert.DeserializeObject<string>(codeResponseData);
-
-                                HttpContext.Session.SetString("VoucherCode", JsonConvert.SerializeObject(transactionId));
-
-                                paymentOptions = JsonConvert.DeserializeObject<List<PaymentOptionModel>>(optionsResponseData);
-
-                                var paymentOptionsJson = JsonConvert.SerializeObject(paymentOptions);
-                                HttpContext.Session.SetString("PaymentOptions", paymentOptionsJson);
+                            var paymentOptionsJson = JsonConvert.SerializeObject(paymentOptions);
+                            HttpContext.Session.SetString("PaymentOptions", paymentOptionsJson);
 
 
-                                 return Json(new PaymentOptionModel());
-                            }
-                            else
-                            {
-                                string errorContent = await optionsResponse.Content.ReadAsStringAsync();
-
-                                Console.WriteLine($"Error Content: {errorContent}");
-                                Console.WriteLine($"Status Code: {optionsResponse.StatusCode}");
-                                Console.WriteLine($"Reason Phrase: {optionsResponse.ReasonPhrase}");
-
-                                return Error();
-                            }
+                            return Json(new PaymentOptionModel());
                         }
                         else
                         {
-                            return RedirectToAction("Index");
+                            string errorContent = await optionsResponse.Content.ReadAsStringAsync();
+
+                            Console.WriteLine($"Error Content: {errorContent}");
+                            Console.WriteLine($"Status Code: {optionsResponse.StatusCode}");
+                            Console.WriteLine($"Reason Phrase: {optionsResponse.ReasonPhrase}");
+
+                            return Error();
                         }
                     }
                     else
                     {
-                        return Error();
+                        return RedirectToAction("Index");
                     }
+                }
+                else
+                {
+                    return Error();
                 }
             }
             catch (Exception ex)

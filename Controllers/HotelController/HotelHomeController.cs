@@ -33,12 +33,12 @@ namespace HulubejeBooking.Controllers.HotelController
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.UserName = user?.firstName;
+                ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
-                ViewBag.Image = user?.personalattachment;
+                ViewBag.Personalattachment = user?.personalattachment;
                 ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idnumber = user?.idnumber;
                 ViewBag.Idtype = user?.idtype;
                 ViewBag.Dob = user?.dob;
                 ViewBag.Idattachment = user?.idattachment;
@@ -121,12 +121,12 @@ namespace HulubejeBooking.Controllers.HotelController
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.UserName = user?.firstName;
+                ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
-                ViewBag.Image = user?.personalattachment;
+                ViewBag.Personalattachment = user?.personalattachment;
                 ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idnumber = user?.idnumber;
                 ViewBag.Idtype = user?.idtype;
                 ViewBag.Dob = user?.dob;
                 ViewBag.Idattachment = user?.idattachment;
@@ -322,12 +322,12 @@ namespace HulubejeBooking.Controllers.HotelController
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.UserName = user?.firstName;
+                ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
-                ViewBag.Image = user?.personalattachment;
+                ViewBag.Personalattachment = user?.personalattachment;
                 ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Inumber = user?.idnumber;
+                ViewBag.Idnumber = user?.idnumber;
                 ViewBag.Idtype = user?.idtype;
                 ViewBag.Dob = user?.dob;
                 ViewBag.Idattachment = user?.idattachment;
