@@ -101,8 +101,28 @@
 
             <script>
                 setTimeout(function () {
-                    document.getElementById('errorAlert').style.display = 'none';
-                }, 2000);
+                    var errorAlert = document.getElementById('errorAlert');
+                    errorAlert.style.opacity = '0';
+                    setTimeout(function () {
+                        errorAlert.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            </script>   
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert" id="errorAlert" style="transition: opacity 0.5s ease-in-out;">
+                <p style="margin: 0;">@TempData["ErrorMessage"]</p>
+            </div>
+
+            <script>
+                setTimeout(function () {
+                    var errorAlert = document.getElementById('errorAlert');
+                    errorAlert.style.opacity = '0';
+                    setTimeout(function () {
+                        errorAlert.style.display = 'none';
+                    }, 500);
+                }, 5000);
             </script>
         }
         <div class="mb-3 text-center">
@@ -129,7 +149,7 @@
                         </script>
                     }
                     <div class="form-group has-feedback">
-                        <input asp-for="Phone" id="phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
+                        <input asp-for="Phone" type="tel" id="phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
                         <span class="glyphicon glyphicon-user form-control-feedback"></span>
                         <span asp-validation-for="Phone"></span>
                     </div>
@@ -171,7 +191,7 @@
                 <a href="/forgotpassword">Forgot Password?</a>
             </div>
             <div class="create-account">
-                <span>Don't have an account? <a href="/signup">Create New Account</a></span>
+                <span>Don't have an account? <a href="/phonenumber">Create New Account</a></span>
             </div>
 
         </section>

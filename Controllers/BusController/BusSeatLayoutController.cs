@@ -82,6 +82,7 @@ namespace HulubejeBooking.Controllers.BusController
                     string validation = "Bus";
                     var validationJson = JsonConvert.SerializeObject(validation);
                     HttpContext.Session.SetString("SignInInformation", validationJson);
+                    TempData["ErrorMessage"] = "Please login to proceed further.";
                     return RedirectToAction("Index", "SignIn");
 
                 }

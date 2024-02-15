@@ -42,6 +42,7 @@ namespace HulubejeBooking.Controllers.HotelController
                     string validation = "Hotel";
                     var validationJson = JsonConvert.SerializeObject(validation);
                     HttpContext.Session.SetString("SignInInformation", validationJson);
+                    TempData["ErrorMessage"] = "Please login to proceed further.";
                     return RedirectToAction("Index", "Signin");
                 }
             }
