@@ -10,12 +10,14 @@
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
+        transition: max-width 1s ease; /* Smooth transition */
     }
 
     #phone-number {
         padding: 8px;
         border-radius: 5px;
         border: 1px solid #ccc;
+        transition: max-width 1s ease; /* Smooth transition */
     }
 
     .phoneInput{
@@ -23,7 +25,19 @@
         border-radius: 5px;
         border: 1px solid #ccc;
     }
+
+    /* Responsive styles */
+    @@media screen and (max-width: 430px) {
+        #country-code-select {
+            max-width: 120px;
+        }
+
+        #phone-number {
+            max-width: 140px;
+        }
+    }
 </style>
+
 <body>
     <div class="container">
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
