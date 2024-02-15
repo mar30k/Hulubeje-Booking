@@ -28,7 +28,6 @@ namespace HulubejeBooking.Controllers.Payment
         {
             var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
             var value = HttpContext.Session.GetString("cinema");
-            HttpContext.Session.Remove("cinema");
             if  (value != null)
             {
                 ViewBag.CoutDown = value;
