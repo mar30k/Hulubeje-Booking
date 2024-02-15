@@ -136,7 +136,7 @@
                     }, 2000);
                     return; 
                 }
-                var form = $('<form action="/BusSchedule/BusScheduleview" method="post"></form>');
+                var form = $('<form action="/routeschedule" method="post"></form>');
                 form.append('<input type="hidden" name="destination" value="' + selectedDestination + '">');
                 form.append('<input type="hidden" name="depature" value="' + selectedDeparture + '">');
                 form.append('<input type="hidden" name="travelDate" value="' + selectedTravelDate + '">');

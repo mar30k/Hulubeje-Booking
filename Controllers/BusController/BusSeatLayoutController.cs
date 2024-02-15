@@ -21,7 +21,7 @@ namespace HulubejeBooking.Controllers.BusController
             _authenticationManager = authenticationManager;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<IActionResult> SeatLayout(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule, string originTerminalName, string via,
+        public async Task<IActionResult> Index(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule, string originTerminalName, string via,
             string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId , int vehicle, string destinationTermianl)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];

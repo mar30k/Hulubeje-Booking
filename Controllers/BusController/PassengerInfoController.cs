@@ -5,14 +5,14 @@ using Newtonsoft.Json;
 
 namespace HulubejeBooking.Controllers.BusController
 {
-    public class BusPassengerInfoController : Controller
+    public class PassengerInfoController : Controller
     {
         private IHttpContextAccessor? _httpContextAccessor;
-        public BusPassengerInfoController(IHttpContextAccessor httpContextAccessor)
+        public PassengerInfoController(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
-        public IActionResult PassengerInfo(int selectedButtonsCount, List<string> seatName, string plateNumber, string terminal, int distance, List<string> seatId, int vehicleOperatorId, int routeScheduleId, string destinationTermianl,
+        public IActionResult Index(int selectedButtonsCount, List<string> seatName, string plateNumber, string terminal, int distance, List<string> seatId, int vehicleOperatorId, int routeScheduleId, string destinationTermianl,
             string tariff, string level, string route, string operatorName, string scheduleDate, DateTime scheduleTime, string destinationCity, string depatureCity, DateTime arrivialDate, DateTime departureDate, string originTerminalName, string via)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];

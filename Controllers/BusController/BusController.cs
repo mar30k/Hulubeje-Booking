@@ -1,23 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using System.Net.Http;
 using Newtonsoft.Json;
 using HulubejeBooking.Models.BusModels;
 using HulubejeBooking.Models.Authentication;
-
 namespace HulubejeBooking.Controllers.BusController
 {
-    public class BusScheduleController : Controller
+    public class BusController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
 
-        public BusScheduleController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
+        public BusController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async  Task<IActionResult> BusScheduleview(string depature,string destination, DateTime travelDate)
+
+        public async Task<IActionResult> Index()
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -36,21 +35,23 @@ namespace HulubejeBooking.Controllers.BusController
                 ViewBag.EmailAddress = user?.emailAddress;
             }
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
-            HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"routeschedule/getschedulesbyroute?route={destination}&date={travelDate}");
-            if(response.IsSuccessStatusCode)
+            HttpResponseMessage response = await busSeatLayoutClient.GetAsync("operators/getalloperators");
+            var busModel = new BusModel();
+            if (response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
-                var scheduleData = JsonConvert.DeserializeObject<List<VwRouteSchedule>>(responseData);
-                if(scheduleData != null )
-                {
-                    foreach (var schedule in scheduleData)
-                    {
-                        schedule.DepatureCity = depature;
-                    }
-                }
-                return View(scheduleData);
+                var companyData = JsonConvert.DeserializeObject<List<CompanyModel>>(responseData);
+                busModel.Company = companyData;
             }
-            return View(null);
+            HttpResponseMessage routeResponse = await busSeatLayoutClient.GetAsync("routes/getallroutes");
+            if(routeResponse.IsSuccessStatusCode)
+            {
+                string routeResponseData = await routeResponse.Content.ReadAsStringAsync();
+                var routeData = JsonConvert.DeserializeObject<List<RouteModel>>(routeResponseData);
+                busModel.RouteModel = routeData;
+            }
+            return View(busModel);
         }
+
     }
 }

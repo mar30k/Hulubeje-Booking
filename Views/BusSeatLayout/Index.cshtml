@@ -9,7 +9,8 @@
 </script>
 <partial name="_Navigation" />
 <style>
-    @@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap'); 
+    @@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500&display=swap');
+
     .buttons {
         display: flex;
         align-items: center;
@@ -67,25 +68,27 @@
 
                                 for (int y = 1; y <= maxY; y++)
                                 {
-                                        <tr>
-                                            @for (int x = 1; x <= maxX; x++)
+                                    <tr>
+                                        @for (int x = 1; x <= maxX; x++)
                                         {
                                             var seat = seats.FirstOrDefault(s => s.X == x && s.Y == y && (s.Type == "Seat" || s.Type == "Driver Seat" || s.Type == "OOO"));
 
                                             if (seat != null)
                                             {
-                                                    <td style="height: 30px !important; width: 30px !important">
+                                                <td style="height: 30px !important; width: 30px !important">
                                                     <button class="buttons rounded" id="@seat.Id" style="background-color: @(seat.Type == "Driver Seat" ? "yellow" : "");background-color: @(seat.Type == "OOO" ? "black" : ""); color: @(seat.Type == "OOO" ? "white" : ""); border-color:@(seat.Type == "OOO" ? "Black" : "")"
-                                                            onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")@(seat.Type == "OOO" ? "disabled" : "")>@seat.Name</button>
-                                                    </td>
+                                                            onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")@(seat.Type == "OOO" ? "disabled" : "")>
+                                                        @seat.Name
+                                                    </button>
+                                                </td>
                                             }
                                             else
                                             {
-                                                    <td style="height: 30px !important; width: 30px !important">
-                                                    </td>
+                                                <td style="height: 30px !important; width: 30px !important">
+                                                </td>
                                             }
                                         }
-                                        </tr>
+                                    </tr>
                                 }
                             }
                         }
@@ -98,12 +101,12 @@
         </div>
     </div>
     <div class="col-2  ml-0">
-        <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; 
+        <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
             <div class="row">
                 <h4 class="mb-1" style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.OperatorName</h4>
                 <div style="text-align: left;">
-                    <p class ="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                    <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                         <strong>Level:</strong>&nbsp; @Model?.Level
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
@@ -177,7 +180,7 @@
                 });
                 selectedButtonsId.forEach(function (seatId) {
                     form.append('<input type="hidden" name="seatId" value="' + seatId + '">');
-                }); 
+                });
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
                 form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
                 form.append('<input type="hidden" name="level" value="' + level + '">');
@@ -200,10 +203,10 @@
                 $("body").append(form);
                 form.submit();
             }
-            else{
+            else {
                 alert("please select seats!!")
             }
-            
+
         });
     });
 </script>
