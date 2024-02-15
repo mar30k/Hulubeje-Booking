@@ -6,12 +6,12 @@ using System.Net.Http;
 
 namespace HulubejeBooking.Controllers.CinemaController
 {
-    public class CinemaHomeController : Controller
+    public class CinemaController : Controller
     {
         private IHttpContextAccessor _httpContextAccessor;
         private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly IHttpClientFactory _httpClientFactory;
-        public CinemaHomeController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public CinemaController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
