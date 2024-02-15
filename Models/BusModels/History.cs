@@ -34,9 +34,4 @@
         public decimal? AdditionalCharge { get; set; }
         public decimal? GrandTotal { get; set; }
     }
-
-    public class RootModel
-    {
-        public List<HistoryModel> Routes { get; set; }
-    }
 }

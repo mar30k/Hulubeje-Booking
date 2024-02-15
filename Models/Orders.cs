@@ -2,6 +2,11 @@
 
 namespace HulubejeBooking.Models
 {
+    public class HistoryWrapper
+    {
+        public OrdersModel? OrdersModel { get; set; }
+        public List<HistoryModel>? HistoryModel { get; set; }
+    }
     public class Orders
     {
         public string? VoucherCode { get; set; }
@@ -24,10 +29,5 @@ namespace HulubejeBooking.Models
     {
         public int? NextPage { get; set; }
         public List<Orders>? Orders { get; set; }
-    }
-    public class HistoryWrapper
-    {
-        public OrdersModel? OrdersModel { get; set; }
-        public List<HistoryModel>? HistoryModel { get; set; }
     }
 }
