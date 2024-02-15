@@ -52,8 +52,25 @@ namespace HulubejeBooking.Controllers
                 string responseData = await historyResponse.Content.ReadAsStringAsync();
                 var history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
                 historyWrapper.OrdersModel = history;
+
+                while (history?.NextPage != null)
+                {
+                    historyResponse = await hulubejeClient.GetAsync(hulubejeClient.BaseAddress + $"/order/GetOrdersByConsigneeCode?consigneeCode={phoneNumber}&page={history?.NextPage}");
+                    if (historyResponse.IsSuccessStatusCode)
+                    {
+                        responseData = await historyResponse.Content.ReadAsStringAsync();
+                        history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
+                        historyWrapper?.OrdersModel?.Orders?.AddRange(history.Orders);
+                        historyWrapper.OrdersModel.NextPage = history?.NextPage; 
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             return View(historyWrapper);
+
         }
     }
 }
