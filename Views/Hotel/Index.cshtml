@@ -416,7 +416,7 @@
                 roomsCount: roomsCount,
                 numberOfNights: numberOfNights
             };
-            var form = $('<form action="/HotelHome/HotelList" method="post"></form>');
+            var form = $('<form action="/Hotel/HotelList" method="post"></form>');
 
             form.append('<input type="hidden" name="city" value="' + city + '" />');
             form.append('<input type="hidden" name="dateRange" value="' + dateRange + '" />');
@@ -448,12 +448,12 @@
             }; 
 
             $.ajax({
-                url: '/HotelHome/Hoteldetail',
+                url: '/Hotel/Hoteldetail',
                  type: 'POST',
                  contentType: 'application/json',
                  data: JSON.stringify(data),
                  success: function () {
-                    window.location.href = "/HotelHome/HoteldetailView";
+                    window.location.href = "/Hotel/HoteldetailView";
                  },
                  error: function (error) {
                      console.error('Error:', error);

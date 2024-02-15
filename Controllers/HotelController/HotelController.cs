@@ -7,16 +7,16 @@ using HulubejeBooking.Models.Authentication;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
-    public class HotelHomeController : Controller
+    public class HotelController : Controller
     {
-        private readonly ILogger<HotelHomeController> _logger;
+        private readonly ILogger<HotelController> _logger;
         private readonly object JsonRequestBehavior;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HotelListBuffer _hotelListBuffer;
         private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor? _httpContextAccessor;
 
-        public HotelHomeController(ILogger<HotelHomeController> logger,
+        public HotelController(ILogger<HotelController> logger,
             IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager,
              HotelListBuffer hotelListBuffer, IHttpContextAccessor? httpContextAccessor)
         {
