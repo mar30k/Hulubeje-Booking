@@ -76,7 +76,7 @@
                                             {
                                                     <td style="height: 30px !important; width: 30px !important">
                                                     <button class="buttons rounded" id="@seat.Id" style="background-color: @(seat.Type == "Driver Seat" ? "yellow" : "");background-color: @(seat.Type == "OOO" ? "black" : ""); color: @(seat.Type == "OOO" ? "white" : ""); border-color:@(seat.Type == "OOO" ? "Black" : "")"
-                                                            onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")>@seat.Name</button>
+                                                            onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")@(seat.Type == "OOO" ? "disabled" : "")>@seat.Name</button>
                                                     </td>
                                             }
                                             else
