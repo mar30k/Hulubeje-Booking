@@ -100,6 +100,7 @@
                                                 }
                                             }
                                             <p class="destinationCity" style="display: none">@schedule?.DestCityName</p>
+                                            <p class="sheduleId" style="display: none">@schedule?.Id</p>
                                             <p class="distance" style="display: none">@schedule?.Distance</p>
                                             <p class="originTerminalName" style="display: none">@schedule?.OriginTerminalName</p>
                                             <p class="via" style="display: none">@schedule?.ViaDescription</p>
@@ -160,6 +161,7 @@
                 var destinationTermianl = $(this).closest('.card-body').find('.destinationTermianl').text().trim();
                 var originTerminalName = $(this).closest('.card-body').find('.originTerminalName').text().trim();
                 var via = $(this).closest('.card-body').find('.via').text().trim();
+                var sheduleId = $(this).closest('.card-body').find('.sheduleId').text().trim();
 
                 form.append('<input type="hidden" name="plateNumber" value="' + plateNumber + '">');
                 form.append('<input type="hidden" name="terminal" value="' + terminal + '">');
@@ -180,6 +182,7 @@
                 form.append('<input type="hidden" name="destinationTermianl" value="' + destinationTermianl + '">');
                 form.append('<input type="hidden" name="originTerminalName" value="' + originTerminalName + '">');
                 form.append('<input type="hidden" name="via" value="' + via + '">');
+                form.append('<input type="hidden" name="sheduleId" value="' + sheduleId + '">');
                 $("body").append(form);
                 form.submit();
             });
