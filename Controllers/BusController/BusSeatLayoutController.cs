@@ -21,8 +21,8 @@ namespace HulubejeBooking.Controllers.BusController
             _authenticationManager = authenticationManager;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<IActionResult> Index(string plateNumber, string terminal, string distance, string tariff, string level, string route, string operatorName,string routeSchedule, string originTerminalName, string via,
-            string scheduleDate, string scheduleTime, string destinationCity, string depatureCity, string arrivalDate, string departureDate, string vehicleOperatorId , int vehicle, string destinationTermianl)
+        public async Task<IActionResult> Index(string? plateNumber, string? terminal, string? distance, string? tariff, string? level, string? route, string? operatorName,string? routeSchedule, string? originTerminalName, string? via,
+            string? scheduleDate, string? scheduleTime, string? destinationCity, string? depatureCity, string? arrivalDate, string? departureDate, string? vehicleOperatorId , int? vehicle, string? destinationTermianl, string? sheduleId)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -65,7 +65,7 @@ namespace HulubejeBooking.Controllers.BusController
                     Date = scheduleDate,
                     Time = scheduleTime,
                     DestinationCity = destinationCity,
-                    DepatureCity = depatureCity,
+                    DepartureCity = depatureCity,
                     ArrivialDate = arrivalDate,
                     DepartureDate = departureDate,
                     VehicleOperatorId = vehicleOperatorId,
@@ -73,6 +73,7 @@ namespace HulubejeBooking.Controllers.BusController
                     DestinationTermianl=  destinationTermianl,
                     OriginTerminalName = originTerminalName,
                     Via = via,
+                    SheduleId = sheduleId
                 };
                 var paramJson = JsonConvert.SerializeObject(param);
                 HttpContext.Session.SetString("BusValues", paramJson);
@@ -93,25 +94,27 @@ namespace HulubejeBooking.Controllers.BusController
             if (seatValuesJson != null)
             {
                 var seatValues = JsonConvert.DeserializeObject<BusSeatLayout>(seatValuesJson);
-                plateNumber = seatValues.PlateNumber;
-                terminal = seatValues.Terminal;
-                level = seatValues.Level;
-                route = seatValues.Route;
-                tariff = seatValues.Tariff;
-                operatorName = seatValues.OperatorName;
-                scheduleDate = seatValues.Date;
-                scheduleTime = seatValues.Time;
-                destinationCity = seatValues.DestinationCity;
-                depatureCity = seatValues.DepatureCity;
-                distance = seatValues.Distance;
-                vehicleOperatorId = seatValues.VehicleOperatorId;
-                arrivalDate = seatValues.ArrivialDate;
-                departureDate = seatValues.DepartureDate;
-                routeSchedule = seatValues.RouteScheduleId;
-                vehicle = (int)seatValues.Vehicle;
-                via = seatValues.Via;
-                originTerminalName = seatValues.OriginTerminalName;
-                destinationTermianl = seatValues.DestinationTermianl;
+
+                plateNumber = seatValues?.PlateNumber;
+                terminal = seatValues?.Terminal;
+                level = seatValues?.Level;
+                route = seatValues?.Route;
+                tariff = seatValues?.Tariff;
+                operatorName = seatValues?.OperatorName;
+                scheduleDate = seatValues?.Date;
+                scheduleTime = seatValues?.Time;
+                destinationCity = seatValues?.DestinationCity;
+                depatureCity = seatValues?.DepartureCity;
+                distance = seatValues?.Distance;
+                vehicleOperatorId = seatValues?.VehicleOperatorId;
+                arrivalDate = seatValues?.ArrivialDate;
+                departureDate = seatValues?.DepartureDate;
+                routeSchedule = seatValues?.RouteScheduleId;
+                vehicle = (int?)seatValues?.Vehicle;
+                via = seatValues?.Via;
+                originTerminalName = seatValues?.OriginTerminalName;
+                destinationTermianl = seatValues?.DestinationTermianl;
+                sheduleId = seatValues?.SheduleId;
             }
 
 
@@ -129,7 +132,7 @@ namespace HulubejeBooking.Controllers.BusController
                 Date = scheduleDate,
                 Time = scheduleTime,
                 DestinationCity = destinationCity,
-                DepatureCity = depatureCity,
+                DepartureCity = depatureCity,
                 ArrivialDate = arrivalDate,
                 DepartureDate = departureDate,
                 VehicleOperatorId = vehicleOperatorId,
@@ -156,7 +159,13 @@ namespace HulubejeBooking.Controllers.BusController
                     schedueleInfo.SeatLayout = seatLayout;
                 }
             }
-
+            HttpResponseMessage soldSeatsRespnse = await busSeatLayoutClient.GetAsync($"routeschedule/getsoldseats?RouteSchedule={sheduleId}");
+            if (soldSeatsRespnse.IsSuccessStatusCode)
+            {
+                string soldSeatsResponseData = await soldSeatsRespnse.Content.ReadAsStringAsync();
+                var soldSeats = JsonConvert.DeserializeObject<List<int>>(soldSeatsResponseData);
+                schedueleInfo.SoldSeats = soldSeats;
+            }
             return View(schedueleInfo);
         }
     }
