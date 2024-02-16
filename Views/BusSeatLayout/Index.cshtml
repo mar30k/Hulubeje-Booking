@@ -60,8 +60,9 @@
                         @{
                             var seatLayout = Model?.SeatLayout;
                             var seats = seatLayout?.Seats;
+                            var soldSeats = Model?.SoldSeats;
 
-                            if (seatLayout != null && seats != null)
+                            if (seatLayout != null && seats != null && soldSeats != null)
                             {
                                 var maxX = seatLayout.MaxX;
                                 var maxY = seatLayout.MaxY;
@@ -72,12 +73,16 @@
                                         @for (int x = 1; x <= maxX; x++)
                                         {
                                             var seat = seats.FirstOrDefault(s => s.X == x && s.Y == y && (s.Type == "Seat" || s.Type == "Driver Seat" || s.Type == "OOO"));
+                                            var isSold = seat?.Id != null && soldSeats.Contains((int)seat.Id);
 
                                             if (seat != null)
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
-                                                    <button class="buttons rounded" id="@seat.Id" style="background-color: @(seat.Type == "Driver Seat" ? "yellow" : "");background-color: @(seat.Type == "OOO" ? "black" : ""); color: @(seat.Type == "OOO" ? "white" : ""); border-color:@(seat.Type == "OOO" ? "Black" : "")"
-                                                            onclick="toggleButton(this)" @(seat.Type == "Driver Seat" ? "disabled" : "")@(seat.Type == "OOO" ? "disabled" : "")>
+                                                    <button class="buttons rounded" id="@seat.Id"
+                                                            style="background-color: @(seat.Type == "Driver Seat" ? "yellow" : (seat.Type == "OOO" ? "black" : (isSold ? "red" : "")));
+                                                       color: @(seat.Type == "OOO" || isSold ? "white" : "");
+                                                       border-color: @(seat.Type == "OOO" ? "Black" : "")"
+                                                            onclick="toggleButton(this)" @(seat.Type == "Driver Seat" || seat.Type == "OOO" || isSold ? "disabled" : "")>
                                                         @seat.Name
                                                     </button>
                                                 </td>
@@ -110,7 +115,7 @@
                         <strong>Level:</strong>&nbsp; @Model?.Level
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                        <strong>Depature City:</strong>&nbsp; @Model?.DepatureCity
+                        <strong>Depature City:</strong>&nbsp; @Model?.DepartureCity
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                         <strong>Destination City:</strong>&nbsp; @Model?.DestinationCity
@@ -148,7 +153,7 @@
     var scheduleDate = "@Model?.Date";
     var scheduleTime = "@Model?.Time";
     var destinationCity = "@Model?.DestinationCity";
-    var depatureCity = "@Model?.DepatureCity";
+    var depatureCity = "@Model?.DepartureCity";
     var arrivialDate = "@Model?.ArrivialDate";
     var departureDate = "@Model?.DepartureDate";
     var destinationTermianl = "@Model?.DestinationTermianl";
