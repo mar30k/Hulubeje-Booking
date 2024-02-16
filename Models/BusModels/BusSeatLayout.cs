@@ -14,15 +14,16 @@
         public string? DestinationCity {  get; set; }  
         public string? DestinationTermianl {  get; set; }  
         public string? OriginTerminalName {  get; set; }  
-        public string? DepatureCity {  get; set; }
+        public string? DepartureCity {  get; set; }
         public string? ArrivialDate {  get; set; }
         public string? DepartureDate {  get; set; }
         public string? VehicleOperatorId {  get; set; }
         public string? Via {  get; set; }
         public int? Vehicle {  get; set; }
+        public string? SheduleId {  get; set; }
         public string? RouteScheduleId {  get; set; }
         public SeatLayoutStructure? SeatLayout { get; set; }
-
+        public List<int>? SoldSeats { get; set; }
     }
     public class SeatLayoutStructure
     {
