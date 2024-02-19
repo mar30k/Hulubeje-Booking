@@ -60,8 +60,11 @@ namespace HulubejeBooking.Controllers
                     {
                         responseData = await historyResponse.Content.ReadAsStringAsync();
                         history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
-                        historyWrapper?.OrdersModel?.Orders?.AddRange(history.Orders);
-                        historyWrapper.OrdersModel.NextPage = history?.NextPage; 
+                        historyWrapper?.OrdersModel?.Orders?.AddRange(history?.Orders ?? Enumerable.Empty<Orders>());
+                        if (historyWrapper != null && historyWrapper.OrdersModel != null && history != null)
+                        {
+                            historyWrapper.OrdersModel.NextPage = history.NextPage;
+                        }
                     }
                     else
                     {
