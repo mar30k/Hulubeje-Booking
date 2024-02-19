@@ -10,7 +10,6 @@ namespace HulubejeBooking.Controllers.HotelController
     public class HotelController : Controller
     {
         private readonly ILogger<HotelController> _logger;
-        private readonly object JsonRequestBehavior;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HotelListBuffer _hotelListBuffer;
         private readonly AuthenticationManager _authenticationManager;
@@ -68,8 +67,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 
             }
 
-            _hotelListBuffer._hotels = hotels;
-
+            _hotelListBuffer._hotels = hotels ?? new List<GetModel>();
             var dataList = new List<GetModel>();
             dataList = _hotelListBuffer._hotels;
 
@@ -157,7 +155,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 var filteredCompanies = dataList
                     .SelectMany(hotel =>
                         hotel.Branches
-                            .Where(branch => branch.City.Equals(cityName, StringComparison.OrdinalIgnoreCase))
+                            .Where(branch => branch != null && branch.City != null && branch.City.Equals(cityName, StringComparison.OrdinalIgnoreCase))
                             .Select(branch =>
                                 new FilteredCompany
                                 {
