@@ -8,7 +8,6 @@ namespace Payment.Controllers
 {
     public class PaymentOptions : Controller
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
         public PaymentOptions(IHttpContextAccessor httpContextAccessor)
         {
