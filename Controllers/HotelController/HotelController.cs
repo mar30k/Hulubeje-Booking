@@ -54,14 +54,14 @@ namespace HulubejeBooking.Controllers.HotelController
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                hotels = JsonConvert.DeserializeObject<List<GetModel>>(data);
+                hotels = data != null ? JsonConvert.DeserializeObject<List<GetModel>>(data) : new List<GetModel>();
                 
 
                 HttpResponseMessage response2 = await _client.GetAsync(_client.BaseAddress + "/Industry/GetCitiesForHotelFilter");
                 if (response2.IsSuccessStatusCode)
                 {
                     string data2 = await response2.Content.ReadAsStringAsync();
-                    country = JsonConvert.DeserializeObject<List<CityData>>(data2);
+                    country = data2 != null ? JsonConvert.DeserializeObject<List<CityData>>(data2) : new List<CityData>();
                 }
 
                 
@@ -202,7 +202,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
-                    hotels = JsonConvert.DeserializeObject<List<HotelModel>>(data);
+                    hotels = data != null ? JsonConvert.DeserializeObject<List<HotelModel>>(data) : new List<HotelModel>();
                 }
 
                 var viewModel = new HotelViewModel
@@ -258,7 +258,7 @@ namespace HulubejeBooking.Controllers.HotelController
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                var availableRooms = JsonConvert.DeserializeObject<List<RoomModel>>(data);
+                var availableRooms = data != null ? JsonConvert.DeserializeObject<List<RoomModel>>(data) : new List<RoomModel>();
 
 
                 var viewModel = new AvailabilityViewModel
