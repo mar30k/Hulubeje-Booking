@@ -22,7 +22,7 @@
     }
     public class Wrapper
     {
-        public List<PaymentOptionModel> PaymentOptions { get; set; }
-        public BoAModel Boa { get; set; }
+        public List<PaymentOptionModel>? PaymentOptions { get; set; }
+        public BoAModel? Boa { get; set; }
     }
 }
