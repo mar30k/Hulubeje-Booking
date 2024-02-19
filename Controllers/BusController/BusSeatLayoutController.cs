@@ -163,7 +163,7 @@ namespace HulubejeBooking.Controllers.BusController
             if (soldSeatsRespnse.IsSuccessStatusCode)
             {
                 string soldSeatsResponseData = await soldSeatsRespnse.Content.ReadAsStringAsync();
-                var soldSeats = JsonConvert.DeserializeObject<List<int>>(soldSeatsResponseData);
+                List<int>? soldSeats = JsonConvert.DeserializeObject<List<int>>(soldSeatsResponseData);
                 schedueleInfo.SoldSeats = soldSeats;
             }
             return View(schedueleInfo);

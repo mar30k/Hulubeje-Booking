@@ -22,7 +22,7 @@ namespace HulubejeBooking.Controllers.BusController
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                var user = userDataCookie != null ? JsonConvert.DeserializeObject<UserInformation>(userDataCookie) : new UserInformation();
                 ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
@@ -40,7 +40,7 @@ namespace HulubejeBooking.Controllers.BusController
             if(response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
-                var scheduleData = JsonConvert.DeserializeObject<List<VwRouteSchedule>>(responseData);
+                var scheduleData = responseData != null ? JsonConvert.DeserializeObject<List<VwRouteSchedule>>(responseData) : new List<VwRouteSchedule>();
                 if(scheduleData != null )
                 {
                     foreach (var schedule in scheduleData)
