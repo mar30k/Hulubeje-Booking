@@ -35,14 +35,14 @@
             }
         }
 
-        @@media (max-width: 500px) {
+        @@media (max-width: 300px) {
             .companyimage {
                 object-fit: contain;
                 max-height: 80px; /* Set the maximum height as needed */
             }
 
             .customcard {
-                height: 185px;
+                height: 165px;
             }
         }
 
@@ -182,8 +182,10 @@
                                                     </thead>
                                                     <tbody>
                                                             <tr>
-                                                                <td>@route.PassengerFullName</td>
-                                                                <td>@route.SubTotal</td>
+                                                                <td>
+                                                                    @route?.PassengerFullName 
+                                                                </td>
+                                                                <td>@route?.SubTotal</td>
                                                             </tr>
                                                     </tbody>
                                                 </table>
