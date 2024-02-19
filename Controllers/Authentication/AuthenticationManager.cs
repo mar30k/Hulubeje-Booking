@@ -11,7 +11,7 @@ namespace HulubejeBooking.Controllers.Authentication
     {
         private IHttpContextAccessor _httpContextAccessor;
 
-        private UserInformation _cachedUser;
+        private UserInformation? _cachedUser;
         public AuthenticationManager(
                 IHttpContextAccessor httpContextAccessor
                 )
@@ -69,12 +69,12 @@ namespace HulubejeBooking.Controllers.Authentication
             var loggedInCheckerJson = _httpContextAccessor?.HttpContext?.Session.GetString("isLoggedIn");
             if (loggedInCheckerJson != null) {
                 string isLoggedInJson = _httpContextAccessor.HttpContext.Session.GetString("isLoggedIn");
-                 loginChecker = JsonConvert.DeserializeObject<bool>(isLoggedInJson);
+                loginChecker = isLoggedInJson != null ? JsonConvert.DeserializeObject<bool>(isLoggedInJson) : new bool();
             }
             var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
 
             if (authenticateResult.Succeeded)
-            {
+            {  
                 var authenticationProperties = authenticateResult.Properties;
 
                 if (authenticationProperties?.IsPersistent == true)

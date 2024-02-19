@@ -25,7 +25,7 @@ namespace HulubejeBooking.Controllers.Authentication
             if (response.IsSuccessStatusCode)
             {
                 var respnseData = await response.Content.ReadAsStringAsync();
-                countryCodes = JsonConvert.DeserializeObject<List<CountryResponse>>(respnseData);
+                countryCodes = respnseData != null ? JsonConvert.DeserializeObject<List<CountryResponse>>(respnseData) : new List<CountryResponse>();
                 var ethiopia = countryCodes?.Find(c => c.Name?.Common == "Ethiopia");
                 if (ethiopia != null)
                 {

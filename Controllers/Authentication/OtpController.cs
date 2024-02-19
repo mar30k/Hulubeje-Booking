@@ -27,7 +27,7 @@ namespace HulubejeBooking.Controllers.Authentication
             }
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var data = HttpContext.Session.GetString("OtpMessageResponse");
-            var newData = JsonConvert.DeserializeObject<MessageResponse>(data);
+            var newData = data != null ? JsonConvert.DeserializeObject<MessageResponse>(data) : new MessageResponse() ;
             var code = newData?.code;
             var to = newData?.to;
             var vc = newData?.verificationId;
