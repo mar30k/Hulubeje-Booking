@@ -28,9 +28,9 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
             return View();
         }
-        public async Task<IActionResult> PaymentAsync([FromBody] RequestWrapper data)
+        public IActionResult Payment([FromBody] RequestWrapper data)
         {
-            var validation = new RequestWrapper 
+            var validation = new RequestWrapper
             {
                 GuestInfoData = data.GuestInfoData,
                 CinemaDetailsData = data.CinemaDetailsData,
@@ -54,10 +54,9 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
             HttpContext.Session.Remove("PaymentInfo");
             HttpContext.Session.Remove("ValidationInfo");
 
-
-            var newData = JsonConvert.DeserializeObject<RequestWrapper>(data);
-            var PaymentInfo = JsonConvert.DeserializeObject<PaymentInfoModel>(paymentInfo);
-            var newValidationInfo = JsonConvert.DeserializeObject<PaymentValidation>(validationInfo);
+            var newData = data != null ? JsonConvert.DeserializeObject<RequestWrapper>(data) : new RequestWrapper();
+            var PaymentInfo = paymentInfo != null ? JsonConvert.DeserializeObject<PaymentInfoModel>(paymentInfo) : new PaymentInfoModel();
+            var newValidationInfo = validationInfo != null ? JsonConvert.DeserializeObject<PaymentValidation>(validationInfo) : new PaymentValidation();
             var PaymentMethod = "Telebirr OTP";
 
             if (newData?.CinemaDetailsData != null)
@@ -87,7 +86,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
                 var responseData = await response.Content.ReadAsStringAsync();
 
-                var PaymentDone = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
+                var PaymentDone = responseData != null ? JsonConvert.DeserializeObject<PaymentValidation>(responseData) : new PaymentValidation();
 
                 HttpContext.Session.SetString("PaymentDoneModel", JsonConvert.SerializeObject(PaymentDone));
 
@@ -96,9 +95,9 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
             else if (newData?.GuestInfoData != null)
             {
                 var b = newData.GuestInfoData;
-                var dt = DateRangeParser.parseDateRange(b.date);
-                var arrivalDate = dt.startDateString;
-                var departureDate = dt.endDateString;
+                var dt = b.date != null ? DateRangeParser.parseDateRange(b.date) : null;
+                var arrivalDate = dt?.startDateString;
+                var departureDate = dt?.endDateString;
                 var cashRecieptVoucher = PaymentInfo?.PaymentTransactionRequest.TransactionId;
                 var  param = new
                 {
