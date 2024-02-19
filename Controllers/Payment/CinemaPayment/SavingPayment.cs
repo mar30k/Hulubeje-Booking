@@ -26,12 +26,12 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
             return View();
         }
-        public async Task<IActionResult> PaymentAsync([FromBody] RequestWrapper data) 
+        public IActionResult Payment([FromBody] RequestWrapper data)
         {
             var validation = data.CinemaDetailsData;
             var validationJson = JsonConvert.SerializeObject(validation);
             HttpContext.Session.SetString("ValidationData", validationJson);
-            
+
             return View();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
