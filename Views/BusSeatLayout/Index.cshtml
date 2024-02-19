@@ -78,10 +78,15 @@
                                             if (seat != null)
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
+                                                    @{
+                                                        var buttonStyle = "background-color: " + (seat.Type == "OOO" ? "black" : (isSold ? "red" : "")) + "; color: " + (seat.Type == "OOO" || isSold ? "white" : "") + "; border-color: " + (seat.Type == "OOO" ? "Black" : "") + "; border-color: " + (seat.Type == "Driver Seat" ? "black" : "") + ";";
+                                                        if (seat.Type == "Driver Seat")
+                                                        {
+                                                            buttonStyle += "background-image: url('https://cdn-icons-png.flaticon.com/512/3517/3517250.png'); background-size: cover;";
+                                                        }
+                                                    }
                                                     <button class="buttons rounded" id="@seat.Id"
-                                                            style="background-color: @(seat.Type == "Driver Seat" ? "yellow" : (seat.Type == "OOO" ? "black" : (isSold ? "red" : "")));
-                                                       color: @(seat.Type == "OOO" || isSold ? "white" : "");
-                                                       border-color: @(seat.Type == "OOO" ? "Black" : "")"
+                                                            style="@buttonStyle"
                                                             onclick="toggleButton(this)" @(seat.Type == "Driver Seat" || seat.Type == "OOO" || isSold ? "disabled" : "")>
                                                         @seat.Name
                                                     </button>
@@ -99,6 +104,7 @@
                         }
                     </table>
                 </div>
+
             </div>
         </div>
         <div id="continue" style="text-align: center; position: relative;  margin-top:10px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
