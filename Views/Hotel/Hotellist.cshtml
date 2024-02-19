@@ -5,7 +5,6 @@
 
     .cardPrice {
         box-shadow: 0px 9px 20px 0px rgba(14, 88, 48, 0.1);
-        width: 150px;
         padding: 10px;
         border: 1px solid #ddd;
         border-radius: 5px;
@@ -87,7 +86,7 @@
 
 <div class="container">
 
-    <div class="row" style="padding-bottom:10px;">
+    <div class="row m-1" style="padding-bottom:10px;">
         <div class="col-md-4">
             <div class="row" style="padding-right: 0px; padding-left:0px;">
                 <form>
@@ -275,7 +274,7 @@
 
         </div>
         <div class="col-md-8">
-            @if (Model.Hotels != null)
+            @if (Model?.Hotels?.Count > 0)
             {
                 @foreach (var hotel in Model.Hotels)
                 {
@@ -382,7 +381,9 @@
             }
             else
             {
-                <h2>No Match!</h2>
+                <div class="justify-content-center d-flex mt-3" >
+                    <h2>No Match!</h2>
+                </div>
             }
 
         </div>
