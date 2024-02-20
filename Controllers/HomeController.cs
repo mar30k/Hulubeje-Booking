@@ -25,7 +25,7 @@ namespace HulubejeBooking.Controllers
 
 		public async Task<IActionResult> Index()
         {
-			var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
 
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))

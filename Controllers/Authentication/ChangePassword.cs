@@ -44,7 +44,12 @@ namespace HulubejeBooking.Controllers.Authentication
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
                 phoneNumber = user != null ? user?.phoneNumber : null;
             }
-            if (changePassword?.Newpassword?.Length < 6 || changePassword?.RepeatPassword?.Length < 6)
+            if (changePassword?.RepeatPassword?.Length < 6)
+            {
+                TempData["ErrorMessage"] = "Incorrect Old Password!";
+                return View();
+            }
+            else if (changePassword?.Newpassword?.Length < 6 || changePassword?.RepeatPassword?.Length < 6)
             {
                 TempData["ErrorMessage"] = "password lenght should be atleast 6 characters ";
                 return View();
@@ -52,11 +57,6 @@ namespace HulubejeBooking.Controllers.Authentication
             else if (changePassword?.RepeatPassword != changePassword?.Newpassword)
             {
                 TempData["ErrorMessage"] = "new passwords should match!";
-                return View();
-            }
-            else if (changePassword?.RepeatPassword?.Length < 6)
-            {
-                TempData["ErrorMessage"] = "incorrect current password";
                 return View();
             }
             else
@@ -95,7 +95,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "incorrect current password";
+                    TempData["ErrorMessage"] = "Incorrect Old Password!";
                     return View();
                 }
             }
