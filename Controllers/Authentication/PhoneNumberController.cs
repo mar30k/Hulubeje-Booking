@@ -37,7 +37,7 @@ namespace HulubejeBooking.Controllers.Authentication
         }
         public async Task<IActionResult> AuthenticatePhone(string phoneNumber)
         {
-
+            HttpContext.Session.Remove("ForgetPassword");
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var param = new
             {
