@@ -4,22 +4,30 @@ using HulubejeBooking.Models.BusModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
-
+using HulubejeBooking.Controllers.Authentication;
 namespace HulubejeBooking.Controllers
 {
     public class HistoryController : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
 
-        public HistoryController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
+        public HistoryController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
 
-        public async Task<IActionResult> IndexAsync(string phoneNumber)
+        public async Task<IActionResult> IndexAsync(string? phoneNumber)
         {
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (!(identificationResult.isLoggedIn || identificationResult.isValid))
+            {
+                return RedirectToAction("Index", "home");
+            }
+            
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
@@ -35,6 +43,7 @@ namespace HulubejeBooking.Controllers
                 ViewBag.Idattachment = user?.idattachment;
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
+                phoneNumber = user?.phoneNumber;
             }
             var historyWrapper = new HistoryWrapper();
             var busClient = _httpClientFactory.CreateClient("BusBooking");
