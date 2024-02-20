@@ -49,7 +49,7 @@ namespace HulubejeBooking.Controllers.HotelController
 
             var hotels = new List<GetModel>();
             var country = new List<CityData>();
-            HotelListRequest viewModel = new HotelListRequest();
+            HotelListRequest viewModel = new();
 
             if (response.IsSuccessStatusCode)
             {
