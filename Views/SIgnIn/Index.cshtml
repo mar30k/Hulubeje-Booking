@@ -92,11 +92,11 @@
 </head>
 <body>
     
-    <div class="container login-container mt-5 mb-5">
+    <div class="container login-container mb-5 mt-5 py-lg-5 px-lg-3 p-2 border border-5">
         @if (TempData["InfoMessage"] != null)
         {
             <div class="alert alert-success" role="alert" id="errorAlert">
-                <p style="margin: 0;">@TempData["InfoMessage"]</p>
+                <p style="margin: 0; font-size: 14px;">@TempData["InfoMessage"]</p>
             </div>
 
             <script>
@@ -125,7 +125,7 @@
                 }, 5000);
             </script>
         }
-        <div class="mb-3 text-center">
+        <div class="mb-4 text-center">
             <h5 class="h5">Sign In</h5>
         </div>
         <section>
@@ -188,7 +188,7 @@
                 </form>
             </div>
             <div class="forgot-password">
-                <a href="/phonenumber">Forgot Password?</a>
+                <a href="/forgetpasswordphone">Forgot Password?</a>
             </div>
             <div class="create-account">
                 <span>Don't have an account? <a href="/phonenumber">Create New Account</a></span>
