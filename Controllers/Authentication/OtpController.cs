@@ -27,32 +27,60 @@ namespace HulubejeBooking.Controllers.Authentication
             }
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var data = HttpContext.Session.GetString("OtpMessageResponse");
+            var forgetPassword = HttpContext.Session.GetString("ForgetPassword") != null;
             var newData = data != null ? JsonConvert.DeserializeObject<MessageResponse>(data) : new MessageResponse() ;
             var code = newData?.code;
             var to = newData?.to;
             var vc = newData?.verificationId;
-
-            if (trimmedCode == code)
+            if (forgetPassword)
             {
-                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Messaging/VerifyOTP?to={to}&vc={vc}&code={code}");
-                string responseData = await response.Content.ReadAsStringAsync();
-                var verificationData = JsonConvert.DeserializeObject<VerifyResponse>(responseData);
-
-                if (verificationData?.isVerified == true)
+                if (trimmedCode == code)
                 {
-                    return RedirectToAction("Index", "Signup");
+                    HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Messaging/VerifyOTP?to={to}&vc={vc}&code={code}");
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    var verificationData = JsonConvert.DeserializeObject<VerifyResponse>(responseData);
+
+                    if (verificationData?.isVerified == true)
+                    {
+                        return RedirectToAction("Index", "ForgetPassword");
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Coundn't verify code";
+                        return RedirectToAction("Index", "Otp");
+                    }
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Coundn't verify code";
+                    TempData["ErrorMessage"] = "Incorrect OTP. Please try again.";
                     return RedirectToAction("Index", "Otp");
                 }
             }
             else
             {
-                TempData["ErrorMessage"] = "Incorrect OTP. Please try again.";
-                return RedirectToAction("Index", "Otp");
+                if (trimmedCode == code)
+                {
+                    HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Messaging/VerifyOTP?to={to}&vc={vc}&code={code}");
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    var verificationData = JsonConvert.DeserializeObject<VerifyResponse>(responseData);
+
+                    if (verificationData?.isVerified == true)
+                    {
+                        return RedirectToAction("Index", "Signup");
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Coundn't verify code";
+                        return RedirectToAction("Index", "Otp");
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Incorrect OTP. Please try again.";
+                    return RedirectToAction("Index", "Otp");
+                }
             }
+            
         }
 
     }
