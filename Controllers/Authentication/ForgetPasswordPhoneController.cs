@@ -9,16 +9,26 @@ namespace HulubejeBooking.Controllers.Authentication
 {
     public class ForgetPasswordPhoneController : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private readonly HttpClient _httpClient;
         private IHttpClientFactory _httpClientFactory;
 
-        public ForgetPasswordPhoneController(HttpClient httpClient, IHttpClientFactory httpClientFactory)
+        public ForgetPasswordPhoneController(HttpClient httpClient, IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager)
         {
             _httpClient = httpClient;
             _httpClientFactory = httpClientFactory;
+            _authenticationManager = authenticationManager;
         }
         public async Task<IActionResult> IndexAsync()
         {
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            if (identificationResult.isLoggedIn || identificationResult.isValid)
+            {
+                TempData["ErrorMessage"] = "You are already logged in!";
+                return RedirectToAction("Index", "home");
+            }
             var countryCodes = new List<CountryResponse>();
             var endPoint = "https://restcountries.com/v3.1/all";
             HttpResponseMessage response = await _httpClient.GetAsync(endPoint);
@@ -32,7 +42,7 @@ namespace HulubejeBooking.Controllers.Authentication
                     countryCodes?.Remove(ethiopia);
                     countryCodes?.Insert(0, ethiopia);
                 }
-            }
+            }            
             return View(countryCodes);
         }
         [HttpPost]

@@ -62,7 +62,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 if (Convert.ToBoolean(responseData))
                 {
                     TempData["InfoMessage"] = "Successfully Changed Password!";
-                    return RedirectToAction("Index", "SignIn");
+                    return RedirectToAction("Index", "signin");
                 }
                 return View();
             }
