@@ -8,6 +8,7 @@ namespace HulubejeBooking.Controllers.Authentication
 {
     public class SignInController : Controller
     {
+
         private readonly ILogger<SignInController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -19,9 +20,16 @@ namespace HulubejeBooking.Controllers.Authentication
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            if (identificationResult.isLoggedIn || identificationResult.isValid)
+            {
+                TempData["ErrorMessage"] = "You are already logged in!";
+                return RedirectToAction("Index", "home");
+            }
             return View();
         }
         [HttpPost]
