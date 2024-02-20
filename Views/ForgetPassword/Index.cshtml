@@ -1,0 +1,46 @@
+﻿<partial name="_Navigation" />
+<title>Forget Password</title>
+<div class="container">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert" id="errorAlert" style="transition: opacity 0.5s ease-in-out;">
+            <p style="margin: 0;">@TempData["ErrorMessage"]</p>
+        </div>
+
+        <script>
+            setTimeout(function () {
+                var errorAlert = document.getElementById('errorAlert');
+                errorAlert.style.opacity = '0';
+                setTimeout(function () {
+                    errorAlert.style.display = 'none';
+                }, 500);
+            }, 5000);
+        </script>
+    }
+    <div class="justify-content-center d-flex align-items-center" style="height: 50vh">
+        <div class="border border-2 rounded p-lg-5 p-3 p-md-4 bg-light">
+            <form asp-action="index" method="post" asp-controller="ForgetPassword">
+                <div class="form-group d-flex row align-content-center justify-content-center">
+                    <div class="col-5 mt-sm-2 mt-1">
+                        <label for="password">Password</label>
+                    </div>
+                    <div class="col-7">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                </div>
+                <div class="form-group d-flex row">
+                    <div class="col-5 mt-sm-2">
+                        <label for="repeatPassword">Repeat Password</label>
+                    </div>
+                    <div class="col-7">
+                        <input type="password" class="form-control" id="repeatPassword" name="repeatPassword" required>
+                    </div>
+                </div>
+                <div class="form-group p-0 m-0 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<partial name="_Footer" />
