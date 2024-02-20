@@ -61,44 +61,33 @@
             // Conditionally render HTML based on the values
             if (retrievedIsValid === true || retrievedIsLoggedIn === true) {
                 document.getElementById("conditionalButtons").innerHTML = `
-                  <strong> <span style="color:lightgreen">E</span><span style="color:yellow">T</span><span style="color:red">H</span></strong>
                     <div class="dropdown-container">
+                            <div class="dropdown-container d-flex">
                         <button type="button" class="btn btn-light ml-2 mr-1" style="color: black;">
-                        <img src="@ViewBag.Personalattachment" class="mr-2 rounded-circle" alt="User Image" style="width: 30px; height: 30px;">
-                        <span style="padding: 5px; ">@ViewBag.FirstName @ViewBag.MiddleName</span>
+                        <div class="d-flex">
+                            <img src="@ViewBag.Personalattachment" class="mr-2 rounded-circle" alt="User Image" style="width: 30px; height: 30px;">
+                            <span style="padding: 5px; white-space: wrap;">@ViewBag.FirstName @ViewBag.MiddleName</span>
+                        </div>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" id="history">History</a></li>
+                            <li><a class="dropdown-item" href="/history">History</a></li>
                             <li><a class="dropdown-item" href="#">Delete Account</a></li>
-                            <li><a class="dropdown-item" href="#">Change Password</a></li>
+                            <li><a class="dropdown-item" href="/changePassword">Change Password</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Privacy Policy</a></li>
                             <li><a class="dropdown-item" href="#">About</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/SignIn/Logout">Logout</a></li>
+                            <li><a class="dropdown-item" href="/signIn/logout">Logout</a></li>
                         </ul>
                  </div>
                 `;
             } else {
                 document.getElementById("conditionalButtons").innerHTML = `
-                                        <a href="/PhoneNumber" class="btn btn-light">Register</a>
-                                        <a href="/SignIn" class="btn btn-light">Login</a>
+                                        <a href="/phonenumber" class="btn btn-light">Register</a>
+                                        <a href="/signin" class="btn btn-light">Login</a>
                                     `;
             }
-            $('.logout').on('click', function () {
-                localStorage.removeItem("phone");
-                sessionStorage.removeItem("phone");
-            });
-            $('#history').click(function (e) {
-                e.preventDefault();
-                var phoneNumber = "@ViewBag.PhoneNumber";
-                if (phoneNumber != null) {
-                    var form = $('<form action="/History" method="post"></form>');
-                    form.append('<input type="hidden" name="phoneNumber" value="' + phoneNumber + '">');
-                    $('body').append(form);
-                    form.submit();
-                }
-            });
+
         });
 
     </script>
@@ -107,16 +96,16 @@
     <div class="container-fluid custom pb-2" style="background-color:#063970;">
         <div class="container pt-3">
             <div class="row" style="display: flex; justify-content: space-between !important">
-                <div class="col-5">
+                <div class="col-6">
                     <nav class="navbar navbar-light">
                         <div class="container">
-                            <a class="navbar-brand" asp-controller="Home" asp-action="Index" style="color: white;">
+                            <a class="navbar-brand mx-0" asp-controller="Home" asp-action="Index" style="color: white; white-space: wrap">
                                 Hulubeje Booking
                             </a>
                         </div>
                     </nav>
                 </div>
-                <div class="col-7" style="display: flex; justify-content: end !important">
+                <div class="col-6" style="display: flex; justify-content: end !important">
                     <div class="pt-2" id="conditionalButtons" style="margin-left:auto;">
                         <!-- Your content here -->
                     </div>

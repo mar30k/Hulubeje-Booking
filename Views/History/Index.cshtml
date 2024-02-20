@@ -154,7 +154,7 @@
             </script>
         </div>
         <div class="tab-pane fade" id="tab2">
-            @if (Model?.HistoryModel?.Count() != 0)
+            @if (Model?.HistoryModel?.Count() > 0)
             {
                 @foreach (var route in Model?.HistoryModel?.Take(10) ?? Enumerable.Empty<HistoryModel>())
                 {
