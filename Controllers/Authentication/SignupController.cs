@@ -26,8 +26,16 @@ namespace HulubejeBooking.Controllers.Authentication
             _httpClientFactory = httpClientFactory;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            if (identificationResult.isLoggedIn || identificationResult.isValid)
+            {
+                TempData["ErrorMessage"] = "You are already logged in!";
+                return RedirectToAction("Index", "home");
+            }
             var data = HttpContext.Session.GetString("UserPohneNumber");
 
             if (!string.IsNullOrEmpty(data) && data.StartsWith('"') && data.EndsWith('"'))
