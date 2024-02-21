@@ -4,20 +4,23 @@ using HulubejeBooking.Models.CInemaModels;
 using System.Text;
 using HulubejeBooking.Controllers;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Controllers.Authentication;
 namespace CinemaSeatBooking.Controllers
 {
     public class CinemaFoodAndBeverageController : Controller
     {
         private readonly HttpClient _httpClient;
         private IHttpContextAccessor? _httpContextAccessor;
+        private readonly AuthenticationManager _authenticationManager;
 
-        public CinemaFoodAndBeverageController(IHttpContextAccessor? httpContextAccessor)
+        public CinemaFoodAndBeverageController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
             };
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
         [HttpPost]
         public async Task<IActionResult> IndexAsync([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string branchCode, [FromForm] string companyName, [FromForm] string movieName,
@@ -39,6 +42,9 @@ namespace CinemaSeatBooking.Controllers
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             HttpResponseMessage response = await _httpClient.GetAsync($"Product/GetProducts?orgTin={companyTinNumber}&type=Restaurant&consignee=0912141914&platform=Web&longitude=0");
 
             var viewModel = new ProductsViewModel
@@ -91,6 +97,9 @@ namespace CinemaSeatBooking.Controllers
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             try
             {
                 List<SelectedItem> selectedItemsList = JsonConvert.DeserializeObject<List<SelectedItem>>(selectedItems)!;
