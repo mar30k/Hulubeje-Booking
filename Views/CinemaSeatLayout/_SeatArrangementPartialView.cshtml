@@ -231,9 +231,6 @@
     }
     public string GetEthiopianTime(string? utcTimeString)
     {
-        Console.WriteLine("utcTimeString " + utcTimeString);
-
-        // Specify the expected format of the time string
         string format = "h.mm tt";
 
         if (DateTime.TryParseExact(utcTimeString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime utcTime))

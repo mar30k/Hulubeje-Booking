@@ -384,6 +384,12 @@
                         keyboard: false
                     }
                 );
+                $('#bookingModal').on('click', '.close', function (e) {
+                    $('#bookingModal').modal('hide');
+                    sessionStorage.removeItem("selectedSeatNames");
+                    resetBooking();
+                    selectedSeatsCountUpdate();
+                });
                 selectedSeatsCountUpdate();
             });
             updateSelectedSeatsUI();
@@ -428,7 +434,7 @@
                 <div class="modal-body">
                     <p>
                         The selected seats will expire in 1 minute and you will get additional one miunute for every page you
-                        progress towards checkout.In total you will have approximately 3 minutes to complete purchase.
+                        progress towards checkout.In total you will have approximately 5 minutes to complete purchase.
                     </p>
                 </div>
                 <div class="modal-footer">
