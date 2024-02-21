@@ -1,4 +1,12 @@
-﻿@model HulubejeBooking.Models.PaymentModels.PaymentValidation
+﻿@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+@model HulubejeBooking.Models.PaymentModels.PaymentValidation
 <partial name="_Navigation" />
 <head>
     <style>

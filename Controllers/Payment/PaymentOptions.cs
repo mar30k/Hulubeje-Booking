@@ -3,22 +3,25 @@ using Newtonsoft.Json;
 using HulubejeBooking.Models.PaymentModels;
 using HulubejeBooking.Controllers;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Controllers.Authentication;
 
 namespace Payment.Controllers
 {
     public class PaymentOptions : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor? _httpContextAccessor;
-        public PaymentOptions(IHttpContextAccessor httpContextAccessor)
+        public PaymentOptions(IHttpContextAccessor httpContextAccessor ,AuthenticationManager authenticationManager)
         {
             _httpContextAccessor = httpContextAccessor; 
+            _authenticationManager = authenticationManager;
         }
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult PaymentOption()
+        public async Task<IActionResult> PaymentOption()
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -36,6 +39,9 @@ namespace Payment.Controllers
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var b = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = b.isValid;
+            ViewBag.isLoggedIn = b.isLoggedIn;
             var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
             var value = HttpContext.Session.GetString("cinema");
             ViewBag.CoutDown= value;

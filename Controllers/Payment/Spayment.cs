@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using HulubejeBooking.Models.PaymentModels.HotlePaymentModels;
 using Microsoft.AspNetCore.Http;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Controllers.Authentication;
 
 namespace HulubejeBooking.Controllers.Payment
 {
@@ -17,14 +18,16 @@ namespace HulubejeBooking.Controllers.Payment
         private readonly ILogger<Spayment> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
+        private readonly AuthenticationManager _authenticationManager;
 
-        public Spayment(ILogger<Spayment> logger, IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
+        public Spayment(ILogger<Spayment> logger, IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
             var value = HttpContext.Session.GetString("cinema");
@@ -49,6 +52,9 @@ namespace HulubejeBooking.Controllers.Payment
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var b = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = b.isValid;
+            ViewBag.isLoggedIn = b.isLoggedIn;
             return View();
         }
         public async Task<IActionResult> PaymentAsync([FromBody] TransactionModel data) 
