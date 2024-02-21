@@ -139,6 +139,14 @@
     </style>
     <partial name="_Navigation" />
 </head>
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 <body>
     <div class="background-container vh-50 md-vh-auto">
         <div class="background-image">
