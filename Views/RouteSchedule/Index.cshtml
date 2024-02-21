@@ -40,6 +40,14 @@
             }
     </style>
 </head>
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 <partial name="_Navigation" />
 <div class="container">
     @if (Model.Count > 0)

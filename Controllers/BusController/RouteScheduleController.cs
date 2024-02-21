@@ -4,6 +4,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using HulubejeBooking.Models.BusModels;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Controllers.Authentication;
 
 namespace HulubejeBooking.Controllers.BusController
 {
@@ -11,11 +12,13 @@ namespace HulubejeBooking.Controllers.BusController
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
+        private readonly AuthenticationManager _authenticationManager;
 
-        public RouteScheduleController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
+        public RouteScheduleController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor,AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
         public async  Task<IActionResult> Index(string depature,string destination, DateTime travelDate)
         {
@@ -35,6 +38,9 @@ namespace HulubejeBooking.Controllers.BusController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"routeschedule/getschedulesbyroute?route={destination}&date={travelDate}");
             if(response.IsSuccessStatusCode)
