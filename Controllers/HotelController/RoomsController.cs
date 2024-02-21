@@ -43,7 +43,10 @@ namespace HulubejeBooking.Controllers.HotelController
 				ViewBag.PhoneNumber = user?.phoneNumber;
 				ViewBag.EmailAddress = user?.emailAddress;
 			}
-			var identificationResult = await _authenticationManager.identificationValid();
+            var b = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = b.isValid;
+            ViewBag.isLoggedIn = b.isLoggedIn;
+            var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var loginInfo = HttpContext.Session.GetString("IsLogin");

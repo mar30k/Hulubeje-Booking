@@ -44,6 +44,9 @@ namespace HulubejeBooking.Controllers.HotelController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var b = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = b.isValid;
+            ViewBag.isLoggedIn = b.isLoggedIn;
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/Industry/GetAllCompanies?industryType=LKUP000000451");
 
@@ -131,6 +134,9 @@ namespace HulubejeBooking.Controllers.HotelController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var b = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = b.isValid;
+            ViewBag.isLoggedIn = b.isLoggedIn;
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var dataList = new List<GetModel>();
 
@@ -314,7 +320,7 @@ namespace HulubejeBooking.Controllers.HotelController
             }
         }
 
-        public IActionResult HoteldetailView()
+        public async Task<IActionResult> HoteldetailViewAsync()
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -332,6 +338,9 @@ namespace HulubejeBooking.Controllers.HotelController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var b = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = b.isValid;
+            ViewBag.isLoggedIn = b.isLoggedIn;
             var value = HttpContext.Session.GetString("hotelDetail");
             if (!string.IsNullOrEmpty(value))
             {

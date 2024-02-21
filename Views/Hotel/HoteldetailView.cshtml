@@ -1,4 +1,12 @@
-﻿<partial name="_Navigation" />
+﻿@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.HotelDetailModel
 <title>Hotel Detail</title>
 <style>

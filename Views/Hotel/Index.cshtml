@@ -1,5 +1,13 @@
 ﻿@using HulubejeBooking.Models.HotelModels
 @model HulubejeBooking.Models.HotelModels.HotelListRequest
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 <partial name="_Navigation" />
 <head>
     <title>Hotel Home</title>
