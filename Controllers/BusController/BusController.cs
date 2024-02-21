@@ -3,17 +3,20 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using HulubejeBooking.Models.BusModels;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Controllers.Authentication;
 namespace HulubejeBooking.Controllers.BusController
 {
     public class BusController : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
 
-        public BusController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
+        public BusController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor,AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
 
         public async Task<IActionResult> Index()
@@ -34,6 +37,9 @@ namespace HulubejeBooking.Controllers.BusController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync("operators/getalloperators");
             var busModel = new BusModel();
