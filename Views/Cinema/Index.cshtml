@@ -25,6 +25,14 @@
         }
     </style>
 </head>
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 <html>
     <body>
     <div class="row pt-2" style="background-color: #063970; ">

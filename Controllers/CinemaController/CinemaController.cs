@@ -3,18 +3,20 @@ using HulubejeBooking.Models.CInemaModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
-
+using HulubejeBooking.Controllers.Authentication;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly IHttpClientFactory _httpClientFactory;
-        public CinemaController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public CinemaController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
         public async Task<List<MovieModel>> GetMoviesWithPosterUrls(List<MovieModel> movies)
         {
@@ -34,6 +36,9 @@ namespace HulubejeBooking.Controllers.CinemaController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var moviesWithPosterUrls = new List<MovieModel>();
             foreach (var movie in movies)
             {
