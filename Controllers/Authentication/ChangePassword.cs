@@ -6,14 +6,16 @@ namespace HulubejeBooking.Controllers.Authentication
 {
     public class ChangePassword : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
-        public ChangePassword(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public ChangePassword(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -31,6 +33,9 @@ namespace HulubejeBooking.Controllers.Authentication
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             return View();
         }
         [HttpPost]
