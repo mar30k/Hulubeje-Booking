@@ -2,30 +2,48 @@
 using HulubejeBooking.Controllers.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using HulubejeBooking.Models.Authentication;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
-    public class FilteredRoomController : Controller
+    public class RoomsController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly HotelListBuffer _hotelListBuffer;
         private readonly AuthenticationManager _authenticationManager;
 
-        public FilteredRoomController(
+        public RoomsController(
             IHttpClientFactory httpClientFactory,
             AuthenticationManager authenticationManager,
-            HotelListBuffer hotelListBuffer)
+            HotelListBuffer hotelListBuffer, IHttpContextAccessor httpContextAccessor)
         {
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
             _hotelListBuffer = hotelListBuffer;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
-
-            var identificationResult = await _authenticationManager.identificationValid();
+			var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+			if (!string.IsNullOrEmpty(userDataCookie))
+			{
+				var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+				ViewBag.FirstName = user?.firstName;
+				ViewBag.LastName = user?.lastName;
+				ViewBag.MiddleName = user?.middleName;
+				ViewBag.Personalattachment = user?.personalattachment;
+				ViewBag.SuccessCode = user?.successCode;
+				ViewBag.Idnumber = user?.idnumber;
+				ViewBag.Idtype = user?.idtype;
+				ViewBag.Dob = user?.dob;
+				ViewBag.Idattachment = user?.idattachment;
+				ViewBag.PhoneNumber = user?.phoneNumber;
+				ViewBag.EmailAddress = user?.emailAddress;
+			}
+			var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var loginInfo = HttpContext.Session.GetString("IsLogin");
@@ -51,7 +69,7 @@ namespace HulubejeBooking.Controllers.HotelController
             var viewModel = new AvailabilityViewModel();
             if (!string.IsNullOrEmpty(viewModelJson))
             {
-                HttpContext.Session.Remove("AvailabilityViewModel");
+                //HttpContext.Session.Remove("AvailabilityViewModel");
                 viewModel = JsonConvert.DeserializeObject<AvailabilityViewModel>(viewModelJson);
             }
             return View(viewModel);
