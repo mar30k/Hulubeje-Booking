@@ -11,7 +11,10 @@
         * {
             font-family: 'Montserrat', sans-serif;
         }
-
+        .navbar{
+            padding: 0px;
+            bs-navbar-padding-y: 0rem;
+        }
         .custom {
             padding-left: 0px;
             padding-right: 0px;
@@ -28,10 +31,6 @@
                 display: none; 
             }
 
-        #history:hover{
-            cursor: pointer;
-        }
-
         .dropdown-container {
             position: relative;
             display: inline-block;
@@ -47,6 +46,27 @@
 
         .dropdown-container:hover .dropdown-menu {
             display: block;
+        }
+
+        .userName {
+            white-space: nowrap;
+            transition: white-space 0.3s ease;
+        }
+
+        .brand{
+            white-space: nowrap;
+            transition: white-space 0.3s ease;
+        }
+        @@media only screen and (max-width: 320px) {
+            .userName {
+                white-space: normal;
+            }
+        }
+
+        @@media only screen and (max-width: 393px) {
+            .brand {
+                white-space: normal;
+            }
         }
     </style>
     <script>
@@ -66,7 +86,7 @@
                         <button type="button" class="btn btn-light ml-2 mr-1" style="color: black;">
                         <div class="d-flex">
                             <img src="@ViewBag.Personalattachment" class="mr-2 rounded-circle" alt="User Image" style="width: 30px; height: 30px;">
-                            <span style="padding: 5px; white-space: wrap;">@ViewBag.FirstName @ViewBag.MiddleName</span>
+                            <span class="userName"style="padding: 5px;">@ViewBag.FirstName @ViewBag.MiddleName</span>
                         </div>
                         </button>
                         <ul class="dropdown-menu">
@@ -77,7 +97,7 @@
                             <li><a class="dropdown-item" href="#">Privacy Policy</a></li>
                             <li><a class="dropdown-item" href="#">About</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/signIn/logout">Logout</a></li>
+                            <li><a class="dropdown-item" id="logoutLink" href="#">Logout</a></li>
                         </ul>
                  </div>
                 `;
@@ -89,7 +109,19 @@
             }
 
         });
+        $(document).ready(function () {
+            $('#logoutLink').click(function (e) {
+                e.preventDefault(); 
+                $('#exampleModal').modal('show');
+            });
+            $('#exampleModal').on('click', '.cancel', function (e) {
+                $('#exampleModal').modal('hide');
+            });
 
+            $('#exampleModal').on('click', '.close', function (e) {
+                $('#exampleModal').modal('hide');
+            });
+        });
     </script>
 </head>
 <body>
@@ -99,7 +131,7 @@
                 <div class="col-6">
                     <nav class="navbar navbar-light">
                         <div class="container">
-                            <a class="navbar-brand mx-0" asp-controller="Home" asp-action="Index" style="color: white; white-space: wrap">
+                            <a class="navbar-brand brand mx-0" asp-controller="Home" asp-action="Index" style="color: white;">
                                 Hulubeje Booking
                             </a>
                         </div>
@@ -120,6 +152,24 @@
                 <a href="/stadium" type="button" class="tabs btn btn-outline-primary mt-2 rounded" style="color: white;"><span><i class="fa fa-ticket"></i></span> Stadium Ticket</a>
             </div>
         </div>
+    </div>  
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-red" id="exampleModalLabel">Logout</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
+                    <a id="confirmLogout" type="button" class="btn btn-danger" href="signin/logout">Logout</a>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
-</html>
