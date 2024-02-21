@@ -1,4 +1,5 @@
-﻿using HulubejeBooking.Models.Authentication;
+﻿using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.BusModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,16 @@ namespace HulubejeBooking.Controllers.BusController
 {
     public class ConfirmationController : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor? _httpContextAccessor;
 
-        public ConfirmationController(IHttpContextAccessor? httpContextAccessor)
+        public ConfirmationController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
         [HttpPost]
-        public IActionResult Index(List<PassengerModel> passengers, List <string> seatId,string tariff, string depatureCity, string destinationCity, string terminal, string operatorName, int distance,
+        public async Task<IActionResult> IndexAsync(List<PassengerModel> passengers, List <string> seatId,string tariff, string depatureCity, string destinationCity, string terminal, string operatorName, int distance,
             string date, string plateNumber, DateTime arrivalDate, DateTime departureDate, int vehicleOperatorId, int routeScheduleId, string destinationTermianl, string originTerminalName, List<string> seatName, string via)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
@@ -37,6 +40,9 @@ namespace HulubejeBooking.Controllers.BusController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             string dateFormat = "ddd, MMM d, yyyy";
             DateTime dateTime = DateTime.ParseExact(date, dateFormat, CultureInfo.InvariantCulture);
             string formattedDate = dateTime.ToString("yyyy-MM-dd");

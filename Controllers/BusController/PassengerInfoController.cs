@@ -1,4 +1,5 @@
-﻿using HulubejeBooking.Models.Authentication;
+﻿using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.BusModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -7,12 +8,14 @@ namespace HulubejeBooking.Controllers.BusController
 {
     public class PassengerInfoController : Controller
     {
+        private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor? _httpContextAccessor;
-        public PassengerInfoController(IHttpContextAccessor httpContextAccessor)
+        public PassengerInfoController(IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
-        public IActionResult Index(int selectedButtonsCount, List<string> seatName, string plateNumber, string terminal, int distance, List<string> seatId, int vehicleOperatorId, int routeScheduleId, string destinationTermianl,
+        public async Task<IActionResult> IndexAsync(int selectedButtonsCount, List<string> seatName, string plateNumber, string terminal, int distance, List<string> seatId, int vehicleOperatorId, int routeScheduleId, string destinationTermianl,
             string tariff, string level, string route, string operatorName, string scheduleDate, DateTime scheduleTime, string destinationCity, string depatureCity, DateTime arrivialDate, DateTime departureDate, string originTerminalName, string via)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
@@ -31,6 +34,9 @@ namespace HulubejeBooking.Controllers.BusController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var schedule = new VwRouteSchedule()
             {
                 Id = routeScheduleId,
