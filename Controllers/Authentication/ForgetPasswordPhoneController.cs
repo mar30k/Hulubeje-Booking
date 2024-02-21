@@ -29,21 +29,23 @@ namespace HulubejeBooking.Controllers.Authentication
                 TempData["ErrorMessage"] = "You are already logged in!";
                 return RedirectToAction("Index", "home");
             }
-            var countryCodes = new List<CountryResponse>();
+            List<CountryResponse> sortedCountryCodes = new();
             var endPoint = "https://restcountries.com/v3.1/all";
             HttpResponseMessage response = await _httpClient.GetAsync(endPoint);
             if (response.IsSuccessStatusCode)
             {
                 var respnseData = await response.Content.ReadAsStringAsync();
-                countryCodes = respnseData != null ? JsonConvert.DeserializeObject<List<CountryResponse>>(respnseData) : new List<CountryResponse>();
-                var ethiopia = countryCodes?.Find(c => c.Name?.Common == "Ethiopia");
+                var countryCodes = respnseData != null ? JsonConvert.DeserializeObject<List<CountryResponse>>(respnseData) : new List<CountryResponse>();
+                sortedCountryCodes = countryCodes != null ? countryCodes.OrderBy(c => c.Name?.Common).ToList() : new List<CountryResponse>();
+                var ethiopia = sortedCountryCodes?.Find(c => c.Name?.Common == "Ethiopia");
                 if (ethiopia != null)
                 {
-                    countryCodes?.Remove(ethiopia);
-                    countryCodes?.Insert(0, ethiopia);
+                    sortedCountryCodes?.Remove(ethiopia);
+                    sortedCountryCodes?.Insert(0, ethiopia);
                 }
-            }            
-            return View(countryCodes);
+            }
+            return View(sortedCountryCodes);
+
         }
         [HttpPost]
         public async Task<IActionResult> IndexAsync(string phoneNumber)
