@@ -57,6 +57,10 @@
             white-space: nowrap;
             transition: white-space 0.3s ease;
         }
+
+        #exampleModal{
+            top: 20%;
+        }
         @@media only screen and (max-width: 320px) {
             .userName {
                 white-space: normal;
@@ -154,7 +158,7 @@
         </div>
     </div>  
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog " role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title text-red" id="exampleModalLabel">Logout</h5>
@@ -167,7 +171,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary cancel" data-dismiss="modal">Cancel</button>
-                    <a id="confirmLogout" type="button" class="btn btn-danger" href="signin/logout">Logout</a>
+                    <a id="confirmLogout" type="button" class="btn btn-danger" href="/signin/logout">Logout</a>
                 </div>
             </div>
         </div>
