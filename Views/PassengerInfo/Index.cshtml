@@ -92,19 +92,19 @@
                                         <div class="form-group mb-1">
                                             <label for="nationality">Nationality</label>
                                             <select class="form-select" name="Passengers[@(i - 1)].Nationality" id="nationality">
-                                                @*                                                 @foreach (var country in GetCountries())
-                                            {
-                                            if (country == "Ethiopia")
-                                            {
-                                            <option selected>@country</option>
-                                            }
-                                            else
-                                            {
-                                            <option>@country</option>
-                                            }
-                                            } *@
-                                                <option >Ethiopian</option>
-                                                <option>Eritrean</option>
+                                                @foreach (var country in GetCountries())
+                                                {
+                                                    if (country == "Ethiopia")
+                                                    {
+                                                        <option selected>@country</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option>@country</option>
+                                                    }
+                                                }
+                                              @*<option>Ethiopian</option>
+                                                <option>Eritrean </option>*@
                                             </select>
                                         </div>
                                         <div class="form-group mb-1">
@@ -233,16 +233,16 @@
             var countryList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<dynamic>>(response);
 
             // Extract 'demonym' property and sort countries alphabetically
-            var sortedCountries = countryList
+            var sortedCountries = countryList!= null ? countryList
                 .OrderBy(c => (c.name?.ToString()) ?? "")
                 .Select(c => (string)c.demonym)
-                .ToList();
+                .ToList() : new List<string>();
 
             // Move Ethiopia and Eritrea to the top
             sortedCountries.Remove("Ethiopian");
-            sortedCountries.Remove("Eritrean");
+            // sortedCountries.Remove("Eritrean");
             sortedCountries.Insert(0, "Ethiopian");
-            sortedCountries.Insert(1, "Eritrean");
+            // sortedCountries.Insert(1, "Eritrean");
 
             return sortedCountries;
         }
