@@ -294,12 +294,21 @@ namespace HulubejeBooking.Controllers.HotelController
                 var oud = roomFormData.oud;
 
                 HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Industry/GetCompanyBranchDetail?orgTin={orgTin}&branchCode={oud}&industryType=LKUP000000451");
-
-                if (response.IsSuccessStatusCode)
+                HttpResponseMessage imageResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetSlidingImagesForSingleCompany?orgTin={orgTin}&oud={oud}");
+                if (response.IsSuccessStatusCode )
                 {
-                    // Assuming you have a model to represent the data received from the API
+                    var images = new List<string>();
+                    if (imageResponse.IsSuccessStatusCode) 
+                    {
+                        string image = await imageResponse.Content.ReadAsStringAsync();
+                        images = JsonConvert.DeserializeObject<List<string>>(image);
+                    }
                     string content = await response.Content.ReadAsStringAsync();
-                   var hotel = JsonConvert.DeserializeObject<HotelDetailModel>(content);
+                    var hotel = JsonConvert.DeserializeObject<HotelDetailModel>(content);
+                    if (hotel != null )
+                    {
+                        hotel.Images = images?.Count > 0 ? images : new List<string>();
+                    }
 
                     var viewModelJson = JsonConvert.SerializeObject(hotel);
 

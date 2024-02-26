@@ -124,7 +124,7 @@
             
 
 
-            <div style="width:50%">
+            <div style="width:100%">
                 <input class="form-control" type="text" id="date-range-picker" placeholder="Checkin-Checkout" style="border-color:#FEBB02; height:60px;">
             </div>
 
@@ -175,21 +175,6 @@
                     </form>
                 </div>
             </div>
-
-          
-            <div class="select" style="width:100%;">
-                @*  <select class="form-select form form-control" id="city" data-tags="true" data-placeholder="Select an option" data-allow-clear="true" style="width:100%; height:60px; border-color:#FEBB02;">
-                <option>Choose a city </option>
-                @if (Model.CityNameList != null)
-                {
-                @foreach (var city in Model.CityNameList)
-                {
-                <option value="@city?.CityName">@city?.CityName?.ToUpper()</option>
-                }
-                }
-                </select> *@
-            </div>
-
         </div>
     </div>
 </div>
@@ -240,70 +225,68 @@
 
 	} *@
 
-    @if (Model != null)
-    {
-        <div class="container mt-2">
-            <div class="row mb-4">
-                <div class="col-md-12 m-2">
-                    <p>@Model?.note</p>
-                </div>
+@if (Model != null)
+{
+    <div class="container mt-2">
+        <div class="row mb-4 p-3 p-1">
+            <div class="col-md-12 p-2 border rounded rounded-2 bg-light"  style="min-height: 100px">
+                <p class="ml-lg-2" style="  color: #333;">@Model?.note</p>
             </div>
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="row g-3">
-                        @if (Model?.paymentOptions is not null)
+        </div>
+        <div class="row mb-4 p-1">
+            <div class="col-md-12">
+                <div class="row g-3">
+                    @if (Model?.paymentOptions?.Count > 0)
+                    {
+                        @foreach (var paymentMethod in Model.paymentOptions)
                         {
-                            @foreach (var paymentMethod in Model.paymentOptions)
-                            {
-                                var image = paymentMethod.PaymentMethodImage;
-                                <div class="col-md-4 mb-3">
-                                    <div class="card h-100 shadow-sm rounded-3 border-0">
-                                        <div class="card-body">
-                                        <img src="@Html.Raw(image)" class="img-fluid mb-2" alt="@paymentMethod?.PaymentMethodName">
-                                        <h5 class="card-title">@paymentMethod?.PaymentMethodName</h5>
-                                        <p class="card-text price">@paymentMethod?.PaymentMethodName</p>
-                                        </div>
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
+                                <div class="card h-100 shadow-sm rounded-3 border-0 p-1">
+                                    <div class="card-body p-0">
+                                        <img src="@paymentMethod.PaymentMethodImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentMethodName" style="max-width: 100%; height: auto;">
+                                        <h5 class="card-title text-center" style="font-size: 16px;">@paymentMethod?.PaymentMethodName</h5>
                                     </div>
                                 </div>
-                            }
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-4">
-                @if (Model?.aminities != null)
-                {
-                    @foreach (var amenity in Model.aminities)
-                    {
-                        <div class="col-lg-2 col-md-3 col-sm-4 mb-3">
-                            <div class="border p-2">
-                                <img src="@amenity.ImageUrl" alt="Amenity Image" class="img-fluid rounded me-2" style="max-height: 20px;">
-                                <span>@amenity.Name</span>
                             </div>
-                        </div>
+                        }
                     }
-                }
-            </div>
-            <div class="row">
-                <div class="col-md-6 offset-md-3 text-center">
-                    <button class="btn btn-primary btn-lg m-3" type="button" id="searchButton">Book Now</button>
                 </div>
             </div>
         </div>
-    }
+        @if (Model?.aminities?.Count > 0)
+        {
+            <div class="p-lg-3 p-1 row">
+                @foreach (var amenity in Model.aminities)
+                {
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
+                        <div class="p-2 border">
+                            <img src="@amenity.ImageUrl" alt="Amenity Image" class="rounded me-2" style="height: 30px; object-fit: contain;">
+                            <span>@amenity.Name</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        <div class="row">
+            <div class="col-md-6 offset-md-3 text-center">
+                <button class="btn btn-primary m-3" type="button" id="searchButton" style="font-size: 16px;">Book Now</button>
+            </div>
+        </div>
+    </div>
+}
 
 
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    @* <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> *@
+@*     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-
+ *@
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script>
 
         jQuery(document).ready(function ($) {
@@ -407,16 +390,16 @@
         //     return storedFormData ? JSON.parse(storedFormData) : null;
         // }
 
-        $(document).ready(function () {
-            var storedData = retrieveFormData();
-            if (storedData) {
-                // $('.form-select').val(storedData.destination);
-                $('#date-range-picker').attr('placeholder', storedData.dateRange);
-                $('#adultCount').text(storedData.adults);
-                $('#childrenCount').text(storedData.children);
-                $('#roomsCount').text(storedData.rooms);
-            }
-        });
+        // $(document).ready(function () {
+        //     var storedData = retrieveFormData();
+        //     if (storedData) {
+        //         // $('.form-select').val(storedData.destination);
+        //         $('#date-range-picker').attr('placeholder', storedData.dateRange);
+        //         $('#adultCount').text(storedData.adults);
+        //         $('#childrenCount').text(storedData.children);
+        //         $('#roomsCount').text(storedData.rooms);
+        //     }
+        // });
 
         // $(document).ready(function () {
         //     $('#searchButton').click(function () {
@@ -475,7 +458,7 @@
                     contentType: 'application/json',
                     data: JSON.stringify(formData),
                     success: function () {
-                        window.location.href = '../FilteredRoom/Index';
+                        window.location.href = '../rooms';
                     },
                     error: function (error) {
                         console.error('Error:', error);
