@@ -20,6 +20,7 @@ namespace HulubejeBooking.Controllers.Authentication
             var identificationResult = await _authenticationManager.identificationValid();
             if (!(identificationResult.isLoggedIn || identificationResult.isValid))
             {
+                TempData["ErrorMessage"] = "Please Login First";
                 return RedirectToAction("Index", "home");
             }
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
