@@ -17,6 +17,11 @@ namespace HulubejeBooking.Controllers.Authentication
         }
         public async Task<IActionResult> IndexAsync()
         {
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (!(identificationResult.isLoggedIn || identificationResult.isValid))
+            {
+                return RedirectToAction("Index", "home");
+            }
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
@@ -33,7 +38,6 @@ namespace HulubejeBooking.Controllers.Authentication
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
-            var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             return View();
