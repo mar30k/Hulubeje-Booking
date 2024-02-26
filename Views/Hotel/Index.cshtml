@@ -216,9 +216,10 @@
     @{
         var random = new Random();
         var shuffledHotels = Model?.filteredCompany?.OrderBy(x => random.Next()).Take(20).ToList();
+        var ordered = shuffledHotels?.OrderBy(x => x.brandName).ToList();
     }
     <div class="row mt-3">
-        @foreach (var hotel in shuffledHotels ?? new List<FilteredCompany>())
+        @foreach (var hotel in ordered ?? new List<FilteredCompany>())
         {
             <div class="col-md-6 mb-3">
                 <!-- Adjust the column width based on your layout -->
@@ -461,7 +462,7 @@
                  contentType: 'application/json',
                  data: JSON.stringify(data),
                  success: function () {
-                    window.location.href = "/Hotel/HoteldetailView";
+                    window.location.href = "/hotel/hoteldetailview";
                  },
                  error: function (error) {
                      console.error('Error:', error);
