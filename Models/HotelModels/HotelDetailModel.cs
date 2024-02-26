@@ -29,6 +29,7 @@
         public int? hotelRating { get; set; }
         public string? state { get; set; }
         public List<Amenity>? aminities { get; set; }
+        public List<string>? Images { get; set; }
     }
     public class BannerResponseModel
     {

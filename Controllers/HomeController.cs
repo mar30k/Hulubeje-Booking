@@ -47,8 +47,8 @@ namespace HulubejeBooking.Controllers
             var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
-			var Picures = new Images();
-			var bus = "wbus";
+            var Picures = new Images();
+            var bus = "wbus";
             var hotel = "whotel";
             var spa = "wspa";
             var events = "wevent";
