@@ -13,14 +13,14 @@ using HulubejeBooking.Controllers.Authentication;
 
 namespace HulubejeBooking.Controllers.Payment
 {
-    public class Spayment : Controller
+    public class SpaymentController : Controller
     {
-        private readonly ILogger<Spayment> _logger;
+        private readonly ILogger<SpaymentController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
         private readonly AuthenticationManager _authenticationManager;
 
-        public Spayment(ILogger<Spayment> logger, IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
+        public SpaymentController(ILogger<SpaymentController> logger, IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
