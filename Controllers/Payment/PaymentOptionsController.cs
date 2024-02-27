@@ -7,11 +7,11 @@ using HulubejeBooking.Controllers.Authentication;
 
 namespace Payment.Controllers
 {
-    public class PaymentOptions : Controller
+    public class PaymentOptionsController : Controller
     {
         private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor? _httpContextAccessor;
-        public PaymentOptions(IHttpContextAccessor httpContextAccessor ,AuthenticationManager authenticationManager)
+        public PaymentOptionsController(IHttpContextAccessor httpContextAccessor ,AuthenticationManager authenticationManager)
         {
             _httpContextAccessor = httpContextAccessor; 
             _authenticationManager = authenticationManager;
