@@ -1,11 +1,13 @@
 ﻿@model HulubejeBooking.Models.PaymentModels.PaymentResponseModel
-<div>
-    @if (Model.IsResolved && Model.IsFulfilled)
-    {
-        <div>Payment is successfully done</div>
-    }
-    else
-    {
-        <div>Payment timed out</div>
-    }
+<title>Telebirr Ussd Push</title>
+<partial name="_Navigation" />
+<div class="container">
+    <div style=" display: flex; align-items: center; justify-content: center; height: 50vh;" class="border m-2 bg-light">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
+            <p class="mt-2">Couldn't Process Your Payment or Session Timed Out.</p>
+        </div>
+    </div>
 </div>
+<partial name="_Footer" />
+
