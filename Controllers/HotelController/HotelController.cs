@@ -308,8 +308,8 @@ namespace HulubejeBooking.Controllers.HotelController
                     if (hotel != null )
                     {
                         hotel.Images = images?.Count > 0 ? images : new List<string>();
+                        hotel.Name = roomFormData.Name;
                     }
-
                     var viewModelJson = JsonConvert.SerializeObject(hotel);
 
                     HttpContext.Session.SetString("hotelDetail", viewModelJson);
