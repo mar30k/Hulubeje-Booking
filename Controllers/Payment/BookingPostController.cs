@@ -6,11 +6,11 @@ using Newtonsoft.Json;
 
 namespace HulubejeBooking.Controllers.Payment
 {
-    public class BookingPost : Controller
+    public class BookingPostController : Controller
     {
         private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor? _httpContextAccessor;
-        public BookingPost(IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
+        public BookingPostController(IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
