@@ -116,17 +116,13 @@
     <div class="container">
         <header class="container-fluid" style="padding-top: 2%">
             <div>
-                <h1 style="color: white;">Welcom to @Model.Name</h1>
+                <h1 style="color: white;">Welcome to @Model.Name</h1>
             </div>
         </header>
     </div>
     <div class="container mt-5">
 
         <div class="d-flex">
-
-            
-
-
             <div style="width:100%">
                 <input class="form-control" type="text" id="date-range-picker" placeholder="Checkin-Checkout" style="border-color:#FEBB02; height:60px;">
             </div>
@@ -177,6 +173,9 @@
                         </div>
                     </form>
                 </div>
+            </div>
+            <div>
+                <button class="btn btn-primary m" type="button" id="searchButton" style="border-color:#FEBB02; height:60px; font-size: 16px;" >Book Now</button>
             </div>
         </div>
     </div>
@@ -278,7 +277,7 @@
                                     @foreach (var image in Model?.Images ?? new List<string>())
                                     {
                                         <div class="col-lg-3 col-md-4 col-sm-6">
-                                            <img src="@image" class="img-fluid mb-2" alt="@image" />
+                                            <img src="@image" class="img-fluid mb-2" alt="@image" style="max-height:auto;"/>
                                         </div>
                                     }
                                 </div>
@@ -292,6 +291,23 @@
             </div>
         </div>
         <div class="row p-1">
+            <div class="col-md-6">
+                <h4 class="bg-light p-2 text-center"> Amenities </h4>
+                @if (Model?.aminities?.Count > 0)
+                {
+                    <div class="p-lg-3 p-1 row">
+                        @foreach (var amenity in Model.aminities)
+                        {
+                            <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
+                                <div class="p-2 border">
+                                    <img src="@amenity.ImageUrl" alt="Amenity Image" class="rounded me-2" style="height: 30px; object-fit: contain;">
+                                    <span>@amenity.Name</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
             <div class="col-md-6">
                 <h4 class="bg-light p-2 text-center">Payment Options</h4>
                 <div class="row g-3 p-lg-3 p-1">
@@ -310,29 +326,6 @@
                         }
                     }
                 </div>
-            </div>
-            <div class="col-md-6">
-                <h4 class="bg-light p-2 text-center"> Amenities </h4>
-                @if (Model?.aminities?.Count > 0)
-                {
-                    <div class="p-lg-3 p-1 row">
-                        @foreach (var amenity in Model.aminities)
-                        {
-                            <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
-                                <div class="p-2 border">
-                                    <img src="@amenity.ImageUrl" alt="Amenity Image" class="rounded me-2" style="height: 30px; object-fit: contain;">
-                                    <span>@amenity.Name</span>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6 offset-md-3 text-center">
-                <button class="btn btn-primary m-3" type="button" id="searchButton" style="font-size: 16px;">Book Now</button>
             </div>
         </div>
     </div>
