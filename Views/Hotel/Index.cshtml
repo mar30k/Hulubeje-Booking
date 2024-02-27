@@ -10,7 +10,7 @@
 </script>
 <partial name="_Navigation" />
 <head>
-    <title>Hotel Home</title>
+    <title>Hotels</title>
     <style>
         /*     @@import "bourbon";
          */
@@ -453,7 +453,8 @@
             var data = 
             {
                 oud: $(this).data('oud'),
-                orgTin: $(this).data('orgTin')
+                orgTin: $(this).data('orgTin'),
+                name:  $(this).data('hotel-name')
             }; 
 
             $.ajax({

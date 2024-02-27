@@ -18,6 +18,7 @@
 
     public class HotelDetailModel
     {
+        public string? Name { get; set; }
         public string? branchCode { get; set; }
         public string? orgTin { get; set; }
         public string? note { get; set; }
@@ -30,16 +31,5 @@
         public string? state { get; set; }
         public List<Amenity>? aminities { get; set; }
         public List<string>? Images { get; set; }
-    }
-    public class BannerResponseModel
-    {
-        public List<string>? BannerUrls { get; set; }
-    }
-
-    public class HotelDetail
-    {
-        public HotelDetailModel Hotel { get; set; }
-        public BannerResponseModel HotelPicture { get; set; }
-
     }
 }

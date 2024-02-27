@@ -106,14 +106,17 @@
         animation: slide 1s;
         display: block;
     }
+
+    .image:hover{
+        cursor: pointer;
+    }
 </style>
 
 <div class="row" style="background-color:#063970;">
     <div class="container">
         <header class="container-fluid" style="padding-top: 2%">
             <div>
-                <h1 style="color: white;">Find your next stay</h1>
-                <h4 style="color: white;">Search deals on hotels, homes, and much more...</h4>
+                <h1 style="color: white;">Welcom to @Model.Name</h1>
             </div>
         </header>
     </div>
@@ -222,18 +225,76 @@
 			</div>
 		</div>
 	} *@
-
+@{
+    if (Model.Name == "Adot Tina Hotel" && Model?.Images?.Count > 0)
+    {
+        Model.Images.RemoveAt(Model.Images.Count - 1);
+    }
+    var images = Model?.Images?.OrderBy(x => Guid.NewGuid()).Take(3).ToList();
+}
 @if (Model != null)
 {
     <div class="container mt-2">
-        <div class="row mb-4 p-3 p-1">
-            <div class="col-md-12 p-2 border rounded rounded-2 bg-light"  style="min-height: 100px">
+        <div class="row p-3 p-1">
+            <div class="col-md-6 p-2 border rounded rounded-2 bg-light mt-3"  style="min-height: 100px">
+                <h4 class="ml-lg-3">About Us</h4>
                 <p class="ml-lg-2" style="  color: #333;">@Model?.note</p>
             </div>
+            <div class="col-md-6 p-lg-3 p-2">
+                <div class="row">
+                    @foreach (var image in Model?.Images?.OrderBy(x => Guid.NewGuid()).Take(5).ToList() ?? new List<string>())
+                    {
+                        <div class="col-6">
+                            <img src="@image" class="img-fluid image mb-2" alt="@image" style="max-width: 100%; height: auto;" />
+                        </div>
+                    }
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        $('.image').click(function (e) {
+                            e.preventDefault();
+                            $('#imageModal').modal('show');
+                        });
+                        $('#imageModal').on('click', '.cancel', function (e) {
+                            $('#imageModal').modal('hide');
+                        });
+
+                        $('#imageModal').on('click', '.close', function (e) {
+                            $('#imageModal').modal('hide');
+                        });
+                    });
+                </script>
+                <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" >
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="imageModalLabel">All Images</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    @foreach (var image in Model?.Images ?? new List<string>())
+                                    {
+                                        <div class="col-lg-3 col-md-4 col-sm-6">
+                                            <img src="@image" class="img-fluid mb-2" alt="@image" />
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary close" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row mb-4 p-1">
-            <div class="col-md-12">
-                <div class="row g-3">
+        <div class="row p-1">
+            <div class="col-md-6">
+                <h4 class="bg-light p-2 text-center">Payment Options</h4>
+                <div class="row g-3 p-lg-3 p-1">
                     @if (Model?.paymentOptions?.Count > 0)
                     {
                         @foreach (var paymentMethod in Model.paymentOptions)
@@ -250,21 +311,25 @@
                     }
                 </div>
             </div>
-        </div>
-        @if (Model?.aminities?.Count > 0)
-        {
-            <div class="p-lg-3 p-1 row">
-                @foreach (var amenity in Model.aminities)
+            <div class="col-md-6">
+                <h4 class="bg-light p-2 text-center"> Amenities </h4>
+                @if (Model?.aminities?.Count > 0)
                 {
-                    <div class="col-lg-4 col-md-6 col-sm-12 mb-2">
-                        <div class="p-2 border">
-                            <img src="@amenity.ImageUrl" alt="Amenity Image" class="rounded me-2" style="height: 30px; object-fit: contain;">
-                            <span>@amenity.Name</span>
-                        </div>
+                    <div class="p-lg-3 p-1 row">
+                        @foreach (var amenity in Model.aminities)
+                        {
+                            <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
+                                <div class="p-2 border">
+                                    <img src="@amenity.ImageUrl" alt="Amenity Image" class="rounded me-2" style="height: 30px; object-fit: contain;">
+                                    <span>@amenity.Name</span>
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
             </div>
-        }
+        </div>
+        
         <div class="row">
             <div class="col-md-6 offset-md-3 text-center">
                 <button class="btn btn-primary m-3" type="button" id="searchButton" style="font-size: 16px;">Book Now</button>
