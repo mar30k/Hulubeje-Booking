@@ -323,7 +323,7 @@
                                                 </span>
                                             </div>
 
-                                            <a href="#" class="card-text"><small class="text-body-secondary">@hotel.BranchName</small></a>
+                                            <p class="card-text"><small class="text-body-secondary">@hotel.BranchName</small></p>
                                             <div>
                                                 <span><i class="bi bi-geo-alt-fill"></i> @hotel.SpecificLocation</span>
                                             </div>
@@ -363,9 +363,6 @@
                                         </div>
                                         <div class="col-6">
                                             <h5>Total Price: ETB @hotel.TotalPrice.ToString("N2", new System.Globalization.CultureInfo("am-ET")) </h5>
-                                            <div>
-                                                <p style="display: inline-block; background-color: green; color: white;">20% off</p>
-                                            </div>
                                             <button class="btn btn-primary btn-sm viewAvailabilityBtn"
                                                     data-org-tin="@hotel.orgTin"
                                                     data-hotel="@hotel.OrganizationName"
