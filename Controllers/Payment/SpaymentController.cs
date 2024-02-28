@@ -35,7 +35,12 @@ namespace HulubejeBooking.Controllers.Payment
             {
                 ViewBag.CoutDown = value;
             }
-
+            var errorValue = HttpContext.Session.GetString("error");
+            if (errorValue != null)
+            {
+                TempData["ErrorMessage"] = "Incorrect Otp Or Couldn't Process Your Payment!";
+            }
+            HttpContext.Session.Remove("error");
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
@@ -133,27 +138,9 @@ namespace HulubejeBooking.Controllers.Payment
 
                     return RedirectToAction("PaymentCommon", "SHotelpayment");
                 }
-
-         
-
-                
-                
-
-                //if (response.IsSuccessStatusCode) 
-                //{
-                //    string responseData = await response.Content.ReadAsStringAsync();
-                //    PaymentValidation validationData = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
-
-                //}
-                //else
-                //{
-                //    string responseData = await response.Content.ReadAsStringAsync();
-                //    PaymentValidation validationData = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
-
-
-                //}
-
             }
+            var error = "error";
+            HttpContext.Session.SetString("error",error);
             return View();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
