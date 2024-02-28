@@ -6,6 +6,7 @@
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
+<title>Guest Information</title>
 <partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.AvailabilityViewModel
 <div class="container">
@@ -255,39 +256,39 @@
                     SupplierOUD: sessionStorage.getItem('oud'),
                     Amount: '0.1'
                 },
-                
-                    GuestInfoData: {
-                        orgTin: sessionStorage.getItem('orgTin'),
-                        date: sessionStorage.getItem('dateRange'),
-                        adult: sessionStorage.getItem('adultCount'),
-                        child: sessionStorage.getItem('childrenCount'),
-                        roomTypeCode: sessionStorage.getItem('roomTypeCode'),
-                        rateCode: sessionStorage.getItem('rateCode'),
-                        rateCodeDetail: sessionStorage.getItem('rateCodeDetail'),
-                        roomCount: sessionStorage.getItem('roomsCount'),
-                        oud: sessionStorage.getItem('oud'),
-                        specialRequirement: "i am testing special requirements",
-                        transactionReference: "",
-                        guests: [{
-                            Code: $('#phone').val(),
-                            FirstName: $('#name').val(),
-                            MiddleName: $('#middle').val(),
-                            LastName: $('#last').val(),
-                            Email: $('#email').val(),
-                            PhoneNumber: $('#phone').val(),
-                            IdPicture: "",
-                            DateOfBirth: $('#date').val(),
-                            Gender: $('input[name="gender"]:checked').val(),
-                            Nationality: $('#nationality').val()
-                        }],
-                        onHotelBookSuccess: {
-                            firstName: $('#name').val(),
-                            company: sessionStorage.getItem("hotelName"),
-                            branch: sessionStorage.getItem("branchName"),
-                            nightCount: 1
-                        }
+
+                GuestInfoData: {
+                    orgTin: sessionStorage.getItem('orgTin'),
+                    date: sessionStorage.getItem('dateRange'),
+                    adult: sessionStorage.getItem('adultCount'),
+                    child: sessionStorage.getItem('childrenCount'),
+                    roomTypeCode: sessionStorage.getItem('roomTypeCode'),
+                    rateCode: sessionStorage.getItem('rateCode'),
+                    rateCodeDetail: sessionStorage.getItem('rateCodeDetail'),
+                    roomCount: sessionStorage.getItem('roomsCount'),
+                    oud: sessionStorage.getItem('oud'),
+                    specialRequirement: "i am testing special requirements",
+                    transactionReference: "",
+                    guests: [{
+                        Code: $('#phone').val(),
+                        FirstName: $('#name').val(),
+                        MiddleName: $('#middle').val(),
+                        LastName: $('#last').val(),
+                        Email: $('#email').val(),
+                        PhoneNumber: $('#phone').val(),
+                        IdPicture: "",
+                        DateOfBirth: $('#date').val(),
+                        Gender: $('input[name="gender"]:checked').val(),
+                        Nationality: $('#nationality').val()
+                    }],
+                    onHotelBookSuccess: {
+                        firstName: $('#name').val(),
+                        company: sessionStorage.getItem("hotelName"),
+                        branch: sessionStorage.getItem("branchName"),
+                        nightCount: 1
                     }
-               
+                }
+
             };
 
             $.ajax({
@@ -298,7 +299,7 @@
                 success: function (/* response */) {
                     // var cardText = response.cardText;
 
-                    window.location.href = "/PaymentOptions/PaymentOption"; 
+                    window.location.href = "/paymentoptions";
                     // if (cardText === 'telebirr SMS OTP') {
                     //     window.location.href = '/Spayment/index';
                     // } else if (cardText === 'telebirr USSD Push') {
@@ -320,7 +321,7 @@
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function () {
-                    
+
 
                 },
                 error: function (error) {
@@ -329,13 +330,5 @@
             });
         });
     });
-
-
-
-
-
-       
-    
-
 </script>
 <partial name="_Footer" />

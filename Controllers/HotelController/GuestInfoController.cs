@@ -15,11 +15,7 @@ namespace HulubejeBooking.Controllers.HotelController
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
-        public async Task<IActionResult> GuestInfoAsync(string roomTypecode, string orgTin, string Date, int adultCount, int childCount, int roomCount, string oud)
+        public async Task<IActionResult> IndexAsync(string roomTypecode, string orgTin, string Date, int adultCount, int childCount, int roomCount, string oud)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
