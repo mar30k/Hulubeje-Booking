@@ -127,7 +127,7 @@
 			<table class="table table-image">
 				<thead>
 					<tr>
-						<th scope="col" hidden style="display:none">Room Type</th>
+						<th scope="col" hidden style="display:none">Room Type </th>
 						<th scope="col" hidden style="display:none">Image</th>
 						<th scope="col" hidden style="display:none">Price</th>
 					</tr>
@@ -207,6 +207,8 @@
 
 							<td class="d-flex flex-column">
 								Price: ETB @room.AverageAmount.ToString("N2", new System.Globalization.CultureInfo("am-ET"))
+								<strong style="font-size: 14px; background-color: white; padding: 3px; white-space: nowrap; margin-bottom: 2px; color: @(room.AvailableRoom >= 5 ? "green" : "red")">
+									Rooms Left: @room.AvailableRoom</strong>
 								<button class="btn btn-primary btn-sm mt-auto submit"
 										data-rate-policy="@room.RatePolicy"
 										data-room-type-description="@room.RoomTypeDescription"
