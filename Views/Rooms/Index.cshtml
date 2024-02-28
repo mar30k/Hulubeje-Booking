@@ -272,7 +272,7 @@
 			var childCount = sessionStorage.getItem('childrenCount');
 			var roomCount = sessionStorage.getItem('roomsCount');
 
-			var form = $('<form action="/GuestInfo/GuestInfo" method="post">' +
+			var form = $('<form action="/guestinfo" method="post">' +
 				'<input type="hidden" name="orgTin" value="' + orgTin + '" />' +
 				'<input type="hidden" name="RoomTypeCode" value="' + $(this).data('room-type-code') + '" />' +
 				'<input type="hidden" name="Date" value="' + Date + '" />' +
