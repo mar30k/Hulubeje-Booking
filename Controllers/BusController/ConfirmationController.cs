@@ -81,7 +81,7 @@ namespace HulubejeBooking.Controllers.BusController
             var wrap = new Wrap()
             {
                 VwRouteScheduleData = schedule,
-                PassengerModelData = passengers,
+                PassengerModelData = passengers,    
             }; 
             return View(wrap);
         }
