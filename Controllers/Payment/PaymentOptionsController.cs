@@ -16,12 +16,7 @@ namespace Payment.Controllers
             _httpContextAccessor = httpContextAccessor; 
             _authenticationManager = authenticationManager;
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> PaymentOption()
+        public async Task<IActionResult> IndexAsync()
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
@@ -44,14 +39,14 @@ namespace Payment.Controllers
             ViewBag.isLoggedIn = b.isLoggedIn;
             var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
             var value = HttpContext.Session.GetString("cinema");
-            ViewBag.CoutDown= value;
+            ViewBag.CoutDown = value;
             if (!string.IsNullOrEmpty(paymentOptionsJson))
             {
                 var viewPayments = JsonConvert.DeserializeObject<List<PaymentOptionModel>>(paymentOptionsJson);
                 var wrapper = new Wrapper
                 {
-                    PaymentOptions = viewPayments,  
-                    Boa = new BoAModel()  
+                    PaymentOptions = viewPayments,
+                    Boa = new BoAModel()
                 };
                 return View(wrapper);
             }
@@ -59,9 +54,6 @@ namespace Payment.Controllers
             {
                 return View(new Wrapper());
             }
-        }
-
-
-
+        }        
     }
 }
