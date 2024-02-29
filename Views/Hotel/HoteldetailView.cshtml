@@ -110,6 +110,22 @@
     .image:hover{
         cursor: pointer;
     }
+
+    @@media (max-width: 500px) {
+        .searchbar {
+            flex-direction: column;
+            margin: 10px;
+        }
+
+        .login-wrapper,
+        #date-range-picker,
+        #searchButton {
+            width: 100% !important;
+            margin-right: 0;
+            margin-bottom: 3px;
+            height: 50px !important;
+        }
+    }
 </style>
 
 <div class="row" style="background-color:#063970;">
@@ -120,9 +136,9 @@
             </div>
         </header>
     </div>
-    <div class="container mt-5">
+    <div class="container mt-lg-5 mt-3">
 
-        <div class="d-flex">
+        <div class="d-flex searchbar">
             <div style="width:100%">
                 <input class="form-control" type="text" id="date-range-picker" placeholder="Checkin-Checkout" style="border-color:#FEBB02; height:60px;">
             </div>
@@ -175,7 +191,7 @@
                 </div>
             </div>
             <div>
-                <button class="btn btn-primary m" type="button" id="searchButton" style="border-color:#FEBB02; height:60px; font-size: 16px;" >Book Now</button>
+                <button class="btn btn-primary m" type="button" id="searchButton" style="border-color:#FEBB02; height:60px; font-size: 16px;" >Start Booking</button>
             </div>
         </div>
     </div>
