@@ -468,7 +468,7 @@
                     clearInterval(countdownInterval);
                     alert("Booking time expired. Please restart the booking process.");
                     sessionStorage.clear();
-                    window.location.href = '@Url.Action("Index","CinemaHome")';
+                    window.location.href = '@Url.Action("Index","Cinema")';
                 }
                 sessionStorage.setItem("remainingTime", updatedRemainingTime);
             }, 1000);
