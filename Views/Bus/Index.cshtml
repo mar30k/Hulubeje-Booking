@@ -24,7 +24,7 @@
 
     /* Responsive styling for smaller screens */
     @@media (max-width: 500px) {
-        .d-flex {
+        .searchBar {
             flex-direction: column;
             margin: 10px;
         }
@@ -64,7 +64,7 @@
             var allRoutes = Model?.RouteModel;
             var allCities = Model?.RouteModel?.Select(route => route.Routes).ToList();
         }
-        <div class="d-flex" style="">
+        <div class="d-flex searchBar" style="">
             <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>
                 @if (allRoutes is not null)
                 {
