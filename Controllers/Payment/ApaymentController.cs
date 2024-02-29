@@ -89,52 +89,61 @@ namespace HulubejeBooking.Controllers.Payment
                 string apiUrl = $"{_client.BaseAddress}payment/transaction?{queryString}";
 
                 bool isSuccess = false;
-                DateTime endTime = DateTime.Now.AddMinutes(0.5); 
+                DateTime endTime = DateTime.Now.AddSeconds(30); // Set end time to 30 seconds from now
 
-                while (DateTime.Now < endTime && !isSuccess)
+                // Set up a timer to execute the request every 5 seconds
+                System.Timers.Timer timer = new System.Timers.Timer(5000);
+                timer.Elapsed += async (sender, e) =>
                 {
-                    HttpResponseMessage response = await _client.GetAsync(apiUrl);
-                    var responseData = await response.Content.ReadAsStringAsync();
-                    
-                    pay = JsonConvert.DeserializeObject<PaymentResponseModel>(responseData);
-                    if (pay != null )
+                    if (!isSuccess && DateTime.Now < endTime)
                     {
-                        isSuccess = pay.IsFulfilled;
-                    }
-                    var isSuccessful = new
-                    {
-                        accessToken,
-                        paymentTransactionRequest = new
+                        HttpResponseMessage response = await _client.GetAsync(apiUrl);
+                        var responseData = await response.Content.ReadAsStringAsync();
+
+                        var pay = JsonConvert.DeserializeObject<PaymentResponseModel>(responseData);
+                        if (pay != null)
                         {
-                            newParam?.UserMobileNumber,
-                            newParam?.SupplierTin,
-                            newParam?.SupplierOUD,
-                            newParam?.TransactionId,
-                            newParam?.Amount,
-                            newParam?.PaymentProviderOUD,
-                            newParam?.Pin,
-                            ExpirationDate = ""
+                            isSuccess = pay.IsFulfilled;
+                        }
 
-                        },
-                        IsAsyncMode = false
+                        var isSuccessful = new
+                        {
+                            accessToken,
+                            paymentTransactionRequest = new
+                            {
+                                newParam?.UserMobileNumber,
+                                newParam?.SupplierTin,
+                                newParam?.SupplierOUD,
+                                newParam?.TransactionId,
+                                newParam?.Amount,
+                                newParam?.PaymentProviderOUD,
+                                newParam?.Pin,
+                                ExpirationDate = ""
+                            },
+                            IsAsyncMode = false
+                        };
+                        var isSuccessfulJson = JsonConvert.SerializeObject(isSuccessful);
+                        HttpContext.Session.SetString("PaymentInfo", isSuccessfulJson);
 
-                    };
-                    var isSuccessfulJson = JsonConvert.SerializeObject(isSuccessful);
-                    HttpContext.Session.SetString("PaymentInfo", isSuccessfulJson);
+                        var ValidationDataJson = JsonConvert.SerializeObject(pay);
+                        HttpContext.Session.SetString("AsyncPaymentInfo", ValidationDataJson);
+                    }
+                    else
+                    {
+                        timer.Stop();
+                    }
+                };
 
-                    var ValidationDataJson = JsonConvert.SerializeObject(pay);
+                timer.Start();
 
-                    HttpContext.Session.SetString("AsyncPaymentInfo", ValidationDataJson);
-                     
-                                                    
-                }
-                await Task.Delay(5000);
+                await Task.Delay(30000);
+
                 if (pay!=null && pay.IsFulfilled && pay.IsResolved)
                 {
                     return RedirectToAction("PaymentCommon", "SHotelpayment");
 
                 }
-            }
+                }
 
             return View(pay);
         }
