@@ -25,8 +25,8 @@ public class CinemaSeatLayoutController : Controller
          _authenticationManager = authenticationManager;
         _httpContextAccessor = httpContextAccessor;
     }
-    public async Task<IActionResult> IndexAsync(string spacecode, string companyTinNumber, string branchCode, string companyName,
-        string movieName, string movieCode, string dimension, string spaceType, string selectedDate, string code, decimal price, string hallName, string utcTime)
+    public async Task<IActionResult> IndexAsync(string? spacecode, string? companyTinNumber, string? branchCode, string? companyName,
+        string? movieName, string? movieCode, string? dimension, string? spaceType, string? selectedDate, string? code, decimal price, string? hallName, string? utcTime)
     {
         var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
         if (!string.IsNullOrEmpty(userDataCookie))
@@ -92,18 +92,18 @@ public class CinemaSeatLayoutController : Controller
         if (seatValuesJson != null )
          {
                 var seatValues = JsonConvert.DeserializeObject<SeatLayout>(seatValuesJson);
-                spacecode = seatValues.SpaceCode;
-                companyTinNumber = seatValues.CompanyTinNumber;
-                branchCode = seatValues.BranchCode;
-                companyName = seatValues.CompanyName;
-                movieName = seatValues.MovieName;
-                movieCode = seatValues.MovieCode;
-                hallName = seatValues.HallName;
-                utcTime = seatValues.UtcTime;
-                dimension = seatValues.Dimension;
-                code = seatValues.MovieScheduleCode;
-                spaceType = seatValues.SpaceType;
-                selectedDate = seatValues.SelectedDate;
+                spacecode = seatValues?.SpaceCode;
+                companyTinNumber = seatValues?.CompanyTinNumber;
+                branchCode = seatValues?.BranchCode;
+                companyName = seatValues?.CompanyName;
+                movieName = seatValues?.MovieName;
+                movieCode = seatValues?.MovieCode;
+                hallName = seatValues?.HallName;
+                utcTime = seatValues?.UtcTime;
+                dimension = seatValues?.Dimension;
+                code = seatValues?.MovieScheduleCode;
+                spaceType = seatValues?.SpaceType;
+                selectedDate = seatValues?.SelectedDate;
                 price = seatValues.Price;
 
          }
@@ -211,8 +211,8 @@ public class CinemaSeatLayoutController : Controller
         }
         return View(null);
     }
-    public async Task<IActionResult> GetUpdatedSeatInfo(string spacecode, string companyTinNumber, string code, string movieName, string companyName, string utcTime, string selectedDate, string hallName,
-        string spaceType, string dimension)
+    public async Task<IActionResult> GetUpdatedSeatInfo(string? spacecode, string? companyTinNumber, string? code, string? movieName, string? companyName, string? utcTime, string? selectedDate, string? hallName,
+        string? spaceType, string? dimension)
     {
         try
         {
