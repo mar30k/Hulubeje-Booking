@@ -95,8 +95,6 @@ namespace HulubejeBooking.Controllers.Payment
                     }
 
                 };
-                
-                HttpContext.Session.Remove("transactionDatas");
 
                 var reqJson = JsonConvert.SerializeObject(request);
                 var content = new StringContent(reqJson, Encoding.UTF8, "application/json");

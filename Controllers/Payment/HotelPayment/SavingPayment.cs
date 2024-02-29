@@ -44,6 +44,7 @@ namespace HulubejeBooking.Controllers.Payment.HotlePayment
 
         public async Task<IActionResult> PaymentCommonAsync()
         {
+            HttpContext.Session.Remove("transactionDatas");
             var _Hotel = _httpClientFactory.CreateClient("CnetHulubeje");
             var _Bus = _httpClientFactory.CreateClient("BusBooking");
             var data = HttpContext.Session.GetString("Data");
