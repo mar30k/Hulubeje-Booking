@@ -208,7 +208,8 @@
 							<td class="d-flex flex-column">
 								Price: ETB @room.AverageAmount.ToString("N2", new System.Globalization.CultureInfo("am-ET"))
 								<strong style="font-size: 14px; background-color: white; padding: 3px; white-space: nowrap; margin-bottom: 2px; color: @(room.AvailableRoom >= 5 ? "green" : "red")">
-									Rooms Left: @room.AvailableRoom</strong>
+									@(room.AvailableRoom <= 10 ? room.AvailableRoom : "Available") Rooms Left
+								</strong>
 								<button class="btn btn-primary btn-sm mt-auto submit"
 										data-rate-policy="@room.RatePolicy"
 										data-room-type-description="@room.RoomTypeDescription"
@@ -218,7 +219,7 @@
 										data-room-type="@room.RoomTypeDescription"
 										data-rate-code ="@room.RateCode"
 										data-rate-code-detail="@room.RateCodeDetail">
-									Book
+									Book This Room
 								</button>
 							</td>
 						</tr>
