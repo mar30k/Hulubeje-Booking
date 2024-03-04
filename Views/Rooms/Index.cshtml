@@ -9,6 +9,12 @@
 	.roomimages:hover{
 		cursor: pointer;
 	}
+
+/* 	@@media (max-width: 500px) {
+		.additionalroomimages {
+			display: none;
+		}
+	} */
 </style>
 <script>
 	sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
@@ -24,35 +30,35 @@
 	<div class="row mt-2 g-2">
 
 		<a href="#" id="hotelLink"><h5 class="card-title">HotelName</h5></a>
-		<div class="col-lg-6 col-md-6 col-sm-6 ">
+		<div class="col-6">
 			<div class="row">
 				@if (Model.AllPictureUrls.Count > 0)
 				{
 					@for (int i = 1; i < 5 && i < Model.AllPictureUrls.Count; i++)
 					{
-						<div class="col-lg-6 col-md-6 col-sm-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
+						<div class="col-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
 							padding-right: 5px;">
 							<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="roomimages w-100  " />
 						</div>
-					}
+					}	
 				}
 			</div>
 		</div>
 
-		<div class="col-lg-6 col-md-6 col-sm-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
+		<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
 			<img src="@Model?.AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  "/>
 		</div>
 
 
 	</div>
-	<div class="row g-2">
+	<div class="row g-2 additionalroomimages" >
 		@if(Model?.AllPictureUrls.Count > 0)
 		{
 			@for (int i = 1; i < 5 && i < Model.AllPictureUrls.Count; i++)
 			{
-				<div class="col-lg-3 col-md-3 col-sm-3 mb-2 " style="padding-left: 5px;
+				<div class="col-md-3 col-6 mb-2 " style="padding-left: 5px;
 							padding-right: 5px;">
-					<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages " />
+					<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages  " />
 				</div>
 			}
 		}
@@ -107,7 +113,7 @@
 				{
 					@foreach (var amenity in roomPic.Aminities)
 					{
-						<div class="col-lg-2 col-md-3 col-sm-4 mb-2" style="padding-left: 5px; padding-right: 5px;">
+						<div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-2" style="padding-left: 5px; padding-right: 5px;">
 							<div class="border">
 								<div class="d-flex align-items-center">
 									<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
@@ -184,12 +190,11 @@
 											</div>
 										</div>
 									}
-
 									<div class="row g-1">
 										<div class="d-flex flex-wrap">
 											@foreach (var amenity in room.Aminities)
 											{
-												<div class="col-lg-2 col-md-3 col-sm-4 my-1" style="padding-left: 5px;  padding-right: 5px;">
+												<div class="col-lg-2 col-md-3 col-sm-4 col-6 my-1" style="padding-left: 5px;  padding-right: 5px;">
 													<div class="border d-flex flex-column align-items-center">
 
 														<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
@@ -208,9 +213,9 @@
 							<td class="d-flex flex-column">
 								Price: ETB @room.AverageAmount.ToString("N2", new System.Globalization.CultureInfo("am-ET"))
 								<strong style="font-size: 14px; background-color: white; padding: 3px; white-space: nowrap; margin-bottom: 2px; color: @(room.AvailableRoom >= 5 ? "green" : "red")">
-									@(room.AvailableRoom <= 10 ? room.AvailableRoom : "Available") Rooms Left
+									@(room.AvailableRoom == 1 ? $"{room.AvailableRoom} Room Left" : (room.AvailableRoom <= 10 ? $"{room.AvailableRoom} Rooms Left" : "Available"))
 								</strong>
-								<button class="btn btn-primary btn-sm mt-auto submit"
+								<button class="btn btn-primary btn-sm mt-auto submit" style="white-space: nowrap"
 										data-rate-policy="@room.RatePolicy"
 										data-room-type-description="@room.RoomTypeDescription"
 										data-room-pakages="@room.PackageList"
