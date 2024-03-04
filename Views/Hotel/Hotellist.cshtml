@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Globalization
+@{
     var isVaild = ViewBag.isVaild;
     var isLoggedIN = ViewBag.isLoggedIn;
 }
@@ -10,14 +11,6 @@
 @model HulubejeBooking.Models.HotelModels.HotelViewModel
 <title>Hotel List</title>
 <style>
-
-    .cardPrice {
-        box-shadow: 0px 9px 20px 0px rgba(14, 88, 48, 0.1);
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
 
     h4 {
         font-size: 18px;
@@ -102,7 +95,7 @@
                         <div class="row">
                             <legend>Filter by Amenities</legend>
 
-                            <div class=" col-md-6 hotelAmenities" style="border: 1px solid #928F63;">
+                            <div class=" col-md-6 hotelAmenities" style="border: 1px solid #928F63; border-right: none;">
 
                                 <label>Hotel Amenities</label>
                                 <div>
@@ -239,9 +232,9 @@
                         </div>
 
                     </fieldset>
-                    <div class="row">
-                        <legend>Filter By Price</legend>
-                        <div class=" col-md-6 card cardPrice" style="border: 1px solid #928F63;">
+                    <div class="row mt-2 gx-1">
+                        <div class=" col-md-6  cardPrice pt-2 border-lg-start" style="border: 1px solid #928F63; border-right: none;">
+                        <legend >Filter By Price</legend>
                             <div class="price-content">
                                 <div>
                                     <label for="filter-min-value">Min</label>
@@ -259,42 +252,64 @@
                                 <input id="filter-max-value" type="range" class="max-price" value="5000" min="10" max="5000" step="10" />
                             </div>
                         </div>
-                        <div class=" col-md-6  filter" style="border: 1px solid #928F63;">
+                        <div class="col-md-6 filter pt-2" style="border: 1px solid #928F63;">
+                            <legend>Sort</legend>
                             <div>
-                                <input type="checkbox" id="default" name="default" value=" ">
-                                <label for="default">Default</label>
+                                <input type="checkbox" id="defaultFilter" name="sort"  checked>
+                                <label for="defaultFilter">Default</label>
                             </div>
                             <div>
-                                <input type="checkbox" id="lowToHigh" name="lowToHigh" value=" ">
-                                <label for="lowToHigh">Low To High</label>
+                                <input type="checkbox" id="lowToHighFilter" name="sort" >
+                                <label for="lowToHighFilter">Low To High</label>
                             </div>
                             <div>
-                                <input type="checkbox" id="highToLow" name="highToLow" value=" ">
-                                <label for="highToLow">High To Low </label>
+                                <input type="checkbox" id="highToLowFilter" name="sort" >
+                                <label for="highToLowFilter">High To Low</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="sortByNameAZ" name="sort" value=" ">
+                                <label for="sortByNameAZ">A to Z</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="sortByNameZA" name="sort" value=" ">
+                                <label for="sortByNameZA">Z to A</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="sortDecresingStar" name="sort" value=" ">
+                                <label for="sortDecresingStar">Star: High to Low</label>
+                            </div><div>
+                                <input type="checkbox" id="sortIncresingStar" name="sort" value=" ">
+                                <label for="sortIncresingStar">Star: Low to High</label>
                             </div>
                         </div>
                     </div>
-
                 </form>
             </div>
 
 
 
         </div>
-        <div class="col-md-8">
+
+        <div class="col-md-8 hotelsContainer">
             @if (Model?.Hotels?.Count > 0)
             {
+                var count = 0;
                 @foreach (var hotel in Model.Hotels)
                 {
-                    <div class="cardH card w-100 mt-3"
-                         data-hotel-amenities="@string.Join(",", @hotel.roomAminities)"
-                         data-room-amenities="@string.Join(",", hotel.hotelAminities)"
-                         data-min-room-value="@hotel.MinRoomValue"
-                         data-tin="@hotel.orgTin" data-oud="@hotel.BranchCode"
-                         data-hotelRating="@hotel.HotelRating">
+                    count += 1;
+                    <div class="cardH hotelCards card w-100 mt-3"
+                         data-hotel-ratings="@hotel?.HotelRating"
+                         data-hotel-name = "@hotel?.OrganizationName"
+                         data-original-count="@count"
+                         data-hotel-price = "@hotel?.TotalPrice"
+                         data-hotel-amenities="@string.Join(",", hotel?.roomAminities ?? Enumerable.Empty<string>())"
+                         data-room-amenities="@string.Join(",", hotel?.hotelAminities ?? Enumerable.Empty<string>())"
+                         data-min-room-value="@hotel?.MinRoomValue"
+                         data-tin="@hotel?.orgTin" data-oud="@hotel?.BranchCode"
+                         data-hotelRating="@hotel?.HotelRating">
                         <div class="row">
                             <div class="col-sm-4">
-                                <img src="@hotel.PortraitPicture" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
+                                <img src="@hotel?.PortraitPicture" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
                             </div>
                             <div class="col-sm-8">
 
@@ -302,36 +317,34 @@
                                 <div class="card-body">
                                     <div class="row align-items-start ">
                                         <div class="col">
-                                            <a href="#"><h5 class="card-title">@hotel.OrganizationName</h5></a>
+                                            <a href="#"><h5 class="card-title">@hotel?.OrganizationName</h5></a>
                                             <div>
                                                 <span class="card-text">
-                                                    <script>
-                                                        var dynamicRating = @hotel.HotelRating;
-                                                        var starsContainer = $("<div>");
+                                                    @{
+                                                        var dynamicRating = string.IsNullOrEmpty(hotel?.HotelRating) ? 0 : (int)Math.Round(decimal.Parse(hotel.HotelRating, CultureInfo.InvariantCulture));
+                                                    }
 
-                                                        for (var i = 0; i < dynamicRating; i++) {
-                                                            var filledStar = $("<i>").addClass("bi bi-star-fill");
-                                                            starsContainer.append(filledStar);
-                                                        }
+                                                    @for (var i = 0; i < dynamicRating; i++)
+                                                    {
+                                                        <i class="bi bi-star-fill"></i>
+                                                    }
 
-                                                        for (var j = 0; j < 5 - dynamicRating; j++) {
-                                                            var unfilledStar = $("<i>").addClass("bi bi-star");
-                                                            starsContainer.append(unfilledStar);
-                                                        }
-                                                        $(".cardH:last .card-text").append(starsContainer);
-                                                    </script>
+                                                    @for (var j = dynamicRating; j < 5; j++)
+                                                    {
+                                                        <i class="bi bi-star"></i>
+                                                    }
                                                 </span>
                                             </div>
 
-                                            <p class="card-text"><small class="text-body-secondary">@hotel.BranchName</small></p>
+                                            <p class="card-text"><small class="text-body-secondary">@hotel?.BranchName</small></p>
                                             <div>
-                                                <span><i class="bi bi-geo-alt-fill"></i> @hotel.SpecificLocation</span>
+                                                <span><i class="bi bi-geo-alt-fill"></i> @hotel?.SpecificLocation</span>
                                             </div>
                                             <div>
-                                                <span class="p-1 rounded"style="display: inline-block; background-color: green; color: white;">@hotel.RateDescription</span>
+                                                <span class="p-1 rounded"style="display: inline-block; background-color: green; color: white;">@hotel?.RateDescription</span>
                                             </div>
                                         </div>
-                                        <span class="mt-2"><i class="bi bi-cash-stack"></i>Starting from: ETB @hotel.MinRoomValue.ToString("N2", new System.Globalization.CultureInfo("am-ET"))</span>
+                                        <span class="mt-2"><i class="bi bi-cash-stack"></i>Starting from: ETB @hotel?.MinRoomValue.ToString("N2", new System.Globalization.CultureInfo("am-ET"))</span>
                                         <div>
                                         </div>
                                         <div class="col-md-3">
@@ -344,15 +357,15 @@
                                             <div class="mt-2">
                                                 <div style="border-left: 1px solid black; padding-left: 8px;">
                                                     <span type="text" data-toggle="tooltip" data-placement="bottom" title="">
-                                                        Number Of Rooms: @hotel.HotelRoomsCount
+                                                        Type Of Rooms: @hotel?.HotelRoomsCount
                                                     </span>
                                                     <br>
                                                     <span type="text"
                                                           data-toggle="tooltip"
                                                           data-placement="bottom"
                                                           title=""
-                                                          style="color: @(hotel.IsTaxInclusive ? "green" : "red")">
-                                                        @(hotel.IsTaxInclusive ? "Tax Inclusive" : "Tax Exclusive")
+                                                          style="color: @(hotel?.IsTaxInclusive == true ? "green" : "red")">
+                                                        @(hotel?.IsTaxInclusive == true? "Tax Inclusive" : "Tax Exclusive")
                                                     </span>
 
                                                 </div>
@@ -361,12 +374,12 @@
 
                                         </div>
                                         <div class="col-6">
-                                            <h5>Total Price: ETB @hotel.TotalPrice.ToString("N2", new System.Globalization.CultureInfo("am-ET")) </h5>
+                                            <h5>Total Price: ETB @hotel?.TotalPrice.ToString("N2", new System.Globalization.CultureInfo("am-ET")) </h5>
                                             <button class="btn btn-primary btn-sm viewAvailabilityBtn"
-                                                    data-org-tin="@hotel.orgTin"
-                                                    data-hotel="@hotel.OrganizationName"
-                                                    data-oud="@hotel.BranchCode"
-                                                    data-branch="@hotel.BranchName">
+                                                    data-org-tin="@hotel?.orgTin"
+                                                    data-hotel="@hotel?.OrganizationName"
+                                                    data-oud="@hotel?.BranchCode"
+                                                    data-branch="@hotel?.BranchName">
                                                 View Availability
                                             </button>
 
@@ -402,9 +415,121 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-
+@* <script>
+    $(document).ready(function () {
+        
+    });
+</script> *@
 <script>
     $(document).ready(function () {
+        function sortByLowToHigh() {
+            var hotels = $(".hotelCards").toArray();
+            hotels.sort(function (a, b) {
+                return parseFloat($(a).data("hotel-price")) - parseFloat($(b).data("hotel-price"));
+            });
+            $(".hotelsContainer").empty().append(hotels);
+        }
+        function sortByNameZA() {
+            var hotels = $(".hotelCards").toArray();
+            hotels.sort(function (a, b) {
+                var nameA = $(a).data("hotel-name").toUpperCase();
+                var nameB = $(b).data("hotel-name").toUpperCase();
+                return nameB.localeCompare(nameA);
+            });
+            $(".hotelsContainer").empty().append(hotels);
+        }
+
+        function sortByNameAZ() {
+            var hotels = $(".hotelCards").toArray();
+            hotels.sort(function (a, b) {
+                var nameA = $(a).data("hotel-name").toUpperCase();
+                var nameB = $(b).data("hotel-name").toUpperCase();
+                return nameA.localeCompare(nameB);
+            });
+            $(".hotelsContainer").empty().append(hotels);
+        }
+        function sortIncreasingStar (){
+            var hotels = $(".hotelCards").toArray();
+            hotels.sort(function (a, b) {
+                return parseFloat($(a).data("hotel-ratings")) - parseFloat($(b).data("hotel-ratings"));
+            });
+            $(".hotelsContainer").empty().append(hotels);
+        }
+        function sortDecreasingStar() {
+            var hotels = $(".hotelCards").toArray();
+            hotels.sort(function (a, b) {
+                return parseFloat($(b).data("hotel-ratings")) - parseFloat($(a).data("hotel-ratings"));
+            });
+            $(".hotelsContainer").empty().append(hotels);
+        }
+        function sortByHighToLow() {
+            var hotels = $(".hotelCards").toArray();
+            hotels.sort(function (a, b) {
+                return parseFloat($(b).data("hotel-price")) - parseFloat($(a).data("hotel-price"));
+            });
+            $(".hotelsContainer").empty().append(hotels);
+        }
+
+        function resetToDefault() {
+            var hotels = $(".hotelCards").toArray();
+            hotels.sort(function (a, b) {
+                return parseFloat($(a).data("original-count")) - parseFloat($(b).data("original-count"));
+            });
+            $(".hotelsContainer").empty().append(hotels);
+        }
+
+        $("#defaultFilter").change();
+
+        $("#lowToHighFilter").change(function () {
+            if ($(this).is(":checked")) {
+                sortByLowToHigh();
+
+            }
+            else {
+                resetToDefault();
+            }
+        });
+
+        $("#highToLowFilter").change(function () {
+            if ($(this).is(":checked")) {
+                sortByHighToLow();
+            } else {
+                resetToDefault();
+            }
+        });
+        $("#sortDecresingStar").change(function () {
+            if ($(this).is(":checked")) {
+                sortDecreasingStar();
+            } else {
+                resetToDefault();
+            }
+        });
+        $("#sortIncresingStar").change(function () {
+            if ($(this).is(":checked")) {
+                sortIncreasingStar();
+            } else {
+                resetToDefault();
+            }
+        });
+        $("#sortByNameAZ").change(function () {
+            if ($(this).is(":checked")) {
+                sortByNameAZ();
+            } else {
+                resetToDefault();
+            }
+        });
+        $("#sortByNameZA").change(function () {
+            if ($(this).is(":checked")) {
+                sortByNameZA();
+            } else {
+                resetToDefault();
+            }
+        });
+        $("#defaultFilter").change(function () {
+            if ($(this).is(":checked")) {
+                resetToDefault();
+            }
+        });
         $('[data-toggle="tooltip"]').tooltip();
 
         function filterCards() {
@@ -483,7 +608,6 @@
         filterCards();
     });
     $(document).ready(function () {
-        // Iterate through each hotel and format the TotalPrice
         $('.card').each(function () {
             var totalPriceElement = $(this).find('.total-price');
             var totalPrice = parseFloat(totalPriceElement.text());
@@ -527,7 +651,7 @@
 
 
     $(document).ready(function () {
-        $('.viewAvailabilityBtn').click(function () {
+        $(".hotelsContainer").on("click", ".viewAvailabilityBtn", function () {
             var orgTin = $(this).data('org-tin');
             var oud = $(this).data('oud');
             var hotelName = $(this).data('hotel');
