@@ -132,14 +132,14 @@
                 selectedSeatsDisplay.textContent = selectedSeatsCount ;
             }
 
-            function applyEventListeners() {
-                var buttons = document.querySelectorAll('.buttons');
-                buttons.forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        // Your existing click event logic...
-                    });
-                });
-            }
+            // function applyEventListeners() {
+            //     var buttons = document.querySelectorAll('.buttons');
+            //     buttons.forEach(function (button) {
+            //         button.addEventListener('click', function () {
+            //             // Your existing click event logic...
+            //         });
+            //     });
+            // }
             function applyEventListenersSkip() {
                 var button = document.getElementById('skipButton');
                 if (button) {
@@ -217,7 +217,7 @@
                         resetBooking();
                         alert("Booking time expired. Please restart the booking process.");
                         sessionStorage.clear(); // Clear session storage
-                        window.location.href = '@Url.Action("Index", "CinemaHome")';
+                        window.location.href = '@Url.Action("Index", "cinema")';
                     }
                 }, 1000);
             }
@@ -351,7 +351,8 @@
                 }
                 var button = document.getElementById(seatCode);
                 if (button) {
-                    button.style.backgroundColor = index === -1 ? "green" : "";
+                    button.style.backgroundColor = index === -1 ? "green" : "white";
+                    button.style.color = index === -1 ? "white" : "green";
                 }
                 updateButtonStatus();
                 saveSelectedSeatsToStorage();
