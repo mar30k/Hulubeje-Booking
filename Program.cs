@@ -28,10 +28,14 @@ builder.Services.AddAuthentication("cnet.erp.v6")
          options.AccessDeniedPath = "/account/denied";
          options.LoginPath = "/login";
      });
+builder.Services.AddHttpClient("HulubejeBooking", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("http://196.191.244.136:8090/api/");
+    httpClient.DefaultRequestHeaders.Add("x-api-key", "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE");
+});
 builder.Services.AddHttpClient("MovieDb", httpClient =>
 {
     httpClient.BaseAddress = new Uri("https://api.themoviedb.org/3/");
-    httpClient.DefaultRequestHeaders.Add("x-api-key", "1ba83335ce22421020a77845254a578e");
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<HotelListBuffer>();
