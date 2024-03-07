@@ -44,10 +44,13 @@
 				}
 			</div>
 		</div>
-
-		<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
-			<img src="@Model?.AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  "/>
-		</div>
+		@if (Model.AllPictureUrls.Count > 1)
+		{
+			<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
+				<img src="@Model?.AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  " />
+			</div>
+		}
+		
 
 
 	</div>
@@ -194,7 +197,7 @@
 										<div class="d-flex flex-wrap">
 											@foreach (var amenity in room.Aminities)
 											{
-												<div class="col-lg-2 col-md-3 col-sm-4 col-6 my-1" style="padding-left: 5px;  padding-right: 5px;">
+												<div class="col-lg-2 col-md-3 col-sm-4 my-1" style="padding-left: 5px;  padding-right: 5px;">
 													<div class="border d-flex flex-column align-items-center">
 
 														<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
