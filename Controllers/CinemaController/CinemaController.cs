@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
 using HulubejeBooking.Controllers.Authentication;
+using System.Text;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
@@ -20,25 +21,6 @@ namespace HulubejeBooking.Controllers.CinemaController
         }
         public async Task<List<MovieModel>> GetMoviesWithPosterUrls(List<MovieModel> movies)
         {
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            if (!string.IsNullOrEmpty(userDataCookie))
-            {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.FirstName = user?.firstName;
-                ViewBag.LastName = user?.lastName;
-                ViewBag.MiddleName = user?.middleName;
-                ViewBag.Personalattachment = user?.personalattachment;
-                ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Idnumber = user?.idnumber;
-                ViewBag.Idtype = user?.idtype;
-                ViewBag.Dob = user?.dob;
-                ViewBag.Idattachment = user?.idattachment;
-                ViewBag.PhoneNumber = user?.phoneNumber;
-                ViewBag.EmailAddress = user?.emailAddress;
-            }
-            var identificationResult = await _authenticationManager.identificationValid();
-            ViewBag.isVaild = identificationResult.isValid;
-            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
             var moviesWithPosterUrls = new List<MovieModel>();
             foreach (var movie in movies)
             {
@@ -56,20 +38,89 @@ namespace HulubejeBooking.Controllers.CinemaController
                         var posterUrl = "https://image.tmdb.org/t/p/w500" + result.poster_path;
                         var backdroppath = "https://image.tmdb.org/t/p/w500" + result.backdrop_path;
 
-                        // Assign values to MovieModel properties
                         movie.PosterUrl = posterUrl;
                         movie.Overview = result.overview;
                         movie.GenreId = result.genre_ids;
                         movie.MovieId = result.id;
                         movie.BackdropPath = backdroppath;
-                        moviesWithPosterUrls.Add(movie);
                     }
+                    moviesWithPosterUrls.Add(movie);
                 }
             }
             return moviesWithPosterUrls;
         }
         public async Task<IActionResult> Index()
         {
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            string? password = "";
+            string? code = "";
+            if (!string.IsNullOrEmpty(userDataCookie))
+            {
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                password = user != null ? user?.password : "";
+                code = user != null ? user?.phoneNumber :
+                ViewBag.FirstName = user?.firstName;
+                ViewBag.LastName = user?.lastName;
+                ViewBag.MiddleName = user?.middleName;
+                ViewBag.Personalattachment = user?.personalattachment;
+                ViewBag.SuccessCode = user?.successCode;
+                ViewBag.Idnumber = user?.idnumber;
+                ViewBag.Idtype = user?.idtype;
+                ViewBag.Dob = user?.dob;
+                ViewBag.Idattachment = user?.idattachment;
+                ViewBag.PhoneNumber = user?.phoneNumber;
+                ViewBag.EmailAddress = user?.emailAddress;
+            }
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            if (identificationResult.isValid || identificationResult.isLoggedIn)
+            {
+                var param = new
+                {
+                    code,
+                    password,
+                    isChangePassword = false
+                };
+                var jsonRequest = JsonConvert.SerializeObject(param);
+
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                HttpResponseMessage loginResponse = await _v7Client.PostAsync("auth/login", content);
+                if (loginResponse.IsSuccessStatusCode)
+                {
+                    string loginData = await loginResponse.Content.ReadAsStringAsync();
+                    var loginresponseData = JsonConvert.DeserializeObject<LoginAuthentication>(loginData);
+                    if (loginresponseData != null && loginresponseData.IsSuccessful == true)
+                    {
+                        var token = loginresponseData?.Data?.Token;
+                        if (token != null) { HttpContext.Session.SetString("loginToken", token); }
+                    }
+                }
+            }
+            else
+            {
+                var param = new
+                {
+                    code = "0911675618",
+                    password = "1234567",
+                    isChangePassword = false
+                };
+                var jsonRequest = JsonConvert.SerializeObject(param);
+
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                HttpResponseMessage loginResponse = await _v7Client.PostAsync("auth/login", content);
+                if (loginResponse.IsSuccessStatusCode)
+                {
+                    var loginData = await loginResponse.Content.ReadAsStringAsync();
+                    var loginresponseData = JsonConvert.DeserializeObject<LoginAuthentication>(loginData);
+                    if (loginresponseData != null && loginresponseData.IsSuccessful == true)
+                    {
+                        var token = loginresponseData?.Data?.Token;
+                        if (token != null) { HttpContext.Session.SetString("loginToken", token); }
+                    }
+                }
+            }
             try
             {
                 var _client = _httpClientFactory.CreateClient("CnetHulubeje");
@@ -106,6 +157,7 @@ namespace HulubejeBooking.Controllers.CinemaController
         [HttpPost]
         public async Task<IActionResult> Index(DateTime selectedDate)
         {
+
             try
             {
                 var _client = _httpClientFactory.CreateClient("CnetHulubeje");
