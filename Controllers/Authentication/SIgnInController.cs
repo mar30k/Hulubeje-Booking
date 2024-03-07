@@ -49,6 +49,7 @@ namespace HulubejeBooking.Controllers.Authentication
             var userInformation = userInformationResponse?[0].userInformation;
             if (userInformation != null)
             {
+                userInformation.password = data.Password;
                 _authenticationManager.SignIn(userInformation, data.RememberMe);
                 var signInInformation = HttpContext.Session.GetString("SignInInformation");
                 var signin = "";

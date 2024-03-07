@@ -51,6 +51,7 @@ namespace HulubejeBooking.Models.Authentication
         public string? dob { get; set; }
         public string? idattachment { get; set; }
         public string? personalattachment { get; set; }
+        public string? password { get; set; }
     }
 
     public class UserResponse
