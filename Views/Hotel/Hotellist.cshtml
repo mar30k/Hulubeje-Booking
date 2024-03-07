@@ -9,6 +9,10 @@
 </script>
 <partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.HotelViewModel
+@{
+    double maxTotalPrice = Model?.Hotels != null ? Model.Hotels.Max(hotel => hotel.TotalPrice) : 0;
+    double minTotalPrice = Model?.Hotels != null ? Model.Hotels.Min(hotel => hotel.TotalPrice) : 0;
+}
 <title>Hotel List</title>
 <style>
 
@@ -238,18 +242,18 @@
                             <div class="price-content">
                                 <div>
                                     <label for="filter-min-value">Min</label>
-                                    <p id="min-value" style="font-size: 12px;">ETB 50</p>
+                                    <p id="min-value" style="font-size: 12px;">ETB @minTotalPrice</p>
                                 </div>
                                 <div>
                                     <label for="filter-max-value">Max</label>
-                                    <p id="max-value" style="font-size: 12px;">ETB 5,000</p>
+                                    <p id="max-value" style="font-size: 12px;">ETB @maxTotalPrice</p>
                                 </div>
                             </div>
 
                             <div class="range-slider">
                                 <div class="range-fill"></div>
-                                <input id="filter-min-value" type="range" class="min-price" value="50" min="10" max="5000" step="10" />
-                                <input id="filter-max-value" type="range" class="max-price" value="5000" min="10" max="5000" step="10" />
+                                <input id="filter-min-value" type="range" class="min-price" value="@minTotalPrice" min="@minTotalPrice" max="@maxTotalPrice" step="10" />
+                                <input id="filter-max-value" type="range" class="max-price" value="@maxTotalPrice" min="@minTotalPrice" max="@maxTotalPrice" step="10" />
                             </div>
                         </div>
                         <div class="col-md-6 filter pt-2" style="border: 1px solid #928F63;">
@@ -260,19 +264,19 @@
                             </div>
                             <div>
                                 <input type="checkbox" id="lowToHighFilter" name="sort" >
-                                <label for="lowToHighFilter">Low To High</label>
+                                <label for="lowToHighFilter">Price: Low To High</label>
                             </div>
                             <div>
                                 <input type="checkbox" id="highToLowFilter" name="sort" >
-                                <label for="highToLowFilter">High To Low</label>
+                                <label for="highToLowFilter">Price: High To Low</label>
                             </div>
                             <div>
                                 <input type="checkbox" id="sortByNameAZ" name="sort" value=" ">
-                                <label for="sortByNameAZ">A to Z</label>
+                                <label for="sortByNameAZ">Name: A - Z</label>
                             </div>
                             <div>
                                 <input type="checkbox" id="sortByNameZA" name="sort" value=" ">
-                                <label for="sortByNameZA">Z to A</label>
+                                <label for="sortByNameZA">Name: Z - A</label>
                             </div>
                             <div>
                                 <input type="checkbox" id="sortDecresingStar" name="sort" value=" ">
@@ -422,15 +426,14 @@
 </script> *@
 <script>
     $(document).ready(function () {
+        var hotels = $(".hotelCards").toArray();
         function sortByLowToHigh() {
-            var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {
                 return parseFloat($(a).data("hotel-price")) - parseFloat($(b).data("hotel-price"));
             });
             $(".hotelsContainer").empty().append(hotels);
         }
         function sortByNameZA() {
-            var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {
                 var nameA = $(a).data("hotel-name").toUpperCase();
                 var nameB = $(b).data("hotel-name").toUpperCase();
@@ -440,7 +443,6 @@
         }
 
         function sortByNameAZ() {
-            var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {
                 var nameA = $(a).data("hotel-name").toUpperCase();
                 var nameB = $(b).data("hotel-name").toUpperCase();
@@ -449,21 +451,18 @@
             $(".hotelsContainer").empty().append(hotels);
         }
         function sortIncreasingStar (){
-            var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {
                 return parseFloat($(a).data("hotel-ratings")) - parseFloat($(b).data("hotel-ratings"));
             });
             $(".hotelsContainer").empty().append(hotels);
         }
         function sortDecreasingStar() {
-            var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {
                 return parseFloat($(b).data("hotel-ratings")) - parseFloat($(a).data("hotel-ratings"));
             });
             $(".hotelsContainer").empty().append(hotels);
         }
         function sortByHighToLow() {
-            var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {
                 return parseFloat($(b).data("hotel-price")) - parseFloat($(a).data("hotel-price"));
             });
@@ -471,7 +470,6 @@
         }
 
         function resetToDefault() {
-            var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {
                 return parseFloat($(a).data("original-count")) - parseFloat($(b).data("original-count"));
             });
