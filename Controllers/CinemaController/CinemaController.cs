@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using HulubejeBooking.Controllers.Authentication;
 using System.Text;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Http;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
@@ -42,7 +44,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                         movie.Overview = result.overview;
                         movie.GenreId = result.genre_ids;
                         movie.MovieId = result.id;
-                        movie.BackdropPath = backdroppath;
+                        movie.BackdropPath = backdroppath;   
                     }
                     moviesWithPosterUrls.Add(movie);
                 }
@@ -52,6 +54,7 @@ namespace HulubejeBooking.Controllers.CinemaController
         public async Task<IActionResult> Index()
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var token = "";
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             string? password = "";
             string? code = "";
@@ -59,7 +62,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
                 password = user != null ? user?.password : "";
-                code = user != null ? user?.phoneNumber :
+                code = user != null ? user?.phoneNumber : "";       
                 ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
@@ -93,7 +96,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                     var loginresponseData = JsonConvert.DeserializeObject<LoginAuthentication>(loginData);
                     if (loginresponseData != null && loginresponseData.IsSuccessful == true)
                     {
-                        var token = loginresponseData?.Data?.Token;
+                        token = loginresponseData?.Data?.Token;
                         if (token != null) { HttpContext.Session.SetString("loginToken", token); }
                     }
                 }
@@ -102,8 +105,8 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 var param = new
                 {
-                    code = "0911675618",
-                    password = "1234567",
+                    code = "0000000000",
+                    password = "0000000000",
                     isChangePassword = false
                 };
                 var jsonRequest = JsonConvert.SerializeObject(param);
@@ -116,43 +119,24 @@ namespace HulubejeBooking.Controllers.CinemaController
                     var loginresponseData = JsonConvert.DeserializeObject<LoginAuthentication>(loginData);
                     if (loginresponseData != null && loginresponseData.IsSuccessful == true)
                     {
-                        var token = loginresponseData?.Data?.Token;
+                        token = loginresponseData?.Data?.Token;
                         if (token != null) { HttpContext.Session.SetString("loginToken", token); }
                     }
                 }
             }
-            try
+            var movies = new Movie();
+            DateTime dateTime = DateTime.Now;
+            string formattedDate = dateTime.ToString("yyyy-MM-dd");
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage responseMessage =await _v7Client.GetAsync($"cinema/getconsolidatedmovies?Date={formattedDate}");
+            if (responseMessage.IsSuccessStatusCode)
             {
-                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-                DateTime currentDate = DateTime.Now;
-                string formattedDate = currentDate.ToString("yyyy-MM-dd");
-
-                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
-
-                if (response.IsSuccessStatusCode )
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    var movies = JsonConvert.DeserializeObject<List<MovieModel>>(responseData);
-
-                    if (movies != null)
-                    {
-                        var moviesWithPosters = await GetMoviesWithPosterUrls(movies);
-                        return View(moviesWithPosters);
-                    }
-                    else
-                    {
-                        return View(null);
-                    }
-                }
-                else
-                {
-                    return View(null);
-                }
+                string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                movies = JsonConvert.DeserializeObject<Movie>(responseMessageData);
             }
-            catch (HttpRequestException)
-            {
-                return View(null);
-            }
+            var moviesJson = JsonConvert.SerializeObject(movies);
+            HttpContext.Session.SetString("movies", moviesJson);
+            return View(movies);
         }
         [HttpPost]
         public async Task<IActionResult> Index(DateTime selectedDate)
