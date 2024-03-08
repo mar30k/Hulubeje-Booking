@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Globalization;
 using HulubejeBooking.Controllers.Authentication;
+using System.Security.Policy;
 namespace HulubejeBooking.Controllers
 {
     public class CinemaMovieDetailsController : Controller
@@ -20,9 +21,30 @@ namespace HulubejeBooking.Controllers
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
         }
-        public async Task<IActionResult> Index(string selectedDate, string movieCode, string companyName, string sanitizedOverview,
-             string posterUrl, string movieName, int movieId, string backdropPath)
+        public async Task<IActionResult> Index(int companyCode, string selectedDate, string movieCode, string companyName, string sanitizedOverview,
+             string posterUrl, string movieName, int movieId, string streamUrl)
         {
+            var movieJson = HttpContext.Session.GetString("movies");
+            var movieData = movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) : new Movie();
+            var movieSchedule = new List<MovieSchedules>();
+            if (movieData != null && movieData.Data != null)
+            {
+                var company = movieData.Data.FirstOrDefault(c => c.CompanyCode == companyCode);
+
+                if (company != null && company.Movies != null)
+                {
+                    var movie = company.Movies.FirstOrDefault(m => m.MovieName == movieName);
+
+                    if (movie != null && movie.MovieSchedule != null)
+                    {
+                        movieSchedule = movie.MovieSchedule;
+                    }
+                }
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
@@ -51,31 +73,27 @@ namespace HulubejeBooking.Controllers
                 Overview = sanitizedOverview,
                 PosterUrl = posterUrl,
                 MovieName = movieName,
-                BackdropPath = backdropPath,
                 SelectedDate = selectedDate
             };
-            var videosApiUrl = $"movie/{movieId}/videos?api_key={_tmdbApiKey}";
-            HttpResponseMessage videosResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + videosApiUrl);
-            if (videosResponse.IsSuccessStatusCode)
+            movieDetails.MovieSchedules = movieSchedule;
+            movieDetails.CompanyCode = companyCode.ToString();
+            var movieTitle = Uri.EscapeDataString(movieName ?? string.Empty);
+            var tmdbClient = _httpClientFactory.CreateClient("MovieDb");
+            var tmdbResponse = await tmdbClient.GetAsync(tmdbClient.BaseAddress + $"search/movie?api_key={_tmdbApiKey}&query={movieTitle}");
+            if (tmdbResponse.IsSuccessStatusCode)
             {
-                string videosResponseData = await videosResponse.Content.ReadAsStringAsync();
-                var videosResponseObj = JsonConvert.DeserializeObject<dynamic>(videosResponseData);
+                var tmdbData = await tmdbResponse.Content.ReadAsStringAsync();
+                var movieDetail = JsonConvert.DeserializeObject<MovieDetails>(tmdbData);
 
-                string? trailerKey = null;
-                if (videosResponseObj != null)
+                if (movieDetail != null && movieDetail?.results != null && movieDetail.results.Count > 0)
                 {
-                    foreach (var result in videosResponseObj.results)
-                    {
-                        if (result.type == "Trailer" && result.site == "YouTube")
-                        {
-                            trailerKey = result.key.ToString();
-                            break;
-                        }
-                    }
-
+                    var result = movieDetail.results[0];
+                    var backdroppath = "https://image.tmdb.org/t/p/w500" + result.backdrop_path;
+                    movieDetails.BackdropPath = backdroppath;
                 }
-                movieDetails.YoutubeKey = trailerKey;
             }
+            string videoId = streamUrl.Substring(streamUrl.IndexOf("v=") + 2);
+            movieDetails.YoutubeKey = videoId;
             string detailsApiUrl = $"movie/{movieId}?api_key={_tmdbApiKey}&append_to_response=release_dates";
             HttpResponseMessage detailsResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + detailsApiUrl);
 
