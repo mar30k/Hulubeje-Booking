@@ -1,4 +1,4 @@
-﻿@model HulubejeBooking.Models.CInemaModels.SeatLayout
+﻿@model HulubejeBooking.Models.CInemaModels.SeatLayouts
 @using System.Globalization
 @using System.Web
 @{
@@ -60,7 +60,7 @@
 
     </style>
     @{
-        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.MovieName);
+        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.Data?.MovieName);
     }
     <script>
         var selectedSeats = [];
@@ -94,35 +94,35 @@
                 }
             });
 
-            setInterval(function () {
-                updateSeatInfo();
-            }, 10000); // Update every 10000 milliseconds (10 seconds)
+            // setInterval(function () {
+            //     updateSeatInfo();
+            // }, 10000); // Update every 10000 milliseconds (10 seconds)
 
-            function updateSeatInfo() {
-                var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
-                var companyTinNumber = "@Model?.CompanyTinNumber";
-                var code = "@Model?.MovieScheduleCode";
-                var spacecode = "@Model?.SpaceCode";
-                var companyName = "@Model?.CompanyName";
-                var utcTime = "@Model?.UtcTime";
-                var selectedDate = "@Model?.SelectedDate";
-                var hallName = "@Model?.HallName";
-                var dimension = "@Model?.Dimension";
-                var spaceType = "@Model?.SpaceType";
+            // function updateSeatInfo() {
+            //     var movieName = @*@Html.Raw(Json.Serialize(santizedMovieName))*@;
+            //     var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+            //     var code = "@Model?.Data?.MovieScheduleCode";
+            //     var spacecode = "@Model?.Data?.SpaceCode";
+            //     var companyName = "@Model?.Data?.CompanyName";
+            //     var utcTime = "@Model?.Data?.UtcTime";
+            //     var selectedDate = "@Model?.Data?.SelectedDate";
+            //     var hallName = "@Model?.Data?.HallName";
+            //     var dimension = "@Model?.Data?.Dimension";
+            //     var spaceType = "@Model?.Data?.SpaceType";
 
-                // Use AJAX to fetch updated seat information
-                $.get("/CinemaSeatLayout/GetUpdatedSeatInfo", {
-                    companyTinNumber: companyTinNumber, code: code, spacecode: spacecode, movieName: movieName,
-                    companyName: companyName, utcTime: utcTime, selectedDate: selectedDate, hallName: hallName, spaceType: spaceType, dimension: dimension
-                }, function (data) {
-                    $("#seatInfoContainer").html(data);
-                    applyEventListeners();
-                    updateButtonStatus();
-                    updateSelectedSeatsUI();
-                    selectedSeatsCountUpdate();
-                    applyEventListenersSkip();
-                });
-            }
+            //     // Use AJAX to fetch updated seat information
+            //     $.get("/CinemaSeatLayout/GetUpdatedSeatInfo", {
+            //         companyTinNumber: companyTinNumber, code: code, spacecode: spacecode, movieName: movieName,
+            //         companyName: companyName, utcTime: utcTime, selectedDate: selectedDate, hallName: hallName, spaceType: spaceType, dimension: dimension
+            //     }, function (data) {
+            //         $("#seatInfoContainer").html(data);
+            //         applyEventListeners();
+            //         updateButtonStatus();
+            //         updateSelectedSeatsUI();
+            //         selectedSeatsCountUpdate();
+            //         applyEventListenersSkip();
+            //     });
+            // }
 
             function selectedSeatsCountUpdate() {
                 var selectedSeatsDisplay = document.getElementById("selectedSeatsDisplay");
@@ -145,18 +145,18 @@
                 if (button) {
                     button.addEventListener('click', function () {
                         var selectedSeats = retrieveSelectedSeatsFromStorage();
-                        var companyTinNumber = "@Model?.CompanyTinNumber";
-                        var movieScheduleCode = "@Model?.MovieScheduleCode";
-                        var articleCode = "@Model?.ArticleCode";
+                        var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+                        var movieScheduleCode = "@Model?/Data?.MovieScheduleCode";
+                        var articleCode = "@Model?.Data?.ArticleCode";
                         var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
-                        var companyName = "@Model?.CompanyName";
-                        var utcTime = "@Model?.UtcTime";
-                        var selectedDate = "@Model?.SelectedDate";
-                        var hallName = "@Model?.HallName";
-                        var price = "@Model?.Price";
-                        var dimension = "@Model?.Dimension";
-                        var spaceType = "@Model?.SpaceType";
-                        var branchCode = "@Model?.BranchCode";
+                        var companyName = "@Model?.Data?.CompanyName";
+                        var utcTime = "@Model?.Data?.UtcTime";
+                        var selectedDate = "@Model?.Data?.SelectedDate";
+                        var hallName = "@Model?.Data?.HallName";
+                        var price = "@Model?.Data?.Price";
+                        var dimension = "@Model?.Data?.Dimension";
+                        var spaceType = "@Model?.Data?.SpaceType";
+                        var branchCode = "@Model?.Data?.BranchCode";
 
                         var remainingTime = countdown ?? 0;
 
@@ -235,7 +235,7 @@
                     if (seatCount === 0) {
                         skipButton.innerText = "Skip";
                     } else {
-                        skipButton.innerText = "You Will Pay " + (seatCount * parseFloat("@Model?.Price")).toFixed(2) + " ETB for " + seatCount + " seats";
+                        skipButton.innerText = "You Will Pay " + (seatCount * parseFloat("@Model?.Data?.Price")).toFixed(2) + " ETB for " + seatCount + " seats";
                     }
 
                 } else {
@@ -258,8 +258,8 @@
 
             function resetBooking() {
                 clearInterval(countdownInterval);
-                var companyTinNumber = "@Model?.CompanyTinNumber";
-                var movieScheduleCode = "@Model?.MovieScheduleCode";
+                var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+                var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
 
                 selectedSeats.forEach(function (selectedSeat) {
                     var button = document.getElementById(selectedSeat);
@@ -291,10 +291,10 @@
                 isBookingStarted = false; // Reset booking flag
             }
             function toggleSeatSelection(seatCode, isDisabled) {
-                var maxSeats = parseInt("@Model?.MaxSeats", 10);
+                var maxSeats = parseInt("@Model?.Data?.MaxSeats", 10);
                 var index = selectedSeats.indexOf(seatCode);
-                var companyTinNumber = "@Model?.CompanyTinNumber";
-                var movieScheduleCode = "@Model?.MovieScheduleCode";
+                var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+                var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
                 var consignee = "0912141914"; // Keep the consignee same, as you mentioned
                 var urlAdd = 'https://api-hulubeje.cnetcommerce.com/api/ManageSeatCache/SetCachedSeatsForSchedule' +
                     `?schedule=${movieScheduleCode}&seat=${seatCode}&consignee=${consignee}&orgTin=${companyTinNumber}`;
@@ -416,7 +416,7 @@
         </nav>
     </header>
     <div id="seatLimitAlert" class="alert alert-danger fixed-bottom mb-3" role="alert" style="display: none; position: fixed; bottom: 20px; left: 20px; width: 300px;">
-        You can't select more than @Model?.MaxSeats seats
+        You can't select more than @Model?.Data?.MaxSeats seats
     </div>
     <div class="container-xl">
         <div id="seatInfoContainer">

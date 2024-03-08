@@ -1,4 +1,4 @@
-﻿@model HulubejeBooking.Models.CInemaModels.SeatLayout
+﻿@model HulubejeBooking.Models.CInemaModels.SeatLayouts
 @using System.Globalization
 @using System.Text.RegularExpressions
 <style>
@@ -68,20 +68,20 @@
 <div class="row mt-3">
     <div class="col-lg-10 mb-3">
         <div style="background: lightgrey; padding: 20px;" class="mr-2">
-            @if (Model != null && Model.Seats != null && Model.Seats.Any())
+            @if (Model != null && Model.Data?.Seats != null && Model.Data.Seats.Any())
             {
                 <div style="display: flex;justify-content:safe center; align-items: center; overflow-x: auto; margin-top: 30px;">
                     <table>
-                        @for (int y = Model.MaxY; y >= 1; y--)
+                        @for (int y = Model.Data.MaxY; y >= 1; y--)
                         {
                             <tr>
-                                @for (int x = 1; x <= Model.MaxX; x++)
+                                @for (int x = 1; x <= Model.Data.MaxX; x++)
                                 {
                                     <td style="height: 30px !important; width: 30px !important">
-                                        @if (Model.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))
+                                        @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))
                                         {
-                                            var seat = Model.Seats.First(seat => seat.X == x && seat.Y == y);
-
+                                            var seat = Model.Data.Seats.First(seat => seat.X == x && seat.Y == y);
+@* 
                                             // Check if the seat is booked, sold, or taken
                                             var isBooked = (Model.BookedSeats?.Contains(seat.Code) ?? false);
                                             var isSold = Model.SoldSeats?.Contains(seat.Code) ?? false;
@@ -89,8 +89,8 @@
 
                                             var backgroundColor = isBooked ? (isSold ? "red" : "blue") : (isTaken ? "orange" : "");
                                             var textColor = isTaken || isBooked || (isBooked && isSold) ? "white" : "";
-
-                                            <button id="@seat.Code" class="buttons rounded" onclick="return false" @(isBooked || isSold || isTaken ? "disabled" : "") style="background-color: @(backgroundColor); color: @(textColor); ">
+ *@
+                                            <button id="@seat.Code" class="buttons rounded"  @* onclick="return false" @(isBooked || isSold || isTaken ? "disabled" : "") style="background-color: @(backgroundColor); color: @(textColor); "*@>
                                                 @seat.Name
                                             </button>
                                         }
@@ -127,35 +127,35 @@
         </div>
     </div>
     <div class="col-lg-2  ml-0">
-        <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:280px; ">
+        @*<div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:280px; ">
             <div class="row">
-                <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.CompanyName</h4>
+                <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.Data?.CompanyName</h4>
                 <div style="text-align: left;">
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                         @{
-                            var decodedMovieName = Regex.Unescape(Model?.MovieName ?? "");
+                            var decodedMovieName = Regex.Unescape(Model?.Data?.MovieName ?? "");
                         }
 
                         <strong>Movie:</strong>&nbsp; @decodedMovieName
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                        <strong>Hall Name:</strong>&nbsp; @Model?.HallName
+                        <strong>Hall Name:</strong>&nbsp; @Model?.Data?.HallName
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                        <strong>Time:</strong>&nbsp; @Model?.UtcTime (@GetEthiopianTime(Model?.UtcTime) Local)
+                        <strong>Time:</strong>&nbsp; @Model?.Data?.UtcTime (@GetEthiopianTime(Model?.Data?.UtcTime) Local)
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                        <strong>Date:</strong>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.SelectedDate)
+                        <strong>Date:</strong>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.Data?.SelectedDate)
                     </p>
                     <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                         <strong>Dimension:</strong>&nbsp;
-                        <span style="background-color: @(Model?.Dimension == "2D" ? "blue" : "red"); color:white; padding: 1.5px; border-radius:3px;">
-                            @Model?.Dimension
+                        <span style="background-color: @(Model?.Data?.Dimension == "2D" ? "blue" : "red"); color:white; padding: 1.5px; border-radius:3px;">
+                            @Model?.Data?.Dimension
                         </span>
                     </p>
                 </div>
             </div>
-            <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
+            @* <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
                 <div class="row">
                     <div class="col-10">
                         <div class="row">
@@ -211,7 +211,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>*@
     </div>
 </div>
 <div class="mb-3"></div>
