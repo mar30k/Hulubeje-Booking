@@ -1,9 +1,57 @@
 ﻿@using System.Web
-@model List<HulubejeBooking.Models.CInemaModels.MovieModel>;
+@model HulubejeBooking.Models.CInemaModels.Movie;
 @if (Model is not null)
 {
     <div class="row" id="movieCardsContainer">
-        @{
+        @if (Model?.Data?.Count > 0)
+        {
+            foreach (var movie in Model?.Data ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
+            {
+                var companyCode = movie.CompanyCode;
+                var companyName = movie.CompanyName;
+                if (companyName == "Power Gym PLC ")
+                {
+                    companyName = "Power Cinema";
+                }
+                foreach (var movies in movie.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
+                {
+                    int? year = movies.ReleaseDate?.Year;
+                    var delay = 0.1;
+                    <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
+                        <div class="card position-relative">
+                            <img src="@movies.MoviePoster" alt="Poster Image" class="img-fluid">
+
+                            <div class="button-container">
+                                @{
+                                    var sanitizedOverview = HttpUtility.JavaScriptStringEncode(movies?.Plot);
+                                    var santizedMovieName = HttpUtility.JavaScriptStringEncode(movies?.MovieName);
+                                    var streamUrl = HttpUtility.JavaScriptStringEncode(movies?.StreamUrl);
+                                    Console.WriteLine("schedule count " + movies?.MovieSchedule?.Count);
+                                }
+                                <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@movies?.MoviePoster', '@santizedMovieName', '@movies?.MovieId','@movies?.StreamUrl','@movies?.MovieSchedule' )">
+                                    @companyName
+                                </button>
+                            </div>
+                            <div class="card-title">
+                                @movies?.MovieName (@year)
+                            </div>
+                        </div>
+                    </div>
+                    delay += 0.1;
+                }
+            }
+        }
+        else
+        {
+            <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
+                    <p class="mt-2">We apologize, but it seems there are no movies available for this day.</p>
+                </div>
+            </div>
+        }
+
+        @* @{
             var groupedMovies = Model.GroupBy(m => m.MovieName, StringComparer.OrdinalIgnoreCase);
             var delay = 0.1; // Initial delay in seconds
 
@@ -32,7 +80,7 @@
                 </div>
                 delay += 0.1;
             }
-        }
+        } *@
     </div>
 }
 else
@@ -45,22 +93,21 @@ else
     </div>
 }
 <script>
-    function onCompanyButtonClick(movieCode, companyName, sanitizedOverview, posterUrl, movieName, movieId, backdropPath) {
+    function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, movieSchedules) {
         // Create a form element
         var selectedDate = document.getElementById("selectedDate").value;
         sessionStorage.setItem('selectedMovieName', movieName);
         sessionStorage.setItem('selectedCompanyName ', companyName);
         sessionStorage.setItem('selectedDate', selectedDate);
         var form = $('<form action="/cinemamoviedetails" method="post"></form>');
-        // Append hidden input fields for the parameters
         form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '">');
-        form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
         form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
         form.append('<input type="hidden" name="sanitizedOverview" value="' + sanitizedOverview + '">');
-        form.append('<input type="hidden" name="posterUrl" value="' + posterUrl + '">');
+        form.append('<input type="hidden" name="posterUrl" value="' + moviePoster + '">');
         form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
         form.append('<input type="hidden" name="movieId" value="' + movieId + '">');
-        form.append('<input type="hidden" name="backdropPath" value="' + backdropPath + '">');
+        form.append('<input type="hidden" name="streamUrl" value="' + streamUrl + '">');
+        form.append('<input type="hidden" name="companyCode" value="' + companyCode + '">');
 
         // Append the form to the body and submit it
         $('body').append(form);

@@ -1,5 +1,5 @@
 ﻿@using System.Web
-@model List<HulubejeBooking.Models.CInemaModels.MovieModel>;
+@model HulubejeBooking.Models.CInemaModels.Movie;
 @{
     DateTime today = DateTime.Today;
     string minDate = today.ToString("yyyy-MM-dd");
@@ -145,10 +145,8 @@
                 }
             }
 
-            // Add event listeners to the search inputs for real-time filtering
             document.getElementById('companyFilter').addEventListener('input', function () {
                 if (document.getElementById('movieFilter').value.trim().length > 0) {
-                    // Disable company filter if movie filter has text
                     document.getElementById('companyFilter').disabled = true;
                 } else {
                     filterByCompany();
@@ -158,7 +156,6 @@
 
             document.getElementById('movieFilter').addEventListener('input', function () {
                 if (document.getElementById('companyFilter').value.trim().length > 0) {
-                    // Disable movie filter if company filter has text
                     document.getElementById('movieFilter').disabled = true;
                 } else {
                     filterByMovie();
