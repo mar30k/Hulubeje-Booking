@@ -30,8 +30,13 @@ builder.Services.AddAuthentication("cnet.erp.v6")
      });
 builder.Services.AddHttpClient("HulubejeBooking", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("http://196.191.244.136:8090/api/");
+    httpClient.BaseAddress = new Uri("https://v7-hulubeje.cnetcommerce.com/api/");
     httpClient.DefaultRequestHeaders.Add("x-api-key", "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE");
+});
+builder.Services.AddHttpClient("HulubejeCache", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://cache.cnetcommerce.com/api/cache/");
+    httpClient.DefaultRequestHeaders.Add("x-api-key", "3e1a8b15-ygqa-3965-l5es-509a88f53477");
 });
 builder.Services.AddHttpClient("MovieDb", httpClient =>
 {
