@@ -38,6 +38,7 @@
         }
 
         public List<MovieSchedule>? Schedules { get; set; } // Added property for cinema schedules
+        public List<MovieSchedules>? MovieSchedules { get; set; }
     }
 
     public class MovieSchedule

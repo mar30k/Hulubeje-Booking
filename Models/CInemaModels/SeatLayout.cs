@@ -1,5 +1,12 @@
 ﻿namespace HulubejeBooking.Models.CInemaModels
 {
+    public class SeatLayouts
+    {
+        public bool? IsSuccessful { get; set; }
+        public SeatLayout? Data { get; set; }
+        public string[]? ErrorMessages { get; set; }
+        public object? AdditionalParameters { get; set; }
+    }
     public class SeatLayout
     {
         public string? SpaceCode { get; set; }
@@ -17,7 +24,8 @@
         public string? BranchCode { get; set; }
         public int MaxX { get; set; }
         public int MaxY { get; set; }
-        public decimal Price { get; set; }
+        public int SpaceId { get; set; }
+        public decimal? Price { get; set; }
         public List<SeatInfo>? Seats { get; set; }
         public string? MaxSeats { get; set; }
         public List<string>? BookedSeats { get; set; }
