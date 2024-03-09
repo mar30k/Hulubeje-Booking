@@ -47,7 +47,20 @@
             width: 30px;
             height: 30px;
         }
-
+        .takenorbookedseats{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            background: #fff;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            color: #1ea83c;
+            width: 30px;
+            height: 30px;
+        }
         .hall {
             width: 100%;
             height: 100%;
@@ -58,6 +71,20 @@
             color: white;
         }
 
+        .taken {
+            background-color: orange;
+            color: white;
+        }
+
+        .booked {
+            background-color: blue;
+            color: white;
+        }
+
+        .sold {
+            background-color: red;
+            color: white;
+        }
     </style>
     @{
         var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.Data?.MovieName);
@@ -65,17 +92,53 @@
     <script>
         var selectedSeats = [];
         var countdownInterval;
-        var countdownTime = 60; // Countdown time in seconds
+        var countdownTime = 60;
         var isBookingStarted = false;
         var isThereSelectedSeat = sessionStorage.getItem('secondsAdded');
-        var selectedSeats = sessionStorage.getItem('selectedSeats');
-        var selectedSeatArray = selectedSeats ? JSON.parse(selectedSeats) : [];
-        var numberOfElements = selectedSeatArray.length;
+        selectedSeats = sessionStorage.getItem('selectedSeats');
+        var key = "cinema_" +'@Model?.Data?.CompanyTinNumber' + '_' + '@Model?.Data?.BranchCode' + '_' + '@Model?.Data?.MovieScheduleCode';
+        var seatCacheKey = key +"_" +'@Model?.Data?.SelectedDate';
+        function fetchSeatStatus() {
+            $.ajax({
+                url: 'https://cache.cnetcommerce.com/api/cache/getEntriesContainsKey?key=' + key,
+                headers: {
+                    "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
+                },
+                method: "GET",
+                success: function (response) {
+                    var fetchedSeatIds = response.map(function (seat) {
+                        return seat.value.toString();
+                    });
+
+                    $("button").each(function () {
+                        var buttonId = $(this).attr("id");
+                        if (buttonId && fetchedSeatIds.indexOf(buttonId) === -1) {
+                            $(this).removeClass("taken booked sold");
+                        }
+                    });
+
+                    response.forEach(function (seat) {
+                        var buttonId = seat.value.toString();
+                        var button = document.getElementById(buttonId);
+                        if (button) {
+                            button.dataset.seatStatus = seat.status;
+                            button.classList.remove("taken", "booked", "sold");
+                            button.classList.add(seat.status);
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching seat status:", error);
+                }
+            });
+        }
+        fetchSeatStatus();
+        setInterval(fetchSeatStatus, 10000); 
+
         document.addEventListener("DOMContentLoaded", function () {
-            applyEventListenersSkip();
             var buttons = document.querySelectorAll('.buttons');
             var countdown;
-            selectedSeats = retrieveSelectedSeatsFromStorage();
+            var selectedSeats = retrieveSelectedSeatsFromStorage();
             document.body.addEventListener('click', function (event) {
                 if (event.target.classList.contains('buttons')) {
                     var seatCode = event.target.id;
@@ -83,319 +146,139 @@
 
                     var isBooked = seatStatus === 'booked';
                     var isSold = seatStatus === 'sold';
-                    var isTaken = seatStatus === 'taken';
-
+                    console.log(seatStatus);
                     if (!isBookingStarted) {
                         startBooking();
                         isBookingStarted = true;
                     }
-
-                    toggleSeatSelection(seatCode, isBooked || isSold || isTaken);
+                    
+                    toggleSeatSelection(seatCode, isBooked || isSold );
                 }
             });
-
-            // setInterval(function () {
-            //     updateSeatInfo();
-            // }, 10000); // Update every 10000 milliseconds (10 seconds)
-
-            // function updateSeatInfo() {
-            //     var movieName = @*@Html.Raw(Json.Serialize(santizedMovieName))*@;
-            //     var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
-            //     var code = "@Model?.Data?.MovieScheduleCode";
-            //     var spacecode = "@Model?.Data?.SpaceCode";
-            //     var companyName = "@Model?.Data?.CompanyName";
-            //     var utcTime = "@Model?.Data?.UtcTime";
-            //     var selectedDate = "@Model?.Data?.SelectedDate";
-            //     var hallName = "@Model?.Data?.HallName";
-            //     var dimension = "@Model?.Data?.Dimension";
-            //     var spaceType = "@Model?.Data?.SpaceType";
-
-            //     // Use AJAX to fetch updated seat information
-            //     $.get("/CinemaSeatLayout/GetUpdatedSeatInfo", {
-            //         companyTinNumber: companyTinNumber, code: code, spacecode: spacecode, movieName: movieName,
-            //         companyName: companyName, utcTime: utcTime, selectedDate: selectedDate, hallName: hallName, spaceType: spaceType, dimension: dimension
-            //     }, function (data) {
-            //         $("#seatInfoContainer").html(data);
-            //         applyEventListeners();
-            //         updateButtonStatus();
-            //         updateSelectedSeatsUI();
-            //         selectedSeatsCountUpdate();
-            //         applyEventListenersSkip();
-            //     });
-            // }
-
-            function selectedSeatsCountUpdate() {
-                var selectedSeatsDisplay = document.getElementById("selectedSeatsDisplay");
-                var selectedSeatsCountArray = sessionStorage.getItem('selectedSeats');
-                var selectedSeatsArray = JSON.parse(selectedSeatsCountArray);
-                var selectedSeatsCount = selectedSeatsArray ? selectedSeatsArray.length : 0;
-                selectedSeatsDisplay.textContent = selectedSeatsCount ;
-            }
-
-            // function applyEventListeners() {
-            //     var buttons = document.querySelectorAll('.buttons');
-            //     buttons.forEach(function (button) {
-            //         button.addEventListener('click', function () {
-            //             // Your existing click event logic...
-            //         });
-            //     });
-            // }
-            function applyEventListenersSkip() {
-                var button = document.getElementById('skipButton');
-                if (button) {
-                    button.addEventListener('click', function () {
-                        var selectedSeats = retrieveSelectedSeatsFromStorage();
-                        var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
-                        var movieScheduleCode = "@Model?/Data?.MovieScheduleCode";
-                        var articleCode = "@Model?.Data?.ArticleCode";
-                        var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
-                        var companyName = "@Model?.Data?.CompanyName";
-                        var utcTime = "@Model?.Data?.UtcTime";
-                        var selectedDate = "@Model?.Data?.SelectedDate";
-                        var hallName = "@Model?.Data?.HallName";
-                        var price = "@Model?.Data?.Price";
-                        var dimension = "@Model?.Data?.Dimension";
-                        var spaceType = "@Model?.Data?.SpaceType";
-                        var branchCode = "@Model?.Data?.BranchCode";
-
-                        var remainingTime = countdown ?? 0;
-
-                        var selectedSeatsJson = sessionStorage.getItem('selectedSeats');
-                        var selectedSeatsArray = selectedSeatsJson ? JSON.parse(selectedSeatsJson) : [];
-                        var numberOfElements = selectedSeatsArray.length;
-                        sessionStorage.setItem('remainingTime', remainingTime);
-                        if (remainingTime != 0) {
-                            sessionStorage.setItem('countdownStarted', true);
-                        }
-
-                        var form = $('<form action="/cinemafoodandbeverage" method="post"></form>');
-
-                        form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />');
-                        form.append('<input type="hidden" name="movieScheduleCode" value="' + movieScheduleCode + '" />');
-                        form.append('<input type="hidden" name="movieName" value="' + movieName + '" />');
-                        form.append('<input type="hidden" name="companyName" value="' + companyName + '" />');
-                        form.append('<input type="hidden" name="hallName" value="' + hallName + '" />');
-                        form.append('<input type="hidden" name="utcTime" value="' + utcTime + '" />');
-                        form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '" />');
-                        form.append('<input type="hidden" name="price" value="' + price + '" />');
-                        form.append('<input type="hidden" name="dimension" value="' + dimension + '" />');
-                        form.append('<input type="hidden" name="spaceType" value="' + spaceType + '" />');
-                        form.append('<input type="hidden" name="articleCode" value="' + articleCode + '" />');
-                        form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
-                        form.append('<input type="hidden" name="numberOfElements" value="' + numberOfElements + '" />');
-
-                        $('body').append(form);
-
-                        form.submit();
-                    });
-                } else {
-                    console.error("Button not found!");
-                }
-            }
-            function startBooking() {
-                if (!isThereSelectedSeat) {
-                    $('#bookingModal').modal('show');
-                    // Handle "OK" button click
-                    $('#okButton').one('click', function () {
-                        // Close the modal
-                        $('#bookingModal').modal('hide');
-                        countdown = countdownTime;
-                        startCountdownTimer();
-                    });
-                }
-            }
-
-            function startCountdownTimer() {
-                // Display the countdown timer div
-                $('#countdownTimer').show();
-                countdownInterval = setInterval(function () {
-                    $('#countdownTimer').text("Time remaining: " + formatTime(countdown));
-                    countdown--;
-
-                    if (countdown <= 0) {
-                        clearInterval(countdownInterval);
-                        resetBooking();
-                        alert("Booking time expired. Please restart the booking process.");
-                        sessionStorage.clear(); // Clear session storage
-                        window.location.href = '@Url.Action("Index", "cinema")';
-                    }
-                }, 1000);
-            }
-
-            var countdownStarted = sessionStorage.getItem('countdownStarted');
-            if (countdownStarted === 'true') {
-                var remainingTime = parseInt(sessionStorage.getItem('remainingTime'));
-                countdown = remainingTime;
-                startCountdownTimer();
-            } 
-            function updateButtonStatus() {
-                var skipButton = document.getElementById('skipButton');
-                if (isBookingStarted) {
-                    var seatCount = selectedSeats.length;
-                    if (seatCount === 0) {
-                        skipButton.innerText = "Skip";
-                    } else {
-                        skipButton.innerText = "You Will Pay " + (seatCount * parseFloat("@Model?.Data?.Price")).toFixed(2) + " ETB for " + seatCount + " seats";
-                    }
-
-                } else {
-                    skipButton.innerText = "Skip";
-                }
-            }
-
-            $('#cancelButton').click(function () {
-                $('#bookingModal').modal('hide');
-                sessionStorage.removeItem("selectedSeatNames");
-                resetBooking();
-                selectedSeatsCountUpdate();
-            });
-
-            function formatTime(seconds) {
-                var min = Math.floor(seconds / 60);
-                var sec = seconds % 60;
-                return min + ":" + (sec < 10 ? "0" : "") + sec;
-            }
-
-            function resetBooking() {
-                clearInterval(countdownInterval);
-                var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
-                var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
-
-                selectedSeats.forEach(function (selectedSeat) {
-                    var button = document.getElementById(selectedSeat);
-                    if (button) {
-                        button.style.backgroundColor = "";
-                    }
-                });
-
-                var urlRemove = 'https://api-hulubeje.cnetcommerce.com/api/ManageSeatCache/DeleteCachedSeatsForSchedule';
-                $.ajax({
-                    url: urlRemove,
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        schedule: movieScheduleCode,
-                        allSeats: selectedSeats,
-                        orgTin: companyTinNumber
-                    }),
-                    success: function (response) {
-                    },
-                    error: function (error) {
-                    }
-                });
-
-                // Clear the selected seats array
-                selectedSeats = [];
-                saveSelectedSeatsToStorage();
-                updateButtonStatus();
-                isBookingStarted = false; // Reset booking flag
-            }
-            function toggleSeatSelection(seatCode, isDisabled) {
-                var maxSeats = parseInt("@Model?.Data?.MaxSeats", 10);
-                var index = selectedSeats.indexOf(seatCode);
-                var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
-                var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
-                var consignee = "0912141914"; // Keep the consignee same, as you mentioned
-                var urlAdd = 'https://api-hulubeje.cnetcommerce.com/api/ManageSeatCache/SetCachedSeatsForSchedule' +
-                    `?schedule=${movieScheduleCode}&seat=${seatCode}&consignee=${consignee}&orgTin=${companyTinNumber}`;
-
-                var urlRemove = 'https://api-hulubeje.cnetcommerce.com/api/ManageSeatCache/DeleteCachedSeatsForSchedule';
-
-                if (!isDisabled && index === -1) {
-                    if (selectedSeats.length < maxSeats) {
-                        selectedSeats.push(seatCode);
-
-                        var seatNames = selectedSeats.map(function (code) {
-                            return document.getElementById(code).innerText;
-                        });
-                        sessionStorage.setItem('selectedSeatNames', JSON.stringify(seatNames));
-
-                        $.ajax({
-                            url: urlAdd,
-                            type: 'POST',
-                            success: function (response) {
-                            },
-                            error: function (error) {
-
-                            }
-                        });
-                    } else {
-                        var alertElement = document.getElementById("seatLimitAlert");
-                        alertElement.style.display = "block";
-                        setTimeout(function () {
-                            alertElement.style.display = "none";
-                        }, 2000);
-                        return;
-                    }
-                } else if (!isDisabled) {
-                    selectedSeats.splice(index, 1);
-                    var updatedSeatNames = selectedSeats.map(function (code) {
-                        return document.getElementById(code).innerText;
-                    });
-                    sessionStorage.setItem('selectedSeatNames', JSON.stringify(updatedSeatNames));
-
-                    $.ajax({
-                        url: urlRemove,
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            schedule: movieScheduleCode,
-                            allSeats: [seatCode],
-                            orgTin: companyTinNumber
-                        }),
-                        success: function (response) {
-                        },
-                        error: function (error) {
-                        }
-                    });
-                }
-                var button = document.getElementById(seatCode);
-                if (button) {
-                    button.style.backgroundColor = index === -1 ? "green" : "white";
-                    button.style.color = index === -1 ? "white" : "green";
-                }
-                updateButtonStatus();
-                saveSelectedSeatsToStorage();
-                updateSelectedSeatsUI();
-                selectedSeatsCountUpdate()
-                return selectedSeats;
-            }
-            function saveSelectedSeatsToStorage() {
-                sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
-            }
-
-            function retrieveSelectedSeatsFromStorage() {
-                var storedSelectedSeats = sessionStorage.getItem('selectedSeats');
-                return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
-            }
-            function updateSelectedSeatsUI() {
-                selectedSeats.forEach(function (seatCode) {
-                    var button = document.getElementById(seatCode);
-                    if (button) {
-                        button.style.backgroundColor = "green"; // Adjust based on your styling
-                        button.removeAttribute("disabled"); // Remove the disabled attribute
-                        button.style.color = "black";
-                    }
-                });
-            }
-            $(document).ready(function () {
-                $('#bookingModal').modal(
-                    {
-                        backdrop: "static",
-                        keyboard: false
-                    }
-                );
-                $('#bookingModal').on('click', '.close', function (e) {
+        });
+        function startBooking() {
+            if (!isThereSelectedSeat) {
+                $('#bookingModal').modal('show');
+                $('#okButton').one('click', function () {
                     $('#bookingModal').modal('hide');
-                    sessionStorage.removeItem("selectedSeatNames");
-                    resetBooking();
-                    selectedSeatsCountUpdate();
+                    countdown = countdownTime;
+                    startCountdownTimer();
                 });
-                selectedSeatsCountUpdate();
-            });
-            updateSelectedSeatsUI();
+            }
+        }
+        function retrieveSelectedSeatsFromStorage() {
+            var storedSelectedSeats = sessionStorage.getItem('selectedSeats');
+            return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
+        }
+        function startCountdownTimer() {
+            $('#countdownTimer').show();
+            countdownInterval = setInterval(function () {
+                $('#countdownTimer').text("Time remaining: " + formatTime(countdown));
+                countdown--;
+
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    // resetBooking();
+                    alert("Booking time expired. Please restart the booking process.");
+                    sessionStorage.clear(); 
+                    window.location.href = '@Url.Action("Index", "cinema")';
+                }
+            }, 1000);
+        }
+        $('#bookingModal').on('click', '#cancelButton', function (e) {
+            $('#bookingModal').modal('hide');
+            sessionStorage.removeItem("selectedSeatNames");
+            // resetBooking();
+            // selectedSeatsCountUpdate();
         });
 
+        function formatTime(seconds) {
+            var min = Math.floor(seconds / 60);
+            var sec = seconds % 60;
+            return min + ":" + (sec < 10 ? "0" : "") + sec;
+        }
+
+
+        function toggleSeatSelection(seatCode, isDisabled) {
+            selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
+            var maxSeats = parseInt("@Model?.Data?.MaxSeats", 10);
+            var index = selectedSeats.indexOf(seatCode);
+            if (!isDisabled && index === -1) {
+                if (selectedSeats.length < maxSeats) {
+                    $.ajax({
+                        url: 'https://cache.cnetcommerce.com/api/cache/safePushEntry',
+                        headers: {
+                            "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
+                            "Content-Type": "application/json"
+                        },
+                        method: "POST",
+                        data: JSON.stringify({
+                            "key": seatCacheKey,
+                            "value": parseInt(seatCode)
+                        }),
+                        success: function (response) {
+                            if (response.isSuccessful) {
+                                console.log("Status:", response.status);
+                            } else {
+                                console.error("Error: Request was not successful");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error fetching seat status:", error);
+                        }
+                    });
+                    selectedSeats.push(seatCode);
+                    var seatNames = selectedSeats.map(function (code) {
+                        return document.getElementById(code).innerText;
+                    });
+                    sessionStorage.setItem('selectedSeatNames', JSON.stringify(seatNames));
+                } else {
+                    var alertElement = document.getElementById("seatLimitAlert");
+                    alertElement.style.display = "block";
+                    setTimeout(function () {
+                        alertElement.style.display = "none";
+                    }, 2000);
+                    return;
+                }
+            } else if (!isDisabled) {
+                selectedSeats.splice(index, 1);
+                var updatedSeatNames = selectedSeats.map(function (code) {
+                    return document.getElementById(code).innerText;
+                });
+                sessionStorage.setItem('selectedSeatNames', JSON.stringify(updatedSeatNames));
+            }
+            var button = document.getElementById(seatCode);
+            if (button) {
+                button.style.backgroundColor = index === -1 ? "green" : "white";
+                button.style.color = index === -1 ? "white" : "green";
+            }
+
+
+            // updateButtonStatus();
+            saveSelectedSeatsToStorage();
+            // updateSelectedSeatsUI();
+            // selectedSeatsCountUpdate()
+            // return selectedSeats;
+        }
+        function saveSelectedSeatsToStorage() {
+            sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+        }
+        $(document).ready(function () {
+            $('#bookingModal').modal(
+                {
+                    backdrop: "static",
+                    keyboard: false
+                }
+            );
+            $('#bookingModal').on('click', '.close', function (e) {
+                $('#bookingModal').modal('hide');
+                sessionStorage.removeItem("selectedSeatNames");
+                // resetBooking();
+                // selectedSeatsCountUpdate();
+            });
+
+            // selectedSeatsCountUpdate();
+        });
     </script>
 </head>
 <body>
@@ -420,7 +303,92 @@
     </div>
     <div class="container-xl">
         <div id="seatInfoContainer">
-            <partial name="_SeatArrangementPartialView" />
+            <div class="row mt-3">
+                <div class="col-lg-10 mb-3">
+                    <div style="background: lightgrey; padding: 20px;" class="mr-2">
+                        @if (Model != null && Model.Data?.Seats != null && Model.Data.Seats.Any())
+                        {
+                            <div style="display: flex;justify-content:safe center; align-items: center; overflow-x: auto; margin-top: 30px;">
+                                <table>
+                                    @for (int y = Model.Data.MaxY; y >= 1; y--)
+                                    {
+                                        <tr>
+                                            @for (int x = 1; x <= Model?.Data?.MaxX; x++)
+                                            {
+                                                <td style="height: 30px !important; width: 30px !important">
+                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))
+                                                    {
+                                                        var seat = Model.Data.Seats.First(seat => seat.X == x && seat.Y == y);
+                                                        var seatStatuses = Model?.SeatStatus;
+                                                        var seatStatus = seatStatuses?.FirstOrDefault(s => s.Value.ToString() == seat.Id);
+                                                        var buttonClass = " rounded";
+                                                        var seatStatusess = "Available";
+                                                        var isButtonDisabled = false;
+
+                                                        if (seatStatus != null)
+                                                        {
+                                                            if (seatStatus.Status == "taken")
+                                                            {
+                                                                seatStatusess = "taken";
+                                                                buttonClass += " taken takenorbookedseats";
+                                                            }
+                                                             if (seatStatus.Status == "booked")
+                                                            {
+                                                                seatStatusess = "booked";
+                                                                buttonClass += " booked takenorbookedseats ";
+                                                                isButtonDisabled = true;
+                                                            }
+                                                            else if (seatStatus.Status == "sold")
+                                                            {
+                                                                seatStatusess = "sold";
+                                                                buttonClass += " sold takenorbookedseats ";
+                                                                isButtonDisabled = true;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            buttonClass += " buttons";
+                                                        }
+                                                        <button data-seat-status="@seatStatusess" id="@seat.Id" class="@buttonClass" @(isButtonDisabled ? "disabled" : "")>
+                                                            @seat.Name
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="hall">
+                                                        </div>
+                                                    }
+                                                </td>
+
+                                            }
+                                        </tr>
+
+                                    }
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-exclamation-circle" style="font-size: 48px; color: red;"></i>
+                                    <p>No seats available.</p>
+                                </div>
+                            </div>
+                        }
+                    </div>  
+                    @*         <div class="screen-container">
+                    <div class="screen"></div>
+                    </div> *@
+                    <div id="priceContainer" style="text-align: center; position: relative;  margin-top:30px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
+                        <p class="text">All eyes this way please!</p>
+                        <button id="skipButton" class="btn btn-outline-primary">Skip</button>
+                    </div>
+                </div>
+                <div class="col-lg-2 ml-0">
+
+                </div>
+            </div>
         </div>
     </div>
     <div class="modal" tabindex="-1" role="dialog" id="bookingModal">

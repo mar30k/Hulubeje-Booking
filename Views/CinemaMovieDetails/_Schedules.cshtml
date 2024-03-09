@@ -36,7 +36,7 @@
                         }
                     </div>
                 </div>
-                <div class="mb-2 d-flex justify-content-start flex-column pt-1 pl-3 pr-3 ">
+                <div class="mb-2 d-flex justify-content-start flex-column pt-1 pl-lg-3 pr-lg-3 p-1 ">
                     @if (schedule.Status == "CLOSED")
                     {
                         foreach (var movieSpace in schedule?.MovieSpaces ?? new List<MovieSpace>())
@@ -57,22 +57,19 @@
                             for (int i = count - 1; i >= 0; i--)
                             {
                                 var movieSpace = schedule.MovieSpaces[i];
+                                var schdetailId = schedule.SchdetailId;
 
                                 <div class="d-flex justify-content-between p-1 align-items-center">
                                     <p style="font-size: 14px; margin: 0px; text-align: center">@movieSpace.CinemaHall</p>
-                                    <button class="btn btn-success col-6 mx-3" type="button" style="max-width: 180px;" onclick="onScheduleButtonClick(@movieSpace.Id, @movieSpace.SpaceId, @Model.CompanyCode)">
+                                    <button class="btn btn-success col-6 " type="button" style="max-width: 210px;"
+                                            onclick="onScheduleButtonClick('@movieSpace.Id',' @movieSpace.SpaceId', '@Model?.CompanyCode','@schdetailId' , '@Model?.CompanyTinNumber?.ToString()','@Model?.BranchCode?.ToString()' )">
                                         Book Now @($"{movieSpace.PriceValue:F2}") Birr
                                     </button>
                                 </div>
                             }
                         }
-@*                             var spaceType = "Regular";
-                        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.MovieName);
-                        <button class="btn btn-success " onclick="onScheduleButtonClick('@schedule.SpaceCode', '@Model?.CompanyTinNumber?.ToString()','@Model?.BranchCode?.ToString()','@Model?.CompanyName','@santizedMovieName','@Model?.MovieCode','@schedule.Dimension','@spaceType',
-                                        '@Model?.SelectedDate?.ToString()','@schedule.Code','@schedule.NPrice','@schedule.HallName','@utcTime.ToString("h.mm tt")')" type="button">
-                            Book Now <br> @schedule.NPrice ETB
-                        </button> *@
-                    }
+
+                        }
                 </div>
             </div>
         }       

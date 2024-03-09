@@ -9,7 +9,7 @@
         public string? CompanyName { get; set; }
         public string? CompanyCode { get; set; }
         public string? BranchName { get; set; }
-        public string? BranchCode { get; set; }
+        public int? BranchCode { get; set; }
         public string? MoviePreviewImageUrl { get; set; }
         public int? ReleaseYear { get; set; }
         public string? CompanyTinNumber { get; set; }

@@ -49,7 +49,7 @@
         public DateTime? EndTime { get; set; }
         public string? DimensionName { get; set; }
         public string? Status { get; set; }
-        public int? SchdetailId { get; set; }
+        public int SchdetailId { get; set; }
         public List<MovieSpace>? MovieSpaces { get; set; }
     }
 

@@ -22,7 +22,7 @@ namespace HulubejeBooking.Controllers
             _authenticationManager = authenticationManager;
         }
         public async Task<IActionResult> Index(int companyCode, string selectedDate, string movieCode, string companyName, string sanitizedOverview,
-             string posterUrl, string movieName, int movieId, string streamUrl)
+             string posterUrl, string movieName, int movieId, string streamUrl, string tin, int branchCode)
         {
             var movieJson = HttpContext.Session.GetString("movies");
             var movieData = movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) : new Movie();
@@ -77,9 +77,12 @@ namespace HulubejeBooking.Controllers
             };
             movieDetails.MovieSchedules = movieSchedule;
             movieDetails.CompanyCode = companyCode.ToString();
+            movieDetails.CompanyTinNumber = tin.ToString();
+            movieDetails.BranchCode = branchCode;
             var movieTitle = Uri.EscapeDataString(movieName ?? string.Empty);
             var tmdbClient = _httpClientFactory.CreateClient("MovieDb");
             var tmdbResponse = await tmdbClient.GetAsync(tmdbClient.BaseAddress + $"search/movie?api_key={_tmdbApiKey}&query={movieTitle}");
+            int? tmdbMovieId = 0;
             if (tmdbResponse.IsSuccessStatusCode)
             {
                 var tmdbData = await tmdbResponse.Content.ReadAsStringAsync();
@@ -90,11 +93,12 @@ namespace HulubejeBooking.Controllers
                     var result = movieDetail.results[0];
                     var backdroppath = "https://image.tmdb.org/t/p/w500" + result.backdrop_path;
                     movieDetails.BackdropPath = backdroppath;
+                    tmdbMovieId = result.id;
                 }
             }
             string videoId = streamUrl.Substring(streamUrl.IndexOf("v=") + 2);
             movieDetails.YoutubeKey = videoId;
-            string detailsApiUrl = $"movie/{movieId}?api_key={_tmdbApiKey}&append_to_response=release_dates";
+            string detailsApiUrl = $"movie/{tmdbMovieId}?api_key={_tmdbApiKey}&append_to_response=release_dates";
             HttpResponseMessage detailsResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + detailsApiUrl);
 
             if (detailsResponse.IsSuccessStatusCode)
@@ -109,7 +113,7 @@ namespace HulubejeBooking.Controllers
                     movieDetails.Genres = movieDetail.Genres;
                 }
             }
-            string castApiUrl = $"movie/{movieId}/credits?api_key={_tmdbApiKey}";
+            string castApiUrl = $"movie/{tmdbMovieId}/credits?api_key={_tmdbApiKey}";
             HttpResponseMessage castResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + castApiUrl);
 
             if (castResponse.IsSuccessStatusCode)
@@ -125,70 +129,7 @@ namespace HulubejeBooking.Controllers
                         ProfilePath = "https://image.tmdb.org/t/p/w500" + c["profile_path"].ToString()
                     })
                     .ToList();
-                    movieDetails.Cast = castList;                                }
-            }
-            var productsApiUrl = $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={selectedDate:yyyy-MM-dd}";
-            HttpResponseMessage productsResponse = await _client.GetAsync(_client.BaseAddress + productsApiUrl);
-            if (productsResponse.IsSuccessStatusCode)
-            {
-                string productsResponseData = await productsResponse.Content.ReadAsStringAsync();
-                var movieList = JsonConvert.DeserializeObject<List<MovieModel>>(productsResponseData);
-                if (movieList != null)
-                {
-                    var movieInfo = movieList.FirstOrDefault(m =>
-                        string.Equals(m.MovieName, movieName, StringComparison.OrdinalIgnoreCase) &&
-                        string.Equals(m.CompanyName, companyName, StringComparison.OrdinalIgnoreCase));
-
-                    if (movieInfo != null && movieDetails != null)
-                    {
-                        movieDetails.CompanyTinNumber = movieInfo?.CompanyTinNumber;
-                        movieDetails.BranchCode = movieInfo?.BranchCode;
-                        movieDetails.ArticleCode = movieInfo?.ArticleCode;
-                    }
-                }
-            }
-
-            var retrievedCompanyTinNumber = movieDetails?.CompanyTinNumber;
-            var retrievedBranchCode = movieDetails?.BranchCode;
-
-            string schedulesApiUrl = $"/cinema/cinemaSchedules?orgTin={retrievedCompanyTinNumber}&date={selectedDate:yyyy-MM-dd} 11:11:11.326116&branchCode={retrievedBranchCode}";
-
-
-            HttpResponseMessage schedulesResponse = await _client.GetAsync(_client.BaseAddress + schedulesApiUrl);
-
-            if (schedulesResponse.IsSuccessStatusCode)
-            {
-                // Read and parse the cinema schedules response content
-                string schedulesResponseData = await schedulesResponse.Content.ReadAsStringAsync();
-                var schedulesResponseObj = JsonConvert.DeserializeObject<dynamic>(schedulesResponseData);
-                // Find schedules for the selected movie using the movie name
-                if (schedulesResponseObj is not null)
-                {
-                    var selectedMovie = ((IEnumerable<dynamic>)schedulesResponseObj.movies)
-                                        .FirstOrDefault(m => m.movieName != null && m.movieName.ToString().Equals(movieName, StringComparison.OrdinalIgnoreCase));
-                    if (selectedMovie != null)
-                    {
-                        List<MovieSchedule> schedules = JsonConvert.DeserializeObject<List<MovieSchedule>>(selectedMovie.movieSchedules.ToString());
-                        var pgRating = selectedMovie.pgRating;
-
-
-                        CultureInfo cultureInfo = CultureInfo.InvariantCulture;
-                        string format24Hours = "hh:mm:ss tt";
-                        if (movieDetails != null)
-                        {
-                            movieDetails.Schedules = await Task.Run(() =>
-                            {
-                                var orderedSchedules = schedules
-                                    .Where(e => e.StartTime != null)
-                                    .OrderBy(e => DateTime.ParseExact(e.StartTime!.ToString(), format24Hours, cultureInfo))
-                                    .ToList();
-
-                                return orderedSchedules;
-                            });
-
-                            movieDetails.PgRating = pgRating;
-                        }
-                    }
+                    movieDetails.Cast = castList;                                
                 }
             }
             return View(movieDetails);   

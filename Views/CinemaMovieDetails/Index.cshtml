@@ -277,7 +277,7 @@
     </div>
 
     <script>
-        function onScheduleButtonClick(id, speceId, companyCode, spacecode, companyTinNumber, branchCode, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, price, hallName, utcTime) {
+        function onScheduleButtonClick(id, speceId, companyCode, schdetailId, companyTinNumber, branchCode, spacecode, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, price, hallName, utcTime) {
             sessionStorage.removeItem("remainingTime");
             sessionStorage.removeItem("countdownStarted");
             sessionStorage.removeItem("secondsAdded");
@@ -287,10 +287,11 @@
             sessionStorage.removeItem("secondsAddedInOtp");
             var form = $('<form action="/cinemaseatlayout" method="post"></form>');
             form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
+            form.append('<input type="hidden" name="schdetailId" value="' + schdetailId + '">');
             form.append('<input type="hidden" name="id" value="' + id + '">');
             form.append('<input type="hidden" name="companyCode" value="' + companyCode + '">');
             form.append('<input type="hidden" name="speceId" value="' + speceId + '">');
-            form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '">');
+            form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber.toString() + '">');
             form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
             form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
             form.append('<input type="hidden" name="movieName" value="' + movieName + '">');

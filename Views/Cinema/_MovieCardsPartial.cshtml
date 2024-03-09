@@ -5,14 +5,15 @@
     <div class="row" id="movieCardsContainer">
         @if (Model?.Data?.Count > 0)
         {
+            var movieGroups = Model.Data
+            .SelectMany(companyData => companyData.Movies)
+            .GroupBy(movie => movie.MovieName)
+            .ToList();
             foreach (var movie in Model?.Data ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
             {
+                
                 var companyCode = movie.CompanyCode;
                 var companyName = movie.CompanyName;
-                if (companyName == "Power Gym PLC ")
-                {
-                    companyName = "Power Cinema";
-                }
                 foreach (var movies in movie.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
                 {
                     int? year = movies.ReleaseDate?.Year;
@@ -28,7 +29,8 @@
                                     var streamUrl = HttpUtility.JavaScriptStringEncode(movies?.StreamUrl);
                                     Console.WriteLine("schedule count " + movies?.MovieSchedule?.Count);
                                 }
-                                <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@movies?.MoviePoster', '@santizedMovieName', '@movies?.MovieId','@movies?.StreamUrl','@movies?.MovieSchedule' )">
+                                <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@movies?.MoviePoster', '@santizedMovieName', 
+                                    '@movies?.MovieId','@movies?.StreamUrl','@movies?.MovieSchedule','@movie.TIN','@movie.BranchCode' )">
                                     @companyName
                                 </button>
                             </div>
@@ -50,37 +52,6 @@
                 </div>
             </div>
         }
-
-        @* @{
-            var groupedMovies = Model.GroupBy(m => m.MovieName, StringComparer.OrdinalIgnoreCase);
-            var delay = 0.1; // Initial delay in seconds
-
-            @foreach (var group in groupedMovies)
-            {
-                var movie = group.First();
-                var companyNames = group.Select(m => m.CompanyName).ToList();
-                <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
-                    <div class="card position-relative">
-                        <img src="@movie.PosterUrl" alt="Poster Image" class="img-fluid">
-                        <div class="button-container">
-                            @foreach (var companyName in companyNames)
-                            {
-                                var sanitizedOverview = HttpUtility.JavaScriptStringEncode(movie.Overview);
-                                var santizedMovieName = HttpUtility.JavaScriptStringEncode(movie.MovieName);
-                                var santizedBackdropPath = HttpUtility.JavaScriptStringEncode(movie.BackdropPath);
-                                <button class="button" onclick="onCompanyButtonClick('@movie.MovieCode','@companyName', '@sanitizedOverview', '@movie.PosterUrl', '@santizedMovieName', '@movie.MovieId', '@santizedBackdropPath')">
-                                    @companyName
-                                </button>
-                            }
-                        </div>
-                        <div class="card-title">
-                            @movie.MovieName (@movie.ReleaseYear)
-                        </div>
-                    </div>
-                </div>
-                delay += 0.1;
-            }
-        } *@
     </div>
 }
 else
@@ -93,7 +64,7 @@ else
     </div>
 }
 <script>
-    function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, movieSchedules) {
+    function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, movieSchedules, tin, branchCode) {
         // Create a form element
         var selectedDate = document.getElementById("selectedDate").value;
         sessionStorage.setItem('selectedMovieName', movieName);
@@ -108,6 +79,8 @@ else
         form.append('<input type="hidden" name="movieId" value="' + movieId + '">');
         form.append('<input type="hidden" name="streamUrl" value="' + streamUrl + '">');
         form.append('<input type="hidden" name="companyCode" value="' + companyCode + '">');
+        form.append('<input type="hidden" name="tin" value="' + tin + '">');
+        form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
 
         // Append the form to the body and submit it
         $('body').append(form);

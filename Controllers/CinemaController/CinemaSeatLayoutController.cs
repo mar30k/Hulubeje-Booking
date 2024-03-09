@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Tweetinvi.Core.Extensions;
 
 public class CinemaSeatLayoutController : Controller
 {
@@ -31,12 +32,14 @@ public class CinemaSeatLayoutController : Controller
     }
     public async Task<IActionResult> IndexAsync(string? spacecode, string? companyTinNumber, string? branchCode, string? companyName,
         string? movieName, string? movieCode, string? dimension, string? spaceType, string? selectedDate, string? code, decimal? price, string? hallName, string? utcTime,
-        string speceId, string id, string companyCode)
+        string speceId, string id, string companyCode, string schdetailId)
     {
+        string? phoneNumber = "";
         var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
         if (!string.IsNullOrEmpty(userDataCookie))
         {
             var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+            phoneNumber = user?.phoneNumber;
             ViewBag.FirstName = user?.firstName;
             ViewBag.LastName = user?.lastName;
             ViewBag.MiddleName = user?.middleName;
@@ -112,18 +115,28 @@ public class CinemaSeatLayoutController : Controller
                 price = seatValues?.Price;
 
          }
+        string? companyTin = "";
+        if (HttpContext.Session.TryGetValue("movies", out var movies))
+        {
+            var moviesString = Encoding.UTF8.GetString(movies);
+            var movie = JsonConvert.DeserializeObject<Movie>(moviesString);
+            var companyData = movie?.Data?.FirstOrDefault(c => c.BranchCode.ToString() == branchCode);
+            companyTin = companyData?.TIN;
+        }
+        string key = "cinema_" + companyTin + "_" + branchCode + "_" + schdetailId;
         var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+        var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
         var seats = new SeatLayouts();
+        
         if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
         {
             string token = Encoding.UTF8.GetString(loginToken);
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage seatresponse = await _v7Client.GetAsync($"cinema/getcinemaseatarrangement?code={companyCode}&spaceId={speceId}&id={id}");
-            if (seatresponse != null)
+            if (seatresponse.IsSuccessStatusCode)
             {
                 string seatReasponseData = await seatresponse.Content.ReadAsStringAsync();
                 seats = JsonConvert.DeserializeObject<SeatLayouts>(seatReasponseData);
-                return View(seats);
             }
             else
             {
@@ -135,6 +148,19 @@ public class CinemaSeatLayoutController : Controller
             TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
             return RedirectToAction("Index", "Home");
         }
+        HttpResponseMessage seatCacheresponse = await _seatCacheClient.GetAsync($"getEntriesContainsKey?key={key}");
+        if (seatCacheresponse.IsSuccessStatusCode)
+        {
+            string cache = await seatCacheresponse.Content.ReadAsStringAsync();
+            seats.SeatStatus = JsonConvert.DeserializeObject<List<SeatStatus>>(cache);
+        }
+        seats.Data.CompanyTinNumber = companyTin;
+        seats.Data.CompanyName = companyName;
+        seats.Data.BranchCode = branchCode;
+        seats.Data.MovieScheduleCode = schdetailId;
+        seats.Data.SelectedDate = phoneNumber;
+        return View(seats);
+
         //HttpResponseMessage response = await _httpClient.GetAsync($"cinema/getCinemaSeatArrangment?orgTin={companyTinNumber}&spaceCode={spacecode}");
 
         //if (response.IsSuccessStatusCode)
@@ -237,106 +263,119 @@ public class CinemaSeatLayoutController : Controller
 
         //    return View(seatArrangement);
         //}
-       
+
+
     }
-    public async Task<IActionResult> GetUpdatedSeatInfo(string? spacecode, string? companyTinNumber, string? code, string? movieName, string? companyName, string? utcTime, string? selectedDate, string? hallName,
-        string? spaceType, string? dimension)
-    {
-        try
-        {
-            HttpResponseMessage response = await _httpClient.GetAsync($"cinema/getCinemaSeatArrangment?orgTin={companyTinNumber}&spaceCode={spacecode}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                string responseData = await response.Content.ReadAsStringAsync();
 
-                var updatedSeatModel = JsonConvert.DeserializeObject<SeatLayout>(responseData);
 
-                HttpResponseMessage bookedSeatsResponse = await _httpClient.GetAsync($"cinema/GetBookedSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
 
-                if (bookedSeatsResponse.IsSuccessStatusCode)
-                {
-                    string bookedSeatsData = await bookedSeatsResponse.Content.ReadAsStringAsync();
-                    var bookedSeats = JsonConvert.DeserializeObject<List<string>>(bookedSeatsData);
-                    if (updatedSeatModel is not null)
-                    {
-                        updatedSeatModel.BookedSeats ??= bookedSeats;
-                    }
-                }
-                else
-                {
-                    return PartialView("_SeatArrangementPartialView", null);
-                }
 
-                HttpResponseMessage soldseatsResponse = await _httpClient.GetAsync($"cinema/GetSoldSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
-                if (soldseatsResponse.IsSuccessStatusCode)
-                {
-                    string soldSeatData = await soldseatsResponse.Content.ReadAsStringAsync();
-                    var soldSeats = JsonConvert.DeserializeObject<List<string>>(soldSeatData);
-                    if (updatedSeatModel is not null)
-                    {
-                        updatedSeatModel.SoldSeats ??= soldSeats;
-                    }
-                }
-                else
-                {
-                    return PartialView("_SeatArrangementPartialView", null);
-                }
 
-                HttpResponseMessage availableSeatsResponse = await _httpClient.GetAsync($"cinema/GetAvailableSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
-                if (availableSeatsResponse.IsSuccessStatusCode)
-                {
-                    string availableSeatsData = await availableSeatsResponse.Content.ReadAsStringAsync();
-                    var availableSeats = JsonConvert.DeserializeObject<List<string>>(availableSeatsData);
-                    if (updatedSeatModel is not null)
-                    {
-                        updatedSeatModel.AvailableSeats ??= availableSeats;
-                    }
-                    var anonymousObject = new
-                    {
-                        schedule = code,
-                        allSeats = updatedSeatModel?.AvailableSeats,
-                        orgTin = companyTinNumber
-                    };
 
-                    string jsonBody = JsonConvert.SerializeObject(anonymousObject);
-                    var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage takenSeatsResponse = await _httpClient.PostAsync("ManageSeatCache/GetCachedSeatsForSchedule", content);
-                    if (takenSeatsResponse.IsSuccessStatusCode)
-                    {
-                        string takenSeatsResponseData = await takenSeatsResponse.Content.ReadAsStringAsync();
-                        var takenSeats = JsonConvert.DeserializeObject<List<string>>(takenSeatsResponseData);
-                        if (updatedSeatModel is not null)
-                        {
-                            updatedSeatModel.TakenSeats ??= takenSeats;
-                        }
-                    }
-                    else
-                    {
-                        return PartialView("_SeatArrangementPartialView", null);
-                    }
-                    if (updatedSeatModel is not null) {
-                        updatedSeatModel.CompanyName = companyName;
-                        updatedSeatModel.Dimension = dimension;
-                        updatedSeatModel.MovieName = movieName;
-                        updatedSeatModel.UtcTime = utcTime;
-                        updatedSeatModel.SelectedDate = selectedDate;
-                        updatedSeatModel.SpaceType = spaceType;
-                        updatedSeatModel.HallName = hallName;
-                    }
-                }
-                return PartialView("_SeatArrangementPartialView", updatedSeatModel);
-            }
-            else
-            {
-                return PartialView("_SeatArrangementPartialView", null);
-            }
-        }
-        catch (Exception)
-        {
-            return PartialView("_SeatArrangementPartialView", null);
-        }
-    }
+
+
+
+
+    //public async Task<IActionResult> GetUpdatedSeatInfo(string? spacecode, string? companyTinNumber, string? code, string? movieName, string? companyName, string? utcTime, string? selectedDate, string? hallName,
+    //    string? spaceType, string? dimension)
+    //{
+    //    try
+    //    {
+    //        HttpResponseMessage response = await _httpClient.GetAsync($"cinema/getCinemaSeatArrangment?orgTin={companyTinNumber}&spaceCode={spacecode}");
+
+    //        if (response.IsSuccessStatusCode)
+    //        {
+    //            string responseData = await response.Content.ReadAsStringAsync();
+
+    //            var updatedSeatModel = JsonConvert.DeserializeObject<SeatLayout>(responseData);
+
+    //            HttpResponseMessage bookedSeatsResponse = await _httpClient.GetAsync($"cinema/GetBookedSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
+
+    //            if (bookedSeatsResponse.IsSuccessStatusCode)
+    //            {
+    //                string bookedSeatsData = await bookedSeatsResponse.Content.ReadAsStringAsync();
+    //                var bookedSeats = JsonConvert.DeserializeObject<List<string>>(bookedSeatsData);
+    //                if (updatedSeatModel is not null)
+    //                {
+    //                    updatedSeatModel.BookedSeats ??= bookedSeats;
+    //                }
+    //            }
+    //            else
+    //            {
+    //                return PartialView("_SeatArrangementPartialView", null);
+    //            }
+
+    //            HttpResponseMessage soldseatsResponse = await _httpClient.GetAsync($"cinema/GetSoldSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
+    //            if (soldseatsResponse.IsSuccessStatusCode)
+    //            {
+    //                string soldSeatData = await soldseatsResponse.Content.ReadAsStringAsync();
+    //                var soldSeats = JsonConvert.DeserializeObject<List<string>>(soldSeatData);
+    //                if (updatedSeatModel is not null)
+    //                {
+    //                    updatedSeatModel.SoldSeats ??= soldSeats;
+    //                }
+    //            }
+    //            else
+    //            {
+    //                return PartialView("_SeatArrangementPartialView", null);
+    //            }
+
+    //            HttpResponseMessage availableSeatsResponse = await _httpClient.GetAsync($"cinema/GetAvailableSeats?orgTin={companyTinNumber}&scheduleCode={code}&spaceCode={spacecode}");
+    //            if (availableSeatsResponse.IsSuccessStatusCode)
+    //            {
+    //                string availableSeatsData = await availableSeatsResponse.Content.ReadAsStringAsync();
+    //                var availableSeats = JsonConvert.DeserializeObject<List<string>>(availableSeatsData);
+    //                if (updatedSeatModel is not null)
+    //                {
+    //                    updatedSeatModel.AvailableSeats ??= availableSeats;
+    //                }
+    //                var anonymousObject = new
+    //                {
+    //                    schedule = code,
+    //                    allSeats = updatedSeatModel?.AvailableSeats,
+    //                    orgTin = companyTinNumber
+    //                };
+
+    //                string jsonBody = JsonConvert.SerializeObject(anonymousObject);
+    //                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+    //                HttpResponseMessage takenSeatsResponse = await _httpClient.PostAsync("ManageSeatCache/GetCachedSeatsForSchedule", content);
+    //                if (takenSeatsResponse.IsSuccessStatusCode)
+    //                {
+    //                    string takenSeatsResponseData = await takenSeatsResponse.Content.ReadAsStringAsync();
+    //                    var takenSeats = JsonConvert.DeserializeObject<List<string>>(takenSeatsResponseData);
+    //                    if (updatedSeatModel is not null)
+    //                    {
+    //                        updatedSeatModel.TakenSeats ??= takenSeats;
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    return PartialView("_SeatArrangementPartialView", null);
+    //                }
+    //                if (updatedSeatModel is not null) {
+    //                    updatedSeatModel.CompanyName = companyName;
+    //                    updatedSeatModel.Dimension = dimension;
+    //                    updatedSeatModel.MovieName = movieName;
+    //                    updatedSeatModel.UtcTime = utcTime;
+    //                    updatedSeatModel.SelectedDate = selectedDate;
+    //                    updatedSeatModel.SpaceType = spaceType;
+    //                    updatedSeatModel.HallName = hallName;
+    //                }
+    //            }
+    //            return PartialView("_SeatArrangementPartialView", updatedSeatModel);
+    //        }
+    //        else
+    //        {
+    //            return PartialView("_SeatArrangementPartialView", null);
+    //        }
+    //    }
+    //    catch (Exception)
+    //    {
+    //        return PartialView("_SeatArrangementPartialView", null);
+    //    }
+    //}
 
 }
