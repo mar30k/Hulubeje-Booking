@@ -7,6 +7,8 @@ using HulubejeBooking.Controllers.Authentication;
 using System.Text;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
+using NuGet.Common;
+using HulubejeBooking.Models.BusModels;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
@@ -141,32 +143,33 @@ namespace HulubejeBooking.Controllers.CinemaController
         [HttpPost]
         public async Task<IActionResult> Index(DateTime selectedDate)
         {
-
             try
             {
-                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                var movies = new Movie();
                 string formattedDate = selectedDate.ToString("yyyy-MM-dd");
-                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Cinema/GetProductsForFilterAndPreview?industryType=LKUP000120765&date={formattedDate}");
-
-                if (response.IsSuccessStatusCode)
+                if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
                 {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    var movies = JsonConvert.DeserializeObject<List<MovieModel>>(responseData);
-                    if (movies != null)
+                    string token = Encoding.UTF8.GetString(loginToken);
+                    _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    HttpResponseMessage responseMessage = await _v7Client.GetAsync($"cinema/getconsolidatedmovies?Date={formattedDate}");
+                    if (responseMessage.IsSuccessStatusCode)
                     {
-                        var moviesWithPosters = await GetMoviesWithPosterUrls(movies);
-                        return View(moviesWithPosters);
+                        string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                        movies = JsonConvert.DeserializeObject<Movie>(responseMessageData);
                     }
-                    else
-                    {
-                        return View(null);
-                    }
+                    var moviesJson = JsonConvert.SerializeObject(movies);
+                    HttpContext.Session.SetString("movies", moviesJson);
+                    return View(movies);
 
                 }
                 else
                 {
-                    return View(null);
+                    TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                    return RedirectToAction("Index", "Home");
                 }
+
+
             }
             catch (HttpRequestException)
             {
