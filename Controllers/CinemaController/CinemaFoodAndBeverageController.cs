@@ -24,7 +24,8 @@ namespace CinemaSeatBooking.Controllers
         }
         [HttpPost]
         public async Task<IActionResult> IndexAsync([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string branchCode, [FromForm] string companyName, [FromForm] string movieName,
-                    [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType, [FromForm] string articleCode, [FromForm] string numberOfElements)
+                    [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType,
+                    [FromForm] string articleCode, [FromForm] string numberOfElements, [FromForm] string seatCacheKey)
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
