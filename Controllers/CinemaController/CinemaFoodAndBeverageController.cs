@@ -5,6 +5,9 @@ using System.Text;
 using HulubejeBooking.Controllers;
 using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Controllers.Authentication;
+using System.Net.Http;
+using HulubejeBooking.Models.BusModels;
+using System.Net.Http.Headers;
 namespace CinemaSeatBooking.Controllers
 {
     public class CinemaFoodAndBeverageController : Controller
@@ -12,8 +15,8 @@ namespace CinemaSeatBooking.Controllers
         private readonly HttpClient _httpClient;
         private IHttpContextAccessor? _httpContextAccessor;
         private readonly AuthenticationManager _authenticationManager;
-
-        public CinemaFoodAndBeverageController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
+        private IHttpClientFactory _httpClientFactory;
+        public CinemaFoodAndBeverageController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager, IHttpClientFactory httpClientFactory)
         {
             _httpClient = new HttpClient
             {
@@ -21,12 +24,15 @@ namespace CinemaSeatBooking.Controllers
             };
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
+            _httpClientFactory = httpClientFactory;
         }
         [HttpPost]
         public async Task<IActionResult> IndexAsync([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string branchCode, [FromForm] string companyName, [FromForm] string movieName,
                     [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType,
-                    [FromForm] string articleCode, [FromForm] string numberOfElements, [FromForm] string seatCacheKey)
+                    [FromForm] string articleCode, [FromForm] string numberOfElements, [FromForm] string seatCacheKey, [FromForm] string companyCode)
         {
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
@@ -46,10 +52,11 @@ namespace CinemaSeatBooking.Controllers
             var identificationResult = await _authenticationManager.identificationValid();
             ViewBag.isVaild = identificationResult.isValid;
             ViewBag.isLoggedIn = identificationResult.isLoggedIn;
-            HttpResponseMessage response = await _httpClient.GetAsync($"Product/GetProducts?orgTin={companyTinNumber}&type=Restaurant&consignee=0912141914&platform=Web&longitude=0");
+            
 
             var viewModel = new ProductsViewModel
             {
+                SeatCacheKey = seatCacheKey,
                 BranchCode = branchCode,
                 MovieScheduleCode = movieScheduleCode,
                 CompanyTinNumber = companyTinNumber,
@@ -64,19 +71,31 @@ namespace CinemaSeatBooking.Controllers
                 ArticleCode = articleCode,
                 NumberOfSeats = numberOfElements,
             };
-            if (response.IsSuccessStatusCode)
+            
+            if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
             {
-                string responseData = await response.Content.ReadAsStringAsync();
+                string token = Encoding.UTF8.GetString(loginToken);
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage response = await _v7Client.GetAsync($"product/getproductsbytype?companyCode={companyCode}&orgOUD={branchCode}&industryType=1988");
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseData = await response.Content.ReadAsStringAsync();
 
-                var productsData = JsonConvert.DeserializeObject<List<Product>>(responseData);
+                    var productsData = JsonConvert.DeserializeObject<FoodItem>(responseData);
 
-                viewModel.Products = productsData;
-                return View(viewModel);
+                    viewModel.FoodItem = productsData;
+                    return View(viewModel);
+                }
+                else
+                {
+                    return View(viewModel);
+                }
+
             }
             else
             {
-
-                return View(viewModel);
+                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                return RedirectToAction("Index", "Home");
             }
         }
         public async Task<IActionResult> CalculateBill(string movieName,string branchCode,string movieDimension, string date, string time, string company, string hallName,
