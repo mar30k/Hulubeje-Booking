@@ -73,12 +73,12 @@ namespace HulubejeBooking.Controllers
                 Overview = sanitizedOverview,
                 PosterUrl = posterUrl,
                 MovieName = movieName,
-                SelectedDate = selectedDate
+                SelectedDate = selectedDate,
+                MovieSchedules = movieSchedule,
+                CompanyCode = companyCode.ToString(),
+                CompanyTinNumber = tin.ToString(),
+                BranchCode = branchCode
             };
-            movieDetails.MovieSchedules = movieSchedule;
-            movieDetails.CompanyCode = companyCode.ToString();
-            movieDetails.CompanyTinNumber = tin.ToString();
-            movieDetails.BranchCode = branchCode;
             var movieTitle = Uri.EscapeDataString(movieName ?? string.Empty);
             var tmdbClient = _httpClientFactory.CreateClient("MovieDb");
             var tmdbResponse = await tmdbClient.GetAsync(tmdbClient.BaseAddress + $"search/movie?api_key={_tmdbApiKey}&query={movieTitle}");

@@ -47,7 +47,7 @@
             width: 30px;
             height: 30px;
         }
-        .takenorbookedseats{
+/*         .takenorbookedseats{
             display: flex;
             align-items: center;
             justify-content: center;
@@ -60,47 +60,86 @@
             color: #1ea83c;
             width: 30px;
             height: 30px;
-        }
+        } */
         .hall {
-            width: 100%;
-            height: 100%;
+            width: 30px;
+            height: 30px;
         }
 
-        .booked-seat {
+/*         .booked-seat {
             background-color: blue;
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            width: 30px;
+            height: 30px;
         }
-
+ */
         .taken {
             background-color: orange;
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            width: 30px;
+            height: 30px;
         }
 
         .booked {
             background-color: blue;
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            width: 30px;
+            height: 30px;
         }
 
         .sold {
             background-color: red;
             color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            width: 30px;
+            height: 30px;
         }
     </style>
     @{
         var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.Data?.MovieName);
     }
     <script>
-        var selectedSeats = [];
         var countdownInterval;
         var countdownTime = 60;
         var isBookingStarted = false;
         var isThereSelectedSeat = sessionStorage.getItem('secondsAdded');
-        selectedSeats = sessionStorage.getItem('selectedSeats');
+        var selectedSeats = selectedSeats ? JSON.parse(sessionStorage.getItem('selectedSeats')) : [];
         var key = "cinema_" +'@Model?.Data?.CompanyTinNumber' + '_' + '@Model?.Data?.BranchCode' + '_' + '@Model?.Data?.MovieScheduleCode';
-        var seatCacheKey = key +"_" +'@Model?.Data?.SelectedDate';
+        var seatCacheKey = key +"_" +'@Model?.Data?.PhoneNumber';
         function fetchSeatStatus() {
             $.ajax({
-                url: 'https://cache.cnetcommerce.com/api/cache/getEntriesContainsKey?key=' + key,
+                url: 'https://cache.cnetcommerce.com/api/cache/getEntriesContainsKey?key=' + seatCacheKey,
                 headers: {
                     "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
                 },
@@ -110,17 +149,19 @@
                         return seat.value.toString();
                     });
 
-                    $("button").each(function () {
+                    $(".buttonSeats").each(function () {
                         var buttonId = $(this).attr("id");
                         if (buttonId && fetchedSeatIds.indexOf(buttonId) === -1) {
                             $(this).removeClass("taken booked sold");
+                            $(this).addClass("buttons");
                         }
                     });
 
                     response.forEach(function (seat) {
                         var buttonId = seat.value.toString();
                         var button = document.getElementById(buttonId);
-                        if (button) {
+
+                        if (button && selectedSeats.indexOf(buttonId) === -1) {
                             button.dataset.seatStatus = seat.status;
                             button.classList.remove("taken", "booked", "sold");
                             button.classList.add(seat.status);
@@ -132,7 +173,6 @@
                 }
             });
         }
-        fetchSeatStatus();
         setInterval(fetchSeatStatus, 10000); 
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -146,7 +186,6 @@
 
                     var isBooked = seatStatus === 'booked';
                     var isSold = seatStatus === 'sold';
-                    console.log(seatStatus);
                     if (!isBookingStarted) {
                         startBooking();
                         isBookingStarted = true;
@@ -177,20 +216,15 @@
                 countdown--;
 
                 if (countdown <= 0) {
-                    clearInterval(countdownInterval);
-                    // resetBooking();
+                    // clearInterval(countdownInterval);
+                    resetBooking();
                     alert("Booking time expired. Please restart the booking process.");
                     sessionStorage.clear(); 
                     window.location.href = '@Url.Action("Index", "cinema")';
                 }
             }, 1000);
         }
-        $('#bookingModal').on('click', '#cancelButton', function (e) {
-            $('#bookingModal').modal('hide');
-            sessionStorage.removeItem("selectedSeatNames");
-            // resetBooking();
-            // selectedSeatsCountUpdate();
-        });
+
 
         function formatTime(seconds) {
             var min = Math.floor(seconds / 60);
@@ -200,9 +234,10 @@
 
 
         function toggleSeatSelection(seatCode, isDisabled) {
-            selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
+            var button = document.getElementById(seatCode);
             var maxSeats = parseInt("@Model?.Data?.MaxSeats", 10);
             var index = selectedSeats.indexOf(seatCode);
+
             if (!isDisabled && index === -1) {
                 if (selectedSeats.length < maxSeats) {
                     $.ajax({
@@ -218,20 +253,32 @@
                         }),
                         success: function (response) {
                             if (response.isSuccessful) {
-                                console.log("Status:", response.status);
+                                selectedSeats.push(seatCode);
+                                console.log(selectedSeats);
+                                var seatNames = selectedSeats.map(function (code) {
+                                    return document.getElementById(code).innerText;
+                                });
+                                sessionStorage.setItem('selectedSeatNames', JSON.stringify(seatNames));
+                                sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+                                if (button) {
+                                    button.style.backgroundColor = index === -1 ? "green" : "white";
+                                    button.style.color = index === -1 ? "white" : "green";
+                                }
+                                updateButtonStatus();
+                                // selectedSeatsCountUpdate();
                             } else {
-                                console.error("Error: Request was not successful");
+                                var alertElement = document.getElementById("takenSeatAlert");
+                                alertElement.style.display = "block";
+                                setTimeout(function () {
+                                    alertElement.style.display = "none";
+                                }, 2000);
+                                return;
                             }
                         },
                         error: function (xhr, status, error) {
                             console.error("Error fetching seat status:", error);
                         }
                     });
-                    selectedSeats.push(seatCode);
-                    var seatNames = selectedSeats.map(function (code) {
-                        return document.getElementById(code).innerText;
-                    });
-                    sessionStorage.setItem('selectedSeatNames', JSON.stringify(seatNames));
                 } else {
                     var alertElement = document.getElementById("seatLimitAlert");
                     alertElement.style.display = "block";
@@ -241,28 +288,91 @@
                     return;
                 }
             } else if (!isDisabled) {
-                selectedSeats.splice(index, 1);
-                var updatedSeatNames = selectedSeats.map(function (code) {
-                    return document.getElementById(code).innerText;
+                $.ajax({
+                    url: 'https://cache.cnetcommerce.com/api/cache/popEntry',
+                    headers: {
+                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
+                        "Content-Type": "application/json"
+                    },
+                    method: "DELETE",
+                    data: JSON.stringify({
+                        "key": seatCacheKey,
+                        "value": parseInt(seatCode)
+                    }),
+                    success: function (response) {
+                        selectedSeats.splice(index, 1);
+                        var updatedSeatNames = selectedSeats.map(function (code) {
+                            return document.getElementById(code).innerText;
+                        });
+                        sessionStorage.setItem('selectedSeatNames', JSON.stringify(updatedSeatNames));
+                        sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+
+                        if (button) {
+                            button.style.backgroundColor = index === -1 ? "green" : "white";
+                            button.style.color = index === -1 ? "white" : "green";
+                        }
+                        updateButtonStatus();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching seat status:", error);
+                    }
                 });
-                sessionStorage.setItem('selectedSeatNames', JSON.stringify(updatedSeatNames));
-            }
-            var button = document.getElementById(seatCode);
-            if (button) {
-                button.style.backgroundColor = index === -1 ? "green" : "white";
-                button.style.color = index === -1 ? "white" : "green";
+                // selectedSeatsCountUpdate();
             }
 
+            
+        }
+        function resetBooking() {
+            // clearInterval(countdownInterval);
+            var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+            var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
+            selectedSeats.forEach(function (selectedSeat) {
+                $.ajax({
+                    url: 'https://cache.cnetcommerce.com/api/cache/popEntry',
+                    headers: {
+                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
+                        "Content-Type": "application/json"
+                    },
+                    method: "DELETE",
+                    data: JSON.stringify({
+                        "key": seatCacheKey,
+                        "value": parseInt(selectedSeat)
+                    }),
+                    success: function (response) {
+                        // Reset the background color of the button associated with the seat
+                        var button = document.getElementById(selectedSeat);
+                        if (button) {
+                            button.style.backgroundColor = "";
+                            button.style.color = "green";
+                        }
+                        selectedSeats = [];
 
-            // updateButtonStatus();
-            saveSelectedSeatsToStorage();
-            // updateSelectedSeatsUI();
-            // selectedSeatsCountUpdate()
-            // return selectedSeats;
+                        sessionStorage.setItem('selectedSeatNames', JSON.stringify(selectedSeats));
+                        sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+                        updateButtonStatus();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching seat status:", error);
+                    }
+                });
+            });
+            isBookingStarted = false;
         }
-        function saveSelectedSeatsToStorage() {
-            sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+        function updateButtonStatus() {
+            var skipButton = document.getElementById('skipButton');
+            if (isBookingStarted) {
+                var seatCount = selectedSeats.length;
+                if (seatCount === 0) {
+                    skipButton.innerText = "Skip";
+                } else {
+                    skipButton.innerText = "You Will Pay " + (seatCount * parseFloat("@Model?.Data?.Price")).toFixed(2) + " ETB for " + seatCount + " seats";
+                }
+
+            } else {
+                skipButton.innerText = "Skip";
+            }
         }
+
         $(document).ready(function () {
             $('#bookingModal').modal(
                 {
@@ -272,11 +382,14 @@
             );
             $('#bookingModal').on('click', '.close', function (e) {
                 $('#bookingModal').modal('hide');
-                sessionStorage.removeItem("selectedSeatNames");
-                // resetBooking();
+                resetBooking();
                 // selectedSeatsCountUpdate();
             });
-
+            $('#bookingModal').on('click', '#cancelButton', function (e) {
+                $('#bookingModal').modal('hide');
+                resetBooking();
+                // selectedSeatsCountUpdate();
+            });
             // selectedSeatsCountUpdate();
         });
     </script>
@@ -301,6 +414,9 @@
     <div id="seatLimitAlert" class="alert alert-danger fixed-bottom mb-3" role="alert" style="display: none; position: fixed; bottom: 20px; left: 20px; width: 300px;">
         You can't select more than @Model?.Data?.MaxSeats seats
     </div>
+    <div id="takenSeatAlert" class="alert alert-danger fixed-bottom mb-3" role="alert" style="display: none; position: fixed; bottom: 20px; left: 20px; width: 300px;">
+        Someone Just Grabbed Your Seat
+    </div>
     <div class="container-xl">
         <div id="seatInfoContainer">
             <div class="row mt-3">
@@ -321,7 +437,7 @@
                                                         var seat = Model.Data.Seats.First(seat => seat.X == x && seat.Y == y);
                                                         var seatStatuses = Model?.SeatStatus;
                                                         var seatStatus = seatStatuses?.FirstOrDefault(s => s.Value.ToString() == seat.Id);
-                                                        var buttonClass = " rounded";
+                                                        var buttonClass = " rounded ";
                                                         var seatStatusess = "Available";
                                                         var isButtonDisabled = false;
 
@@ -330,18 +446,18 @@
                                                             if (seatStatus.Status == "taken")
                                                             {
                                                                 seatStatusess = "taken";
-                                                                buttonClass += " taken takenorbookedseats";
+                                                                buttonClass += " taken ";
                                                             }
                                                              if (seatStatus.Status == "booked")
                                                             {
                                                                 seatStatusess = "booked";
-                                                                buttonClass += " booked takenorbookedseats ";
+                                                                buttonClass += " booked  ";
                                                                 isButtonDisabled = true;
                                                             }
                                                             else if (seatStatus.Status == "sold")
                                                             {
                                                                 seatStatusess = "sold";
-                                                                buttonClass += " sold takenorbookedseats ";
+                                                                buttonClass += " sold  ";
                                                                 isButtonDisabled = true;
                                                             }
                                                         }
@@ -349,7 +465,7 @@
                                                         {
                                                             buttonClass += " buttons";
                                                         }
-                                                        <button data-seat-status="@seatStatusess" id="@seat.Id" class="@buttonClass" @(isButtonDisabled ? "disabled" : "")>
+                                                        <button data-seat-status="@seatStatusess" id="@seat.Id" class="@buttonClass buttonSeats" @(isButtonDisabled ? "disabled" : "") >
                                                             @seat.Name
                                                         </button>
                                                     }

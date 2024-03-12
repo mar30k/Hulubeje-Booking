@@ -11,8 +11,10 @@
     public class SeatLayout
     {
         public string? SpaceCode { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? MovieCode { get; set; }
         public string? CompanyTinNumber { get; set; }
+        public string? CompanyCode { get; set; }
         public string? CompanyName { get; set; }
         public string? MovieName { get; set; }
         public string? ArticleCode { get; set; }
@@ -26,6 +28,7 @@
         public int MaxX { get; set; }
         public int MaxY { get; set; }
         public int SpaceId { get; set; }
+        public string? Id { get; set; }
         public decimal? Price { get; set; }
         public List<SeatInfo>? Seats { get; set; }
         public string? MaxSeats { get; set; }

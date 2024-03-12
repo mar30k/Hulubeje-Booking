@@ -27,7 +27,6 @@
                                     var sanitizedOverview = HttpUtility.JavaScriptStringEncode(movies?.Plot);
                                     var santizedMovieName = HttpUtility.JavaScriptStringEncode(movies?.MovieName);
                                     var streamUrl = HttpUtility.JavaScriptStringEncode(movies?.StreamUrl);
-                                    Console.WriteLine("schedule count " + movies?.MovieSchedule?.Count);
                                 }
                                 <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@movies?.MoviePoster', '@santizedMovieName', 
                                     '@movies?.MovieId','@movies?.StreamUrl','@movies?.MovieSchedule','@movie.TIN','@movie.BranchCode' )">
