@@ -130,6 +130,7 @@
         var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.Data?.MovieName);
     }
     <script>
+        var countdown;
         var countdownInterval;
         var countdownTime = 60;
         var isBookingStarted = false;
@@ -177,7 +178,6 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             var buttons = document.querySelectorAll('.buttons');
-            var countdown;
             var selectedSeats = retrieveSelectedSeatsFromStorage();
             document.body.addEventListener('click', function (event) {
                 if (event.target.classList.contains('buttons')) {
@@ -198,11 +198,7 @@
         function startBooking() {
             if (!isThereSelectedSeat) {
                 $('#bookingModal').modal('show');
-                $('#okButton').one('click', function () {
-                    $('#bookingModal').modal('hide');
-                    countdown = countdownTime;
-                    startCountdownTimer();
-                });
+
             }
         }
         function retrieveSelectedSeatsFromStorage() {
@@ -213,10 +209,10 @@
             $('#countdownTimer').show();
             countdownInterval = setInterval(function () {
                 $('#countdownTimer').text("Time remaining: " + formatTime(countdown));
-                countdown--;
+                countdown --;
 
                 if (countdown <= 0) {
-                    // clearInterval(countdownInterval);
+                    clearInterval(countdownInterval);
                     resetBooking();
                     alert("Booking time expired. Please restart the booking process.");
                     sessionStorage.clear(); 
@@ -225,7 +221,7 @@
             }, 1000);
         }
 
-
+         
         function formatTime(seconds) {
             var min = Math.floor(seconds / 60);
             var sec = seconds % 60;
@@ -323,7 +319,7 @@
             
         }
         function resetBooking() {
-            // clearInterval(countdownInterval);
+            clearInterval(countdownInterval);
             var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
             var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
             selectedSeats.forEach(function (selectedSeat) {
@@ -390,8 +386,77 @@
                 resetBooking();
                 // selectedSeatsCountUpdate();
             });
+            $('#okButton').one('click', function () {
+                $('#bookingModal').modal('hide');
+                countdown = countdownTime;
+                clearInterval(countdownInterval);
+                startCountdownTimer();
+            });
+            applyEventListenersSkip();
+
             // selectedSeatsCountUpdate();
         });
+        function retrieveSelectedSeatsFromStorage() {
+            var storedSelectedSeats = sessionStorage.getItem('selectedSeats');
+            return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
+        }
+        function applyEventListenersSkip() {
+            var button = document.getElementById('skipButton');
+            if (button) {
+                button.addEventListener('click', function () {
+                    console.log("buttonclicked");
+                    var selectedSeats = retrieveSelectedSeatsFromStorage();
+                    var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+                    var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
+                    var articleCode = "@Model?.Data?.ArticleCode";
+                    var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
+                    var companyName = "@Model?.Data?.CompanyName";
+                    var utcTime = "@Model?.Data?.UtcTime";
+                    var selectedDate = "@Model?.Data?.SelectedDate";
+                    var hallName = "@Model?.Data?.HallName";
+                    var price = "@Model?.Data?.Price";
+                    var dimension = "@Model?.Data?.Dimension";
+                    var spaceType = "@Model?.Data?.SpaceType";
+                    var branchCode = "@Model?.Data?.BranchCode";
+                    var scheduleCode = "@Model?.Data?.MovieScheduleCode";
+                    var phoneNumber = "@Model?.Data?.BranchCode";
+
+                    var remainingTime = countdown ?? 0;
+
+                    var selectedSeatsJson = sessionStorage.getItem('selectedSeats');
+                    var selectedSeatsArray = selectedSeatsJson ? JSON.parse(selectedSeatsJson) : [];
+                    var numberOfElements = selectedSeatsArray.length;
+                    sessionStorage.setItem('remainingTime', remainingTime);
+                    if (remainingTime != 0) {
+                        sessionStorage.setItem('countdownStarted', true);
+                    }
+
+                    var form = $('<form action="/cinemafoodandbeverage" method="post"></form>');
+
+                    form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />');
+                    form.append('<input type="hidden" name="movieScheduleCode" value="' + movieScheduleCode + '" />');
+                    form.append('<input type="hidden" name="movieName" value="' + movieName + '" />');
+                    form.append('<input type="hidden" name="companyName" value="' + companyName + '" />');
+                    form.append('<input type="hidden" name="hallName" value="' + hallName + '" />');
+                    form.append('<input type="hidden" name="utcTime" value="' + utcTime + '" />');
+                    form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '" />');
+                    form.append('<input type="hidden" name="price" value="' + price + '" />');
+                    form.append('<input type="hidden" name="dimension" value="' + dimension + '" />');
+                    form.append('<input type="hidden" name="spaceType" value="' + spaceType + '" />');
+                    form.append('<input type="hidden" name="articleCode" value="' + articleCode + '" />');
+                    form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
+                    form.append('<input type="hidden" name="numberOfElements" value="' + numberOfElements + '" />');
+                    form.append('<input type="hidden" name="seatCacheKey" value="' + seatCacheKey + '" />');
+
+                    $('body').append(form);
+
+                    form.submit();
+                });
+            } else {
+                console.error("Button not found!");
+            }
+        }
+
     </script>
 </head>
 <body>
