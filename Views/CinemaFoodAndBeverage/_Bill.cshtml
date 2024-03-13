@@ -59,9 +59,7 @@
 </div>
 <script>
     var userMobileNumber = "@ViewBag.PhoneNumber";
-    console.log("phoneNumber dadaadbadb" + userMobileNumber);
     $('#confirmButton').on('click', function () {
-    console.log("phoneNumber " + userMobileNumber);
     var phoneNumber = localStorage.getItem("phone") || sessionStorage.getItem("phone");
     var cinemaArticles = @Html.Raw(Json.Serialize(Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT")));
     var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];

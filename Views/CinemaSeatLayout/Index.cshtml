@@ -125,16 +125,32 @@
             width: 30px;
             height: 30px;
         }
+
+        .blocked {
+            background-color: red;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            width: 30px;
+            height: 30px;
+        }
     </style>
     @{
         var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.Data?.MovieName);
     }
     <script>
+        var countdownreset;
         var countdown;
         var countdownInterval;
-        var countdownTime = 60;
+        var countdownTime;
         var isBookingStarted = false;
-        var isThereSelectedSeat = sessionStorage.getItem('secondsAdded');
+        var isThereSelectedSeat = retrieveSelectedSeatsFromStorage().length == 0 && sessionStorage.getItem('countdownStarted') == 'true';
         var selectedSeats = selectedSeats ? JSON.parse(sessionStorage.getItem('selectedSeats')) : [];
         var key = "cinema_" +'@Model?.Data?.CompanyTinNumber' + '_' + '@Model?.Data?.BranchCode' + '_' + '@Model?.Data?.MovieScheduleCode';
         var seatCacheKey = key +"_" +'@Model?.Data?.PhoneNumber';
@@ -187,7 +203,7 @@
                     var isBooked = seatStatus === 'booked';
                     var isSold = seatStatus === 'sold';
                     if (!isBookingStarted) {
-                        startBooking();
+                        startBooking(seatCode);
                         isBookingStarted = true;
                     }
                     
@@ -195,12 +211,12 @@
                 }
             });
         });
-        function startBooking() {
+        function startBooking(seatCode) {
             if (!isThereSelectedSeat) {
                 $('#bookingModal').modal('show');
-
             }
         }
+       
         function retrieveSelectedSeatsFromStorage() {
             var storedSelectedSeats = sessionStorage.getItem('selectedSeats');
             return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
@@ -214,9 +230,9 @@
                 if (countdown <= 0) {
                     clearInterval(countdownInterval);
                     resetBooking();
-                    alert("Booking time expired. Please restart the booking process.");
+                    // alert("Booking time expired. Please restart the booking process.");
                     sessionStorage.clear(); 
-                    window.location.href = '@Url.Action("Index", "cinema")';
+                    // window.location.href = '@Url.Action("Index", "cinema")';
                 }
             }, 1000);
         }
@@ -250,7 +266,6 @@
                         success: function (response) {
                             if (response.isSuccessful) {
                                 selectedSeats.push(seatCode);
-                                console.log(selectedSeats);
                                 var seatNames = selectedSeats.map(function (code) {
                                     return document.getElementById(code).innerText;
                                 });
@@ -261,6 +276,30 @@
                                     button.style.color = index === -1 ? "white" : "green";
                                 }
                                 updateButtonStatus();
+                                if (countdownreset == true) {
+                                    $.ajax({
+                                        url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
+                                        headers: {
+                                            "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
+                                            "Content-Type": "application/json"
+                                        },
+                                        method: "POST",
+                                        data: JSON.stringify({
+                                            "key": seatCacheKey,
+                                            "extensionDeligate": "on_Seat_Layout",
+                                            "extension": 1
+                                        }),
+                                        success: function (response) {
+                                            console.log("response", response);
+                                            countdown = 60;
+                                            startCountdownTimer();
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error("Error fetching seat status:", error);
+                                        }
+                                    });
+                                    countdownreset = false;
+                                }
                                 // selectedSeatsCountUpdate();
                             } else {
                                 var alertElement = document.getElementById("takenSeatAlert");
@@ -274,7 +313,7 @@
                         error: function (xhr, status, error) {
                             console.error("Error fetching seat status:", error);
                         }
-                    });
+                    });                
                 } else {
                     var alertElement = document.getElementById("seatLimitAlert");
                     alertElement.style.display = "block";
@@ -308,11 +347,16 @@
                             button.style.color = index === -1 ? "white" : "green";
                         }
                         updateButtonStatus();
+                        if (selectedSeats.length == 0) {
+                            clearInterval(countdownInterval);
+                            $('#countdownTimer').hide();
+                            countdownreset = true;
+                        }
                     },
                     error: function (xhr, status, error) {
                         console.error("Error fetching seat status:", error);
                     }
-                });
+                });           
                 // selectedSeatsCountUpdate();
             }
 
@@ -356,6 +400,11 @@
         }
         function updateButtonStatus() {
             var skipButton = document.getElementById('skipButton');
+            var countdownStarted = sessionStorage.getItem('countdownStarted');
+            if (countdownStarted === 'true') {
+                isBookingStarted = true;
+                selectedSeats = retrieveSelectedSeatsFromStorage();
+            }
             if (isBookingStarted) {
                 var seatCount = selectedSeats.length;
                 if (seatCount === 0) {
@@ -388,17 +437,71 @@
             });
             $('#okButton').one('click', function () {
                 $('#bookingModal').modal('hide');
-                countdown = countdownTime;
-                clearInterval(countdownInterval);
+                $.ajax({
+                    url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
+                    headers: {
+                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
+                        "Content-Type": "application/json"
+                    },
+                    method: "POST",
+                    data: JSON.stringify({
+                        "key": seatCacheKey,
+                        "extensionDeligate": "on_Seat_Layout",
+                        "extension": 1
+                    }),
+                    success: function (response) {
+                        countdown = parseInt(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching seat status:", error);
+                    }
+                });
                 startCountdownTimer();
             });
             applyEventListenersSkip();
 
             // selectedSeatsCountUpdate();
+            var countdownStarted = sessionStorage.getItem('countdownStarted');
+            if (countdownStarted === 'true' && selectedSeats.length >0) {
+                $.ajax({
+                    url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
+                    headers: {
+                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
+                        "Content-Type": "application/json"
+                    },
+                    method: "POST",
+                    data: JSON.stringify({
+                        "key": seatCacheKey,
+                        "extensionDeligate": "on_seat_layout",
+                        "extension": 1
+                    }),
+                    success: function (response) {
+                        countdown = parseInt(response);
+                        startCountdownTimer();
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching seat status:", error);
+                    }
+                });
+                updateButtonStatus();
+            }
+            updateSelectedSeatsUI();
         });
         function retrieveSelectedSeatsFromStorage() {
             var storedSelectedSeats = sessionStorage.getItem('selectedSeats');
             return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
+        }
+        function updateSelectedSeatsUI() {
+            selectedSeats = retrieveSelectedSeatsFromStorage();
+            selectedSeats.forEach(function (seatCode) {
+                var button = document.getElementById(seatCode);
+                if (button) {
+                    button.style.backgroundColor = "green"; 
+                    button.removeAttribute("disabled"); // Remove the disabled attribute
+                    button.style.color = "white";
+                }
+            });
         }
         function applyEventListenersSkip() {
             var button = document.getElementById('skipButton');
@@ -407,6 +510,7 @@
                     console.log("buttonclicked");
                     var selectedSeats = retrieveSelectedSeatsFromStorage();
                     var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+                    var companyCode = "@Model?.Data?.CompanyCode";
                     var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
                     var articleCode = "@Model?.Data?.ArticleCode";
                     var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
@@ -447,6 +551,7 @@
                     form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
                     form.append('<input type="hidden" name="numberOfElements" value="' + numberOfElements + '" />');
                     form.append('<input type="hidden" name="seatCacheKey" value="' + seatCacheKey + '" />');
+                    form.append('<input type="hidden" name="companyCode" value="' + companyCode + '" />');
 
                     $('body').append(form);
 
@@ -479,7 +584,7 @@
     <div id="seatLimitAlert" class="alert alert-danger fixed-bottom mb-3" role="alert" style="display: none; position: fixed; bottom: 20px; left: 20px; width: 300px;">
         You can't select more than @Model?.Data?.MaxSeats seats
     </div>
-    <div id="takenSeatAlert" class="alert alert-danger fixed-bottom mb-3" role="alert" style="display: none; position: fixed; bottom: 20px; left: 20px; width: 300px;">
+    <div id="takenSeatAlert" class="alert alert-danger fixed-bottom mb-3" role="alert" style="display: none; position: fixed; bottom: 20px; left: 20px; width: 330px;">
         Someone Just Grabbed Your Seat
     </div>
     <div class="container-xl">
@@ -497,7 +602,7 @@
                                             @for (int x = 1; x <= Model?.Data?.MaxX; x++)
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
-                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))
+                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && (seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type =="blocked")))
                                                     {
                                                         var seat = Model.Data.Seats.First(seat => seat.X == x && seat.Y == y);
                                                         var seatStatuses = Model?.SeatStatus;
@@ -523,6 +628,12 @@
                                                             {
                                                                 seatStatusess = "sold";
                                                                 buttonClass += " sold  ";
+                                                                isButtonDisabled = true;
+                                                            }
+                                                            else if (seatStatus.Status == "blocked")
+                                                            {
+                                                                seatStatusess = "blocked";
+                                                                buttonClass += "blocked";
                                                                 isButtonDisabled = true;
                                                             }
                                                         }
