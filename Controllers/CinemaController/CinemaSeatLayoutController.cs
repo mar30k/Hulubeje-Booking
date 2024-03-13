@@ -92,7 +92,7 @@ public class CinemaSeatLayoutController : Controller
                 Price = price,
                 UtcTime = utcTime,
                 MovieScheduleCode = schdetailId
-
+                                
             };
             var paramJson = JsonConvert.SerializeObject(param);
             HttpContext.Session.SetString("cinmaValues", paramJson);
@@ -171,6 +171,7 @@ public class CinemaSeatLayoutController : Controller
         seats.Data.MovieScheduleCode = schdetailId;
         seats.Data.PhoneNumber = phoneNumber;
         seats.Data.Price = price;
+        seats.Data.CompanyCode = companyCode;
         return seats != null ? View(seats) : View(null);
 
     }
