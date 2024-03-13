@@ -64,7 +64,6 @@ else
 }
 <script>
     function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, movieSchedules, tin, branchCode) {
-        // Create a form element
         var selectedDate = document.getElementById("selectedDate").value;
         sessionStorage.setItem('selectedMovieName', movieName);
         sessionStorage.setItem('selectedCompanyName ', companyName);
@@ -81,7 +80,6 @@ else
         form.append('<input type="hidden" name="tin" value="' + tin + '">');
         form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
 
-        // Append the form to the body and submit it
         $('body').append(form);
         form.submit();
     }
