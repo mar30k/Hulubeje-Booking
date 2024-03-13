@@ -230,9 +230,9 @@
                 if (countdown <= 0) {
                     clearInterval(countdownInterval);
                     resetBooking();
-                    // alert("Booking time expired. Please restart the booking process.");
+                    alert("Booking time expired. Please restart the booking process.");
                     sessionStorage.clear(); 
-                    // window.location.href = '@Url.Action("Index", "cinema")';
+                    window.location.href = '@Url.Action("Index", "cinema")';
                 }
             }, 1000);
         }
