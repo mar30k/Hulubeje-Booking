@@ -462,7 +462,7 @@
 
             // selectedSeatsCountUpdate();
             var countdownStarted = sessionStorage.getItem('countdownStarted');
-            if (countdownStarted === 'true' && selectedSeats.length >0) {
+            if (countdownStarted === 'true' && retrieveSelectedSeatsFromStorage().length >0) {
                 $.ajax({
                     url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
                     headers: {
@@ -498,8 +498,8 @@
                 var button = document.getElementById(seatCode);
                 if (button) {
                     button.style.backgroundColor = "green"; 
-                    button.removeAttribute("disabled"); // Remove the disabled attribute
-                    button.style.color = "white";
+                    button.removeAttribute("disabled"); 
+                    button.style.color = "white";0
                 }
             });
         }
