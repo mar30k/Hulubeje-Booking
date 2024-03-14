@@ -277,7 +277,7 @@
     </div>
 
     <script>
-        function onScheduleButtonClick(id, speceId, price, companyCode, schdetailId, companyTinNumber, branchCode, spacecode, companyName, movieName, movieCode, dimension, spaceType, selectedDate, code, hallName, utcTime) {
+        function onScheduleButtonClick(id, speceId, price, companyCode, schdetailId, companyTinNumber, branchCode, dimension, movieName, utcTime, hallName, selectedDate, spacecode, movieCode, spaceType, code) {
             sessionStorage.removeItem("remainingTime");
             sessionStorage.removeItem("countdownStarted");
             sessionStorage.removeItem("secondsAdded");
@@ -293,7 +293,7 @@
             form.append('<input type="hidden" name="speceId" value="' + speceId + '">');
             form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber.toString() + '">');
             form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
-            form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
+            // form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
             form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
             form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
             form.append('<input type="hidden" name="dimension" value="' + dimension + '">');

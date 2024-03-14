@@ -1,4 +1,5 @@
-﻿using HulubejeBooking.Models.Authentication;
+﻿
+using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.CInemaModels;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace HulubejeBooking.Controllers
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
         }
-        public async Task<IActionResult> Index(int companyCode, string selectedDate, string movieCode, string companyName, string sanitizedOverview,
+        public async Task<IActionResult> Index(int companyCode, DateTime selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, int movieId, string streamUrl, string tin, int branchCode)
         {
             var movieJson = HttpContext.Session.GetString("movies");
@@ -34,10 +35,13 @@ namespace HulubejeBooking.Controllers
                 if (company != null && company.Movies != null)
                 {
                     var movie = company.Movies.FirstOrDefault(m => m.MovieName == movieName);
-
-                    if (movie != null && movie.MovieSchedule != null)
+                    if (movie != null && movie.MovieSchedule != null )
                     {
                         movieSchedule = movie.MovieSchedule;
+                    }
+                    if (movie != null && movie.Date != null)
+                    {
+                        selectedDate = (DateTime)movie.Date;
                     }
                 }
             }
@@ -132,6 +136,7 @@ namespace HulubejeBooking.Controllers
                     movieDetails.Cast = castList;                                
                 }
             }
+            movieDetails.MovieName = movieName;
             return View(movieDetails);   
         }
     }

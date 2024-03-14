@@ -1,6 +1,7 @@
 ﻿@model HulubejeBooking.Models.CInemaModels.SeatLayouts
 @using System.Globalization
 @using System.Web
+@using System.Text.RegularExpressions
 @{
     string formattedDate = DateTime.Now.ToString("MMM-d h.mmtt");
 }
@@ -222,7 +223,6 @@
             return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
         }
         function startCountdownTimer() {
-            $('#countdownTimer').show();
             countdownInterval = setInterval(function () {
                 $('#countdownTimer').text("Time remaining: " + formatTime(countdown));
                 countdown --;
@@ -235,6 +235,7 @@
                     window.location.href = '@Url.Action("Index", "cinema")';
                 }
             }, 1000);
+            $('#countdownTimer').show();
         }
 
          
@@ -278,20 +279,14 @@
                                 updateButtonStatus();
                                 if (countdownreset == true) {
                                     $.ajax({
-                                        url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
+                                        url: 'https://cache.cnetcommerce.com/api/cache/getEntryLifeSpan?key=' + seatCacheKey,
                                         headers: {
-                                            "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                                            "Content-Type": "application/json"
+                                            "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
                                         },
-                                        method: "POST",
-                                        data: JSON.stringify({
-                                            "key": seatCacheKey,
-                                            "extensionDeligate": "on_Seat_Layout",
-                                            "extension": 1
-                                        }),
+                                        method: "GET",
+                                        cache: false,
                                         success: function (response) {
-                                            console.log("response", response);
-                                            countdown = 60;
+                                            countdown = parseInt(response);
                                             startCountdownTimer();
                                         },
                                         error: function (xhr, status, error) {
@@ -357,7 +352,7 @@
                         console.error("Error fetching seat status:", error);
                     }
                 });           
-                // selectedSeatsCountUpdate();
+                selectedSeatsCountUpdate();
             }
 
             
@@ -438,47 +433,36 @@
             $('#okButton').one('click', function () {
                 $('#bookingModal').modal('hide');
                 $.ajax({
-                    url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
+                    url: 'https://cache.cnetcommerce.com/api/cache/getEntryLifeSpan?key=' + seatCacheKey,
                     headers: {
-                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                        "Content-Type": "application/json"
+                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
                     },
-                    method: "POST",
-                    data: JSON.stringify({
-                        "key": seatCacheKey,
-                        "extensionDeligate": "on_Seat_Layout",
-                        "extension": 1
-                    }),
+                    method: "GET",
+                    cache: false,
                     success: function (response) {
                         countdown = parseInt(response);
+                        startCountdownTimer();
                     },
                     error: function (xhr, status, error) {
                         console.error("Error fetching seat status:", error);
                     }
                 });
-                startCountdownTimer();
             });
             applyEventListenersSkip();
 
-            // selectedSeatsCountUpdate();
+            selectedSeatsCountUpdate();
             var countdownStarted = sessionStorage.getItem('countdownStarted');
             if (countdownStarted === 'true' && retrieveSelectedSeatsFromStorage().length >0) {
                 $.ajax({
-                    url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
+                    url: 'https://cache.cnetcommerce.com/api/cache/getEntryLifeSpan?key=' + seatCacheKey,
                     headers: {
-                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                        "Content-Type": "application/json"
+                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
                     },
-                    method: "POST",
-                    data: JSON.stringify({
-                        "key": seatCacheKey,
-                        "extensionDeligate": "on_seat_layout",
-                        "extension": 1
-                    }),
+                    method: "GET",
+                    cache: false,
                     success: function (response) {
                         countdown = parseInt(response);
                         startCountdownTimer();
-
                     },
                     error: function (xhr, status, error) {
                         console.error("Error fetching seat status:", error);
@@ -491,6 +475,13 @@
         function retrieveSelectedSeatsFromStorage() {
             var storedSelectedSeats = sessionStorage.getItem('selectedSeats');
             return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
+        }
+        function selectedSeatsCountUpdate() {
+            var selectedSeatsDisplay = document.getElementById("selectedSeatsDisplay");
+            var selectedSeatsCountArray = sessionStorage.getItem('selectedSeats');
+            var selectedSeatsArray = JSON.parse(selectedSeatsCountArray);
+            var selectedSeatsCount = selectedSeatsArray ? selectedSeatsArray.length : 0;
+            selectedSeatsDisplay.textContent = selectedSeatsCount;
         }
         function updateSelectedSeatsUI() {
             selectedSeats = retrieveSelectedSeatsFromStorage();
@@ -616,7 +607,7 @@
                                                             if (seatStatus.Status == "taken")
                                                             {
                                                                 seatStatusess = "taken";
-                                                                buttonClass += " taken ";
+                                                                buttonClass += " taken buttons";
                                                             }
                                                              if (seatStatus.Status == "booked")
                                                             {
@@ -678,7 +669,97 @@
                     </div>
                 </div>
                 <div class="col-lg-2 ml-0">
+                    <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:280px; ">
+                        <div class="row">
+                            <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.Data?.CompanyName</h4>
+                            <div style="text-align: left;">
+                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                                    @{
+                                        var decodedMovieName = Regex.Unescape(Model?.Data?.MovieName ?? "");
+                                    }
 
+                                    <strong>Movie:</strong>&nbsp; @decodedMovieName
+                                </p>
+                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                                    <strong>Hall Name:</strong>&nbsp; @Model?.Data?.HallName
+                                </p>
+                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                                    <strong>Time:</strong>&nbsp; @Model?.Data?.UtcTime (@GetEthiopianTime(Model?.Data?.UtcTime) Local)
+                                </p>
+                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                                    <strong>Date:</strong>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.Data?.SelectedDate)
+                                </p>
+                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                                    <strong>Dimension:</strong>&nbsp;
+                                    <span style="background-color: @(Model?.Data?.Dimension == "2D" ? "blue" : "red"); color:white; padding: 1.5px; border-radius:3px;">
+                                        @Model?.Data?.Dimension
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
+                            <div class="row">
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-8 mt-1">
+                                            <p style="color:black">Available seats</p>
+                                        </div>
+                                        @{
+                                            var seatCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked") ?? 0;
+                                            int takenSeatCount = Model.SeatStatus.Count(status => status.Status == "taken");
+                                            int bookedSeatsCount = Model.SeatStatus.Count(status => status.Status == "booked");
+                                            int soldSeatsCount = Model.SeatStatus.Count(status => status.Status == "booked");
+                                        }
+                                        <div class="col-4" style="text-align: center">
+                                            <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
+                                                @seatCount
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-8 mt-1">
+                                            <p style="color:black">Booked seats</p>
+                                        </div>
+                                        <div class="col-4" style="text-align: center">
+                                            <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@bookedSeatsCount</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-8 mt-1">
+                                            <p style="color:black">Taken seats</p>
+                                        </div>
+                                        <div class="col-4" style="text-align: center">
+                                            <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@takenSeatCount</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-8 mt-1">
+                                            <p style="color:black">Sold seats</p>
+                                        </div>
+                                        <div class="col-4" style="text-align: center">
+                                            <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@soldSeatsCount</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-8 mt-1">
+                                            <p style="color:black">Selected seats</p>
+                                        </div>
+                                        <div class="col-4" style="text-align: center">
+                                            <p id="selectedSeatsDisplay" style="background-color: green;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid green; margin-right: 5px;"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -707,3 +788,33 @@
     </div>
 </body>
 <partial name="_Footer" />
+@functions {
+    public string GetFormattedDateWithDayOfWeek(string? date)
+    {
+        DateTime parsedDate;
+        if (DateTime.TryParse(date, out parsedDate))
+        {
+            string dayOfWeek = parsedDate.ToString("ddd"); // Get abbreviated day of the week
+            string formattedDate = parsedDate.ToString("dd-MM-yyyy"); // "dd-MM-yyyy" gives the desired format
+
+            return $"{dayOfWeek} {formattedDate}";
+        }
+
+        return string.Empty;
+    }
+    public string GetEthiopianTime(string? utcTimeString)
+    {
+        string format = "h.mm tt";
+
+        if (DateTime.TryParseExact(utcTimeString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime utcTime))
+        {
+
+            DateTime ethiopianTime = utcTime.AddHours(utcTime.ToString("tt").Equals("AM") ? 6 : -6);
+
+            return ethiopianTime.ToString("h.mm tt");
+        }
+
+        return "Invalid time format";
+    }
+
+}

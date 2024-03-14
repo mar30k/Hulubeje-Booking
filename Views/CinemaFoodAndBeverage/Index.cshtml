@@ -309,10 +309,7 @@
                             <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">Hall</span>
                             <span style="text-align: right;margin-right: 10px">@Model.HallName</span>
                         </div>
-                        <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
-                            <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">Space Type</span>
-                            <span style="text-align: right; margin-right: 10px">@Model.SpaceType</span>
-                        </div>
+
                         <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
                             <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">Dimension</span>
                             <span style="text-align: right; margin-right: 10px">@Model.Dimension</span>
@@ -373,6 +370,7 @@
                     "Content-Type": "application/json"
                 },
                 method: "POST",
+                cache: false,
                 data: JSON.stringify({
                     "key": "@Model?.SeatCacheKey",
                     "extensionDeligate": "on_invoice",
@@ -380,6 +378,9 @@
                 }),
                 success: function (response) {
                     updatedRemainingTime = parseInt(response);
+                    if (updatedRemainingTime >0) {
+                        startCountdownTimer(updatedRemainingTime);
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.error("Error fetching seat status:", error);
@@ -467,11 +468,11 @@
             sessionStorage.setItem('secondsAdded', 'true');
         }
 
-        $(document).ready(function () {
-            if (updatedRemainingTime > 0) {
-                startCountdownTimer(updatedRemainingTime);
-            }
-        });
+        // $(document).ready(function () {
+        //     if (updatedRemainingTime > 0) {
+        //         startCountdownTimer(updatedRemainingTime);
+        //     }
+        // });
 
         function formatTime(seconds) {
             var min = Math.floor(seconds / 60);

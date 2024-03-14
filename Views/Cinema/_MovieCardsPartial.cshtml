@@ -9,12 +9,12 @@
             .SelectMany(companyData => companyData.Movies)
             .GroupBy(movie => movie.MovieName)
             .ToList();
-            foreach (var movie in Model?.Data ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
+            foreach (var company in Model?.Data ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
             {
-                
-                var companyCode = movie.CompanyCode;
-                var companyName = movie.CompanyName;
-                foreach (var movies in movie.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
+
+                var companyCode = company.CompanyCode;
+                var companyName = company.CompanyName;
+                foreach (var movies in company.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
                 {
                     int? year = movies.ReleaseDate?.Year;
                     var delay = 0.1;
@@ -29,7 +29,7 @@
                                     var streamUrl = HttpUtility.JavaScriptStringEncode(movies?.StreamUrl);
                                 }
                                 <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@movies?.MoviePoster', '@santizedMovieName', 
-                                    '@movies?.MovieId','@movies?.StreamUrl','@movies?.MovieSchedule','@movie.TIN','@movie.BranchCode' )">
+                                    '@movies?.MovieId','@movies?.StreamUrl','@movies?.MovieSchedule','@company.TIN','@company.BranchCode' )">
                                     @companyName
                                 </button>
                             </div>
