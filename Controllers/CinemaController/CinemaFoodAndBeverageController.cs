@@ -18,10 +18,6 @@ namespace CinemaSeatBooking.Controllers
         private IHttpClientFactory _httpClientFactory;
         public CinemaFoodAndBeverageController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager, IHttpClientFactory httpClientFactory)
         {
-            _httpClient = new HttpClient
-            {
-                BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
-            };
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
@@ -56,6 +52,7 @@ namespace CinemaSeatBooking.Controllers
 
             var viewModel = new ProductsViewModel
             {
+                CompanyCode = companyCode,
                 SeatCacheKey = seatCacheKey,
                 BranchCode = branchCode,
                 MovieScheduleCode = movieScheduleCode,
@@ -99,8 +96,10 @@ namespace CinemaSeatBooking.Controllers
             }
         }
         public async Task<IActionResult> CalculateBill(string movieName,string branchCode,string movieDimension, string date, string time, string company, string hallName,
-            string moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems)
+            string moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems, string companyCode)
         {
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
@@ -124,50 +123,57 @@ namespace CinemaSeatBooking.Controllers
             {
                 List<SelectedItem> selectedItemsList = JsonConvert.DeserializeObject<List<SelectedItem>>(selectedItems)!;
 
+
+
+
+
+
                 var lineItems = new List<object>();
                 ProductsViewModel calculatedModel = new();
                 if (selectedItemsList != null)
                 {
                     foreach (var selectedItem in selectedItemsList)
                     {
-                        selectedItem.lineItemNote = "";
-                        selectedItem.specialFlag = "";
+                        selectedItem.uom = "0";
+                        selectedItem.specialFlag = null;
                         lineItems.Add(selectedItem);
-                    }
+                    } 
                 }
                 lineItems.Add(new
                 {
-                    articleName = movieName,
-                    articleCode = movieArticleCode,
-                    price = moviePrice,
-                    quantity = numberOfSeats,
-                    lineItemNote = "",
-                    specialFlag = "@CNET_MOVIE_PRODUCT"
+                    name = movieName,
+                    article = movieArticleCode,
+                    unitAmount = moviePrice,
+                    quantity = 1,
+                    uom = "0",
+                    specialFlag = ""
                 });
 
                 var payload = new
                 {
-                    Consignee = "0912141914",
-                    OrgTin = companyTin,
-                    IndustryType = "LKUP000120765",
-                    Schedule = movieScheduleCode,
+                    code = companyCode,
                     LineItems = lineItems
                 };
 
                 string jsonBody = JsonConvert.SerializeObject(payload);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                if (HttpContext.Session.TryGetValue("loginToken", out var loginToken)) {
+                    string token = Encoding.UTF8.GetString(loginToken);
+                    _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    HttpResponseMessage response = await _v7Client.PostAsync("lineitem/calculate", content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseData = await response.Content.ReadAsStringAsync();
+                        var calculatedBill = JsonConvert.DeserializeObject<Bill>(responseData);
+                        calculatedModel.Bill = calculatedBill;
+                    }
+                    else
+                    {
+                        return PartialView("_Bill", null);
+                    }
+                }
 
-                HttpResponseMessage response = await _httpClient.PostAsync("LineItemTaxCalculator/CalculateOtherFeesForCinema", content);
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    var calculatedBill = JsonConvert.DeserializeObject<Bill>(responseData);
-                    calculatedModel.Bill = calculatedBill;
-                }
-                else
-                {
-                    return PartialView("_Bill", null);
-                }
+                   
                 calculatedModel.MovieScheduleCode = movieScheduleCode;
                 calculatedModel.MovieName = movieName;
                 calculatedModel.CompanyTinNumber = companyTin;

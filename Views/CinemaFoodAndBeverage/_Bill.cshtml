@@ -11,18 +11,18 @@
         <span style="flex: 1 1 0%; text-align: right;">Amounts</span>
     </div>
     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; padding: 5px; margin-bottom: 5px;">
-        @if (Model?.Bill?.LineItems != null)
+        @if (Model?.Bill?.Data?.LineItems != null)
         {
-            var reversedLineItems = Model.Bill.LineItems.ToList();
-            reversedLineItems.Reverse();
+            var reversedLineItems = Model.Bill.Data?.LineItems.ToList();
+            reversedLineItems?.Reverse();
 
-            foreach (var lineItem in reversedLineItems)
+            @foreach (var lineItem in reversedLineItems ?? new List<HulubejeBooking.Models.CInemaModels.LineItem>())
             {
                 <div class="selected-item-partial" style="flex: 0 0 100%;  display: flex; justify-content: space-between;">
                     <span style="flex: 2 1 0%;">@(lineItem?.Name)</span>
-                    <span style="flex: 1 1 0%;">@(lineItem?.Quantity)</span>
-                    <span style="flex: 1 1 0%;">@(lineItem?.UnitPrice)</span>
-                    <span style="flex: 1 1 0%;text-align: right;">@(lineItem?.TotalAmount)</span>
+                    <span style="flex: 1 1 0%;">@(lineItem?.Quantity?.ToString("0"))</span>
+                    <span style="flex: 1 1 0%;">@(lineItem?.UnitAmount?.ToString("0.00"))$</span>
+                    <span style="flex: 1 1 0%;text-align: right;">@(lineItem?.TaxableAmount?.ToString("0.00"))$</span>
                 </div>
             }
         }
@@ -30,38 +30,30 @@
 </div>
 <div class="taxCalculator" style="display: flex; flex-wrap: wrap; justify-content: space-between; padding: 5px; margin-bottom: 5px;">
     <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
-        <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">ADDITIONAL CHARGE</span>
-        <span style="text-align: right;margin-right: 10px">@Model?.Bill?.Extras?.AdditionalCharge</span>
-    </div>
-    <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
-        <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">DISCOUNT</span>
-        <span style="text-align: right;margin-right: 10px">@Model?.Bill?.Extras?.Discount</span>
-    </div>
-    <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
-        <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">SUBTOTAL</span>
-        <span style="text-align: right;margin-right: 10px">@Model?.Bill?.Extras?.SubTotal</span>
-    </div>
-    <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
-        <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">TAX1</span>
-        @if (Model?.Bill?.TaxInformation != null)
+        <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">TXBL 1</span>
+        @if (Model?.Bill?.Data?.ExtraCharge != null)
         {
-            @foreach (var taxInfo in Model.Bill.TaxInformation)
-            {
-                <span style="text-align: right; margin-right: 10px">@taxInfo?.TaxAmount</span>
-            }
+                <span style="text-align: right; margin-right: 10px">@Model.Bill.Data.ExtraCharge.TXBL1</span>
+        } 
+    </div>
+        <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
+        <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">TAX1 15%</span>
+        @if (Model?.Bill?.Data?.ExtraCharge != null)
+        { 
+                <span style="text-align: right; margin-right: 10px">@Model.Bill.Data.ExtraCharge.TAX115</span>
         } 
     </div>
     <div class="dotted-line"></div>
     <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
         <span style="flex: 2 1 0%; text-align: left; margin-right: auto;"><strong>GRAND TOTAL</strong></span>
-        <span style="text-align: right; margin-right: 10px">Total Amount: @(Model?.Bill?.TotalAmount.ToString("F2") ?? "N/A")</span>
+        <span style="text-align: right; margin-right: 10px">Total Amount: @(Model?.Bill?.Data?.GrandTotal?.ToString("F2") ?? "N/A")</span>
     </div>
 </div>
 <script>
     var userMobileNumber = "@ViewBag.PhoneNumber";
     $('#confirmButton').on('click', function () {
     var phoneNumber = localStorage.getItem("phone") || sessionStorage.getItem("phone");
-    var cinemaArticles = @Html.Raw(Json.Serialize(Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT")));
+    @* var cinemaArticles = @Html.Raw(Json.Serialize(Model?.Bill?.LineItems?.FindAll(item => item.SpecialFlag == "@CNET_MOVIE_PRODUCT")));*@
     var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
     var selectedSeatNames = JSON.parse(sessionStorage.getItem('selectedSeatNames')) || [];
     var data = {
@@ -69,12 +61,12 @@
             UserMobileNumber: userMobileNumber,
             SupplierTin: '@Model?.CompanyTinNumber',
             SupplierOUD: '@Model?.BranchCode',
-            Amount: '@Model?.Bill?.TotalAmount'
+            Amount: '@Model?.Bill?.Data?.GrandTotal'
         },
         CinemaDetailsData: {
             Consignee: userMobileNumber,
             MovieSchedule: '@Model?.MovieScheduleCode',
-            GrandTotal: '@Model?.Bill?.TotalAmount',
+            GrandTotal: '@Model?.Bill?.Data?.GrandTotal',
             OrgTin: '@Model?.CompanyTinNumber',
             OrgUnitDef: '@Model?.BranchCode',
             SeatsToBook: selectedSeats,
@@ -105,7 +97,7 @@
                     {
                         for (var i = 0; i < Model?.SelectedItems.Count; i++)
                         {
-                            <text>"@Model?.SelectedItems[i].articleName"</text>
+                            <text>"@Model?.SelectedItems[i].name"</text>
                             if (i < Model?.SelectedItems.Count - 1)
                             {
                                 <text>,</text>

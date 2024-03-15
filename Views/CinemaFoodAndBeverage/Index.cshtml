@@ -421,6 +421,7 @@
         function bill() {
             
             var movieName = "@Model?.MovieName";
+            var companyCode = "@Model?.CompanyCode";
             var branchCode = "@Model?.BranchCode";
             var moviePrice = "@Model?.Price";
             var movieScheduleCode = "@Model?.MovieScheduleCode";
@@ -432,8 +433,10 @@
             var time = "@Model?.ScheduleTime";
             var date = "@Model?.ScheduleDate";
             var movieDimension = "@Model?.Dimension";
+            console.log(selectedItems);
             $.get("/CinemaFoodAndBeverage/CalculateBill", {
                 movieName: movieName,
+                companyCode: companyCode,
                 branchCode: branchCode,
                 hallName: hallName,
                 company: company,
@@ -555,16 +558,16 @@
 
             if (quantity > 0) {
 
-                var existingItem = selectedItems.find(item => item.articleName === itemName);
+                var existingItem = selectedItems.find(item => item.name === itemName);
 
                 if (!existingItem) {
-                        selectedItems.push({ articleName: itemName, quantity: quantity, price: itemPrice, articleCode: itemArticleCode });
+                    selectedItems.push({ name: itemName, quantity: quantity, unitAmount: itemPrice, article: itemArticleCode });
                 } else {
                     existingItem.quantity = quantity;
-                    existingItem.price = itemPrice;
+                    existingItem.unitAmount = itemPrice;
                 }
             } else {
-                    selectedItems.splice(selectedItems.findIndex(item => item.articleName === itemName), 1);
+                    selectedItems.splice(selectedItems.findIndex(item => item.name === itemName), 1);
             }
             renderSelectedItems();
         }
@@ -595,7 +598,7 @@
             totalpricecontainer.innerHTML = '';
             selectedItems.forEach(item => {
                 // item.unit price is used for total amount and 
-                item.unitPrice = item.quantity > 0 ? item.price * item.quantity : 0;
+                item.price = item.quantity > 0 ? item.unitAmount * item.quantity : 0;
                 var itemDiv = document.createElement('div');
                 itemDiv.className = 'selected-item';
                 itemDiv.style.display = 'flex';
@@ -607,16 +610,16 @@
                 var unitPriceSpan = document.createElement('span'); // New span for unit price
                 var priceSpan = document.createElement('span');
 
-                nameSpan.textContent = item.articleName;
+                nameSpan.textContent = item.name;
                 nameSpan.style.flex = '2';
 
                 quantitySpan.textContent = item.quantity;
                 quantitySpan.style.flex = '1';
 
-                unitPriceSpan.textContent = `${item.price.toFixed(2)} $`; // Display unit price
+                unitPriceSpan.textContent = `${item.unitAmount.toFixed(2)} $`; // Display unit price
                 unitPriceSpan.style.flex = '1';
 
-                priceSpan.textContent = `${item.unitPrice.toFixed(2)} $`;
+                priceSpan.textContent = `${item.price.toFixed(2)} $`;
                 priceSpan.style.flex = '1';
                 priceSpan.style.textAlign = 'right';
 
@@ -627,9 +630,9 @@
 
                 selectedItemsContainer.appendChild(itemDiv);
 
-                totalPrice += item.price;
+                totalPrice += item.unitAmount;
                 totalCount += item.quantity;
-                totalAmount += item.unitPrice;   //unit price is used for total amount for a specific item i.e item.price * item.quantity
+                totalAmount += item.price;   //unit price is used for total amount for a specific item i.e item.price * item.quantity
             });
             var totalDiv = document.createElement('div');
             totalDiv.className = 'total-price';
