@@ -31,8 +31,8 @@ public class CinemaSeatLayoutController : Controller
         _httpClientFactory = httpClientFactory;
     }
     public async Task<IActionResult> IndexAsync(string? spacecode, string? companyTinNumber, string? branchCode, string? companyName,
-        string? movieName, string? movieCode, string? dimension, string? spaceType, string? selectedDate, string? code, decimal? price, string? hallName, string? utcTime,
-        int speceId, string? id, string? companyCode, string? schdetailId)
+        string? movieName, string? movieCode, string? dimension, string? spaceType, string? selectedDate, string? code,  string? hallName, string? utcTime,
+        int speceId, string? id, string? companyCode, string? schdetailId, decimal? priceValue, string? articleCode)
     {
         int? companyscode = 0;
         if (HttpContext.Session.TryGetValue("movies", out var movies))
@@ -89,10 +89,11 @@ public class CinemaSeatLayoutController : Controller
                 HallName = hallName,
                 SpaceType = spaceType,
                 SelectedDate = selectedDate,
-                Price = price,
+                Price = priceValue,
                 UtcTime = utcTime,
-                MovieScheduleCode = schdetailId
-                                
+                MovieScheduleCode = schdetailId,
+                ArticleCode = articleCode
+
             };
             var paramJson = JsonConvert.SerializeObject(param);
             HttpContext.Session.SetString("cinmaValues", paramJson);
@@ -126,10 +127,11 @@ public class CinemaSeatLayoutController : Controller
             schdetailId = seatValues?.MovieScheduleCode;
             spaceType = seatValues?.SpaceType;
             selectedDate = seatValues?.SelectedDate;
-            price = seatValues?.Price;
+            priceValue = seatValues?.Price;
             companyCode = seatValues?.CompanyCode;
             id = seatValues?.Id;
             speceId = seatValues.SpaceId;
+            articleCode = seatValues.ArticleCode;
         }
         else
         {
@@ -173,7 +175,6 @@ public class CinemaSeatLayoutController : Controller
             seats.Data.BranchCode = branchCode;
             seats.Data.MovieScheduleCode = schdetailId;
             seats.Data.PhoneNumber = phoneNumber;
-            seats.Data.Price = price;
             seats.Data.CompanyCode = companyCode;
             seats.Data.CompanyName = companyName;
             seats.Data.Dimension = dimension;
@@ -181,6 +182,8 @@ public class CinemaSeatLayoutController : Controller
             seats.Data.UtcTime = utcTime;
             seats.Data.MovieName = movieName;
             seats.Data.SelectedDate = selectedDate;
+            seats.Data.Price = priceValue;
+            seats.Data.ArticleCode = articleCode;
         }
 
         return seats != null ? View(seats) : View(null);

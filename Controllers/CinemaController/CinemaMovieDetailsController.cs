@@ -25,6 +25,7 @@ namespace HulubejeBooking.Controllers
         public async Task<IActionResult> Index(int companyCode, DateTime selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, int movieId, string streamUrl, string tin, int branchCode)
         {
+            int? articleCode = 0;
             var movieJson = HttpContext.Session.GetString("movies");
             var movieData = movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) : new Movie();
             var movieSchedule = new List<MovieSchedules>();
@@ -39,9 +40,10 @@ namespace HulubejeBooking.Controllers
                     {
                         movieSchedule = movie.MovieSchedule;
                     }
-                    if (movie != null && movie.Date != null)
+                    if (movie != null && movie.Date != null &&movie.Article!=null)
                     {
                         selectedDate = (DateTime)movie.Date;
+                        articleCode = movie.Article;
                     }
                 }
             }
@@ -137,6 +139,7 @@ namespace HulubejeBooking.Controllers
                 }
             }
             movieDetails.MovieName = movieName;
+            movieDetails.ArticleCode = articleCode.ToString();
             return View(movieDetails);   
         }
     }
