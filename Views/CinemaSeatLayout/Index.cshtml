@@ -295,7 +295,7 @@
                                     });
                                     countdownreset = false;
                                 }
-                                // selectedSeatsCountUpdate();
+                                selectedSeatsCountUpdate();
                             } else {
                                 var alertElement = document.getElementById("takenSeatAlert");
                                 alertElement.style.display = "block";
@@ -347,12 +347,12 @@
                             $('#countdownTimer').hide();
                             countdownreset = true;
                         }
+                        selectedSeatsCountUpdate();
                     },
                     error: function (xhr, status, error) {
                         console.error("Error fetching seat status:", error);
                     }
                 });           
-                selectedSeatsCountUpdate();
             }
 
             
@@ -422,13 +422,13 @@
             );
             $('#bookingModal').on('click', '.close', function (e) {
                 $('#bookingModal').modal('hide');
+                selectedSeatsCountUpdate();
                 resetBooking();
-                // selectedSeatsCountUpdate();
             });
             $('#bookingModal').on('click', '#cancelButton', function (e) {
                 $('#bookingModal').modal('hide');
                 resetBooking();
-                // selectedSeatsCountUpdate();
+                selectedSeatsCountUpdate();
             });
             $('#okButton').one('click', function () {
                 $('#bookingModal').modal('hide');

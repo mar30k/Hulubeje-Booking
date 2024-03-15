@@ -62,9 +62,10 @@
                                 <div class="d-flex justify-content-between p-1 align-items-center">
                                     <p style="font-size: 14px; margin: 0px; text-align: center">@movieSpace.CinemaHall</p>
                                     <button class="btn btn-success col-6" type="button" style="max-width: 210px;"
-                                            onclick="onScheduleButtonClick('@movieSpace.Id', '@movieSpace.SpaceId', '@movieSpace.PriceValue', '@Model?.CompanyCode',
+                                            onclick="onScheduleButtonClick('@($"{movieSpace.PriceValue:F2}")','@movieSpace.Id', '@movieSpace.SpaceId', '@movieSpace.PriceValue', '@Model?.CompanyCode',
                                                     '@schdetailId', '@Model?.CompanyTinNumber?.ToString()', '@Model?.BranchCode?.ToString()', '@schedule.DimensionName','@santizedMovieName', 
                                                     '@utcTime.ToString("h.mm tt")', '@movieSpace.CinemaHall','@Model?.SelectedDate.ToString()')">
+                                                    
                                         Book Now @($"{movieSpace.PriceValue:F2}") Birr
                                     </button>
                                 </div>

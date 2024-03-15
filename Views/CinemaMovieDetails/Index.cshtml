@@ -277,7 +277,7 @@
     </div>
 
     <script>
-        function onScheduleButtonClick(id, speceId, price, companyCode, schdetailId, companyTinNumber, branchCode, dimension, movieName, utcTime, hallName, selectedDate, spacecode, movieCode, spaceType, code) {
+        function onScheduleButtonClick(priceValue, id, speceId, price, companyCode, schdetailId, companyTinNumber, branchCode, dimension, movieName, utcTime, hallName, selectedDate, articleCode, spacecode, movieCode, spaceType, code) {
             sessionStorage.removeItem("remainingTime");
             sessionStorage.removeItem("countdownStarted");
             sessionStorage.removeItem("secondsAdded");
@@ -285,6 +285,7 @@
             sessionStorage.removeItem("selectedSeats");
             sessionStorage.removeItem("secondsAddedInPayement");
             sessionStorage.removeItem("secondsAddedInOtp");
+            articleCode = '@Model?.ArticleCode?.ToString()';
             var form = $('<form action="/cinemaseatlayout" method="post"></form>');
             form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
             form.append('<input type="hidden" name="schdetailId" value="' + schdetailId + '">');
@@ -303,6 +304,8 @@
             form.append('<input type="hidden" name="price" value="' + price + '">');
             form.append('<input type="hidden" name="hallName" value="' + hallName + '">');
             form.append('<input type="hidden" name="utcTime" value="' + utcTime + '">');
+            form.append('<input type="hidden" name="priceValue" value="' + priceValue + '">');
+            form.append('<input type="hidden" name="articleCode" value="' + articleCode + '">');
 
             $('body').append(form);
             form.submit();
