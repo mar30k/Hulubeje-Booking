@@ -1,39 +1,38 @@
-﻿namespace HulubejeBooking.Models.CInemaModels
+﻿using Newtonsoft.Json;
+
+namespace HulubejeBooking.Models.CInemaModels
 {
-    public class Bill
-    {
-        public decimal TakeAwayBoxCharge { get; set; }
-        public Extras Extras { get; set; }
-        public List<TaxInformation> TaxInformation { get; set; }
-        public decimal TotalAmount { get; set; }
-        public List<LineItem> LineItems { get; set; }
-    }
-
-    public class TaxInformation
-    {
-        public decimal TaxAmount { get; set; }
-        public string? TaxInPercentage { get; set; }
-        public int TaxType { get; set; }
-    }
-
     public class LineItem
     {
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public decimal TaxAmount { get; set; }
-        public decimal TotalAmount { get; set; }
-        public decimal TaxableAmount { get; set; }
-        public int TaxType { get; set; }
-        public decimal UnitPrice { get; set; }
-        public int Quantity { get; set; }
-        public string LineItemNote { get; set; }
-        public string SpecialFlag { get; set; }
+        public int? Article { get; set; }
+        public string? Name { get; set; }
+        public decimal? UnitAmount { get; set; }
+        public decimal? Quantity { get; set; }
+        public decimal? TaxableAmount { get; set; }
     }
 
-    public class Extras
+    public class ExtraCharge
     {
-        public decimal AdditionalCharge { get; set; }
-        public decimal Discount { get; set; }
-        public decimal SubTotal { get; set; }
+        [JsonProperty("TXBL 1")]
+        public decimal? TXBL1 { get; set; }
+        [JsonProperty("TAX1 15%")]
+        public decimal? TAX115 { get; set; }
+    }
+
+    public class Data
+    {
+        public List<LineItem>? LineItems { get; set; }
+        public ExtraCharge? ExtraCharge { get; set; }
+        public decimal? GrandTotal { get; set; }
+        public Dictionary<string, object>? ExtraInformation { get; set; }
+        public Dictionary<string, object>? ExtraData { get; set; }
+    }
+
+    public class Bill
+    {
+        public bool? IsSuccessful { get; set; }
+        public Data? Data { get; set; }
+        public List<string>? ErrorMessages { get; set; }
+        public Dictionary<string, object>? AdditionalParameters { get; set; }
     }
 }

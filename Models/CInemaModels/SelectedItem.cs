@@ -2,11 +2,11 @@
 {
     public class SelectedItem
     {
-        public string? articleName { get; set; }
+        public string? name { get; set; }
         public int quantity { get; set; }
-        public string? articleCode { get; set; }
-        public decimal price { get; set; }
-        public string? lineItemNote { get; set; }
+        public decimal unitAmount { get; set; }
+        public string? article { get; set; }
+        public string? uom { get; set; }
         public string? specialFlag { get; set; }
     }
 }
