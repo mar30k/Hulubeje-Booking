@@ -8,6 +8,7 @@
         public string? ArticleCode { get; set; }
         public string? CompanyTinNumber { get; set; }
         public string? CompanyName { get; set; }
+        public string? CompanyCode { get; set; }
         public string? SpaceType { get; set; }
         public string? MovieName { get; set; }
         public string? ScheduleDate { get; set; }
