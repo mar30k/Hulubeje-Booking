@@ -22,10 +22,6 @@ public class CinemaSeatLayoutController : Controller
 
     public CinemaSeatLayoutController(AuthenticationManager authenticationManager, IHttpContextAccessor? httpContextAccessor, IHttpClientFactory httpClientFactory)
     {
-        _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api/")
-        };
         _authenticationManager = authenticationManager;
         _httpContextAccessor = httpContextAccessor;
         _httpClientFactory = httpClientFactory;
@@ -43,6 +39,11 @@ public class CinemaSeatLayoutController : Controller
             companyTinNumber = companyData?.TIN;
             companyscode = companyData?.CompanyCode;
             companyName = companyData?.CompanyName;
+        }
+        else
+        {
+            TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+            return RedirectToAction("Index", "Home");
         }
         string? phoneNumber = "";
         var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
@@ -131,7 +132,7 @@ public class CinemaSeatLayoutController : Controller
             companyCode = seatValues?.CompanyCode;
             id = seatValues?.Id;
             speceId = seatValues.SpaceId;
-            articleCode = seatValues.ArticleCode;
+            articleCode = seatValues?.ArticleCode;
         }
         else
         {
@@ -143,8 +144,7 @@ public class CinemaSeatLayoutController : Controller
         var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
         var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
         var seats = new SeatLayouts();
-        
-        if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
+		if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
         {
             string token = Encoding.UTF8.GetString(loginToken);
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
