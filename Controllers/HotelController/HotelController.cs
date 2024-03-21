@@ -215,13 +215,17 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpPost]
         public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
         {
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+			var token = "";
+			var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var dt = DateRangeParser.parseDateRange(roomFormData.Date);
-            var arrivalDate = dt.startDateString;
-            var departureDate = dt.endDateString;
+            var arrivalDateString = dt.startDateString.Trim();
+            var departureDateString = dt.endDateString.Trim();
+            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
 
-            var orgTin = roomFormData.orgTin;
-            var oud = roomFormData.oud;
+
+            var companyCode = roomFormData.orgCode;
+            var orgOUD = roomFormData.oud;
             var adultCount = roomFormData.adultCount;
             var childCount = roomFormData.childrenCount;
             var roomCount = roomFormData.roomsCount;
@@ -229,39 +233,39 @@ namespace HulubejeBooking.Controllers.HotelController
 
             var requestBody = new
             {
-                orgTin,
+                companyCode,
                 arrivalDate,
                 departureDate,
                 adultCount,
                 childCount,
                 roomCount,
-                oud
+                orgOUD,
+                city =(string)null
             };
             var roomBody = JsonConvert.SerializeObject(requestBody);
             var roomContent = new StringContent(roomBody, Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync(_client.BaseAddress + "/Hotel/getOnlineRoom", roomContent);
-
-
+            if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
+            {
+                token = Encoding.UTF8.GetString(loginToken);
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage response = await _v7Client.PostAsync("hotel/getrooms", roomContent);
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                var availableRooms = data != null ? JsonConvert.DeserializeObject<List<RoomModel>>(data) : new List<RoomModel>();
-
-
-                var viewModel = new AvailabilityViewModel
+					var availableRooms = data != null ? JsonConvert.DeserializeObject<GetRooms>(data) : new GetRooms();
+                    var availableRoomsJson = JsonConvert.SerializeObject(availableRooms);
+                    HttpContext.Session.SetString("AvailabilityViewModel", data);
+					return Ok();    
+				}
+				else
                 {
-                    AvailableRooms = availableRooms
-                };
-
-
-                var viewModelJson = JsonConvert.SerializeObject(viewModel);
-
-                HttpContext.Session.SetString("AvailabilityViewModel", viewModelJson);
-                return Json(new AvailabilityViewModel());
+					return BadRequest();
+				}
             }
             else
             {
-                return Json(new AvailabilityViewModel());
+				TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+				return RedirectToAction("Index", "Home");
             }
         }
 
