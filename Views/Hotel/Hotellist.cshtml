@@ -8,10 +8,12 @@
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <partial name="_Navigation" />
-@model HulubejeBooking.Models.HotelModels.HotelViewModel
+@model HulubejeBooking.Models.HotelModels.GetHotelByCity
 @{
-    double maxTotalPrice = Model?.Hotels != null ? Model.Hotels.Max(hotel => hotel.TotalPrice) : 0;
-    double minTotalPrice = Model?.Hotels != null ? Model.Hotels.Min(hotel => hotel.TotalPrice) : 0;
+    double? maxTotalPrice = Model?.Data != null ? Model.Data.Max(hotel => hotel.TotalPrice) : 0;
+    double? minTotalPrice = Model?.Data != null ? Model.Data.Min(hotel => hotel.TotalPrice) : 0;
+    Console.WriteLine("maxTotalPrice" + maxTotalPrice);
+    Console.WriteLine("minTotalPrice" + minTotalPrice);
 }
 <title>Hotel List</title>
 <style>
@@ -252,8 +254,8 @@
 
                             <div class="range-slider">
                                 <div class="range-fill"></div>
-                                <input id="filter-min-value" type="range" class="min-price" value="@minTotalPrice" min="@minTotalPrice" max="@maxTotalPrice" step="10" />
-                                <input id="filter-max-value" type="range" class="max-price" value="@maxTotalPrice" min="@minTotalPrice" max="@maxTotalPrice" step="10" />
+                                <input id="filter-min-value" type="range" class="min-price" value="@minTotalPrice" min="@minTotalPrice" max="@(maxTotalPrice + 10)"  step="10"/>
+                                <input id="filter-max-value" type="range" class="max-price" value="@maxTotalPrice" min="@minTotalPrice" max="@(maxTotalPrice + 10)" step="10"/>
                             </div>
                         </div>
                         <div class="col-md-6 filter pt-2" style="border: 1px solid #928F63;">
@@ -295,10 +297,10 @@
         </div>
 
         <div class="col-md-8 hotelsContainer">
-            @if (Model?.Hotels?.Count > 0)
+            @if (Model?.Data?.Count > 0)
             {
                 var count = 0;
-                @foreach (var hotel in Model.Hotels)
+                @foreach (var hotel in Model.Data)
                 {
                     count += 1;
                     <div class="cardH hotelCards card w-100 mt-3"
@@ -306,10 +308,10 @@
                          data-hotel-name = "@hotel?.OrganizationName"
                          data-original-count="@count"
                          data-hotel-price = "@hotel?.TotalPrice"
-                         data-hotel-amenities="@string.Join(",", hotel?.roomAminities ?? Enumerable.Empty<string>())"
-                         data-room-amenities="@string.Join(",", hotel?.hotelAminities ?? Enumerable.Empty<string>())"
+                         data-hotel-amenities="@string.Join(",", hotel?.RoomAminities ?? Enumerable.Empty<string>())"
+                         data-room-amenities="@string.Join(",", hotel?.HotelAminities ?? Enumerable.Empty<string>())"
                          data-min-room-value="@hotel?.MinRoomValue"
-                         data-tin="@hotel?.orgTin" data-oud="@hotel?.BranchCode"
+                         data-tin="@hotel?.OrgTin" data-oud="@hotel?.BranchCode"
                          data-hotelRating="@hotel?.HotelRating">
                         <div class="row">
                             <div class="col-sm-4">
@@ -325,7 +327,9 @@
                                             <div>
                                                 <span class="card-text">
                                                     @{
-                                                        var dynamicRating = string.IsNullOrEmpty(hotel?.HotelRating) ? 0 : (int)Math.Round(decimal.Parse(hotel.HotelRating, CultureInfo.InvariantCulture));
+                                                        var dynamicRating = string.IsNullOrEmpty(hotel?.HotelRating?.ToString())
+                                                        ? 0
+                                                        : (int)Math.Round(double.Parse(hotel.HotelRating.ToString(), CultureInfo.InvariantCulture));
                                                     }
 
                                                     @for (var i = 0; i < dynamicRating; i++)
@@ -348,7 +352,9 @@
                                                 <span class="p-1 rounded"style="display: inline-block; background-color: green; color: white;">@hotel?.RateDescription</span>
                                             </div>
                                         </div>
-                                        <span class="mt-2"><i class="bi bi-cash-stack"></i>Starting from: ETB @hotel?.MinRoomValue.ToString("N2", new System.Globalization.CultureInfo("am-ET"))</span>
+                                        <span class="mt-2">
+                                            <i class="bi bi-cash-stack"></i>Starting from: ETB @((hotel?.MinRoomValue ?? 0).ToString("N2", new System.Globalization.CultureInfo("am-ET")))
+                                        </span>
                                         <div>
                                         </div>
                                         <div class="col-md-3">
@@ -378,9 +384,9 @@
 
                                         </div>
                                         <div class="col-6">
-                                            <h5>Total Price: ETB @hotel?.TotalPrice.ToString("N2", new System.Globalization.CultureInfo("am-ET")) </h5>
+                                            <h5>Total Price: ETB @string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:N2}", hotel?.TotalPrice ?? 0)</h5>
                                             <button class="btn btn-primary btn-sm viewAvailabilityBtn"
-                                                    data-org-tin="@hotel?.orgTin"
+                                                    data-org-code="@hotel?.OrganizationCode"
                                                     data-hotel="@hotel?.OrganizationName"
                                                     data-oud="@hotel?.BranchCode"
                                                     data-branch="@hotel?.BranchName">
@@ -650,13 +656,13 @@
 
     $(document).ready(function () {
         $(".hotelsContainer").on("click", ".viewAvailabilityBtn", function () {
-            var orgTin = $(this).data('org-tin');
+            var orgCode = $(this).data('org-code');
             var oud = $(this).data('oud');
             var hotelName = $(this).data('hotel');
 
             sessionStorage.setItem('hotelName', hotelName);
             sessionStorage.setItem('branchName', $(this).data('branch'));
-            sessionStorage.setItem('orgTin', orgTin);
+            sessionStorage.setItem('orgCode', orgCode);
             sessionStorage.setItem('oud', oud);
 
             var date = sessionStorage.getItem('dateRange');
@@ -671,11 +677,10 @@
                 adultCount: adultCount,
                 childrenCount: childCount,
                 roomsCount: roomCount,
-                orgTin: orgTin,
-                date: date,
+                orgCode: orgCode,
+                // date: date,
                 oud: oud
             };
-
             $.ajax({
                 url: '../Hotel/Availability',
                 type: 'POST',
