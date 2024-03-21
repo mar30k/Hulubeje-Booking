@@ -90,7 +90,7 @@
                 <tbody id="guestTableBody">
                 </tbody>
             </table>
-            <button id="confirmButton" class="btn btn-success Confirm" onclick="redirect()">Confirm</button>
+            <button id="confirmButton" class="btn btn-success Confirm">Confirm</button>
         </div>
 
     </div>
@@ -240,6 +240,18 @@
 
     $(document).ready(function () {
         $('.Confirm').on('click', function () {
+            var dateRange = sessionStorage.getItem('dateRange');
+            var dateParts = dateRange.split(' - ');
+
+            var aDateString = new Date(Date.parse(dateParts[0]));
+            var arrivalDateString = new Date(aDateString);
+
+            var arrivalDate = arrivalDateString.toISOString();
+
+            var dDateString = new Date(Date.parse(dateParts[1]));
+            var departureDateString = new Date(dDateString);
+
+            var departureDate = departureDateString.toISOString();
             sessionStorage.setItem("name", $('#name').val());
             sessionStorage.setItem("middle", $('#middle').val());
             sessionStorage.setItem("last", $('#last').val());
@@ -247,82 +259,50 @@
             sessionStorage.setItem("email", $('#email').val());
             sessionStorage.setItem("phone", $('#phone').val());
             sessionStorage.setItem("nationality", $('#nationality').val());
+            var lineItems = [];
 
             var data = {
-
-                AuthorizePaymentData: {
-                    UserMobileNumber: $('#phone').val(),
-                    SupplierTin: sessionStorage.getItem('orgTin'),
-                    SupplierOUD: sessionStorage.getItem('oud'),
-                    Amount: '0.1'
-                },
-
-                GuestInfoData: {
-                    orgTin: sessionStorage.getItem('orgTin'),
-                    date: sessionStorage.getItem('dateRange'),
-                    adult: sessionStorage.getItem('adultCount'),
-                    child: sessionStorage.getItem('childrenCount'),
-                    roomTypeCode: sessionStorage.getItem('roomTypeCode'),
-                    rateCode: sessionStorage.getItem('rateCode'),
-                    rateCodeDetail: sessionStorage.getItem('rateCodeDetail'),
-                    roomCount: sessionStorage.getItem('roomsCount'),
-                    oud: sessionStorage.getItem('oud'),
-                    specialRequirement: "i am testing special requirements",
-                    transactionReference: "",
+                amount: parseFloat(sessionStorage.getItem('totalPrice')),
+                code: $('#phone').val(),
+                branchCode: parseInt(sessionStorage.getItem('oud')),
+                companyCode: parseInt(sessionStorage.getItem('orgCode')),
+                industryType: 1989,
+                lineItems: lineItems,
+                HotelDetail: {
+                    arrivalDate: arrivalDate,
+                    departureDate: departureDate,
+                    adultCount: parseInt(sessionStorage.getItem('adultCount')), 
+                    childCount: parseInt(sessionStorage.getItem('childrenCount')),
+                    roomTypeCode: parseInt(sessionStorage.getItem('roomTypeCode')),
+                    rateCode: parseInt(sessionStorage.getItem('rateCode')),
+                    rateCodeDetail: parseInt(sessionStorage.getItem('rateCodeDetail')),
+                    roomCount: parseInt(sessionStorage.getItem('roomsCount')),
+                    averageAmount: parseFloat(sessionStorage.getItem('averageAmount')),
+                    totalAmount: parseFloat(sessionStorage.getItem('totalPrice')),
+                    specialRequirement: "",
+                    cashReceiptVoucher: "",
                     guests: [{
-                        Code: $('#phone').val(),
+                        phoneNo: $('#phone').val(),
                         FirstName: $('#name').val(),
-                        MiddleName: $('#middle').val(),
-                        LastName: $('#last').val(),
-                        Email: $('#email').val(),
-                        PhoneNumber: $('#phone').val(),
-                        IdPicture: "",
-                        DateOfBirth: $('#date').val(),
-                        Gender: $('input[name="gender"]:checked').val(),
-                        Nationality: $('#nationality').val()
+                        middleName: $('#middle').val(),
+                        lastName: $('#last').val(),
+                        email: $('#email').val(),
+                        phoneNo: $('#phone').val(),
+                        idNumber: "",
+                        idType: "kebele",
+                        dateOfBirth: $('#date').val(),
+                        gender: $('input[name="gender"]:checked').val(),
                     }],
-                    onHotelBookSuccess: {
-                        firstName: $('#name').val(),
-                        company: sessionStorage.getItem("hotelName"),
-                        branch: sessionStorage.getItem("branchName"),
-                        nightCount: 1
-                    }
                 }
-
             };
-
+            console.log("data", data);
             $.ajax({
                 url: '/PaymentHome/Index',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function (/* response */) {
-                    // var cardText = response.cardText;
-
                     window.location.href = "/paymentoptions";
-                    // if (cardText === 'telebirr SMS OTP') {
-                    //     window.location.href = '/Spayment/index';
-                    // } else if (cardText === 'telebirr USSD Push') {
-                    //     window.location.href = '/Apayment/index';
-                    // }
-                    // else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
-                    //     window.open(response.redirectUrl, '_blank');
-                    // }
-
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
-
-            $.ajax({
-                url: '/SHotelpayment/Payment',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function () {
-
-
                 },
                 error: function (error) {
                     console.error('Error:', error);
