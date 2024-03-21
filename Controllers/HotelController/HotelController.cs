@@ -13,7 +13,7 @@ namespace HulubejeBooking.Controllers.HotelController
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly HotelListBuffer _hotelListBuffer;
         private readonly AuthenticationManager _authenticationManager;
-        private IHttpContextAccessor? _httpContextAccessor;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
 
         public HotelController(ILogger<HotelController> logger,
             IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager,
@@ -28,10 +28,16 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var token = "";
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            string? password = "";
+            string? code = "";
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                password = user != null ? user?.password : "";
+                code = user != null ? user?.phoneNumber : "";
                 ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
@@ -44,68 +50,72 @@ namespace HulubejeBooking.Controllers.HotelController
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
             }
-            var b = await _authenticationManager.identificationValid();
-            ViewBag.isVaild = b.isValid;
-            ViewBag.isLoggedIn = b.isLoggedIn;
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/Industry/GetAllCompanies?industryType=LKUP000000451");
-
-            var hotels = new List<GetModel>();
-            var country = new List<CityData>();
-            HotelListRequest viewModel = new();
-
-            if (response.IsSuccessStatusCode)
+            var identificationResult = await _authenticationManager.identificationValid();
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            if (identificationResult.isValid || identificationResult.isLoggedIn)
             {
-                string data = await response.Content.ReadAsStringAsync();
-                hotels = data != null ? JsonConvert.DeserializeObject<List<GetModel>>(data) : new List<GetModel>();
-                
-
-                HttpResponseMessage response2 = await _client.GetAsync(_client.BaseAddress + "/Industry/GetCitiesForHotelFilter");
-                if (response2.IsSuccessStatusCode)
+                var param = new
                 {
-                    string data2 = await response2.Content.ReadAsStringAsync();
-                    country = data2 != null ? JsonConvert.DeserializeObject<List<CityData>>(data2) : new List<CityData>();
+                    code,
+                    password,
+                    isChangePassword = false
+                };
+                var jsonRequest = JsonConvert.SerializeObject(param);
+                
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                HttpResponseMessage loginResponse = await _v7Client.PostAsync("auth/login", content);
+                if (loginResponse.IsSuccessStatusCode)
+                {
+                    string loginData = await loginResponse.Content.ReadAsStringAsync();
+                    var loginresponseData = JsonConvert.DeserializeObject<LoginAuthentication>(loginData);
+                    if (loginresponseData != null && loginresponseData.IsSuccessful == true)
+                    {
+                        token = loginresponseData?.Data?.Token;
+                        if (token != null) { HttpContext.Session.SetString("loginToken", token); }
                 }
 
                 
             }
-
-            _hotelListBuffer._hotels = hotels ?? new List<GetModel>();
-            var dataList = new List<GetModel>();
-            dataList = _hotelListBuffer._hotels;
-
-            if (dataList != null)
+            }
+            else
             {
-                var filteredCompanies = dataList
-                    .SelectMany(hotel =>
-                        hotel.Branches
-                            .Select(branch =>
-                                new FilteredCompany
-                                {
-                                    isSponsored = hotel.IsSponsored,
-                                    code = hotel.Code,
-                                    tradeName = hotel.TradeName,
-                                    brandName = hotel.BrandName ?? hotel.TradeName,
-                                    industryType = hotel.IndustryType,
-                                    rating = hotel.Rating,
-                                    TIN = hotel.TIN,
-                                    attachments = hotel.Attachments,
-                                    registerDate = hotel.RegisterDate,
-                                    isTaxInclusive = hotel.IsTaxInclusive,
-                                    termsAndConditionUrl = hotel.TermsAndConditionsUrl,
-                                    ratingCount = (int)hotel.RatingCount,
-                                    oud = branch.Code,
-                                    branchName = branch.BranchName,
-                                    branchCategory = branch.Category
-                                }
-                            )
-                    )
-                    .ToList();
+                var param = new
+                {
+                    code = "0000000000",
+                    password = "0000000000",
+                    isChangePassword = false
+                };
+                var jsonRequest = JsonConvert.SerializeObject(param);
 
-                        viewModel = new HotelListRequest
+                var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+                HttpResponseMessage loginResponse = await _v7Client.PostAsync("auth/login", content);
+                if (loginResponse.IsSuccessStatusCode)
+            {
+                    var loginData = await loginResponse.Content.ReadAsStringAsync();
+                    var loginresponseData = JsonConvert.DeserializeObject<LoginAuthentication>(loginData);
+                    if (loginresponseData != null && loginresponseData.IsSuccessful == true)
+                                {
+                        token = loginresponseData?.Data?.Token;
+                        if (token != null) { HttpContext.Session.SetString("loginToken", token); }
+                                }
+                }
+            }
+            var getcities = new GetCities();
+            var getcompaniesbytyp = new GetcompaniesbyType();
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage getcitiesResponse = await _v7Client.GetAsync("getcities");
+            HttpResponseMessage getcompaniesbytypeResponse = await _v7Client.GetAsync("routing/getcompaniesbytype?industryType=1989");
+            if (getcitiesResponse.IsSuccessStatusCode && getcitiesResponse.IsSuccessStatusCode) { 
+                string getcitiesData = await getcitiesResponse.Content.ReadAsStringAsync();
+                string getcompaniesbytypeData = await getcompaniesbytypeResponse.Content.ReadAsStringAsync();
+                getcompaniesbytyp = getcompaniesbytypeData!=null? JsonConvert.DeserializeObject<GetcompaniesbyType>(getcompaniesbytypeData) : new GetcompaniesbyType();   
+                getcities = getcitiesData!=null ?JsonConvert.DeserializeObject<GetCities>(getcitiesData) : new GetCities();   
+            }
+            var viewModel = new HotelHome
                         {
-                            filteredCompany = filteredCompanies,
-                            CityNameList = country
+                Cities = getcities,
+                Companies = getcompaniesbytyp,
                         };
             }
             
