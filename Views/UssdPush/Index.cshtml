@@ -1,0 +1,126 @@
+﻿<partial name="_Navigation" />
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<style>
+    .loader {
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+        position: relative;
+        text-indent: -9999em;
+        animation: mulShdSpin 1.1s infinite ease;
+        transform: translateZ(0);
+    }
+
+    @@keyframes mulShdSpin {
+        0%,
+        100% {
+            box-shadow: 0em -2.6em 0em 0em #ffffff, 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2),
+            0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.5), -1.8em -1.8em 0 0em rgba(255,255,255, 0.7);
+        }
+
+        12.5% {
+            box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.7), 1.8em -1.8em 0 0em #ffffff, 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 
+            0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.5);
+        }
+
+        25% {
+            box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.5), 1.8em -1.8em 0 0em rgba(255,255,255, 0.7), 2.5em 0em 0 0em #ffffff, 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 
+            0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+        }
+
+        37.5% {
+            box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.5), 2.5em 0em 0 0em rgba(255,255,255, 0.7), 1.75em 1.75em 0 0em #ffffff,
+            0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+        }
+
+        50% {
+            box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.5), 1.75em 1.75em 0 0em rgba(255,255,255, 0.7),
+            0em 2.5em 0 0em #ffffff, -1.8em 1.8em 0 0em rgba(255,255,255, 0.2), -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+        }
+
+        62.5% {
+            box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.5), 
+            0em 2.5em 0 0em rgba(255,255,255, 0.7), -1.8em 1.8em 0 0em #ffffff, -2.6em 0em 0 0em rgba(255,255,255, 0.2), -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+        }
+
+        75% {
+            box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2),
+            0em 2.5em 0 0em rgba(255,255,255, 0.5), -1.8em 1.8em 0 0em rgba(255,255,255, 0.7), -2.6em 0em 0 0em #ffffff, -1.8em -1.8em 0 0em rgba(255,255,255, 0.2);
+        }
+
+        87.5% {
+            box-shadow: 0em -2.6em 0em 0em rgba(255,255,255, 0.2), 1.8em -1.8em 0 0em rgba(255,255,255, 0.2), 2.5em 0em 0 0em rgba(255,255,255, 0.2), 1.75em 1.75em 0 0em rgba(255,255,255, 0.2), 
+            0em 2.5em 0 0em rgba(255,255,255, 0.2), -1.8em 1.8em 0 0em rgba(255,255,255, 0.5), -2.6em 0em 0 0em rgba(255,255,255, 0.7), -1.8em -1.8em 0 0em #ffffff;
+        }
+    }
+</style>
+<div class="container">
+    <div class="d-flex justify-content-center align-items-center border border-3 my-lg-5 my-2 mx-lg-5 mx-3  bg-dark" style="height: 50vh;">
+        <span class="loader"></span>
+        <div class="tryagain"style="display: none">
+            <button class="btn btn-danger btn-sm px-5 py-1" onclick="tryagain()">Try Again</button>
+        </div>
+    </div>
+</div>
+<partial name="_Footer" />
+<script>
+    $(document).ready(function () { 
+        var pin = "";
+        $.ajax({
+            url: '/savepayment',
+            type: 'POST',
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify(pin),
+            success: function (response) {
+                if (!response.isSuccessful) {
+                    $('.tryagain').show();
+                    $('.loader').hide();
+                } else if (response.isSuccessful) {
+                    window.location.href = "/paymentsuccessful";
+                } else {
+                    $('#error-message').text("An unknown error occurred.").show();
+                }
+            },
+            error: function (error) {
+                $('#error-message').text("An unknown error occurred.").show();
+            }
+        });
+    });
+    function tryagain() {
+        $('.loader').show();
+        $('.tryagain').hide();
+
+        var pin = "12345";
+        $.ajax({
+            url: '/savepayment',
+            type: 'POST',
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify(pin),
+            success: function (response) {
+                if (!response.isSuccessful) {
+                    $('.tryagain').show(); 
+                    $('.loader').hide();
+                } else if (response.isSuccessful) {
+                    window.location.href = "/paymentsuccessful";
+                } 
+                else {
+                    $('.tryagain').show();
+                    $('.loader').hide();
+                }
+            },
+            error: function (error) {
+                $('.tryagain').show();
+                $('.loader').hide();
+            }
+        });
+    }
+</script>
