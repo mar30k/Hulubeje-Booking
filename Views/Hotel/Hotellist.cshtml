@@ -12,8 +12,6 @@
 @{
     double? maxTotalPrice = Model?.Data != null ? Model.Data.Max(hotel => hotel.TotalPrice) : 0;
     double? minTotalPrice = Model?.Data != null ? Model.Data.Min(hotel => hotel.TotalPrice) : 0;
-    Console.WriteLine("maxTotalPrice" + maxTotalPrice);
-    Console.WriteLine("minTotalPrice" + minTotalPrice);
 }
 <title>Hotel List</title>
 <style>
