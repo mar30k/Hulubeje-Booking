@@ -1,5 +1,5 @@
 ﻿@using HulubejeBooking.Models.HotelModels
-@model HulubejeBooking.Models.HotelModels.HotelListRequest
+@model HulubejeBooking.Models.HotelModels.HotelHome
 @{
     var isVaild = ViewBag.isVaild;
     var isLoggedIN = ViewBag.isLoggedIn;
@@ -154,9 +154,9 @@
 
         <div class="d-flex searchBar">
                 <select class="form-select select form form-control" id="city" data-tags="true" data-placeholder="Select an option" data-allow-clear="true" style="width:100%; height:60px; border-color:#FEBB02;">
-                        @foreach (var city in Model?.CityNameList ?? new List<CityData>())
+                        @foreach (var city in Model?.Cities?.Data ?? new List<CityDatas>())
                         {
-                            <option value="@city?.CityName">@city?.CityName?.ToUpper()</option>
+                            <option value="@city?.Id">@city?.CityName?.ToUpper()</option>
                         }
                 </select>
                 <input class="form-control dateRange" type="text" id="date-range-picker" placeholder="Checkin-Checkout" style="width:50%; border-color:#FEBB02; height:60px;">
@@ -217,41 +217,40 @@
     </div>
 </div>
 <div class="container">
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-        <label class="form-check-label" for="flexCheckDefault"> I'm traveling for work </label>
-    </div>
-
     @{
         var random = new Random();
-        var shuffledHotels = Model?.filteredCompany?.OrderBy(x => random.Next()).Take(20).ToList();
-        var ordered = shuffledHotels?.OrderBy(x => x.brandName).ToList();
+        var shuffledHotels = Model?.Companies?.Data?.OrderBy(x => random.Next()).Take(20).ToList();
+        var ordered = shuffledHotels?.OrderBy(x => x.BrandName).ToList();
     }
     <div class="row mt-3">
-        @foreach (var hotel in ordered ?? new List<FilteredCompany>())
+        @foreach (var hotel in Model?.Companies?.Data   ?? new List<Companies>())
         {
-            <div class="col-md-6 mb-3">
-                <!-- Adjust the column width based on your layout -->
-                <a class="card cardB clickable-card" style="max-width: 100%;"
-                    data-oud="@hotel?.oud"
-                    data-org-tin="@hotel?.TIN"
-                    data-hotel-name="@hotel?.brandName"
-                    data-branch-name="@hotel?.branchName"
-                    data-city="">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="@hotel?.attachments?[0]" class="img-fluid rounded-start" alt="...">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">@hotel?.brandName</h5>
-                                <p class="card-text">The detail information will be posted here. @* @hotel?.oud and @hotel?.TIN *@</p>
-                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+            foreach (var branch in hotel.Branches ?? new List<Branch>())
+            {
+                <div class="col-md-6 mb-3">
+                    <a class="card cardB clickable-card" 
+                       data-oud="@branch?.Code"
+                       data-org-code="@hotel?.Code"
+                       data-org-tin="@hotel?.Tin"
+                       data-hotel-name="@hotel?.BrandName"
+                       data-branch-note="@branch?.Description"
+                        data-branch-name="@branch?.Name"
+                        data-city="" >
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@branch?.Logo" class="img-fluid rounded-start" alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@hotel?.BrandName</h5>
+                                    <p class="card-text">@branch?.City @(branch?.SpecificAddress != null ? $",{branch.SpecificAddress}" : "")</p>
+                                    <p class="card-text"><strong class="text-body-secondary">@branch?.Name </strong> </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
+            }
         }
     </div>
 
@@ -383,14 +382,14 @@
         }
     });
 
-    $(document).ready(function () {
+@*     $(document).ready(function () {
         $('#searchButton').click(function () {
 
             var form = $('#searchForm');
             form.submit();
         });
     });
-
+ *@
     $(document).ready(function () {
         $('#searchButton').on('click', function () {
             var city = $('#city').val();
@@ -434,6 +433,7 @@
                 roomsCount: roomsCount,
                 numberOfNights: numberOfNights
             };
+            console.log(formData);
             var form = $('<form action="/Hotel/HotelList" method="post"></form>');
 
             form.append('<input type="hidden" name="city" value="' + city + '" />');
@@ -453,19 +453,21 @@
     $(document).ready(function () {
         $('.cardB').on('click', function () {
             sessionStorage.setItem("oud", $(this).data('oud'));
-            sessionStorage.setItem('orgTin', $(this).data('orgTin'));
-            sessionStorage.setItem("branchName", $(this).data('hotel-name'));
-            sessionStorage.setItem("hotelName", $(this).data('branch-name'));
+            sessionStorage.setItem('orgTin', $(this).data('org-code'));
+            sessionStorage.setItem("hotelName", $(this).data('hotel-name'));
+            sessionStorage.setItem("branchName", $(this).data('branch-name'));
 
 
 
             var data = 
             {
                 oud: $(this).data('oud'),
-                orgTin: $(this).data('orgTin'),
-                name:  $(this).data('hotel-name')
+                orgCode: $(this).data('org-code'),
+                orgTin: $(this).data('org-tin'),
+                name:  $(this).data('hotel-name'),
+                description: $(this).data('branch-note')
             }; 
-
+            console.log(data);
             $.ajax({
                 url: '/Hotel/Hoteldetail',
                  type: 'POST',
