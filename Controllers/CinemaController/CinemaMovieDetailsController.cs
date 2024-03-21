@@ -51,10 +51,12 @@ namespace HulubejeBooking.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            var code = string.Empty;
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                code = user?.phoneNumber;
                 ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
@@ -102,7 +104,7 @@ namespace HulubejeBooking.Controllers
                     tmdbMovieId = result.id;
                 }
             }
-            string videoId = streamUrl.Substring(streamUrl.IndexOf("v=") + 2);
+            string videoId = streamUrl?.Substring(streamUrl.IndexOf("v=") + 2) ?? "";
             movieDetails.YoutubeKey = videoId;
             string detailsApiUrl = $"movie/{tmdbMovieId}?api_key={_tmdbApiKey}&append_to_response=release_dates";
             HttpResponseMessage detailsResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + detailsApiUrl);
@@ -139,6 +141,7 @@ namespace HulubejeBooking.Controllers
                 }
             }
             movieDetails.MovieName = movieName;
+            movieDetails.PhoneNumber = code;
             movieDetails.ArticleCode = articleCode.ToString();
             return View(movieDetails);   
         }
