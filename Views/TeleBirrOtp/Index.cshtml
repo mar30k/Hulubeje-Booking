@@ -1,0 +1,115 @@
+﻿@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<title>Enter Otp</title>
+<partial name="_Navigation" />
+@{
+    if (ViewBag.CoutDown is not null)
+    {
+            <partial name="_CountDownInOtp" />
+    }
+}
+<div class="container">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mt-2" role="alert" id="errorAlert">
+            <p class="text-center " style="margin: 0;">@TempData["ErrorMessage"]</p>
+        </div>
+    }
+
+    <script>
+        $(document).ready(function () {
+            var errorMessage = '@(TempData["ErrorMessage"])';
+            if (errorMessage) {
+                $('#errorAlert').show();
+                setTimeout(function () {
+                    $('#errorAlert').hide();
+                }, 3000);
+                '@{TempData["ErrorMessage"] = null;}';
+            }
+        });
+    </script>
+</div>
+<div class="message-container" style="display: flex; align-items: center; justify-content: center; height: 50vh;">
+    <div class="d-flex align-items-center m-2" style="flex-direction: column; border: 1px solid #ddd; padding: 15px 30px; background-color: #f9f9f9;">
+        <div class="row inform">
+            <div class="col">
+                <p>Please enter the OTP sent to your phone.</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="passcode" aria-label="Enter OTP Code" placeholder="Enter OTP Code" required>
+                    <button class="btn btn-primary btn-sm payment">Submit</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <div id="error-message" class="text-danger" style="display: none;"></div>
+            </div>
+        </div>
+        <div id="payment-success-message" class="text-success" style="display: none;">
+            <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-9.5 -9.5 69.00 69.00" xml:space="preserve" width="64px" height="64px" fill="#25AE88" transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)">
+                <g id="SVGRepo_bgCarrier" stroke-width="0" transform="translate(6,6), scale(0.76)"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.1"></g>
+                <g id="SVGRepo_iconCarrier">
+                <circle cx="25" cy="25" r="25"></circle>
+                <polyline style="fill:none;stroke:#FFFFFF;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points=" 38,15 22,33 12,25 "></polyline>
+                 </g>
+            </svg>
+            Payment successful!
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.payment').on('click', function () {
+            $('#error-message').fadeOut(300);
+            var pin = $('#passcode').val();
+            $.ajax({
+                url: '/savepayment',
+                type: 'POST',
+                contentType: 'application/json',
+                cache: false,
+                data: JSON.stringify(pin),
+                success: function (response) {
+                    if (response.isSuccessful) {
+                        $('.input-group').hide();
+                        $('.inform').hide();
+                        $('#payment-success-message').html(
+                            '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-9.5 -9.5 69.00 69.00" xml:space="preserve" width="200px" height="200px" fill="#25AE88" transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)">' +
+                            '<g id="SVGRepo_bgCarrier" stroke-width="0" transform="translate(6,6), scale(0.76)"></g>' +
+                            '<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.1"></g>' +
+                            '<g id="SVGRepo_iconCarrier">' +
+                            '<circle cx="25" cy="25" r="25"></circle>' +
+                            '<polyline style="fill:none;stroke:#FFFFFF;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points=" 38,15 22,33 12,25 "></polyline>' +
+                            '</g>' +
+                            '</svg>' +
+                            ' Payment successful!'
+                        ).fadeIn(300);
+                    } else if (!response.isSuccessful && response.errorMessages.length > 0) {
+                        var errorMessage = response.errorMessages[0];
+                        $('#error-message').text(errorMessage).fadeIn(300);
+                    } else {
+                        $('#error-message').text("An unknown error occurred.").fadeIn(300);
+                    }
+                },
+
+                error: function (error) {
+                    $('#error-message').text("An unknown error occurred.").fadeIn(300);
+                }
+            });
+        });
+    });
+</script>
+
+<partial name="_Footer" />
