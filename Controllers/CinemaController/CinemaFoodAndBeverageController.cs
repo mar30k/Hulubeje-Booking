@@ -12,7 +12,6 @@ namespace CinemaSeatBooking.Controllers
 {
     public class CinemaFoodAndBeverageController : Controller
     {
-        private readonly HttpClient _httpClient;
         private IHttpContextAccessor? _httpContextAccessor;
         private readonly AuthenticationManager _authenticationManager;
         private IHttpClientFactory _httpClientFactory;
@@ -96,7 +95,7 @@ namespace CinemaSeatBooking.Controllers
             }
         }
         public async Task<IActionResult> CalculateBill(string movieName,string branchCode,string movieDimension, string date, string time, string company, string hallName,
-            string moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems, string companyCode)
+            decimal moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems, string companyCode, string seatCacheKey)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 
@@ -122,19 +121,13 @@ namespace CinemaSeatBooking.Controllers
             try
             {
                 List<SelectedItem> selectedItemsList = JsonConvert.DeserializeObject<List<SelectedItem>>(selectedItems)!;
-
-
-
-
-
-
                 var lineItems = new List<object>();
                 ProductsViewModel calculatedModel = new();
                 if (selectedItemsList != null)
                 {
                     foreach (var selectedItem in selectedItemsList)
                     {
-                        selectedItem.uom = "0";
+                        selectedItem.uom = 0;
                         selectedItem.specialFlag = null;
                         lineItems.Add(selectedItem);
                     } 
@@ -144,8 +137,7 @@ namespace CinemaSeatBooking.Controllers
                     name = movieName,
                     article = movieArticleCode,
                     unitAmount = moviePrice,
-                    quantity = 1,
-                    uom = "0",
+                    quantity = numberOfSeats,
                     specialFlag = ""
                 });
 
@@ -183,7 +175,12 @@ namespace CinemaSeatBooking.Controllers
                 calculatedModel.ScheduleTime = time;
                 calculatedModel.Dimension = movieDimension;
                 calculatedModel.HallName = hallName;
+                calculatedModel.ArticleCode = movieArticleCode;
                 calculatedModel.SelectedItems = selectedItemsList;
+                calculatedModel.Price = moviePrice;
+                calculatedModel.NumberOfSeats = numberOfSeats;
+                calculatedModel.CompanyCode = companyCode;
+                calculatedModel.SeatCacheKey = seatCacheKey;
                 return PartialView("_Bill", calculatedModel);
             }
             catch (Exception)
