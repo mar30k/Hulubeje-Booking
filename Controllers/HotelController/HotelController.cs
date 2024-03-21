@@ -271,41 +271,55 @@ namespace HulubejeBooking.Controllers.HotelController
 
         public async Task<IActionResult> Hoteldetail([FromBody] RoomFormData roomFormData)
         {
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var token = "";
             try
             {
-                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-
-                var orgTin = roomFormData.orgTin;
-                var oud = roomFormData.oud;
-
-                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Industry/GetCompanyBranchDetail?orgTin={orgTin}&branchCode={oud}&industryType=LKUP000000451");
-                HttpResponseMessage imageResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetSlidingImagesForSingleCompany?orgTin={orgTin}&oud={oud}");
-                if (response.IsSuccessStatusCode )
+                if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
                 {
-                    var images = new List<string>();
-                    if (imageResponse.IsSuccessStatusCode) 
+                    token = Encoding.UTF8.GetString(loginToken);
+                    _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    HttpResponseMessage getcompanyscheduleResponse = await _v7Client.GetAsync($"routing/getcompanyschedule?companyCode={roomFormData.orgTin}&branchCode={roomFormData.oud}&industryType=1989");
+                    var getsupplierpaymentoptions = new PaymentProcessorResponse();
+                    var getcompanyschedule = new GetCompanySchedule();
+                    var getcompanyimages = new GetCompanyImages();
+                    if (getcompanyscheduleResponse.IsSuccessStatusCode)
                     {
-                        string image = await imageResponse.Content.ReadAsStringAsync();
-                        images = JsonConvert.DeserializeObject<List<string>>(image);
+                        string getcompanyscheduleData =await getcompanyscheduleResponse.Content.ReadAsStringAsync();
+                        getcompanyschedule = JsonConvert.DeserializeObject<GetCompanySchedule>(getcompanyscheduleData);
                     }
-                    string content = await response.Content.ReadAsStringAsync();
-                    var hotel = JsonConvert.DeserializeObject<HotelDetailModel>(content);
-                    if (hotel != null )
+
+                    HttpResponseMessage getsupplierpaymentoptionsResponse = await _v7Client.GetAsync($"payment/getsupplierpaymentoptions?code={roomFormData.orgCode}&branchCode={roomFormData.oud}");
+                    HttpResponseMessage getcompanyimagesResponse = await _v7Client.GetAsync($"routing/getcompanyimages?tin={roomFormData.orgTin}&branchCode={roomFormData.oud}&industryType=1989");
+
+                    if (getsupplierpaymentoptionsResponse.IsSuccessStatusCode)
+                {
+                        string getsupplierpaymentoptionsData = await getsupplierpaymentoptionsResponse.Content.ReadAsStringAsync();
+                        getsupplierpaymentoptions  = JsonConvert.DeserializeObject<PaymentProcessorResponse>(getsupplierpaymentoptionsData);
+                    }
+                    if (getcompanyimagesResponse.IsSuccessStatusCode)
                     {
-                        hotel.Images = images?.Count > 0 ? images : new List<string>();
-                        hotel.Name = roomFormData.Name;
+                        string getcompanyimagesData = await getcompanyimagesResponse.Content.ReadAsStringAsync();
+                        getcompanyimages = JsonConvert.DeserializeObject<GetCompanyImages>(getcompanyimagesData);
                     }
-                    var viewModelJson = JsonConvert.SerializeObject(hotel);
-
-                    HttpContext.Session.SetString("hotelDetail", viewModelJson);
-
-
-                    return Json(new HotelDetailModel());
+                    var HotelDetailModel = new HotelDetailModel
+                    {
+                        PaymentOptions = getsupplierpaymentoptions,
+                        Description = roomFormData.Description,
+                        Name = roomFormData.Name,
+                        CompanySchedule = getcompanyschedule,
+						CompanyCode = roomFormData.orgCode,
+						OrgOUD = roomFormData.oud,
+                        ImageModel = getcompanyimages
+                    };
+                    var HotelDetailJson = JsonConvert.SerializeObject(HotelDetailModel);
+                    HttpContext.Session.SetString("HotelDetailModel", HotelDetailJson);
+                    return Ok();
                 }
                 else
                 {
-                    
-                    return View(); // Replace "ErrorView" with the name of your error view
+                    TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                    return RedirectToAction("Index", "Home");
                 }
             }
             catch (Exception ex)
@@ -335,10 +349,10 @@ namespace HulubejeBooking.Controllers.HotelController
             var b = await _authenticationManager.identificationValid();
             ViewBag.isVaild = b.isValid;
             ViewBag.isLoggedIn = b.isLoggedIn;
-            var value = HttpContext.Session.GetString("hotelDetail");
+            var value = HttpContext.Session.GetString("HotelDetailModel");
             if (!string.IsNullOrEmpty(value))
             {
-                HttpContext.Session.Remove("HotelViewModel");
+                //HttpContext.Session.Remove("HotelViewModel");
 
                 var viewModel = JsonConvert.DeserializeObject<HotelDetailModel>(value);
 
