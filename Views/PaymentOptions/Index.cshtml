@@ -1,5 +1,5 @@
 ﻿@using HulubejeBooking.Models.PaymentModels
-@model HulubejeBooking.Models.PaymentModels.Wrapper
+@model HulubejeBooking.Models.PaymentModels.PaymentProcessorResponse
 <title>Payment Options</title>
 <style>
     * {
@@ -50,27 +50,31 @@
     @{
         if (ViewBag.CoutDown is not null)
         {
-            <partial name="_CinemaCountDown" />
+                <partial name="_CinemaCountDown" />
         }
     }
     <div class="container">
         <div class="row mt-3">
-            @foreach (var paymentMethod in Model.PaymentOptions ?? new List<PaymentOptionModel>())
+            @foreach (var paymentMethod in Model?.Data ?? new List<PaymentProcessorData>())
             {
                 <div class="col-md-6 mb-3">
                     <div class="card" style="max-width: 540px;">
                         <div class="row g-0">
                             <div class="col-md-4">
-                                <img src="@paymentMethod.paymentProviderImage" class="img-fluid rounded-start" alt="PaymentProviderOrganizationName">
+                                <div class="row p-0 m-0">
+                                    <img src="@paymentMethod.PaymentProcessorImage" class="img-fluid rounded-start" alt="PaymentProviderOrganizationName">
+                                </div>
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
-                                    <h5 class="card-title">@paymentMethod.paymentProviderOrganizationName</h5>
-                                    <p class="card-text price">@paymentMethod.paymentOptionName</p>
-                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                    <h5 class="card-title font-monospace">@paymentMethod.PaymentProcessorUnitName</h5>
+                                    <p class="card-text price">@paymentMethod.PaymentProcessorName</p>
+                                    <p>Balance<span class="ml-2">@(paymentMethod.BalanceAmount != null ? $"{paymentMethod.BalanceAmount:0.00}" : "---")</span></p>
                                     <button class="btn btn-primary btn-sm payment" id="payment"
-                                            data-operation-mode="@paymentMethod.operationMode"
-                                            data-payment-provider-org-unit-def="@paymentMethod.paymentProviderOrgUnitDef">
+                                            data-operation-mode="@paymentMethod.OperationMode"
+                                            data-payment-processor-consignee-unit="@paymentMethod.PaymentProcessorConsigneeUnit"
+                                            data-payment-processor-consignee-id="@paymentMethod.PaymentProcessorConsigneeId"
+                                            data-payment-processor-name="@paymentMethod.PaymentProcessorUnitName">
                                         Pay
                                     </button>
                                 </div>
@@ -78,29 +82,7 @@
                         </div>
                     </div>
                 </div>
-
             }
-            <div class="col-md-6 mb-3">
-                <div class="card" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="@Model?.Boa?.paymentProviderImage" class="img-fluid rounded-start" alt="PaymentProviderOrganizationName">
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">@Model?.Boa?.paymentProviderOrganizationName</h5>
-                                <p class="card-text price">@Model?.Boa?.paymentOptionName</p>
-                                <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                                <button class="btn btn-primary btn-sm payment" id="payment"
-                                        data-operation-mode="@Model?.Boa?.operationMode"
-                                        data-payment-provider-org-unit-def="@Model?.Boa?.paymentProviderOrgUnitDef">
-                                    Pay
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     <script>
@@ -108,40 +90,34 @@
             $('.payment').on('click', function () {
                 sessionStorage.setItem('ts', $(this).data('payment-provider-org-unit-def'));
                 var data = {
-                    FlagData: { operationMode: $(this).data('operation-mode') },
-
-                    AuthorizePaymentData: {
-
-                        PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
-                    },
-                    TransactionData: {
-
-                        PaymentProviderOUD: $(this).data('payment-provider-org-unit-def')
-                    }
-
+                    operationMode: $(this).data('operation-mode') ,
+                    paymentProcessorConsigneeUnit: $(this).data('payment-processor-consignee-unit'),
+                    paymentProcessorConsigneeId: $(this).data('payment-processor-consignee-id'),
+                    paymentProcessorName: $(this).data('payment-processor-name'),
                 };
-
                 $.ajax({
                     url: '/PaymentHome/SelectedOption',
                     type: 'POST',
                     contentType: 'application/json',
+                    cache: false,
                     data: JSON.stringify(data),
                     success: function (response) {
-                        var cardText = response.cardText;
-
-
-                        if (cardText === 'telebirr SMS OTP') {
-                            window.location.href = '/Spayment';
-                        } else if (cardText === 'telebirr USSD Push') {
-                            window.location.href = '/Apayment';
+                        if (!(response.errorMessages && Array.isArray(response.errorMessages) && response.errorMessages.length > 0)) {
+                            if (response.additionalParameters.type === "ussdpush" && response.additionalParameters.isAsyncMode === true) {
+                                window.location.href = '/UssdPush';
+                            } else if (response.additionalParameters.type === "otp" && response.additionalParameters.isAsyncMode === false) {
+                                window.location.href = '/telebirrotp';
+                            }
+                            else {
+                                window.open(response.additionalParameters.redirectUrl, '_blank');
+                            }
+                        }else{
+                            alert(response.errorMessages[0])
                         }
-                        else if (cardText === 'BOA Card Payment' && response.redirectUrl) {
-                            window.open(response.redirectUrl, '_blank');
-                        }
-
+                        
                     },
                     error: function (error) {
-                        console.error('Error:', error);
+                        alert("Error: Can't process payment.");
                     }
                 });
             });
