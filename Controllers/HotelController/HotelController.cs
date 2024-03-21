@@ -126,8 +126,11 @@ namespace HulubejeBooking.Controllers.HotelController
             return View(viewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> HotelList(string city, int roomsCount, int numberOfNights,int childrenCount,int adultCount, string dateRange)
+        public async Task<IActionResult> HotelList(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange)
         {
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var token = "";
+            var gethotelsbycity = new GetHotelByCity();
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
@@ -155,70 +158,40 @@ namespace HulubejeBooking.Controllers.HotelController
             var childCount = childrenCount;
             var roomCount = roomsCount;
             var dt = DateRangeParser.parseDateRange(dateRange);
-            var arrivalDate = dt.startDateString;
-            var departureDate = dt.endDateString;
+            var arrivalDateString = dt.startDateString.Trim();
+            var departureDateString = dt.endDateString.Trim();
+            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+
             var numberOfDay = numberOfNights;
 
             if (numberOfDay <= 0)
             {
                 numberOfDay = 1;
             }
-
-
-            dataList = _hotelListBuffer._hotels;
-            if (dataList != null)
+            if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
             {
-                var filteredCompanies = dataList
-                    .SelectMany(hotel =>
-                        hotel.Branches
-                            .Where(branch => branch != null && branch.City != null && branch.City.Equals(cityName, StringComparison.OrdinalIgnoreCase))
-                            .Select(branch =>
-                                new FilteredCompany
+                token = Encoding.UTF8.GetString(loginToken);
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var param = new
                                 {
-                                    isSponsored = hotel.IsSponsored,
-                                    code = hotel.Code,
-                                    tradeName = hotel.TradeName,
-                                    brandName = hotel.BrandName ?? hotel.TradeName,
-                                    industryType = hotel.IndustryType,
-                                    rating = hotel.Rating,
-                                    TIN = hotel.TIN,
-                                    attachments = hotel.Attachments,
-                                    registerDate = hotel.RegisterDate,
-                                    isTaxInclusive = hotel.IsTaxInclusive,
-                                    termsAndConditionUrl = hotel.TermsAndConditionsUrl,
-                                    ratingCount = (int)hotel.RatingCount,
-                                    oud = branch.Code,
-                                    branchName = branch.BranchName,
-                                    branchCategory = branch.Category
-                                }
-                            )
-                    )
-                    .ToList();
-
-                var filteredHotel = new FilteredHotel
-                {
-                    adultCount = adultsCount,
-                    childCount = childCount,
-                    roomCount = roomCount,
-                    numberOfDay = numberOfDay,
-                    arrivalDate = arrivalDate,
-                    departureDate = departureDate,
-                    cityName = cityName,
-                    filteredCompanies = filteredCompanies
+                    companyCode = (string)null,
+                    orgOUD = (string)null,
+                    arrivalDate,
+                    departureDate,
+                    adultCount,
+                    childCount,
+                    roomCount,
+                    city
                 };
+                var paramJson = JsonConvert.SerializeObject(param);
+                var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
 
-
-                string jsonBody = JsonConvert.SerializeObject(filteredHotel);
-                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-                var hotels = new List<HotelModel>();
-
-                HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Industry/GetHotelsFilteredByCity", content);
-
-                if (response.IsSuccessStatusCode)
+                HttpResponseMessage gethotelsbycityResponse = await _v7Client.PostAsync($"hotel/gethotelsbycity", content);
+                if (gethotelsbycityResponse.IsSuccessStatusCode)
                 {
-                    string data = await response.Content.ReadAsStringAsync();
-                    hotels = data != null ? JsonConvert.DeserializeObject<List<HotelModel>>(data) : new List<HotelModel>();
+                    string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
+                    gethotelsbycity = JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData);
                 }
 
                 var viewModel = new HotelViewModel
@@ -235,9 +208,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 
 
             }
-            else
-            {
-                return Ok();
+            return View(gethotelsbycity);
             }
         }
 
