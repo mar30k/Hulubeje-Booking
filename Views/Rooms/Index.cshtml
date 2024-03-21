@@ -24,47 +24,60 @@
 <div class="container">
 
 
+	@{
+		var AllPictureUrls = new List<string>();
+		foreach (var rooms in Model.Data ?? new List<RoomType>())
+		{
+			foreach (var picture in rooms.PictureUrls ?? new List<string>())
+			{
+				AllPictureUrls.Add(picture);
+			}
+		}
+		foreach (var pictrure in AllPictureUrls ?? new List<string>())
+		{
+			Console.WriteLine(pictrure);
+		}
+	}
 
 
-
-	 <div class="row mt-2 g-2">
+	<div class="row mt-2 g-2">
 
 		<a href="#" id="hotelLink"><h5 class="card-title">HotelName</h5></a>
-		@*<div class="col-6">
+		<div class="col-6">
 			<div class="row">
-				@if (Model.AllPictureUrls.Count > 0)
+				@if (AllPictureUrls?.Count > 0)
 				{
-					@for (int i = 1; i < 5 && i < Model.AllPictureUrls.Count; i++)
+					@for (int i = 1; i < 5 && i < AllPictureUrls?.Count; i++)
 					{
 						<div class="col-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
 							padding-right: 5px;">
-							<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="roomimages w-100  " />
+							<img src="@AllPictureUrls[i]" alt="Room Picture" class="roomimages w-100  " />
 						</div>
-					}	
+					}
 				}
 			</div>
 		</div>
-		@if (Model.AllPictureUrls.Count > 1)
+		@if (AllPictureUrls?.Count > 1)
 		{
 			<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
-				<img src="@Model?.AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  " />
+				<img src="@AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  " />
 			</div>
 		}
-		
+
 
 
 	</div>
-	<div class="row g-2 additionalroomimages" >
-		@if(Model?.AllPictureUrls.Count > 0)
+	<div class="row g-2 additionalroomimages">
+		@if (AllPictureUrls?.Count > 0)
 		{
-			@for (int i = 1; i < 5 && i < Model.AllPictureUrls.Count; i++)
+			@for (int i = 1; i < 5 && i < AllPictureUrls.Count; i++)
 			{
 				<div class="col-md-3 col-6 mb-2 " style="padding-left: 5px;
 							padding-right: 5px;">
-					<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages  " />
+					<img src="@AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages  " />
 				</div>
 			}
-	} *@
+		}
 	</div>
 
 	<script>
