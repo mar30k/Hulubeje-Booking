@@ -1,27 +1,36 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using HulubejeBooking.Models.PaymentModels;
-using HulubejeBooking.Controllers;
+﻿using HulubejeBooking.Controllers.Authentication;
 using HulubejeBooking.Models.Authentication;
-using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.PaymentModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 
-namespace Payment.Controllers
+namespace HulubejeBooking.Controllers.Payment
 {
     public class PaymentOptionsController : Controller
     {
-        private readonly AuthenticationManager _authenticationManager;
+        private IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
-        public PaymentOptionsController(IHttpContextAccessor httpContextAccessor ,AuthenticationManager authenticationManager)
+        private AuthenticationManager _authenticationManager;
+
+        public PaymentOptionsController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
-            _httpContextAccessor = httpContextAccessor; 
+            _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
+
         }
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> Index()
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            string? code = null;
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                code = user?.phoneNumber;
                 ViewBag.FirstName = user?.firstName;
                 ViewBag.LastName = user?.lastName;
                 ViewBag.MiddleName = user?.middleName;
@@ -37,23 +46,10 @@ namespace Payment.Controllers
             var b = await _authenticationManager.identificationValid();
             ViewBag.isVaild = b.isValid;
             ViewBag.isLoggedIn = b.isLoggedIn;
-            var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
-            var value = HttpContext.Session.GetString("cinema");
-            ViewBag.CoutDown = value;
-            if (!string.IsNullOrEmpty(paymentOptionsJson))
-            {
-                var viewPayments = JsonConvert.DeserializeObject<List<PaymentOptionModel>>(paymentOptionsJson);
-                var wrapper = new Wrapper
-                {
-                    PaymentOptions = viewPayments,
-                    Boa = new BoAModel()
-                };
-                return View(wrapper);
-            }
-            else
-            {
-                return View(new Wrapper());
-            }
-        }        
+            var paymentOptionsData = HttpContext.Session.GetString("paymentOptrions");
+            var paymentOptions = paymentOptionsData != null ? JsonConvert.DeserializeObject<PaymentProcessorResponse>(paymentOptionsData) : new PaymentProcessorResponse();
+
+            return View(paymentOptions);
+        }
     }
 }

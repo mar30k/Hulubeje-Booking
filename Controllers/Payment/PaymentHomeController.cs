@@ -37,49 +37,49 @@ namespace HulubejeBooking.Controllers.Payment
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
                 code = user?.phoneNumber;
-                }
+            }
             else
-                {
+            {
                 return BadRequest();
-                    }
+            }
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
-                    {
+            {
                 string token = Encoding.UTF8.GetString(loginToken);
                 _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 HttpResponseMessage transactionIdResponse = await _v7Client.GetAsync($"payment/generatetransactionid?code={code}");
                 if (transactionIdResponse.IsSuccessStatusCode)
-                        {
+                {   
                     string transactionIdData = await transactionIdResponse.Content.ReadAsStringAsync();
                     var transactionId = JsonConvert.DeserializeObject<TransactionId>(transactionIdData);
                     if (transactionId != null)
-                        {
+                    {
                         HttpContext.Session.SetString("VoucherCode", transactionId.Data);
-                        }
+                    }
                     HttpResponseMessage paymentOptionsResponse = await _v7Client.GetAsync($"payment/getuserpaymnetoption?code={code}&companyCode={model?.CompanyCode}&branchCode={model?.BranchCode}");
                     if (paymentOptionsResponse.IsSuccessStatusCode)
-                        {
+                    {
                         string paymentoptionData = await paymentOptionsResponse.Content.ReadAsStringAsync();
                         HttpContext.Session.SetString("paymentOptrions", paymentoptionData);
                     }
 
                     return Ok();
-                        }
-                    else
-                    {
-                    return BadRequest();
-                    }
-
                 }
-                else
-                {
+                else 
+                { 
+                    return BadRequest();
+                }
+
+            }
+            else
+            {
                 TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
                 return RedirectToAction("Index", "Home");
-                }
             }
+        }
 
         public async Task<IActionResult> SelectedOption([FromBody] PaymentProcessorData data)
-            {
+        {
             if (data != null)
             {
                 var paymentProcessorJson = JsonConvert.SerializeObject(data);
@@ -89,7 +89,7 @@ namespace HulubejeBooking.Controllers.Payment
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             string? code;
             if (!string.IsNullOrEmpty(userDataCookie))
-        {
+            {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
                 code = user?.phoneNumber;
                 var vCode = HttpContext.Session.GetString("VoucherCode");
@@ -101,7 +101,7 @@ namespace HulubejeBooking.Controllers.Payment
                     var paymentModelData = JsonConvert.DeserializeObject<PaymentModel>(paymentModel);
                     _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                     var additionalParameters = new
-                {
+                    {
                         referenceNumber = "optional"
                     };
                     var ActivityLog = new ActivityLog
@@ -149,9 +149,9 @@ namespace HulubejeBooking.Controllers.Payment
                 }
             }
             else
-            {
+            { 
                 return BadRequest();
-        }
+            }
         }
     }
 }
