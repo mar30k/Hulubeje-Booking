@@ -69,11 +69,11 @@ namespace HulubejeBooking.Controllers.HotelController
             }
 
             var viewModelJson = HttpContext.Session.GetString("AvailabilityViewModel");
-            var viewModel = new AvailabilityViewModel();
+            var viewModel = new GetRooms();
             if (!string.IsNullOrEmpty(viewModelJson))
             {
                 //HttpContext.Session.Remove("AvailabilityViewModel");
-                viewModel = JsonConvert.DeserializeObject<AvailabilityViewModel>(viewModelJson);
+                viewModel = JsonConvert.DeserializeObject<GetRooms>(viewModelJson);
             }
             return View(viewModel);
         }
