@@ -196,68 +196,17 @@
         </div>
     </div>
 </div>
-@* <div class="container">
- *@@* 
-	@if (Model is not null)
-	{
-		<div class="row g-1">
-			<div class="d-flex flex-wrap">
-				<p>@Model.note</p>
-                @foreach (var paymentMethod in Model.paymentOptions)
-                {
-                    <div class="col-md-6 mb-3">
-                        <div class="card" style="max-width: 540px;">
-                            <div class="row g-0">
-                                <div class="col-md-4">
-                                    <img src="@paymentMethod.PaymentMethodImage" class="img-fluid rounded-start" alt="PaymentProviderOrganizationName">
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title">@paymentMethod.PaymentMethodName</h5>
-                                        <p class="card-text price">@paymentMethod.PaymentMethodName</p>
-                                        <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                }
-				@foreach (var amenity in Model?.aminities)
-				{
-					<div class="col-lg-2 col-md-3 col-sm-4 mb-2" style="padding-left: 5px; padding-right: 5px;">
-						<div class="border">
-							<div class="d-flex align-items-center">
-								<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
-								<span>@amenity.Name</span>
-							</div>
-						</div>
-					</div>
-				}
-                <div>
-                    <button class="btn btn-primary mb-2" type="button" style="  height:60px;" id="searchButton"> <span>Book</span> </button>
-                </div>
-			</div>
-		</div>
-	} *@
-@{
-    if (Model.Name == "Adot Tina Hotel" && Model?.Images?.Count > 0)
-    {
-        Model.Images.RemoveAt(Model.Images.Count - 1);
-    }
-    var images = Model?.Images?.OrderBy(x => Guid.NewGuid()).Take(3).ToList();
-}
 @if (Model != null)
 {
     <div class="container mt-2">
         <div class="row p-3 p-1">
             <div class="col-md-6 p-2 border rounded rounded-2 bg-light mt-3"  style="min-height: 100px">
                 <h4 class="ml-lg-3">About Us</h4>
-                <p class="ml-lg-2" style="  color: #333;">@Model?.note</p>
+                <p class="ml-lg-2" style="  color: #333;">@Model?.Description</p>
             </div>
             <div class="col-md-6 p-lg-3 p-2">
                 <div class="row">
-                    @foreach (var image in Model?.Images?.OrderBy(x => Guid.NewGuid()).Take(5).ToList() ?? new List<string>())
+                    @foreach (var image in Model?.ImageModel?.Data?.OrderBy(x => Guid.NewGuid()).Take(5).ToList() ?? new List<string>())
                     {
                         <div class="col-6">
                             <img src="@image" class="img-fluid image mb-2" alt="@image" style="max-width: 100%; height: auto;" />
@@ -290,7 +239,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    @foreach (var image in Model?.Images ?? new List<string>())
+                                    @foreach (var image in Model?.ImageModel?.Data  ?? new List<string>())
                                     {
                                         <div class="col-lg-3 col-md-4 col-sm-6">
                                             <img src="@image" class="img-fluid mb-2" alt="@image" style="max-height:auto;"/>
@@ -309,10 +258,10 @@
         <div class="row p-1">
             <div class="col-md-6">
                 <h4 class="bg-light p-2 text-center"> Amenities </h4>
-                @if (Model?.aminities?.Count > 0)
+                @if (Model?.CompanySchedule?.Data?.Aminities?.Count > 0)
                 {
                     <div class="p-lg-3 p-1 row">
-                        @foreach (var amenity in Model.aminities)
+                        @foreach (var amenity in Model?.CompanySchedule?.Data?.Aminities ?? new List<HulubejeBooking.Models.HotelModels.Amenity>())
                         {
                             <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
                                 <div class="p-2 border">
@@ -327,15 +276,15 @@
             <div class="col-md-6">
                 <h4 class="bg-light p-2 text-center">Payment Options</h4>
                 <div class="row g-3 p-lg-3 p-1">
-                    @if (Model?.paymentOptions?.Count > 0)
+                    @if (Model?.PaymentOptions?.Data?.Count > 0)
                     {
-                        @foreach (var paymentMethod in Model.paymentOptions)
+                        @foreach (var paymentMethod in Model.PaymentOptions.Data)
                         {
                             <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
                                 <div class="card h-100 shadow-sm rounded-3 border-0 p-1">
                                     <div class="card-body p-0">
-                                        <img src="@paymentMethod.PaymentMethodImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentMethodName" style="max-width: 100%; height: auto;">
-                                        <h5 class="card-title text-center" style="font-size: 16px;">@paymentMethod?.PaymentMethodName</h5>
+                                        <img src="@paymentMethod.PaymentProcessorImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentProcessorName" style="max-width: 100%; height: auto;">
+                                        <h5 class="card-title text-center" style="font-size: 16px;">@paymentMethod?.PaymentProcessorUnitName</h5>
                                     </div>
                                 </div>
                             </div>
@@ -507,21 +456,24 @@
                 var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
 
                 sessionStorage.setItem('dateRange', dateRange);
+                // sessionStorage.setItem('hotelName', 'Model');
                 sessionStorage.setItem('adultCount', adultCount);
                 sessionStorage.setItem('childrenCount', childrenCount);
                 sessionStorage.setItem('roomsCount', roomsCount);
                 sessionStorage.setItem('numberOfNights', numberOfNights);
+                sessionStorage.setItem('orgCode', '@Model?.CompanyCode');
+                sessionStorage.setItem('oud', '@Model?.OrgOUD');
 
 
 
                 var formData = {
-                    orgTin:'@Model?.orgTin',
+                    orgCode:'@Model?.CompanyCode',
                     Date: dateRange,
                     adultCount: adultCount,
                     childrenCount: childrenCount,
                     roomsCount: roomsCount,
                     numberOfNights: numberOfNights,
-                    oud:'@Model?.branchCode'
+                    oud:'@Model?.OrgOUD'
                 };
 
                 $.ajax({
