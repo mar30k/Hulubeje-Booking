@@ -3,6 +3,7 @@
     public class MovieModel
     {
         public string? MovieCode { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? BackdropPath { get; set; }
         public string? ArticleCode { get; set; }
         public string? MovieName { get; set; }
