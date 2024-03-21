@@ -1,28 +1,25 @@
 ﻿namespace HulubejeBooking.Models.PaymentModels
 {
-    public class PaymentOptionModel
+    public class PaymentProcessorResponse
     {
-        public int? operationMode { get; set; }
-        public string? paymentOptionName { get; set; }
-        public string? paymentProviderOrgUnitDef { get; set; }
-        public string? paymentProviderOrganizationTin { get; set; }
-        public string? paymentProviderOrganizationName { get; set; }
-        public string? paymentProviderImage { get; set; }
-        public string? paymentOrganizationImage { get; set; }
+        public bool? IsSuccessful { get; set; }
+        public List<PaymentProcessorData>? Data { get; set; }
+        public List<string>? ErrorMessages { get; set; }
+        public List<string>? AdditionalParameters { get; set; }
     }
-    public class BoAModel 
+
+    public class PaymentProcessorData
     {
-        public int? operationMode { get; set; } = 0;
-        public string? paymentOptionName { get; set; } = "BOA Card Payment";
-        public string? paymentProviderOrgUnitDef { get; set; } = "0000006979-01";
-        public string? paymentProviderOrganizationTin { get; set; } = "0000006979";
-        public string? paymentProviderOrganizationName { get; set; } = "Pay With Card";
-        public string? paymentProviderImage { get; set; } = "https://api-hulubeje.cnetcommerce.com/assets/LOG-02.png";
-        public string? paymentOrganizationImage { get; set; } = "https://api-hulubeje.cnetcommerce.com/assets/LOG-01.png";
-    }
-    public class Wrapper
-    {
-        public List<PaymentOptionModel>? PaymentOptions { get; set; }
-        public BoAModel? Boa { get; set; }
+        public string? Code { get; set; }
+        public string? AccountNo { get; set; }
+        public int? OperationMode { get; set; }
+        public decimal? BalanceAmount { get; set; }
+        public string? PaymentProcessorName { get; set; }
+        public string? PaymentProcessorUnitName { get; set; }
+        public int? PaymentProcessorConsigneeId { get; set; }
+        public int? PaymentProcessorConsigneeUnit { get; set; }
+        public int? PaymentProcessorSpecialization { get; set; }
+        public string? PaymentProcessorImage { get; set; }
+        public string? PaymentProcessorUnitImage { get; set; }
     }
 }

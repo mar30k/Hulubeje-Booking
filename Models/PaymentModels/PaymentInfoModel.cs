@@ -7,7 +7,7 @@
         public bool IsAsyncMode { get; set; }
     }
 
-    public class PaymentTransactionRequest
+    public class PaymentTransactionRequests
     {
         public string UserMobileNumber { get; set; }
         public string SupplierTin { get; set; }
