@@ -1,5 +1,5 @@
 ﻿<partial name="_Navigation" />
-@model HulubejeBooking.Models.HotelModels.AvailabilityViewModel
+@model HulubejeBooking.Models.HotelModels.GetRooms
 @using HulubejeBooking.Models.HotelModels;
 @{
 	var isVaild = ViewBag.isVaild;
@@ -27,10 +27,10 @@
 
 
 
-	<div class="row mt-2 g-2">
+	 <div class="row mt-2 g-2">
 
 		<a href="#" id="hotelLink"><h5 class="card-title">HotelName</h5></a>
-		<div class="col-6">
+		@*<div class="col-6">
 			<div class="row">
 				@if (Model.AllPictureUrls.Count > 0)
 				{
@@ -64,7 +64,7 @@
 					<img src="@Model.AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages  " />
 				</div>
 			}
-		}
+	} *@
 	</div>
 
 	<script>
@@ -91,9 +91,9 @@
 				<div class="modal-body">
 					<div class="row">
 						<div class="d-flex flex-wrap">
-							@foreach (var roomPic in Model?.AvailableRooms ?? new List<RoomModel>())
+							@foreach (var roomPic in Model?.Data ?? new List<RoomType>())
 							{
-								@foreach (var pictureUrl in roomPic.PictureUrls)
+								@foreach (var pictureUrl in roomPic.PictureUrls ?? new List<string>())
 								{
 									<div class="col-lg-4 col-md-4 col-sm-4 mb-3">
 										<img src="@pictureUrl" class="img-fluid shadow-1-strong rounded mb-4 w-100 h-200" alt="Hotel Room" />
@@ -107,14 +107,14 @@
 		</div>
 	</div>
 
-	@foreach (var roomPic in Model?.AvailableRooms ?? new List<RoomModel>())
+	@foreach (var roomPic in Model?.Data ?? new List<RoomType>())
 	{
 		<div class="row g-1">
 			<div class="d-flex flex-wrap">
 
-				@if (roomPic == Model?.AvailableRooms?.First())
+				@if (roomPic == Model?.Data?.First())
 				{
-					@foreach (var amenity in roomPic.Aminities)
+					@foreach (var amenity in roomPic.Aminities ?? new List<Aminity>())
 					{
 						<div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-2" style="padding-left: 5px; padding-right: 5px;">
 							<div class="border">
@@ -145,7 +145,7 @@
 
 
 
-					@foreach (var room in Model?.AvailableRooms ?? new List<RoomModel>())
+					@foreach (var room in Model?.Data ?? new List<RoomType>())
 					{
 						<tr class="w-50">
 
@@ -195,7 +195,7 @@
 									}
 									<div class="row g-1">
 										<div class="d-flex flex-wrap">
-											@foreach (var amenity in room.Aminities)
+											@foreach (var amenity in room.Aminities ?? new List<Aminity>())
 											{
 												<div class="col-lg-2 col-md-3 col-sm-4 my-1" style="padding-left: 5px;  padding-right: 5px;">
 													<div class="border d-flex flex-column align-items-center">
@@ -214,15 +214,16 @@
 
 
 							<td class="d-flex flex-column">
-								Price: ETB @room.AverageAmount.ToString("N2", new System.Globalization.CultureInfo("am-ET"))
+								Price: ETB @room.TotalAmount?.ToString("N2", new System.Globalization.CultureInfo("am-ET"))
 								<strong style="font-size: 14px; background-color: white; padding: 3px; white-space: nowrap; margin-bottom: 2px; color: @(room.AvailableRoom >= 5 ? "green" : "red")">
 									@(room.AvailableRoom == 1 ? $"{room.AvailableRoom} Room Left" : (room.AvailableRoom <= 10 ? $"{room.AvailableRoom} Rooms Left" : "Available"))
 								</strong>
 								<button class="btn btn-primary btn-sm mt-auto submit" style="white-space: nowrap"
 										data-rate-policy="@room.RatePolicy"
 										data-room-type-description="@room.RoomTypeDescription"
-										data-room-pakages="@room.PackageList"
-										data-room-price="@room.AverageAmount"
+										data-room-pakages="@room.Packagelist"
+										data-room-total-price="@room.TotalAmount"
+										data-room-average-amount="@room.AverageAmount"
 										data-room-type-code="@room.RoomTypeCode"
 										data-room-type="@room.RoomTypeDescription"
 										data-rate-code ="@room.RateCode"
@@ -264,7 +265,8 @@
 
 			var hotelName = sessionStorage.getItem('hotelName');
 
-			sessionStorage.setItem('price', $(this).data('room-price'));
+			sessionStorage.setItem('averageAmount', $(this).data('room-average-amount'));
+			sessionStorage.setItem('totalPrice', $(this).data('room-total-price'));
 			sessionStorage.setItem('roomTypeCode', $(this).data('room-type-code'));
 			sessionStorage.setItem('roomType', $(this).data('room-type'));
 			sessionStorage.setItem('roomPakages', $(this).data('room-pakages'));
