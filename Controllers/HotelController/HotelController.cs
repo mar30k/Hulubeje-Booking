@@ -1,9 +1,13 @@
-﻿using HulubejeBooking.Models.HotelModels;
-using HulubejeBooking.Controllers.Authentication;
+﻿using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Models.BusModels;
+using HulubejeBooking.Models.HotelModels;
+using HulubejeBooking.Models.PaymentModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
-using HulubejeBooking.Models.Authentication;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
@@ -74,8 +78,6 @@ namespace HulubejeBooking.Controllers.HotelController
                         token = loginresponseData?.Data?.Token;
                         if (token != null) { HttpContext.Session.SetString("loginToken", token); }
                 }
-
-                
             }
             }
             else
@@ -117,12 +119,6 @@ namespace HulubejeBooking.Controllers.HotelController
                 Cities = getcities,
                 Companies = getcompaniesbytyp,
                         };
-            }
-            
-
-
-
-
             return View(viewModel);
         }
         [HttpPost]
@@ -150,11 +146,7 @@ namespace HulubejeBooking.Controllers.HotelController
             var b = await _authenticationManager.identificationValid();
             ViewBag.isVaild = b.isValid;
             ViewBag.isLoggedIn = b.isLoggedIn;
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-            var dataList = new List<GetModel>();
 
-            var cityName = city;
-            var adultsCount = adultCount;
             var childCount = childrenCount;
             var roomCount = roomsCount;
             var dt = DateRangeParser.parseDateRange(dateRange);
@@ -193,25 +185,9 @@ namespace HulubejeBooking.Controllers.HotelController
                     string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
                     gethotelsbycity = JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData);
                 }
-
-                var viewModel = new HotelViewModel
-                {
-                    Hotels = hotels,
-                    Rooms = new List<RoomModel>()
-                };
-                var viewModelJson = JsonConvert.SerializeObject(viewModel);
-
-                HttpContext.Session.SetString("HotelViewModel", viewModelJson);
-                return View(viewModel);
-
-                
-                
-
             }
             return View(gethotelsbycity);
             }
-        }
-
         [HttpPost]
         public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
         {
