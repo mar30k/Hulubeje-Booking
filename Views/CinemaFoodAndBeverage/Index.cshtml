@@ -421,6 +421,7 @@
         function bill() {
             
             var movieName = "@Model?.MovieName";
+            var seatCacheKey = "@Model?.SeatCacheKey";
             var companyCode = "@Model?.CompanyCode";
             var branchCode = "@Model?.BranchCode";
             var moviePrice = "@Model?.Price";
@@ -448,6 +449,7 @@
                 companyTin: companyTin,
                 movieArticleCode: movieArticleCode,
                 numberOfSeats: numberOfSeats,
+                seatCacheKey: seatCacheKey,
                 selectedItems: JSON.stringify(selectedItems),
             }, function (data) {
                 $("#BillContainer").html(data);

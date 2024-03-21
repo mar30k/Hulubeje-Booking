@@ -5,21 +5,18 @@
     <div class="row" id="movieCardsContainer">
         @if (Model?.Data?.Count > 0)
         {
-            var movieGroups = Model.Data
-            .SelectMany(companyData => companyData.Movies)
-            .GroupBy(movie => movie.MovieName)
-            .ToList();
             foreach (var company in Model?.Data ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
             {
-
                 var companyCode = company.CompanyCode;
+
                 var companyName = company.CompanyName;
-                foreach (var movies in company.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
+@*                 <h3 class="justify-content-center d-flex mt-2">@companyName</h3>
+ *@                foreach (var movies in company.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
                 {
                     int? year = movies.ReleaseDate?.Year;
                     var delay = 0.1;
                     <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
-                        <div class="card position-relative">
+                        <div class="card position-relative">    
                             <img src="@movies.MoviePoster" alt="Poster Image" class="img-fluid">
 
                             <div class="button-container">
