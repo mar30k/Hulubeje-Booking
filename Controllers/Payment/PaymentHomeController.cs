@@ -78,188 +78,80 @@ namespace HulubejeBooking.Controllers.Payment
                 }
             }
 
+        public async Task<IActionResult> SelectedOption([FromBody] PaymentProcessorData data)
             {
-                return Error();
+            if (data != null)
+            {
+                var paymentProcessorJson = JsonConvert.SerializeObject(data);
+                HttpContext.Session.SetString("PaymentProcessorData", paymentProcessorJson);
             }
-        }
-        [HttpPost]
-        public async Task<IActionResult> SelectedOptionAsync([FromBody] RequestWrapper data)
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            string? code;
+            if (!string.IsNullOrEmpty(userDataCookie))
         {
-            try
-            {
-                var operationMode = data.FlagData.operationMode;
-                var value = OperationModeController.FlagChecker(operationMode);
-                var synch = value.Synchronous;
-                var asynch = value.Asynchronous;
-                var Currency = "etb";
-
+                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+                code = user?.phoneNumber;
                 var vCode = HttpContext.Session.GetString("VoucherCode");
-                var TransactionId = !string.IsNullOrWhiteSpace(vCode)
-                    ? JsonConvert.DeserializeObject<string>(vCode)
-                    : null;
 
-                var parameters = HttpContext.Session.GetString("paymentInfo");
-                var newParam = !string.IsNullOrWhiteSpace(parameters)
-                    ? JsonConvert.DeserializeObject<AuthorizePayment>(parameters)
-                    : null;
-
-
-
-                if (!HttpContext.Session.TryGetValue("AccessToken", out var accessTokenBytes))
+                if (HttpContext.Session.TryGetValue("loginToken", out var loginToken) && HttpContext.Session.TryGetValue("PaymentModels", out var model))
                 {
-                    return Error();
-                }
-
-                string accessToken = Encoding.UTF8.GetString(accessTokenBytes);
-
-                using var _client = _httpClientFactory.CreateClient("Payment");
-                if (synch)
+                    string token = Encoding.UTF8.GetString(loginToken);
+                    string paymentModel = Encoding.UTF8.GetString(model);
+                    var paymentModelData = JsonConvert.DeserializeObject<PaymentModel>(paymentModel);
+                    _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    var additionalParameters = new
                 {
+                        referenceNumber = "optional"
+                    };
+                    var ActivityLog = new ActivityLog
+                    {
+                        Code = code,
+                    };
                     var param = new
                     {
-                        newParam?.UserMobileNumber,
-                        newParam?.SupplierTin,
-                        newParam?.SupplierOUD,
-                        TransactionId,
-                        data.AuthorizePaymentData.PaymentProviderOUD,
-                        newParam?.Amount,
-                        AdditionalParameters = new
-                        {
-                            data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
-                        }
+                        ActivityLog,
+                        additionalParameters,
+                        userMobileNumber = code,
+                        transactionId = vCode,
+                        supplierConsigneeUnit = paymentModelData?.BranchCode,
+                        supplierConsigneeId = paymentModelData?.CompanyCode,
+                        paymentProcessorConsigneeUnit = data?.PaymentProcessorConsigneeUnit,
+                        paymentProcessorConsigneeId = data?.PaymentProcessorConsigneeId,
+                        amount = paymentModelData?.Amount,
+                        //amount = 0.1,
+                        operationmode = data?.OperationMode,
+                        pin = "",
                     };
-
-
-                    var jsonRequest = JsonConvert.SerializeObject(param);
-
-                    var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-                    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/authorization", content);
-
-                    if (response.IsSuccessStatusCode)
+                    string jsonBody = JsonConvert.SerializeObject(param);
+                    string activityLogjson = JsonConvert.SerializeObject(ActivityLog);
+                    HttpContext.Session.SetString("PaymentTransactionRequest", jsonBody);
+                    HttpContext.Session.SetString("ActivityLog", activityLogjson);
+                    var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                    HttpResponseMessage authorizationResponse = await _v7Client.PostAsync($"payment/authorization", content);
+                    if (authorizationResponse.IsSuccessStatusCode)
                     {
-
-
-
-                        var transactionModel = new
-                        {
-                            newParam?.UserMobileNumber,
-                            newParam?.SupplierTin,
-                            newParam?.SupplierOUD,
-                            TransactionId,
-                            data.AuthorizePaymentData.PaymentProviderOUD,
-                            newParam?.Amount,
-                            AdditionalParameters = new
-                            {
-                                data.AuthorizePaymentData.AdditionalParameters?.ReferenceNumber
-                            }
-                        };
-                        var values = JsonConvert.SerializeObject(transactionModel);
-
-                        HttpContext.Session.SetString("transactionDatas", values);
-
-                        return Json(new { cardText = "telebirr SMS OTP" });
+                        string authorizationData = await authorizationResponse.Content.ReadAsStringAsync();
+                        var authorizarion = JsonConvert.DeserializeObject<PaymentAuthorizationResponse>(authorizationData);
+                        HttpContext.Session.SetString("PaymentAuthorizationResponse", authorizationData);
+                        return Json(authorizarion);
                     }
                     else
                     {
-                        return Json(new { cardText = "telebirr SMS OTP" });
+                        return BadRequest(); 
                     }
+
+
                 }
-                if (asynch)
+                else
                 {
-                    var param = new
-                    {
-                        newParam?.UserMobileNumber,
-                        newParam?.SupplierTin,
-                        newParam?.SupplierOUD,
-                        TransactionId,
-                        data.TransactionData.PaymentProviderOUD,
-                        newParam?.Amount,
-                        data.TransactionData.Pin,
-                        AdditionalParameters = new
-                        {
-                            data.TransactionData.AdditionalParameters?.ReferenceNumber
-                        }
-                    };
-
-                    var jsonRequest = JsonConvert.SerializeObject(param);
-                    var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-                    var transactionVerification = new
-                    {
-                        newParam?.SupplierOUD,
-                        TransactionId,
-                        newParam?.Amount
-                    };
-                    var values = JsonConvert.SerializeObject(param);
-
-                    HttpContext.Session.SetString("paymentValidation", values);
-
-                    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
-                    string responseData = await response.Content.ReadAsStringAsync();
-
-                    //var paymentValidation = JsonConvert.DeserializeObject<PaymentValidation>(responseData);
-
-                    HttpContext.Session.SetString("ValidationInfo", responseData);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-
-
-                        return Json(new { cardText = "telebirr USSD Push" });
-
-                    }
-                }
-                if (!synch && !asynch)
-                {
-                    var param = new
-                    {
-                        newParam?.UserMobileNumber,
-                        newParam?.SupplierTin,
-                        newParam?.SupplierOUD,
-                        TransactionId,
-                        data.TransactionData.PaymentProviderOUD,
-                        newParam?.Amount,
-                        data.TransactionData.Pin,
-                        Currency
-
-                    };
-                    var jsonRequest = JsonConvert.SerializeObject(param);
-                    var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-                    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "payment/transaction", content);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseData = await response.Content.ReadAsStringAsync();
-                        var apiResponse = JsonConvert.DeserializeObject<BoAResponse>(responseData);
-
-                        var cardText = "BOA Card Payment";
-                        var redirectUrl = apiResponse?.additionalParameters?.RedirectUrl;
-
-
-                        var paymentResponse = new PaymentResponse
-                        {
-                            cardText = cardText,
-                            RedirectUrl = redirectUrl
-                        };
-
-                        return Json(paymentResponse);
-                    }
+                    return BadRequest();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                
-            }
-
-            return Error();
+                return BadRequest();
         }
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
-
 }
