@@ -32,6 +32,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 ViewBag.Idattachment = user?.idattachment;
                 ViewBag.PhoneNumber = user?.phoneNumber;
                 ViewBag.EmailAddress = user?.emailAddress;
+                ViewBag.Gender = user?.gender;
             }
             var b = await _authenticationManager.identificationValid();
             ViewBag.isVaild = b.isValid;
