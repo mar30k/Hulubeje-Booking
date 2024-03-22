@@ -389,13 +389,10 @@
         }
 
 
-        var secondsAdded = sessionStorage.getItem('secondsAdded');
-
-        var companyTin = "@Model?.CompanyTinNumber";
+        var seatCacheKey = "@Model?.SeatCacheKey";
         var movieScheduleCode = "@Model?.MovieScheduleCode";
 
-        sessionStorage.setItem('companyTin', companyTin);
-        sessionStorage.setItem('movieScheduleCode', movieScheduleCode);
+        sessionStorage.setItem('seatCacheKey', seatCacheKey);
 
         var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
 
@@ -467,10 +464,7 @@
                     sessionStorage.clear();
                     window.location.href = '@Url.Action("Index","Cinema")';
                 }
-                sessionStorage.setItem("remainingTime", updatedRemainingTime);
             }, 1000);
-
-            sessionStorage.setItem('secondsAdded', 'true');
         }
 
         // $(document).ready(function () {
