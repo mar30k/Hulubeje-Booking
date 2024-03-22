@@ -3,35 +3,43 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-end align-items-center w-100 ml-5">
                 <div class="today-date" style="display: inline-block; margin-top: 10px; margin-right: 10px;">
-                    <div id="countdownTimer" style="display:none; display: inline-block; margin-right: 10px; margin-top: 3px;"></div>
+                    <div class="mb-2"id="countdownTimer" style="display:none; display: inline-block; margin-right: 10px; margin-top: 3px;"></div>
                 </div>
             </div>
         </div>
     </nav>
 </header>
 <script>
-    $(document).ready(function () {
-        if (updatedRemainingTime > 0) {
-            startCountdownTimer(updatedRemainingTime);
-        }
-        extendCachedSeats();
-    });
-    var storedRemainingTime = sessionStorage.getItem('remainingTime');
-    var movieScheduleCode = sessionStorage.getItem('movieScheduleCode');
-    var companyTin = sessionStorage.getItem('companyTin');
-    var secondsAdded = sessionStorage.getItem('secondsAdded') === 'true';
-    var secondsAddedInPayement = sessionStorage.getItem('secondsAddedInPayement') === 'true';
 
-    var updatedRemainingTime;
-
-    if (secondsAdded && secondsAddedInPayement) {
-        updatedRemainingTime = parseInt(storedRemainingTime);
-    } else if (!secondsAddedInPayement && !secondsAdded) {
-        updatedRemainingTime = parseInt(storedRemainingTime);
-    } else {
-        updatedRemainingTime = parseInt(storedRemainingTime) + 60;
+    var countdownStarted = sessionStorage.getItem('countdownStarted') === 'true';
+    var seatCacheKey = sessionStorage.getItem('seatCacheKey');
+    if (countdownStarted) {
+        $.ajax({
+            url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
+            headers: {
+                "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
+                "Content-Type": "application/json"
+            },
+            method: "POST",
+            cache: false,
+            data: JSON.stringify({
+                "key": seatCacheKey,
+                "extensionDeligate": "on_payment_options",
+                "extension": 60
+            }),
+            success: function (response) {
+                updatedRemainingTime = parseInt(response);
+                if (updatedRemainingTime > 0) {
+                    startCountdownTimer(updatedRemainingTime);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching seat status:", error);
+            }
+        });
+    }else{
+        document.querySelector('header').style.display = 'none';
     }
-    var selectedSeats = JSON.parse(sessionStorage.getItem('selectedSeats')) || [];
     function startCountdownTimer() {
         $('#countdownTimer').show();
         countdownInterval = setInterval(function () {
@@ -42,35 +50,9 @@
                 clearInterval(countdownInterval);
                 alert("Booking time expired. Please restart the booking process.");
                 sessionStorage.clear();
-                window.location.href = '@Url.Action("Index", "cinema")';
+                window.location.href = '@Url.Action("Index", "Cinema")';
             }
-            sessionStorage.setItem("remainingTime", updatedRemainingTime);
         }, 1000);
-        sessionStorage.setItem('secondsAddedInPayement', 'true');
-    }
-    function extendCachedSeats() {
-        if (!secondsAddedInPayement) {
-            var endpoint = 'https://api-hulubeje.cnetcommerce.com/api/ManageSeatCache/ExtendCachedSeatsForSchedule';
-
-            var payload = {
-                "schedule": movieScheduleCode,
-                "allSeats": selectedSeats,
-                "orgTin": companyTin,
-                "seconds": updatedRemainingTime
-            };
-
-            $.ajax({
-                url: endpoint,
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(payload),
-                success: function (response) {
-                },
-                error: function (error) {
-                }
-            });
-        }
-
     }
     function formatTime(seconds) {
         var min = Math.floor(seconds / 60);
