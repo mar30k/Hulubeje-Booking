@@ -8,12 +8,7 @@
 </script>
 <title>Enter Otp</title>
 <partial name="_Navigation" />
-@{
-    if (ViewBag.CoutDown is not null)
-    {
-            <partial name="_CountDownInOtp" />
-    }
-}
+<partial name="_CountDownInOtp" />
 <div class="container">
     @if (TempData["ErrorMessage"] != null)
     {
