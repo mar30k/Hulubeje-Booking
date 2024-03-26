@@ -7,308 +7,145 @@
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <title>Guest Information</title>
+
 <partial name="_Navigation" />
-@model HulubejeBooking.Models.HotelModels.AvailabilityViewModel
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <h5 class="h5">Guest Information</h5>
-            </div>
-            <section class="vh-100 bg-image w-100">
-                <div class="mask d-flex align-items-center gradient-custom-3">
-                    <form id="guestForm">
-                        <div class="form-check mb-5">
-                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                            <label class="form-check-label" for="exampleCheck1">For Me</label>
-                        </div>
-                        <div class="form-group">
-                            <label for="name">First Name</label>
-                            <input type="text" class="form-control" id="name" placeholder=" First Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="middle">Middle Name</label>
-                            <input type="text" class="form-control" id="middle" placeholder=" Middle Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="last">Last Name</label>
-                            <input type="text" class="form-control" id="last" placeholder=" Last Name">
-                        </div>
-                        <div class="form-group">
-                            <label for="date">Date of birth</label>
-                            <input type="date" class="form-control" id="date" placeholder=" Your birth date">
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label>Gender</label>
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="male" name="gender" value="Male">
-                                    <label class="form-check-label" for="male">Male</label>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label>&nbsp;</label>
-                                <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="female" name="gender" value="Female">
-                                    <label class="form-check-label" for="female">Female</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="nationality">Nationality</label>
-                            <select class="form-select operator" id="nationality">
-                                <option selected>...</option>
-                                <option>Ethipian</option>
-                                <option>Eritrean</option>
-
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Email">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone</label>
-                            <input type="tel" class="form-control" id="phone" placeholder="Phone">
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            Submit
+@model HulubejeBooking.Models.HotelModels.RoomFormData
+<div class="container mb-lg-2 mt-2">
+    <form id="guestForm class="ml-lg-2" method="post" asp-controller="GuestConfirmation" asp-action="Index">
+        <div class="accordion" id="accordionExample">
+            @for (int i = 0; i < Model?.adultCount; i++)
+            {
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading@(i + 1)">
+                        <button class="accordion-button @(i == 0 ? "": "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(i + 1)" aria-expanded="@(i == 0 ? "true": "false")" aria-controls="collapse@(i + 1)">
+                            Guest @(i + 1)
                         </button>
-
-                    </form>
+                    </h2>
+                    <div id="collapse@(i + 1)" class="accordion-collapse collapse @(i == 0 ? "show": "")" aria-labelledby="heading@(i + 1)" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            @if (i == 0)
+                            {
+                                <div class="form-check mb-2">
+                                    <input type="checkbox" class="form-check-input" id="forMeCheckBox">
+                                    <label class="form-check-label" for="forMeCheckBox">For Me</label>
+                                </div>
+                            }
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="name@(i + 1)">First Name</label>
+                                        <input type="text" class="form-control" id="name@(i + 1)" name="Guests[@i].FirstName" placeholder="First Name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="middle@(i + 1)">Middle Name</label>
+                                        <input type="text" class="form-control" id="middle@(i + 1)" name="Guests[@i].MiddleName" placeholder="Middle Name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="last@(i + 1)">Last Name</label>
+                                        <input type="text" class="form-control" id="last@(i + 1)" name="Guests[@i].LastName" placeholder="Last Name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="date@(i + 1)">Date of birth</label>
+                                        <input type="date" class="form-control" id="date@(i + 1)" name="Guests[@i].DateOfBirth" placeholder="Your birth date" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="nationality@(i + 1)">Nationality</label>
+                                        <select class="form-select operator" id="nationality@(i + 1)" name="Guests[@i].Nationality" required>
+                                            <option selected>Ethiopian</option>
+                                            <option>Eritrean</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="male@(i + 1)" name="Guests[@i].Gender" value="Male" required>
+                                            <label class="form-check-label" for="male@(i + 1)">Male</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <div class="form-check">
+                                            <input type="radio" class="form-check-input" id="female@(i + 1)" name="Guests[@i].Gender" value="Female" required>
+                                            <label class="form-check-label" for="female@(i + 1)">Female</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email@(i + 1)">Email</label>
+                                        <input type="email" class="form-control" id="email@(i + 1)" name="Guests[@i].Email" placeholder="Email" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="phone@(i + 1)">Phone</label>
+                                        <input type="tel" class="form-control" id="phone@(i + 1)" name="Guests[@i].PhoneNumber" placeholder="Phone" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </section>
-        </div>
-        <div class="col-md-6">
-            <h5 class="h5" hidden style="display: none;">BranchName Information Table</h5>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col" hidden style="display: none;">Information</th>
-                    </tr>
-                </thead>
-                <tbody id="guestTableBody">
-                </tbody>
-            </table>
-            <button id="confirmButton" class="btn btn-success Confirm">Confirm</button>
+            }
         </div>
 
-    </div>
-
-
+        <div class="empty" style="height: 20vh">
+            <div class="justify-content-center d-flex mb-5 mt-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </form>
+   
 </div>
 <script>
-
-    $(document).ready(function () {
-        $('#nationality').select2();
-    });
-
-
-    $(document).ready(function () {
-        var guestRow = null;
-        var hotelRow = null;
-
-        $('#guestForm').submit(function (e) {
-            e.preventDefault();
-
-            var formData = {
-                name: $('#name').val(),
-                middle: $('#middle').val(),
-                last: $('#last').val(),
-                DOB: $('#date').val(),
-                email: $('#email').val(),
-                phone: $('#phone').val(),
-                gender: $('input[name="gender"]:checked').val(),
-                nationality: $('#nationality').val()
-            };
-
-            sessionStorage.setItem("gender", formData.gender);
-
-            var hotelData = {
-                price: sessionStorage.getItem("price"),
-                cityName: sessionStorage.getItem("city"),
-                adult: sessionStorage.getItem("adultCount"),
-                child: sessionStorage.getItem("childrenCount"),
-                room: sessionStorage.getItem("roomsCount"),
-                Date: sessionStorage.getItem("dateRange"),
-                hotel: sessionStorage.getItem("hotelName"),
-                branch: sessionStorage.getItem("branchName"),
-                roomType: sessionStorage.getItem("roomType"),
-                registrationNumber: "To be Assign",
-                reservationtType: "To be Determined"
-
-            };
-            var date = hotelData.Date;
-            dateRange = date.split(" - ");
-            var arrivalDate = new Date(dateRange[0]);
-            var departureDate = new Date(dateRange[1]);
-
-            var formattedArrivalDate = arrivalDate.toLocaleDateString("en-US", { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-            var formattedDepartureDate = departureDate.toLocaleDateString("en-US", { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
-
-            sessionStorage.setItem("arrivalDate", formattedArrivalDate);
-            sessionStorage.setItem("departureDate", formattedDepartureDate);
-            sessionStorage.setItem('hotel', hotelData.hotel);
-            sessionStorage.setItem('branch', hotelData.branch);
-
-            var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
-            var totalPay = numberOfNights * hotelData.price * hotelData.room;
-
-            sessionStorage.getItem('RoomTypeCode');
-            sessionStorage.getItem("roomType");
-            sessionStorage.setItem("numberOfNight", numberOfNights);
-            sessionStorage.setItem("totalPay", totalPay);
-
-
-
-
-
-            var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
-
-            var formattedInfo = '<b>Guest Information</b><br>' +
-                '<p><span>Full Name:</span> ' + formData.name + " " + formData.middle + " " + formData.last + '</p>' +
-                '<p><span>Date of born:</span> ' + formData.DOB + '</p>' +
-                '<p><span>Email:</span> ' + formData.email + '</p>' +
-                '<p><span>Phone Number:</span> ' + formData.phone + '</p>' +
-                '<p><span>Gender:</span>' + formData.gender + '</p>' +
-                '<p><span>Nationality:</span> ' + formData.nationality + '</p>';
-
-            if (guestRow === null) {
-                guestRow = $('<tr><td>' + formattedInfo + '</td></tr>');
-                $('#guestTableBody').append(guestRow);
-            } else {
-                guestRow.html('<td>' + formattedInfo + '</td>');
+    document.getElementById("forMeCheckBox").addEventListener("change", function () {
+        var isChecked = this.checked;
+        var dob = "@ViewBag.Dob";
+        dob = dob.split('T')[0];
+        if (isChecked) {
+            document.getElementById("name1").value = "@ViewBag.FirstName";
+            document.getElementById("middle1").value = "@ViewBag.MiddleName";
+            document.getElementById("last1").value = "@ViewBag.LastName";
+            document.getElementById("nationality1").value = "Ethiopian";
+            document.getElementById("date1").value = dob;
+            var gender = "@ViewBag.Gender".toLowerCase();
+            if (gender === "male") {
+                document.getElementById("male1").checked = true;
+            } else if (gender === "female") {
+                document.getElementById("female1").checked = true;
             }
-            var regiistraion_number = "To be Assign";
-
-            var hotelInfo = '<b>Hotel Information</b><br>' +
-                '<p><span>Hotel:</span> ' + hotelData.hotel + '</p>' +
-                '<p><span>Hotel Branch:</span> ' + hotelData.branch + '</p>' +
-                '<p><span>City:</span> ' + hotelData.cityName + '</p>' +
-                '<p><span>Registration Number:</span> ' + hotelData.registrationNumber + '</p>' +
-                '<p><span>Reservation Type:</span> ' + hotelData.reservationtType + '</p>' +
-                '<p><span>Arrival Date:</span> ' + formattedArrivalDate + '</p>' +
-                '<p><span>Departure Date:</span> ' + formattedDepartureDate + '</p>' +
-                '<p><span>Number of nights :</span> ' + numberOfNights + '</p>' +
-                '<p><span>Number of People:</span> ' + "Child " + hotelData.child + "," + "Adults " + hotelData.adult + '</p>' +
-                '<p><span>Room Type:</span> ' + hotelData.roomType + '</p>' +
-                '<p><span>Number of Rooms:</span> ' + hotelData.room + '</p>' +
-                '<p><span>Rate per Night:</span> ' + hotelData.price + '</p>' +
-                '<p><span>Rate for ' + numberOfNights + ' nights :</span> ' + totalPay + '</p>';
-
-
-
-            if (hotelRow === null) {
-                hotelRow = $('<tr><td>' + hotelInfo + '</td></tr>');
-                $('#guestTableBody').append(hotelRow);
-            } else {
-                hotelRow.html('<td>' + hotelInfo + '</td>');
-            }
-
-
-
-            function calculateNumberOfNights(arrivalDate, departureDate) {
-                var timeDifference = departureDate.getTime() - arrivalDate.getTime();
-                var numberOfNights = Math.round(timeDifference / (1000 * 3600 * 24));
-                return numberOfNights;
-            }
-        });
-    });
-
-    $(document).ready(function () {
-        function toggleButtonVisibility() {
-            var tableBody = $("#guestTableBody");
-            var confirmButton = $("#confirmButton");
-
-            if (tableBody.children().length > 0) {
-                confirmButton.show();
-            } else {
-                confirmButton.hide();
-            }
+            document.getElementById("email1").value = "@ViewBag.EmailAddress";
+            document.getElementById("phone1").value = "@ViewBag.PhoneNumber";
+        } else {
+            // Clear the fields
+            document.getElementById("name1").value = "";
+            document.getElementById("middle1").value = "";
+            document.getElementById("last1").value = "";
+            document.getElementById("nationality1").value = "";
+            document.getElementById("date1").value = "";
+            document.getElementById("male1").checked = false;
+            document.getElementById("female1").checked = false;
+            document.getElementById("email1").value = "";
+            document.getElementById("phone1").value = "";
         }
-
-        toggleButtonVisibility();
-
-        $("#guestForm").submit(function (event) {
-
-            toggleButtonVisibility();
-
-            event.preventDefault();
-        });
-    });
-
-
-    $(document).ready(function () {
-        $('.Confirm').on('click', function () {
-            var dateRange = sessionStorage.getItem('dateRange');
-            var dateParts = dateRange.split(' - ');
-
-            var aDateString = new Date(Date.parse(dateParts[0]));
-            var arrivalDateString = new Date(aDateString);
-
-            var arrivalDate = arrivalDateString.toISOString();
-
-            var dDateString = new Date(Date.parse(dateParts[1]));
-            var departureDateString = new Date(dDateString);
-
-            var departureDate = departureDateString.toISOString();
-            sessionStorage.setItem("name", $('#name').val());
-            sessionStorage.setItem("middle", $('#middle').val());
-            sessionStorage.setItem("last", $('#last').val());
-            sessionStorage.setItem("DOB", $('#date').val());
-            sessionStorage.setItem("email", $('#email').val());
-            sessionStorage.setItem("phone", $('#phone').val());
-            sessionStorage.setItem("nationality", $('#nationality').val());
-            var lineItems = [];
-
-            var data = {
-                amount: parseFloat(sessionStorage.getItem('totalPrice')),
-                code: $('#phone').val(),
-                branchCode: parseInt(sessionStorage.getItem('oud')),
-                companyCode: parseInt(sessionStorage.getItem('orgCode')),
-                industryType: 1989,
-                lineItems: lineItems,
-                HotelDetail: {
-                    arrivalDate: arrivalDate,
-                    departureDate: departureDate,
-                    adultCount: parseInt(sessionStorage.getItem('adultCount')), 
-                    childCount: parseInt(sessionStorage.getItem('childrenCount')),
-                    roomTypeCode: parseInt(sessionStorage.getItem('roomTypeCode')),
-                    rateCode: parseInt(sessionStorage.getItem('rateCode')),
-                    rateCodeDetail: parseInt(sessionStorage.getItem('rateCodeDetail')),
-                    roomCount: parseInt(sessionStorage.getItem('roomsCount')),
-                    averageAmount: parseFloat(sessionStorage.getItem('averageAmount')),
-                    totalAmount: parseFloat(sessionStorage.getItem('totalPrice')),
-                    specialRequirement: "",
-                    cashReceiptVoucher: "",
-                    guests: [{
-                        phoneNo: $('#phone').val(),
-                        FirstName: $('#name').val(),
-                        middleName: $('#middle').val(),
-                        lastName: $('#last').val(),
-                        email: $('#email').val(),
-                        phoneNo: $('#phone').val(),
-                        idNumber: "",
-                        idType: "kebele",
-                        dateOfBirth: $('#date').val(),
-                        gender: $('input[name="gender"]:checked').val(),
-                    }],
-                }
-            };
-            console.log("data", data);
-            $.ajax({
-                url: '/PaymentHome/Index',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function (/* response */) {
-                    window.location.href = "/paymentoptions";
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
-        });
     });
 </script>
 <partial name="_Footer" />
