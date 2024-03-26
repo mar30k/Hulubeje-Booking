@@ -1,5 +1,6 @@
 ﻿using HulubejeBooking.Controllers.Authentication;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Models.HotelModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -15,9 +16,29 @@ namespace HulubejeBooking.Controllers.HotelController
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
         }
-        public async Task<IActionResult> IndexAsync(string roomTypecode, string orgTin, string Date, int adultCount, int childCount, int roomCount, string oud)
+        public async Task<IActionResult> IndexAsync(double averageAmount, double totalPrice, int roomTypeCode, string roomTypeDescription, string roomPakages, string ratePolicy, int rateCode, int rateCodeDetail)
         {
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            var roomDetails = new RoomType
+			{
+			   AverageAmount = averageAmount,
+               TotalAmount = totalPrice,
+               RoomTypeCode = roomTypeCode,
+               RoomTypeDescription = roomTypeDescription,
+               RatePolicy = ratePolicy,
+			   Packagelist = roomPakages,
+               RateCodeDetail = rateCodeDetail,
+               RateCode = rateCode,
+			};
+            var roomDetailsJson = JsonConvert.SerializeObject(roomDetails);
+            HttpContext.Session.SetString("RoomType", roomDetailsJson);
+            var RoomFormData = HttpContext.Session.GetString("RoomFormData");
+            var RoomFormDatajson = new RoomFormData(); 
+
+			if (RoomFormData != null)
+            {
+				RoomFormDatajson = JsonConvert.DeserializeObject<RoomFormData>(RoomFormData);
+			}
+			var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
             if (!string.IsNullOrEmpty(userDataCookie))
             {
                 var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
@@ -37,7 +58,7 @@ namespace HulubejeBooking.Controllers.HotelController
             var b = await _authenticationManager.identificationValid();
             ViewBag.isVaild = b.isValid;
             ViewBag.isLoggedIn = b.isLoggedIn;
-            return View();
+            return View(RoomFormDatajson);
         }
     }
 }
