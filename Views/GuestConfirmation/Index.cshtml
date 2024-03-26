@@ -1,0 +1,203 @@
+﻿@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+@model HulubejeBooking.Models.HotelModels.GuestModelWrapper
+<partial name="_Navigation" />
+<div class="container mt-2">
+    <div class="d-flex justify-content-center">
+        <h3>Guest Detail</h3>
+    </div>
+    <div class="row mt-1 mb-3 mx-lg-5">
+        <div class="col-md-12 d-flex flex-column justify-content-center">
+            @if (Model != null && Model.Guests != null && Model.Guests.Any())
+            {
+                var firstGuest = Model.Guests.FirstOrDefault();
+
+                <div class="card px-lg-5">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <div class="d-flex justify-content-between">
+                                <strong>Guest Full Name  :</strong>
+                                @firstGuest?.FirstName @firstGuest?.MiddleName @firstGuest?.LastName
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Email  :</strong>   @firstGuest?.Email
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Phone Number  :</strong>   @firstGuest?.PhoneNumber
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>IDNumber  :</strong> IdNumber
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Nationality  :</strong>   @firstGuest?.Nationality
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Date OF Birth  :</strong>   @firstGuest?.DateOfBirth
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning mt-3" role="alert">
+                    No guest information available.
+                </div>
+            }
+            <div class="d-flex justify-content-center my-1">
+                <h3>Registration Detail</h3>
+            </div>
+            @if (Model != null && Model.RoomType != null)
+            {
+                <div class="card px-lg-5">
+                    <div class="card-body">
+                        <div class="card-text">
+                            <div class="d-flex justify-content-between">
+                                <strong>Hotel :</strong>  @Model?.RoomFormData?.Name
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Hotel Branch :</strong> @Model?.RoomFormData?.BranchName
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>City  :</strong> @Model?.RoomFormData?.CityName
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Registration Number :</strong>   To Be Assigned
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Reservation Type :</strong>   To Be Determined
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Arrival Date :</strong>   @Model?.RoomFormData?.ArrivalDate?.ToString("ddd, MMM d yyyy")
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Departure Date :</strong>   @Model?.RoomFormData?.DepartureDate?.ToString("ddd, MMM d yyyy")
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Number of Nights :</strong>   @Model?.RoomFormData?.numberOfNights
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Number Of People :</strong>   @Model?.RoomFormData?.adultCount
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Room Type  :</strong>   @Model?.RoomType?.RoomTypeDescription
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Number Of Rooms :</strong>   @Model?.RoomFormData?.roomsCount
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Rate Per Night:</strong>   @Model?.RoomType?.AverageAmount?.ToString("0.00") ETb
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <strong>Rate For @(Model?.RoomFormData?.numberOfNights > 1 ? Model?.RoomFormData?.numberOfNights + " Nights" : Model?.RoomFormData?.numberOfNights + " Night") and
+                                    @(Model?.RoomFormData?.roomsCount > 1 ? Model?.RoomFormData?.roomsCount + " Rooms" : Model?.RoomFormData?.roomsCount + " Room"):
+                                </strong>
+                                @Model?.RoomType?.TotalAmount?.ToString("0.00") ETb
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning mt-3" role="alert">
+                    No guest information available.
+                </div>
+            }
+        </div>
+    </div> 
+    <div class="d-flex justify-content-center mb-3">
+        <button class="btn btn-success confirm"> Confirm  </button>
+    </div>
+</div>
+<script>
+    var guestsData = [];
+
+    // Iterate over Model.Guests list
+    @foreach (var guest in Model?.Guests ?? new List<HulubejeBooking.Models.HotelModels.Guests>())
+    {
+        <text>
+            var guestObj = {
+                phoneNo: '@guest.PhoneNumber', // Assuming PhoneNumber is the property name
+                FirstName: '@guest.FirstName',
+                middleName: '@guest.MiddleName',
+                lastName: '@guest.LastName',
+                email: '@guest.Email',
+                idNumber: "",
+                idType: "kebele",
+                dateOfBirth: '@guest.DateOfBirth', // Assuming DateOfBirth is the property name
+                gender: '@guest.Gender' // Assuming Gender is the property name
+            };
+        guestsData.push(guestObj);
+        </text>
+    }
+    $(document).ready(function () {
+        $('.confirm').on('click', function () {
+            var arrivalDateStrings = '@Model?.RoomFormData?.ArrivalDate'.split(' - ');
+            var departureDateStrings = '@Model?.RoomFormData?.DepartureDate'.split(' - ');
+
+            var aDateString = new Date(Date.parse(arrivalDateStrings[0]));
+            var arrivalDateString = new Date(aDateString);
+            var arrivalDate = arrivalDateString.toISOString();
+
+            var dDateString = new Date(Date.parse(departureDateStrings[0]));
+            var departureDateString = new Date(dDateString);
+
+            var departureDate = departureDateString.toISOString();
+
+            sessionStorage.setItem('countdownStarted', false);
+            // sessionStorage.setItem("name", $('#name').val());
+            // sessionStorage.setItem("middle", $('#middle').val());
+            // sessionStorage.setItem("last", $('#last').val());
+            // sessionStorage.setItem("DOB", $('#date').val());
+            // sessionStorage.setItem("email", $('#email').val());
+            // sessionStorage.setItem("phone", $('#phone').val());
+            // sessionStorage.setItem("nationality", $('#nationality').val());
+            var lineItems = [];
+
+            var data = {
+                amount: parseFloat('@Model?.RoomType?.TotalAmount'),
+                code: '@ViewBag.PhoneNumber',
+                branchCode: parseInt('@Model?.RoomFormData?.oud'),
+                companyCode: parseInt('@Model?.RoomFormData?.orgCode'),
+                industryType: 1989,
+                lineItems: lineItems,
+                HotelDetail: {
+                    arrivalDate: arrivalDate,
+                    departureDate: departureDate,
+                    adultCount: parseInt('@Model?.RoomFormData?.adultCount'),
+                    childCount: parseInt('@Model?.RoomFormData?.childrenCount'),
+                    roomTypeCode: parseInt('@Model?.RoomType?.RoomTypeCode'),
+                    rateCode: parseInt('@Model?.RoomType?.RateCode'),
+                    rateCodeDetail: parseInt('@Model?.RoomType?.RateCodeDetail'),
+                    roomCount: parseInt('@Model?.RoomFormData?.roomsCount'),
+                    averageAmount: parseFloat('@Model?.RoomType?.AverageAmount'),
+                    totalAmount: parseFloat('@Model?.RoomType?.TotalAmount'),
+                    specialRequirement: "",
+                    cashReceiptVoucher: "",
+                    guests: guestsData,
+                }
+            };
+            console.log("data", data);
+            $.ajax({
+                url: '/PaymentHome/Index',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (/* response */) {
+                    window.location.href = "/paymentoptions";
+                },
+                error: function (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+<partial name="_Footer" />
