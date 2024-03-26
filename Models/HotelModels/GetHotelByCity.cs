@@ -29,5 +29,6 @@
         public List<Hotel>? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }
+        public RoomFormData? RoomFormData { get; set; }
     }
 }
