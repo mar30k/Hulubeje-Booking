@@ -132,7 +132,7 @@
     <div class="container">
         <header class="container-fluid" style="padding-top: 2%">
             <div>
-                <h1 style="color: white;">Welcome to @Model.Name</h1>
+                <h1 style="color: white;">Welcome to @Model?.Name</h1>
             </div>
         </header>
     </div>
@@ -432,50 +432,48 @@
 
         $(document).ready(function () {
             $('#searchButton').on('click', function () {
-                var dateRange = $('#date-range-picker').val();
                 var adultCount = parseInt($('#adultCount').text(), 10);
                 var childrenCount = parseInt($('#childrenCount').text(), 10);
                 var roomsCount = parseInt($('#roomsCount').text(), 10);
-
-
+                var dateRange = $('#date-range-picker').val();
 
                 var dateParts = dateRange.split(' - ');
 
                 var arrivalDate = new Date(Date.parse(dateParts[0]));
                 var departureDate = new Date(Date.parse(dateParts[1]));
 
-
-
-
                 function calculateNumberOfNights(arrivalDate, departureDate) {
-                    var timeDifference = departureDate.getTime() - arrivalDate.getTime();
+                var timeDifference = departureDate.getTime() - arrivalDate.getTime();
                     var numberOfNights = Math.round(timeDifference / (1000 * 3600 * 24));
                     return numberOfNights;
                 }
 
                 var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
 
-                sessionStorage.setItem('dateRange', dateRange);
+                // sessionStorage.setItem('dateRange', dateRange);
                 // sessionStorage.setItem('hotelName', 'Model');
-                sessionStorage.setItem('adultCount', adultCount);
-                sessionStorage.setItem('childrenCount', childrenCount);
-                sessionStorage.setItem('roomsCount', roomsCount);
-                sessionStorage.setItem('numberOfNights', numberOfNights);
-                sessionStorage.setItem('orgCode', '@Model?.CompanyCode');
-                sessionStorage.setItem('oud', '@Model?.OrgOUD');
+                // sessionStorage.setItem('adultCount', adultCount);
+                // sessionStorage.setItem('childrenCount', childrenCount);
+                // sessionStorage.setItem('roomsCount', roomsCount);
+                // sessionStorage.setItem('numberOfNights', numberOfNights);
+                // sessionStorage.setItem('orgCode', '@Model?.CompanyCode');
+                // sessionStorage.setItem('oud', '@Model?.OrgOUD');
 
 
 
                 var formData = {
                     orgCode:'@Model?.CompanyCode',
-                    Date: dateRange,
+                    Date: dateRange ,
                     adultCount: adultCount,
                     childrenCount: childrenCount,
                     roomsCount: roomsCount,
                     numberOfNights: numberOfNights,
-                    oud:'@Model?.OrgOUD'
+                    oud:'@Model?.OrgOUD',
+                    name: '@Model?.Name',
+                    CityName: '@Model?.CityName',
+                    branchName: '@Model?.BranchName'
                 };
-
+                console.log(formData);
                 $.ajax({
                     url: '../Hotel/Availability',
                     type: 'POST',

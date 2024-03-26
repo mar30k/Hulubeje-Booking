@@ -239,7 +239,7 @@
                     <div class="row mt-2 gx-1">
                         <div class=" col-md-6  cardPrice pt-2 border-lg-start" style="border: 1px solid #928F63; border-right: none;">
                         <legend >Filter By Price</legend>
-                            <div class="price-content">
+                            @* <div class="price-content">
                                 <div>
                                     <label for="filter-min-value">Min</label>
                                     <p id="min-value" style="font-size: 12px;">ETB @minTotalPrice</p>
@@ -254,7 +254,7 @@
                                 <div class="range-fill"></div>
                                 <input id="filter-min-value" type="range" class="min-price" value="@minTotalPrice" min="@minTotalPrice" max="@(maxTotalPrice + 10)"  step="10"/>
                                 <input id="filter-max-value" type="range" class="max-price" value="@maxTotalPrice" min="@minTotalPrice" max="@(maxTotalPrice + 10)" step="10"/>
-                            </div>
+                            </div> *@
                         </div>
                         <div class="col-md-6 filter pt-2" style="border: 1px solid #928F63;">
                             <legend>Sort</legend>
@@ -324,7 +324,7 @@
                                             <a href="#"><h5 class="card-title">@hotel?.OrganizationName</h5></a>
                                             <div>
                                                 <span class="card-text">
-                                                    @{
+@*                                                     @{
                                                         var dynamicRating = string.IsNullOrEmpty(hotel?.HotelRating?.ToString())
                                                         ? 0
                                                         : (int)Math.Round(double.Parse(hotel.HotelRating.ToString(), CultureInfo.InvariantCulture));
@@ -338,7 +338,7 @@
                                                     @for (var j = dynamicRating; j < 5; j++)
                                                     {
                                                         <i class="bi bi-star"></i>
-                                                    }
+                                                    } *@
                                                 </span>
                                             </div>
 
@@ -385,6 +385,7 @@
                                             <h5>Total Price: ETB @string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:N2}", hotel?.TotalPrice ?? 0)</h5>
                                             <button class="btn btn-primary btn-sm viewAvailabilityBtn"
                                                     data-org-code="@hotel?.OrganizationCode"
+                                                    data-cityname="@hotel?.CityName"
                                                     data-hotel="@hotel?.OrganizationName"
                                                     data-oud="@hotel?.BranchCode"
                                                     data-branch="@hotel?.BranchName">
@@ -656,28 +657,32 @@
         $(".hotelsContainer").on("click", ".viewAvailabilityBtn", function () {
             var orgCode = $(this).data('org-code');
             var oud = $(this).data('oud');
+            var cityName = $(this).data('cityname');
             var hotelName = $(this).data('hotel');
+            var dateRange = '@Model?.RoomFormData?.Date';
+            var dateParts = dateRange.split(' - ');
 
-            sessionStorage.setItem('hotelName', hotelName);
-            sessionStorage.setItem('branchName', $(this).data('branch'));
-            sessionStorage.setItem('orgCode', orgCode);
-            sessionStorage.setItem('oud', oud);
+            var arrivalDate = new Date(Date.parse(dateParts[0]));
+            var departureDate = new Date(Date.parse(dateParts[1]));
 
-            var date = sessionStorage.getItem('dateRange');
-            var adultCount = sessionStorage.getItem('adultCount');
-            var childCount = sessionStorage.getItem('childrenCount');
-            var roomCount = sessionStorage.getItem('roomsCount');
+            function calculateNumberOfNights(arrivalDate, departureDate) {
+                var timeDifference = departureDate.getTime() - arrivalDate.getTime();
+                var numberOfNights = Math.round(timeDifference / (1000 * 3600 * 24));
+                return numberOfNights;
+            }
 
-            sessionStorage.setItem('hotelName', hotelName);
-
+            var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
             var roomFormData = {
-                Date: date,
-                adultCount: adultCount,
-                childrenCount: childCount,
-                roomsCount: roomCount,
+                Date: '@Model?.RoomFormData?.Date',
+                adultCount: parseInt('@Model?.RoomFormData?.adultCount'),
+                childrenCount: parseInt('@Model?.RoomFormData?.adultCount'),
+                roomsCount: parseInt('@Model?.RoomFormData?.adultCount'),
                 orgCode: orgCode,
-                // date: date,
-                oud: oud
+                cityName: cityName,
+                oud: oud,
+                Name: hotelName,
+                numberOfNights: numberOfNights,
+                branchName: $(this).data('branch'),
             };
             $.ajax({
                 url: '../Hotel/Availability',

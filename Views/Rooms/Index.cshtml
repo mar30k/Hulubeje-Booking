@@ -293,16 +293,17 @@
 			var roomCount = sessionStorage.getItem('roomsCount');
 
 			var form = $('<form action="/guestinfo" method="post">' +
-				'<input type="hidden" name="orgTin" value="' + orgTin + '" />' +
-				'<input type="hidden" name="RoomTypeCode" value="' + $(this).data('room-type-code') + '" />' +
-				'<input type="hidden" name="Date" value="' + Date + '" />' +
-				'<input type="hidden" name="adultCount" value="' + adultCount + '" />' +
-				'<input type="hidden" name="childCount" value="' + childCount + '" />' +
-				'<input type="hidden" name="roomCount" value="' + roomCount + '" />' +
-				'<input type="hidden" name="oud" value="' + oud + '" />' +
+				'<input type="hidden" name="averageAmount" value="' + $(this).data('room-average-amount') + '" />' +
+				'<input type="hidden" name="totalPrice" value="' + $(this).data('room-total-price') + '" />' +
+				'<input type="hidden" name="roomTypeCode" value="' + $(this).data('room-type-code') + '" />' +
+				'<input type="hidden" name="roomTypeDescription" value="' + $(this).data('room-type') + '" />' +
+				'<input type="hidden" name="roomPakages" value="' + $(this).data('room-pakages') + '" />' +
+				'<input type="hidden" name="ratePolicy" value="' + $(this).data('rate-policy') + '" />' +
+				'<input type="hidden" name="rateCode" value="' + $(this).data('rate-code') + '" />' +
+				'<input type="hidden" name="rateCodeDetail" value="' + $(this).data('rate-code-detail') + '" />' +
 				'</form>');
 			$('body').append(form);
-			form.submit();
+			form.submit(); 
 		});
 	});
 

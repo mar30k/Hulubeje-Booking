@@ -140,7 +140,9 @@
         }
     </style>
 </head>
-
+@{
+    var cities = Model?.Companies?.Data;
+}
 <div class="row" style="background-color:#063970;">
     <div class="container">
         <header class="container-fluid" style="padding-top: 2%" >
@@ -230,6 +232,7 @@
                 <div class="col-md-6 mb-3">
                     <a class="card cardB clickable-card" 
                        data-oud="@branch?.Code"
+                       data-cityName="@branch?.City"
                        data-org-code="@hotel?.Code"
                        data-org-tin="@hotel?.Tin"
                        data-hotel-name="@hotel?.BrandName"
@@ -433,7 +436,6 @@
                 roomsCount: roomsCount,
                 numberOfNights: numberOfNights
             };
-            console.log(formData);
             var form = $('<form action="/Hotel/HotelList" method="post"></form>');
 
             form.append('<input type="hidden" name="city" value="' + city + '" />');
@@ -462,10 +464,12 @@
             var data = 
             {
                 oud: $(this).data('oud'),
+                branchName: $(this).data('branch-name'),
                 orgCode: $(this).data('org-code'),
                 orgTin: $(this).data('org-tin'),
                 name:  $(this).data('hotel-name'),
-                description: $(this).data('branch-note')
+                description: $(this).data('branch-note'),
+                cityName: $(this).data('cityname')
             }; 
             console.log(data);
             $.ajax({
