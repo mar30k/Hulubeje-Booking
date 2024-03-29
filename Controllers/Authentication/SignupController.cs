@@ -9,6 +9,7 @@ using System.Data;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Text;
+using Tweetinvi.Core.Events;
 
 namespace HulubejeBooking.Controllers.Authentication
 {
@@ -55,30 +56,60 @@ namespace HulubejeBooking.Controllers.Authentication
         {
             if (ModelState.IsValid)
             {
-                var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-                person.ConfirmPassword = "";
-                string jsonBody = JsonConvert.SerializeObject(person);
-                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/createUser", content);
-                string responseData = await response.Content.ReadAsStringAsync();
-                if (responseData != null && Convert.ToBoolean(responseData))
+                var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
+                var userInfo = new
                 {
-                    var isLoggedIn = true;
-                    string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
-                    HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
-
-                    var userInformation = new UserInformation()
+                    code = person.PhoneNumber,
+                    fullname = person.FirstName + person.MiddleName + person.LastName,
+                    password = person.Password,
+                    referenceNumber = "",
+                    email = person.EmailAddress,
+                    ActivityLog =new
                     {
-                        code = person?.PhoneNumber,
-                    };
-                    _authenticationManager.SignIn(userInformation, true);
-                    TempData["InfoMessage"] = "Welcome! You Have Successfully Created Hulubeje Account";
-                    return RedirectToAction("Index", "Home");
+                        latitude = 0,
+                        longitude = 0,
+                        platform = "web",
+                        target = "",
+                        code = person.PhoneNumber,
+                    }
+                };
+                string jsonBody = JsonConvert.SerializeObject(userInfo);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await _V7client.PostAsync("auth/register", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    var responseData = JsonConvert.DeserializeObject<RegisterUserResponse>(responseString);
+                    if (responseData != null && responseData.IsSuccessful && responseData.Data !=null)
+                    {
+                        var isLoggedIn = true;
+                        string isLoggedInJson = JsonConvert.SerializeObject(isLoggedIn);
+                        HttpContext.Session.SetString("isLoggedIn", isLoggedInJson);
+
+                        //var userInformation = new UserData()
+                        //{
+                        //    Token = person?.PhoneNumber,
+                        //};
+                        _authenticationManager.SignIn(responseData.Data, true);
+                        TempData["InfoMessage"] = "Welcome! You Have Successfully Created Hulubeje Account";
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else if (responseData?.ErrorMessages?.Count > 0)
+                    {
+                        TempData["ErrorMessage"] = responseData?.ErrorMessages?.FirstOrDefault();
+                        return RedirectToAction("Index", "signin");
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Seems Like You Have an Account. Please Login!";
+                        return RedirectToAction("Index", "signin");
+                    }
+
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "It seems like this phone number is already registered. Please use a different number or sign in.";
-                    return RedirectToAction("Index", "Home");
+                    TempData["ErrorMessage"] = "Seems Like You Have an Account. Please Login!";
+                    return RedirectToAction("Index", "signin");
                 }
             }
             else
