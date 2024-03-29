@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System.Text;
 using System;
 using Microsoft.CodeAnalysis;
+using NuGet.Common;
+using System.Net.Http.Headers;
 
 namespace HulubejeBooking.Controllers.Authentication
 {
@@ -29,10 +31,10 @@ namespace HulubejeBooking.Controllers.Authentication
             string? phoneNumber = "";
             if (!string.IsNullOrEmpty(userDataCookie))
             {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                phoneNumber = user != null ? user?.phoneNumber : null;
+                var user = JsonConvert.DeserializeObject<UserData>(userDataCookie);
+                phoneNumber = user != null ? user?.Code : null;
             }
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
 
             if (password.Length < 6 || repeatpassword.Length < 6)
             {
@@ -46,25 +48,43 @@ namespace HulubejeBooking.Controllers.Authentication
             }
             else
             {
-                var param = new
+                var userObject = new
                 {
-                    phoneNumber,
-                    latitude = 0,
-                    longitude = 0,
-                    platform = "web",
-                    target = "",
+                    code = phoneNumber,
                     password,
+                    ActivityLog = new
+                    {
+                        code = "",
+                        target = "",
+                        platform = "Web",
+                        latitude = 0,
+                        longitude = 0,
+                        appVersion = "2.0.1+65"
+                    }
                 };
-                string jsonBody = JsonConvert.SerializeObject(param);
+
+                string jsonBody = JsonConvert.SerializeObject(userObject);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + $"/Profile/updatePassword", content);
-                string responseData = await response.Content.ReadAsStringAsync();
-                if (Convert.ToBoolean(responseData))
-                {
-                    TempData["InfoMessage"] = "Successfully Changed Password!";
-                    return RedirectToAction("Index", "signin");
+                if (HttpContext.Session.TryGetValue("VerificationResponse", out var verificationBytes)) {
+                    var verificationstring = Encoding.UTF8.GetString(verificationBytes);
+                    var verificationJson= verificationstring!=null ?JsonConvert.DeserializeObject<VerificationResponse>(verificationstring): new VerificationResponse();
+                    var token = verificationJson?.Token;
+                    _V7client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    HttpResponseMessage response = await _V7client.PostAsync($"auth/changepassword", content);
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    var changePasswordResponse = JsonConvert.DeserializeObject<ChangePasswordResponse>(responseData);
+                    if (Convert.ToBoolean(changePasswordResponse?.Data))
+                    {
+                        TempData["InfoMessage"] = "Successfully Changed Password!";
+                        return RedirectToAction("Index", "home");
+                    }
+                    return View();
                 }
-                return View();
+                else
+                {
+                    TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                    return RedirectToAction("Index", "Home");
+                }
             }
         }
     }

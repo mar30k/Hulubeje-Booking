@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Models.PaymentModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
@@ -50,31 +51,38 @@ namespace HulubejeBooking.Controllers.Authentication
         [HttpPost]
         public async Task<IActionResult> IndexAsync(string phoneNumber)
         {
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
             var PARAM = new
             {
                 latitude = 0,
                 longitude = 0,
                 platform = "web",
                 target = "",
-                username = phoneNumber,
-                phoneNumber,
+                code = phoneNumber
             };
             string jsonBody = JsonConvert.SerializeObject(PARAM);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-
-            HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/forgotPassword", content);
+            int index = phoneNumber.IndexOf("+251");
+            string? code;
+            if (index != -1)
+            {
+                code = phoneNumber.Substring(0, index) + "0" + phoneNumber[(index + 4)..];
+            }
+            else
+            {
+                code = phoneNumber;
+            }
+            HttpResponseMessage response = await _V7client.PostAsync($"auth/userexists?code={code}", content);
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
 
-                var suthResponse = data != null ? JsonConvert.DeserializeObject<ForgetPassword>(data) : new ForgetPassword();
-                var userInformation = suthResponse != null && suthResponse.IsActive;
+                var suthResponse = data != null ? JsonConvert.DeserializeObject<ChangePasswordResponse>(data) : new ChangePasswordResponse();
+                var userInformation = suthResponse != null && suthResponse.Data;
                 var key = "ForgetPassword";
                 if (userInformation == true)
                 {
-                    HttpResponseMessage otpResponse = await _client.GetAsync(_client.BaseAddress + $"/Messaging/SendOTP?to={phoneNumber}");
+                    HttpResponseMessage otpResponse = await _V7client.GetAsync($"messaging/sendotp?to={phoneNumber}");
                     if (otpResponse.IsSuccessStatusCode)
                     {
                         string dataRespponse = await otpResponse.Content.ReadAsStringAsync();
