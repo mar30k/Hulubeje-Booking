@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
 using HulubejeBooking.Controllers.Authentication;
+using Tweetinvi.Core.Models;
+using NuGet.Common;
+using System.Net.Http.Headers;
 namespace HulubejeBooking.Controllers
 {
     public class HistoryController : Controller
@@ -22,6 +25,7 @@ namespace HulubejeBooking.Controllers
 
         public async Task<IActionResult> IndexAsync(string? phoneNumber)
         {
+            string? token ="";
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
@@ -47,7 +51,7 @@ namespace HulubejeBooking.Controllers
 
             var historyWrapper = new HistoryWrapper();
             var busClient = _httpClientFactory.CreateClient("BusBooking");
-            var hulubejeClient = _httpClientFactory.CreateClient("CnetHulubeje");
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             HttpResponseMessage response = await busClient.GetAsync($"history/gethistorybyphoneNumber?PhoneNumber={phoneNumber}");
             if (response.IsSuccessStatusCode)
             {
@@ -55,31 +59,13 @@ namespace HulubejeBooking.Controllers
                 var busHistory = JsonConvert.DeserializeObject<List<HistoryModel>>(busresponseData);
                 historyWrapper.HistoryModel = busHistory;
             }
-            HttpResponseMessage historyResponse = await hulubejeClient.GetAsync(hulubejeClient.BaseAddress + $"/order/GetOrdersByConsigneeCode?consigneeCode={phoneNumber}&page=1");
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage historyResponse = await _v7Client.GetAsync($"voucher/gethistory?code={phoneNumber}");
             if (historyResponse.IsSuccessStatusCode)
             {
                 string responseData = await historyResponse.Content.ReadAsStringAsync();
                 var history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
                 historyWrapper.OrdersModel = history;
-
-                while (history?.NextPage != null)
-                {
-                    historyResponse = await hulubejeClient.GetAsync(hulubejeClient.BaseAddress + $"/order/GetOrdersByConsigneeCode?consigneeCode={phoneNumber}&page={history?.NextPage}");
-                    if (historyResponse.IsSuccessStatusCode)
-                    {
-                        responseData = await historyResponse.Content.ReadAsStringAsync();
-                        history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
-                        historyWrapper?.OrdersModel?.Orders?.AddRange(history?.Orders ?? Enumerable.Empty<Orders>());
-                        if (historyWrapper != null && historyWrapper.OrdersModel != null && history != null)
-                        {
-                            historyWrapper.OrdersModel.NextPage = history.NextPage;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
             }
             return View(historyWrapper);
 
