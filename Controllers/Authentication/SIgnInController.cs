@@ -13,12 +13,14 @@ namespace HulubejeBooking.Controllers.Authentication
         private readonly IHttpClientFactory _httpClientFactory;
 
         private readonly AuthenticationManager _authenticationManager;
+        private readonly WorkWebContext _workWebContext;
         public SignInController(ILogger<SignInController> logger, IHttpClientFactory httpClientFactory,
-            AuthenticationManager authenticationManager)
+            AuthenticationManager authenticationManager, WorkWebContext workWebContext)
         {
             _logger = logger;
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
+            _workWebContext = workWebContext;
         }
         public async Task<IActionResult> IndexAsync()
         {
@@ -35,22 +37,23 @@ namespace HulubejeBooking.Controllers.Authentication
         [HttpPost]
         public async Task<IActionResult> Index(LoginInformation data)
         { 
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
             var param = new
             {
-                username = data.Phone,
+                code = data.Phone,
                 password = data.Password,
             };
             string jsonBody = JsonConvert.SerializeObject(param);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync(_client.BaseAddress + "/Profile/authenticateUser", content);
+            HttpResponseMessage response = await _V7client.PostAsync("auth/login", content);
             string responseData = await response.Content.ReadAsStringAsync();
-            var userInformationResponse = JsonConvert.DeserializeObject<List<UserResponse>>(responseData);
-            var userInformation = userInformationResponse?[0].userInformation;
+            var userInformationResponse = JsonConvert.DeserializeObject<UserDataResponse>(responseData);
+            var userInformation = userInformationResponse?.Data;
             if (userInformation != null)
             {
-                userInformation.password = data.Password;
+                userInformation.Password = data.Password;
                 _authenticationManager.SignIn(userInformation, data.RememberMe);
+                await _workWebContext.SetCurrentCustomerAsync(userInformation);
                 var signInInformation = HttpContext.Session.GetString("SignInInformation");
                 var signin = "";
                 var isLoggedIn = true;
