@@ -1,4 +1,5 @@
-﻿using HulubejeBooking.Models.Authentication;
+﻿using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -7,28 +8,30 @@ namespace HulubejeBooking.Controllers.SpaController
     public class SpaController : Controller
     {
         private IHttpContextAccessor? _httpContextAccessor;
+        private AuthenticationManager _authenticationManager;
 
-        public SpaController(IHttpContextAccessor? httpContextAccessor)
+        public SpaController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager? authenticationManager)
         {
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            if (!string.IsNullOrEmpty(userDataCookie))
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (identificationResult != null)
             {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.FirstName = user?.firstName;
-                ViewBag.LastName = user?.lastName;
-                ViewBag.MiddleName = user?.middleName;
-                ViewBag.Personalattachment = user?.personalattachment;
-                ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Idnumber = user?.idnumber;
-                ViewBag.Idtype = user?.idtype;
-                ViewBag.Dob = user?.dob;
-                ViewBag.Idattachment = user?.idattachment;
-                ViewBag.PhoneNumber = user?.phoneNumber;
-                ViewBag.EmailAddress = user?.emailAddress;
+                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+                ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData.IdType;
+                ViewBag.Dob = identificationResult?.UserData.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
             return View();
         }
