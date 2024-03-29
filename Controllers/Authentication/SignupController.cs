@@ -18,13 +18,15 @@ namespace HulubejeBooking.Controllers.Authentication
         private readonly ILogger<SignupController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly AuthenticationManager _authenticationManager;
+        private readonly WorkWebContext _workWebContext;
 
         public SignupController(ILogger<SignupController> logger,
-            IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager)
+            IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager, WorkWebContext workWebContext)
         {
             _authenticationManager = authenticationManager;
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _workWebContext = workWebContext;
         }
 
         public async Task<IActionResult> IndexAsync()
@@ -91,6 +93,7 @@ namespace HulubejeBooking.Controllers.Authentication
                         //    Token = person?.PhoneNumber,
                         //};
                         _authenticationManager.SignIn(responseData.Data, true);
+                        await _workWebContext.SetCurrentCustomerAsync(responseData.Data);
                         TempData["InfoMessage"] = "Welcome! You Have Successfully Created Hulubeje Account";
                         return RedirectToAction("Index", "Home");
                     }
