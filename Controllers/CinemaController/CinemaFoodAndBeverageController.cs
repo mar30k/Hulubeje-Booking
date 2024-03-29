@@ -28,26 +28,26 @@ namespace CinemaSeatBooking.Controllers
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            if (!string.IsNullOrEmpty(userDataCookie))
-            {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.FirstName = user?.firstName;
-                ViewBag.LastName = user?.lastName;
-                ViewBag.MiddleName = user?.middleName;
-                ViewBag.Personalattachment = user?.personalattachment;
-                ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Idnumber = user?.idnumber;
-                ViewBag.Idtype = user?.idtype;
-                ViewBag.Dob = user?.dob;
-                ViewBag.Idattachment = user?.idattachment;
-                ViewBag.PhoneNumber = user?.phoneNumber;
-                ViewBag.EmailAddress = user?.emailAddress;
-            }
+           
             var identificationResult = await _authenticationManager.identificationValid();
-            ViewBag.isVaild = identificationResult.isValid;
-            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
-            
+
+            if (identificationResult != null)
+            {
+                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+                ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData.IdType;
+                ViewBag.Dob = identificationResult?.UserData.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData.Email;
+            }
 
             var viewModel = new ProductsViewModel
             {
@@ -67,31 +67,22 @@ namespace CinemaSeatBooking.Controllers
                 ArticleCode = articleCode,
                 NumberOfSeats = numberOfElements,
             };
-            
-            if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
+            string? token = identificationResult?.UserData?.Token;
+
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _v7Client.GetAsync($"product/getproductsbytype?companyCode={companyCode}&orgOUD={branchCode}&industryType=1988");
+            if (response.IsSuccessStatusCode)
             {
-                string token = Encoding.UTF8.GetString(loginToken);
-                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage response = await _v7Client.GetAsync($"product/getproductsbytype?companyCode={companyCode}&orgOUD={branchCode}&industryType=1988");
-                if (response.IsSuccessStatusCode)
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
+                string responseData = await response.Content.ReadAsStringAsync();
 
-                    var productsData = JsonConvert.DeserializeObject<FoodItem>(responseData);
+                var productsData = JsonConvert.DeserializeObject<FoodItem>(responseData);
 
-                    viewModel.FoodItem = productsData;
-                    return View(viewModel);
-                }
-                else
-                {
-                    return View(viewModel);
-                }
-
+                viewModel.FoodItem = productsData;
+                return View(viewModel);
             }
             else
             {
-                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
-                return RedirectToAction("Index", "Home");
+                return View(viewModel);
             }
         }
         public async Task<IActionResult> CalculateBill(string movieName,string branchCode,string movieDimension, string date, string time, string company, string hallName,
@@ -99,25 +90,24 @@ namespace CinemaSeatBooking.Controllers
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            if (!string.IsNullOrEmpty(userDataCookie))
-            {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.FirstName = user?.firstName;
-                ViewBag.LastName = user?.lastName;
-                ViewBag.MiddleName = user?.middleName;
-                ViewBag.Personalattachment = user?.personalattachment;
-                ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Idnumber = user?.idnumber;
-                ViewBag.Idtype = user?.idtype;
-                ViewBag.Dob = user?.dob;
-                ViewBag.Idattachment = user?.idattachment;
-                ViewBag.PhoneNumber = user?.phoneNumber;
-                ViewBag.EmailAddress = user?.emailAddress;
-            }
+            
             var identificationResult = await _authenticationManager.identificationValid();
-            ViewBag.isVaild = identificationResult.isValid;
-            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            if (identificationResult != null)
+            {
+                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+                ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData.IdType;
+                ViewBag.Dob = identificationResult?.UserData.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData.Email;
+            }
+            string? token = identificationResult?.UserData?.Token;
             try
             {
                 List<SelectedItem> selectedItemsList = JsonConvert.DeserializeObject<List<SelectedItem>>(selectedItems)!;
@@ -149,23 +139,18 @@ namespace CinemaSeatBooking.Controllers
 
                 string jsonBody = JsonConvert.SerializeObject(payload);
                 var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-                if (HttpContext.Session.TryGetValue("loginToken", out var loginToken)) {
-                    string token = Encoding.UTF8.GetString(loginToken);
-                    _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    HttpResponseMessage response = await _v7Client.PostAsync("lineitem/calculate", content);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        string responseData = await response.Content.ReadAsStringAsync();
-                        var calculatedBill = JsonConvert.DeserializeObject<Bill>(responseData);
-                        calculatedModel.Bill = calculatedBill;
-                    }
-                    else
-                    {
-                        return PartialView("_Bill", null);
-                    }
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage response = await _v7Client.PostAsync("lineitem/calculate", content);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    var calculatedBill = JsonConvert.DeserializeObject<Bill>(responseData);
+                    calculatedModel.Bill = calculatedBill;
                 }
-
-                   
+                else
+                {
+                    return PartialView("_Bill", null);
+                }
                 calculatedModel.MovieScheduleCode = movieScheduleCode;
                 calculatedModel.MovieName = movieName;
                 calculatedModel.CompanyTinNumber = companyTin;
