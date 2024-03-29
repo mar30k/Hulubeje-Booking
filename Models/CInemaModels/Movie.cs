@@ -1,11 +1,15 @@
-﻿namespace HulubejeBooking.Models.CInemaModels
+﻿using HulubejeBooking.Models.Authentication;
+
+namespace HulubejeBooking.Models.CInemaModels
 {
     public class Movie
     {
         public bool? IsSuccessful { get; set; }
         public List<CompanyData>? Data { get; set; }
         public string[]? ErrorMessages { get; set; }
-        public object? AdditionalParameters { get; set; }
+        public string[]? AdditionalParameters { get; set; }
+        public cookieValidation? CookieValidation { get; set; }
+
     }
 
     public class CompanyData

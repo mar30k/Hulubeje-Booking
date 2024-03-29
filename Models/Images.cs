@@ -1,4 +1,6 @@
-﻿namespace HulubejeBooking.Models
+﻿using HulubejeBooking.Models.Authentication;
+
+namespace HulubejeBooking.Models
 {
 	public class Images
 	{
@@ -7,5 +9,6 @@
 		public List<string>? Event { get; set; }
 		public List<string>? Bus { get; set; }
 		public List<string>? Spa { get; set; }
+		public cookieValidation? CookieValidation { get; set; }
 	}
 }

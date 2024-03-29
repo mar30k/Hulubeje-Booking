@@ -44,6 +44,7 @@ builder.Services.AddHttpClient("MovieDb", httpClient =>
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<HotelListBuffer>();
+builder.Services.AddSingleton<Buffers>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
  
 builder.Services.AddSession(options =>
@@ -52,6 +53,7 @@ builder.Services.AddSession(options =>
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuthenticationManager>();
+builder.Services.AddScoped<WorkWebContext>();
 
 var app = builder.Build();
 

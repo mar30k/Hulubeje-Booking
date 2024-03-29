@@ -28,8 +28,8 @@
     </style>
 </head>
 @{
-    var isVaild = ViewBag.isVaild;
-    var isLoggedIN = ViewBag.isLoggedIn;
+    var isVaild = Model?.CookieValidation?.isValid;
+    var isLoggedIN = Model?.CookieValidation?.isLoggedIn;
 }
 @model HulubejeBooking.Models.Images
 <script>

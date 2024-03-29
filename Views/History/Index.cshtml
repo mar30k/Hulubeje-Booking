@@ -84,7 +84,7 @@
 
             <script>
                 $(document).ready(function () {
-                    var ordersData = @Html.Raw(Model.OrdersModel != null && Model.OrdersModel.Orders != null ? Json.Serialize(Model.OrdersModel.Orders) : "null");
+                    var ordersData = @Html.Raw(Model.OrdersModel != null && Model.OrdersModel.Data != null ? Json.Serialize(Model.OrdersModel.Data) : "null");
 
                     if (ordersData && ordersData.length > 0) {
                         var pageSize = 10;
@@ -105,11 +105,11 @@
                                             <div class="card p-2 customcard mb-3">
                                                 <div class="row">
                                                     <div class="col-4">
-                                                        <img src="${order.orgPreviewImage}" class="img-fluid companyimage" alt="Supplier Logo" />
+                                                        <img src="${order.logo}" class="img-fluid companyimage" alt="Supplier Logo" />
                                                     </div>
                                                     <div class="col-8">
                                                         <div>
-                                                            <p style="margin: 2px; ">${order.supplierBrandName}</p>
+                                                            <p style="margin: 2px; ">${order.companyName}</p>
                                                             <small style="color: blue">${order.branchName}</small>
                                                             <p style="margin: 2px; "> ${order.voucherCode}</p>
                                                             <p style="margin: 2px; "> ${formattedDateString}</p>

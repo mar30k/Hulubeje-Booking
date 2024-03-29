@@ -62,7 +62,7 @@ namespace HulubejeBooking.Models.Authentication
     public class MessageResponse
     {
         public bool? isSent { get; set; }
-        public string? messageId { get; set; }
+        public string? messageId { get; set; }  
         public string? to { get; set; }
         public string? code { get; set; }
         public string? verificationId { get; set; }
@@ -72,6 +72,12 @@ namespace HulubejeBooking.Models.Authentication
     {
         public bool? isVerified { get; set; }
         public List<string?>? errors { get; set; }
+    }
+    public class VerificationResponse
+    {
+        public bool IsVerified { get; set; }
+        public string? Token { get; set; }
+        public List<string>? Errors { get; set; }
     }
     public class LoginInformation
     {
@@ -90,6 +96,7 @@ namespace HulubejeBooking.Models.Authentication
     }
     public class cookieValidation
     {
+        public UserData UserData { get; set; }
         public bool isValid { get; set; }
         public bool isLoggedIn { get; set; }   
     }

@@ -1,4 +1,6 @@
-﻿namespace HulubejeBooking.Models.HotelModels
+﻿using HulubejeBooking.Models.Authentication;
+
+namespace HulubejeBooking.Models.HotelModels
 {
     public class RoomFormData
     {
@@ -17,5 +19,6 @@
         public string? orgTin { get; set; }
         public string? Description { get; set; }
         public string? CityName { get; set; }
+        public cookieValidation? CookieValidation { get;  set; }
     }
 }

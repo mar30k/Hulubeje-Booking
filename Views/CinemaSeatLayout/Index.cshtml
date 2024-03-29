@@ -477,6 +477,7 @@
             return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
         }
         function selectedSeatsCountUpdate() {
+            console.log("called");
             var selectedSeatsDisplay = document.getElementById("selectedSeatsDisplay");
             var selectedSeatsCountArray = sessionStorage.getItem('selectedSeats');
             var selectedSeatsArray = JSON.parse(selectedSeatsCountArray);
@@ -708,7 +709,7 @@
                                             var seatCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked") ?? 0;
                                             int takenSeatCount = Model.SeatStatus.Count(status => status.Status == "taken");
                                             int bookedSeatsCount = Model.SeatStatus.Count(status => status.Status == "booked");
-                                            int soldSeatsCount = Model.SeatStatus.Count(status => status.Status == "booked");
+                                            int soldSeatsCount = Model.SeatStatus.Count(status => status.Status == "sold");
                                         }
                                         <div class="col-4" style="text-align: center">
                                             <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">

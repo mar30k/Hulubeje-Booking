@@ -1,5 +1,5 @@
 ﻿@{
-    var isVaild = ViewBag.isVaild;
+    var isVaild = ViewBag.isValid;
     var isLoggedIN = ViewBag.isLoggedIn;
 }
 <script>
@@ -118,29 +118,25 @@
 <script>
     document.getElementById("forMeCheckBox").addEventListener("change", function () {
         var isChecked = this.checked;
-        var dob = "@ViewBag.Dob";
+        var dob = "@Model?.CookieValidation?.UserData?.Dob";
         dob = dob.split('T')[0];
         if (isChecked) {
-            document.getElementById("name1").value = "@ViewBag.FirstName";
-            document.getElementById("middle1").value = "@ViewBag.MiddleName";
-            document.getElementById("last1").value = "@ViewBag.LastName";
-            document.getElementById("nationality1").value = "Ethiopian";
-            document.getElementById("date1").value = dob;
-            var gender = "@ViewBag.Gender".toLowerCase();
+            document.getElementById("name1").value = "@Model?.CookieValidation?.UserData?.FirstName";
+            document.getElementById("middle1").value = "@Model?.CookieValidation?.UserData?.MiddleName";
+            document.getElementById("last1").value = "@Model?.CookieValidation?.UserData?.LastName";
+            var gender = "@Model?.CookieValidation?.UserData.Gender".toLowerCase();
             if (gender === "male") {
                 document.getElementById("male1").checked = true;
             } else if (gender === "female") {
                 document.getElementById("female1").checked = true;
             }
-            document.getElementById("email1").value = "@ViewBag.EmailAddress";
-            document.getElementById("phone1").value = "@ViewBag.PhoneNumber";
+            document.getElementById("email1").value = "@Model?.CookieValidation?.UserData.Email";
+            document.getElementById("phone1").value = "@Model?.CookieValidation?.UserData.Code";
         } else {
             // Clear the fields
             document.getElementById("name1").value = "";
             document.getElementById("middle1").value = "";
             document.getElementById("last1").value = "";
-            document.getElementById("nationality1").value = "";
-            document.getElementById("date1").value = "";
             document.getElementById("male1").checked = false;
             document.getElementById("female1").checked = false;
             document.getElementById("email1").value = "";
