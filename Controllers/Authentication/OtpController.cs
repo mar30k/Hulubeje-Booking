@@ -25,23 +25,25 @@ namespace HulubejeBooking.Controllers.Authentication
             if (otpCode !=null){
                  trimmedCode = otpCode.Trim();
             }
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
+            var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
             var data = HttpContext.Session.GetString("OtpMessageResponse");
             var forgetPassword = HttpContext.Session.GetString("ForgetPassword") != null;
             var newData = data != null ? JsonConvert.DeserializeObject<MessageResponse>(data) : new MessageResponse() ;
             var code = newData?.code;
             var to = newData?.to;
             var vc = newData?.verificationId;
+            var messageId = newData?.messageId;
             if (forgetPassword)
             {
                 if (trimmedCode == code)
                 {
-                    HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Messaging/VerifyOTP?to={to}&vc={vc}&code={code}");
+                    HttpResponseMessage response = await _V7client.GetAsync($"messaging/verifyotp?to={to}&vc={vc}&code={code}&messageId={messageId}");
                     string responseData = await response.Content.ReadAsStringAsync();
-                    var verificationData = JsonConvert.DeserializeObject<VerifyResponse>(responseData);
-
-                    if (verificationData?.isVerified == true)
+                    var verificationData = JsonConvert.DeserializeObject<VerificationResponse>(responseData);
+                    var json = JsonConvert.SerializeObject(verificationData);
+                    if (verificationData?.IsVerified == true)
                     {
+                         HttpContext.Session.SetString("VerificationResponse", json);
                         return RedirectToAction("Index", "ForgetPassword");
                     }
                     else
@@ -60,12 +62,13 @@ namespace HulubejeBooking.Controllers.Authentication
             {
                 if (trimmedCode == code)
                 {
-                    HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Messaging/VerifyOTP?to={to}&vc={vc}&code={code}");
+                    HttpResponseMessage response = await _V7client.GetAsync($"messaging/verifyotp?to={to}&vc={vc}&code={code}&messageId={messageId}");
                     string responseData = await response.Content.ReadAsStringAsync();
-                    var verificationData = JsonConvert.DeserializeObject<VerifyResponse>(responseData);
-
-                    if (verificationData?.isVerified == true)
+                    var verificationData = JsonConvert.DeserializeObject<VerificationResponse>(responseData);
+                    var json = JsonConvert.SerializeObject(verificationData);
+                    if (verificationData?.IsVerified == true)
                     {
+                        HttpContext.Session.SetString("VerificationResponse", json);
                         return RedirectToAction("Index", "Signup");
                     }
                     else
