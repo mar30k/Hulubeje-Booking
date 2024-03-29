@@ -21,25 +21,22 @@ namespace HulubejeBooking.Controllers.BusController
 
         public async Task<IActionResult> Index()
         {
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            if (!string.IsNullOrEmpty(userDataCookie))
-            {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.FirstName = user?.firstName;
-                ViewBag.LastName = user?.lastName;
-                ViewBag.MiddleName = user?.middleName;
-                ViewBag.Personalattachment = user?.personalattachment;
-                ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Idnumber = user?.idnumber;
-                ViewBag.Idtype = user?.idtype;
-                ViewBag.Dob = user?.dob;
-                ViewBag.Idattachment = user?.idattachment;
-                ViewBag.PhoneNumber = user?.phoneNumber;
-                ViewBag.EmailAddress = user?.emailAddress;
-            }
             var identificationResult = await _authenticationManager.identificationValid();
-            ViewBag.isVaild = identificationResult.isValid;
-            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            if (identificationResult != null)
+            {
+                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+                ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData.IdType;
+                ViewBag.Dob = identificationResult?.UserData.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData.Email;
+            }
             var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
             HttpResponseMessage response = await busSeatLayoutClient.GetAsync("operators/getalloperators");
             var busModel = new BusModel();

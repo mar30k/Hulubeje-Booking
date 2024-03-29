@@ -24,25 +24,22 @@ namespace HulubejeBooking.Controllers.BusController
         public async Task<IActionResult> Index(string? plateNumber, string? terminal, string? distance, string? tariff, string? level, string? route, string? operatorName,string? routeSchedule, string? originTerminalName, string? via,
             string? scheduleDate, string? scheduleTime, string? destinationCity, string? depatureCity, string? arrivalDate, string? departureDate, string? vehicleOperatorId , int? vehicle, string? destinationTermianl, string? sheduleId)
         {
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            if (!string.IsNullOrEmpty(userDataCookie))
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (identificationResult != null)
             {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                ViewBag.FirstName = user?.firstName;
-                ViewBag.LastName = user?.lastName;
-                ViewBag.MiddleName = user?.middleName;
-                ViewBag.Personalattachment = user?.personalattachment;
-                ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Idnumber = user?.idnumber;
-                ViewBag.Idtype = user?.idtype;
-                ViewBag.Dob = user?.dob;
-                ViewBag.Idattachment = user?.idattachment;
-                ViewBag.PhoneNumber = user?.phoneNumber;
-                ViewBag.EmailAddress = user?.emailAddress;
+                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+                ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData.IdType;
+                ViewBag.Dob = identificationResult?.UserData.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
-            var b = await _authenticationManager.identificationValid();
-            ViewBag.isVaild = b.isValid;
-            ViewBag.isLoggedIn = b.isLoggedIn;
             var loginInfo = HttpContext.Session.GetString("IsLogin");
             var login = "";
             if (loginInfo != null)
@@ -77,7 +74,6 @@ namespace HulubejeBooking.Controllers.BusController
                 };
                 var paramJson = JsonConvert.SerializeObject(param);
                 HttpContext.Session.SetString("BusValues", paramJson);
-                var identificationResult = await _authenticationManager.identificationValid();
                 if (!identificationResult.isValid && !identificationResult.isLoggedIn)
                 {
                     string validation = "Bus";
