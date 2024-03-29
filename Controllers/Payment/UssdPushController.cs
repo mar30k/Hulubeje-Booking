@@ -16,27 +16,22 @@ namespace HulubejeBooking.Controllers.Payment
         }
         public async Task<IActionResult> Index()
         {
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            string? code = null;
-            if (!string.IsNullOrEmpty(userDataCookie))
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (identificationResult != null)
             {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                code = user?.phoneNumber;
-                ViewBag.FirstName = user?.firstName;
-                ViewBag.LastName = user?.lastName;
-                ViewBag.MiddleName = user?.middleName;
-                ViewBag.Personalattachment = user?.personalattachment;
-                ViewBag.SuccessCode = user?.successCode;
-                ViewBag.Idnumber = user?.idnumber;
-                ViewBag.Idtype = user?.idtype;
-                ViewBag.Dob = user?.dob;
-                ViewBag.Idattachment = user?.idattachment;
-                ViewBag.PhoneNumber = user?.phoneNumber;
-                ViewBag.EmailAddress = user?.emailAddress;
+                ViewBag.isVaild = identificationResult?.isValid;
+                ViewBag.isLoggedIn = identificationResult?.isLoggedIn;
+                ViewBag.FirstName = identificationResult?.UserData?.FirstName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData.IdType;
+                ViewBag.Dob = identificationResult?.UserData.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
-            var b = await _authenticationManager.identificationValid();
-            ViewBag.isVaild = b.isValid;
-            ViewBag.isLoggedIn = b.isLoggedIn;
             return View();
         }
     }

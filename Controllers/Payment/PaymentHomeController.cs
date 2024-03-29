@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Controllers.Authentication;
 using HulubejeBooking.Models.BusModels;
 using HulubejeBooking.Models.CInemaModels;
 using HulubejeBooking.Models.HotelModels;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Common;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -19,62 +19,48 @@ namespace HulubejeBooking.Controllers.Payment
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
+        private readonly AuthenticationManager _authenticationManager;
 
-        public PaymentHomeController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor)
+        public PaymentHomeController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
         public async Task<IActionResult> IndexAsync([FromBody] PaymentModel model)
         {
+            var b = await _authenticationManager.identificationValid();
+
             if (model != null) {
                 var modelJson = JsonConvert.SerializeObject(model);
                 HttpContext.Session.SetString("PaymentModels", modelJson);
             }
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            string? code;
-            if (!string.IsNullOrEmpty(userDataCookie))
-            {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                code = user?.phoneNumber;
-            }
-            else
-            {
-                return BadRequest();
-            }
+            string? code = b.UserData.Code;
+
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
-            {
-                string token = Encoding.UTF8.GetString(loginToken);
-                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage transactionIdResponse = await _v7Client.GetAsync($"payment/generatetransactionid?code={code}");
-                if (transactionIdResponse.IsSuccessStatusCode)
-                {   
-                    string transactionIdData = await transactionIdResponse.Content.ReadAsStringAsync();
-                    var transactionId = JsonConvert.DeserializeObject<TransactionId>(transactionIdData);
-                    if (transactionId != null)
-                    {
-                        HttpContext.Session.SetString("VoucherCode", transactionId.Data);
-                    }
-                    HttpResponseMessage paymentOptionsResponse = await _v7Client.GetAsync($"payment/getuserpaymnetoption?code={code}&companyCode={model?.CompanyCode}&branchCode={model?.BranchCode}");
-                    if (paymentOptionsResponse.IsSuccessStatusCode)
-                    {
-                        string paymentoptionData = await paymentOptionsResponse.Content.ReadAsStringAsync();
-                        HttpContext.Session.SetString("paymentOptrions", paymentoptionData);
-                    }
-
-                    return Ok();
+            string? token = b?.UserData?.Token;
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage transactionIdResponse = await _v7Client.GetAsync($"payment/generatetransactionid?code={code}");
+            if (transactionIdResponse.IsSuccessStatusCode)
+            {   
+                string transactionIdData = await transactionIdResponse.Content.ReadAsStringAsync();
+                var transactionId = JsonConvert.DeserializeObject<TransactionId>(transactionIdData);
+                if (transactionId != null)
+                {
+                    HttpContext.Session.SetString("VoucherCode", transactionId.Data);
                 }
-                else 
-                { 
-                    return BadRequest();
+                HttpResponseMessage paymentOptionsResponse = await _v7Client.GetAsync($"payment/getuserpaymnetoption?code={code}&companyCode={model?.CompanyCode}&branchCode={model?.BranchCode}");
+                if (paymentOptionsResponse.IsSuccessStatusCode)
+                {
+                    string paymentoptionData = await paymentOptionsResponse.Content.ReadAsStringAsync();
+                    HttpContext.Session.SetString("paymentOptrions", paymentoptionData);
                 }
 
+                return Ok();
             }
-            else
-            {
-                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
-                return RedirectToAction("Index", "Home");
+            else 
+            { 
+                return BadRequest();
             }
         }
 
@@ -86,70 +72,64 @@ namespace HulubejeBooking.Controllers.Payment
                 HttpContext.Session.SetString("PaymentProcessorData", paymentProcessorJson);
             }
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            string? code;
-            if (!string.IsNullOrEmpty(userDataCookie))
+            var b = await _authenticationManager.identificationValid();
+            string? code = b.UserData.Code;
+            string? token = b?.UserData?.Token;
+            //var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
+            //var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
+            //code = user?.phoneNumber;
+            var vCode = HttpContext.Session.GetString("VoucherCode");
+
+            if (HttpContext.Session.TryGetValue("PaymentModels", out var model))
             {
-                var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-                code = user?.phoneNumber;
-                var vCode = HttpContext.Session.GetString("VoucherCode");
-
-                if (HttpContext.Session.TryGetValue("loginToken", out var loginToken) && HttpContext.Session.TryGetValue("PaymentModels", out var model))
+                string paymentModel = Encoding.UTF8.GetString(model);
+                var paymentModelData = JsonConvert.DeserializeObject<PaymentModel>(paymentModel);
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var additionalParameters = new
                 {
-                    string token = Encoding.UTF8.GetString(loginToken);
-                    string paymentModel = Encoding.UTF8.GetString(model);
-                    var paymentModelData = JsonConvert.DeserializeObject<PaymentModel>(paymentModel);
-                    _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    var additionalParameters = new
-                    {
-                        referenceNumber = "optional"
-                    };
-                    var ActivityLog = new ActivityLog
-                    {
-                        Code = code,
-                    };
-                    var param = new
-                    {
-                        ActivityLog,
-                        additionalParameters,
-                        userMobileNumber = code,
-                        transactionId = vCode,
-                        supplierConsigneeUnit = paymentModelData?.BranchCode,
-                        supplierConsigneeId = paymentModelData?.CompanyCode,
-                        paymentProcessorConsigneeUnit = data?.PaymentProcessorConsigneeUnit,
-                        paymentProcessorConsigneeId = data?.PaymentProcessorConsigneeId,
-                        amount = paymentModelData?.Amount,
-                        //amount = 0.1,
-                        operationmode = data?.OperationMode,
-                        pin = "",
-                    };
-                    string jsonBody = JsonConvert.SerializeObject(param);
-                    string activityLogjson = JsonConvert.SerializeObject(ActivityLog);
-                    HttpContext.Session.SetString("PaymentTransactionRequest", jsonBody);
-                    HttpContext.Session.SetString("ActivityLog", activityLogjson);
-                    var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-                    HttpResponseMessage authorizationResponse = await _v7Client.PostAsync($"payment/authorization", content);
-                    if (authorizationResponse.IsSuccessStatusCode)
-                    {
-                        string authorizationData = await authorizationResponse.Content.ReadAsStringAsync();
-                        var authorizarion = JsonConvert.DeserializeObject<PaymentAuthorizationResponse>(authorizationData);
-                        HttpContext.Session.SetString("PaymentAuthorizationResponse", authorizationData);
-                        return Json(authorizarion);
-                    }
-                    else
-                    {
-                        return BadRequest(); 
-                    }
-
-
+                    referenceNumber = "optional"
+                };
+                var ActivityLog = new ActivityLog
+                {
+                    Code = code,
+                };
+                var param = new
+                {
+                    ActivityLog,
+                    additionalParameters,
+                    userMobileNumber = code,
+                    transactionId = vCode,
+                    supplierConsigneeUnit = paymentModelData?.BranchCode,
+                    supplierConsigneeId = paymentModelData?.CompanyCode,
+                    paymentProcessorConsigneeUnit = data?.PaymentProcessorConsigneeUnit,
+                    paymentProcessorConsigneeId = data?.PaymentProcessorConsigneeId,
+                    amount = paymentModelData?.Amount,
+                    //amount = 0.1,
+                    operationmode = data?.OperationMode,
+                    pin = "",
+                };
+                string jsonBody = JsonConvert.SerializeObject(param);
+                string activityLogjson = JsonConvert.SerializeObject(ActivityLog);
+                HttpContext.Session.SetString("PaymentTransactionRequest", jsonBody);
+                HttpContext.Session.SetString("ActivityLog", activityLogjson);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                HttpResponseMessage authorizationResponse = await _v7Client.PostAsync($"payment/authorization", content);
+                if (authorizationResponse.IsSuccessStatusCode)
+                {
+                    string authorizationData = await authorizationResponse.Content.ReadAsStringAsync();
+                    var authorizarion = JsonConvert.DeserializeObject<PaymentAuthorizationResponse>(authorizationData);
+                    HttpContext.Session.SetString("PaymentAuthorizationResponse", authorizationData);
+                    return Json(authorizarion);
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(); 
                 }
+
+
             }
             else
-            { 
+            {
                 return BadRequest();
             }
         }

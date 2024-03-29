@@ -35,9 +35,12 @@ namespace HulubejeBooking.Controllers.Payment
         }
         public async Task<IActionResult> IndexAsync([FromBody] string pin)
         {
+            var b = await _authenticationManager.identificationValid();
+            string? token = b?.UserData?.Token;
+
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var saveResponse = new SaveResponse();
-            if (HttpContext.Session.TryGetValue("loginToken", out var loginToken) &&
+            if (
                 HttpContext.Session.TryGetValue("PaymentModels", out var paymentModelBytes) &&
                 HttpContext.Session.TryGetValue("ActivityLog", out var activityLogBytes) &&
                 HttpContext.Session.TryGetValue("PaymentTransactionRequest", out var paymentTransactionRequestBytes)&&
@@ -47,7 +50,6 @@ namespace HulubejeBooking.Controllers.Payment
             {
                 try
                 {
-                    var token = Encoding.UTF8.GetString(loginToken);
                     var paymentModelJson = Encoding.UTF8.GetString(paymentModelBytes);
                     var authorizatioJson = Encoding.UTF8.GetString(authorizatioBytes);
                     var activityLogJson = Encoding.UTF8.GetString(activityLogBytes);
