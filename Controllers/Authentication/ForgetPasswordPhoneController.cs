@@ -90,7 +90,7 @@ namespace HulubejeBooking.Controllers.Authentication
                         var PersonJson = JsonConvert.SerializeObject(otpMessage);
                         HttpContext.Session.SetString("OtpMessageResponse", PersonJson);
                         var PhoneNumber = JsonConvert.SerializeObject(phoneNumber);
-                        HttpContext.Session.SetString("UserPohneNumber", PhoneNumber);
+                        HttpContext.Session.SetString("UserPohneNumber", code);
                         HttpContext.Session.SetString("ForgetPassword", key);
                         return RedirectToAction("Index", "Otp");
                     }

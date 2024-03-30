@@ -14,10 +14,13 @@ namespace HulubejeBooking.Controllers.Authentication
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         private readonly IHttpClientFactory _httpClientFactory;
-        public ForgetPasswordController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        private AuthenticationManager _authenticationManager;
+
+        public ForgetPasswordController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
+            _authenticationManager = authenticationManager;
         }
         public IActionResult Index()
         {
@@ -27,13 +30,6 @@ namespace HulubejeBooking.Controllers.Authentication
         [HttpPost]
         public async Task<IActionResult> IndexAsync(string password, string repeatpassword)
         {
-            var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            string? phoneNumber = "";
-            if (!string.IsNullOrEmpty(userDataCookie))
-            {
-                var user = JsonConvert.DeserializeObject<UserData>(userDataCookie);
-                phoneNumber = user != null ? user?.Code : null;
-            }
             var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
 
             if (password.Length < 6 || repeatpassword.Length < 6)
@@ -48,6 +44,8 @@ namespace HulubejeBooking.Controllers.Authentication
             }
             else
             {
+                var phoneNumber = HttpContext.Session.GetString("UserPohneNumber");
+
                 var userObject = new
                 {
                     code = phoneNumber,
@@ -77,6 +75,10 @@ namespace HulubejeBooking.Controllers.Authentication
                     {
                         TempData["InfoMessage"] = "Successfully Changed Password!";
                         return RedirectToAction("Index", "home");
+                    }
+                    else if (changePasswordResponse?.ErrorMessages?.Count > 0){
+                        TempData["ErrorMessage"] = changePasswordResponse?.ErrorMessages[0];
+                        return View();
                     }
                     return View();
                 }
