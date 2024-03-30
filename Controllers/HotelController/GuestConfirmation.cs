@@ -15,7 +15,7 @@ namespace HulubejeBooking.Controllers.HotelController
             _authenticationManager = authenticationManager;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<IActionResult> Index(List<Guests> guests)
+        public async Task<IActionResult> Index(List<Guests> guests, string? specialRequirement)
         {
             var RoomFormData = HttpContext.Session.GetString("RoomFormData");
             var RoomFormDatajson = new RoomFormData();
@@ -37,7 +37,8 @@ namespace HulubejeBooking.Controllers.HotelController
             {
                 RoomFormData = RoomFormDatajson,
                 RoomType = roomDetailsJson,
-                Guests  = guests
+                Guests  = guests,
+                SpecialRequirement = specialRequirement
             };
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)

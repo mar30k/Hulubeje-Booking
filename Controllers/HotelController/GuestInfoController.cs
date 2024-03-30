@@ -53,6 +53,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
                 ViewBag.PhoneNumber = identificationResult?.UserData.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
+                ViewBag.Gender = identificationResult?.UserData.Gender;
             }
 
             return View(RoomFormDatajson);

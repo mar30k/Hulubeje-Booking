@@ -11,13 +11,14 @@
 <partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.RoomFormData
 <div class="container mb-lg-2 mt-2">
-    <form id="guestForm class="ml-lg-2" method="post" asp-controller="GuestConfirmation" asp-action="Index">
-        <div class="accordion" id="accordionExample">
+    <form id="guestForm" class="ml-lg-2" method="post" asp-controller="GuestConfirmation" asp-action="Index">
+        <div class="accordion" >
             @for (int i = 0; i < Model?.adultCount; i++)
             {
-                <div class="accordion-item">
+                <div class="accordion-item">    
                     <h2 class="accordion-header" id="heading@(i + 1)">
-                        <button class="accordion-button @(i == 0 ? "": "collapsed")" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(i + 1)" aria-expanded="@(i == 0 ? "true": "false")" aria-controls="collapse@(i + 1)">
+                        <button class="accordion-button @(i == 0 ? "": "collapsed")" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapse@(i + 1)" aria-expanded="@(i == 0 ? "true": "false")" aria-controls="collapse@(i + 1)">
                             Guest @(i + 1)
                         </button>
                     </h2>
@@ -106,42 +107,59 @@
                 </div>
             }
         </div>
-
+        <div class="accordion mt-2">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="specialRequirementHeader">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#specialRequirementCollapse" aria-expanded="true" aria-controls="specialRequirementCollapse">
+                        Special Requirement
+                    </button>
+                </h2>
+                <div id="specialRequirementCollapse" class="accordion-collapse collapse show" aria-labelledby="specialRequirementHeader" data-bs-parent=".accordion">
+                    <div class="accordion-body">
+                        <div class="mb-1">
+                            <textarea id="specialRequirement" name="specialRequirement" rows="4" style="width: 100%;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="empty" style="height: 20vh">
             <div class="justify-content-center d-flex mb-5 mt-3">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" >Submit</button>
             </div>
         </div>
     </form>
    
 </div>
 <script>
-    document.getElementById("forMeCheckBox").addEventListener("change", function () {
-        var isChecked = this.checked;
-        var dob = "@Model?.CookieValidation?.UserData?.Dob";
-        dob = dob.split('T')[0];
-        if (isChecked) {
-            document.getElementById("name1").value = "@Model?.CookieValidation?.UserData?.FirstName";
-            document.getElementById("middle1").value = "@Model?.CookieValidation?.UserData?.MiddleName";
-            document.getElementById("last1").value = "@Model?.CookieValidation?.UserData?.LastName";
-            var gender = "@Model?.CookieValidation?.UserData.Gender".toLowerCase();
-            if (gender === "male") {
-                document.getElementById("male1").checked = true;
-            } else if (gender === "female") {
-                document.getElementById("female1").checked = true;
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("forMeCheckBox").addEventListener("change", function () {
+            var isChecked = this.checked;
+            var dob = "@ViewBag.Dob";
+            dob = dob.split('T')[0];
+            if (isChecked) {
+                document.getElementById("name1").value = "@ViewBag.FirstName";
+                document.getElementById("middle1").value = "@ViewBag.MiddleName";
+                document.getElementById("last1").value = "@ViewBag.LastName";
+                var gender = "@ViewBag.Gender".toLowerCase();
+                if (gender === "male") {
+                    document.getElementById("male1").checked = true;
+                } else if (gender === "female") {
+                    document.getElementById("female1").checked = true;
+                }
+                document.getElementById("email1").value = "@ViewBag.EmailAddress";
+                document.getElementById("phone1").value = "@ViewBag.PhoneNumber";
+            } else {
+                // Clear the fields
+                document.getElementById("name1").value = "";
+                document.getElementById("middle1").value = "";
+                document.getElementById("last1").value = "";
+                document.getElementById("male1").checked = false;
+                document.getElementById("female1").checked = false;
+                document.getElementById("email1").value = "";
+                document.getElementById("phone1").value = "";
             }
-            document.getElementById("email1").value = "@Model?.CookieValidation?.UserData.Email";
-            document.getElementById("phone1").value = "@Model?.CookieValidation?.UserData.Code";
-        } else {
-            // Clear the fields
-            document.getElementById("name1").value = "";
-            document.getElementById("middle1").value = "";
-            document.getElementById("last1").value = "";
-            document.getElementById("male1").checked = false;
-            document.getElementById("female1").checked = false;
-            document.getElementById("email1").value = "";
-            document.getElementById("phone1").value = "";
-        }
+        });
     });
 </script>
 <partial name="_Footer" />
