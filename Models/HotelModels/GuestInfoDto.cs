@@ -19,6 +19,7 @@ namespace HulubejeBooking.Models.HotelModels
         public RoomType? RoomType { get; set; }
         public List<Guests>? Guests { get; set; }
         public RoomFormData? RoomFormData { get; set; }
+        public string? SpecialRequirement { get; set; }
     }
 
 
