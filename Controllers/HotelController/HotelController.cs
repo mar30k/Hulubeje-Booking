@@ -60,7 +60,12 @@ namespace HulubejeBooking.Controllers.HotelController
                 string getcompaniesbytypeData = await getcompaniesbytypeResponse.Content.ReadAsStringAsync();
                 getcompaniesbytyp = getcompaniesbytypeData != null ? JsonConvert.DeserializeObject<GetcompaniesbyType>(getcompaniesbytypeData) : new GetcompaniesbyType();
                 getcities = getcitiesData != null ? JsonConvert.DeserializeObject<GetCities>(getcitiesData) : new GetCities();
+                if (getcitiesData != null)
+                {
+                    HttpContext.Session.SetString("GetCities", getcitiesData);
+                }
             }
+            
             var viewModel = new HotelHome
             {
                 Cities = getcities,
@@ -71,6 +76,8 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpPost]
         public async Task<IActionResult> HotelList(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange)
         {
+            var citiesString = HttpContext.Session.GetString("GetCities");
+            var citiesJson = citiesString!=null ?JsonConvert.DeserializeObject<GetCities>(citiesString) : new GetCities ();
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var gethotelsbycity = new GetHotelByCity();
             var identificationResult = await _authenticationManager.identificationValid();
@@ -114,85 +121,101 @@ namespace HulubejeBooking.Controllers.HotelController
             {
                 numberOfDay = 1;
             }
-            //if (HttpContext.Session.TryGetValue("loginToken", out var loginToken))
-            //{
-            //    token = Encoding.UTF8.GetString(loginToken);
-                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var param = new
-                {
-                    companyCode = (string)null,
-                    orgOUD = (string)null,
-                    arrivalDate,
-                    departureDate,
-                    adultCount,
-                    childCount,
-                    roomCount,
-                    city
-                };
-                var paramJson = JsonConvert.SerializeObject(param);
-                var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var param = new
+            {
+                companyCode = (string)null,
+                orgOUD = (string)null,
+                arrivalDate,
+                departureDate,
+                adultCount,
+                childCount,
+                roomCount,
+                city, 
+                page = 1
+            };
+            var paramJson = JsonConvert.SerializeObject(param);
+            var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage gethotelsbycityResponse = await _v7Client.PostAsync($"hotel/gethotelsbycity", content);
-                if (gethotelsbycityResponse.IsSuccessStatusCode)
+            HttpResponseMessage gethotelsbycityResponse = await _v7Client.PostAsync($"hotel/gethotelsbycity", content);
+            if (gethotelsbycityResponse.IsSuccessStatusCode)
+            {
+                string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
+                gethotelsbycity = gethotelsbycityData != null ? JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData) : new GetHotelByCity();
+                if (gethotelsbycity != null && citiesJson != null)
                 {
-                    string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
-                    gethotelsbycity = gethotelsbycityData != null ? JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData) : new GetHotelByCity();
-                    if (gethotelsbycity != null)
-                    {
-                        gethotelsbycity.RoomFormData = data;
-                    }
+                    var cityData = citiesJson.Data.FirstOrDefault(c => c.Id == city);
+                    int hotelsCount = (int)(cityData != null ? cityData.Hotels : 0);
+                    gethotelsbycity.HotelsCount = (int)Math.Ceiling((double)hotelsCount / 10);
+                    gethotelsbycity.RoomFormData = data;
                 }
-            //}
+
+            }
             return View(gethotelsbycity);
         }
         [HttpPost]
         public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
         {
-            string? token = "";
-            var b = await _authenticationManager.identificationValid();
-            token = b.UserData.Token;
-            var dt = DateRangeParser.parseDateRange(roomFormData.Date);
-            var arrivalDateString = dt.startDateString.Trim();
-            var departureDateString = dt.endDateString.Trim();
-            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            roomFormData.ArrivalDate = arrivalDate;
-            roomFormData.DepartureDate = departureDate;
-            var roomFormDatajson = JsonConvert.SerializeObject(roomFormData);
-            HttpContext.Session.SetString("RoomFormData", roomFormDatajson);
-            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            var companyCode = roomFormData.orgCode;
-            var orgOUD = roomFormData.oud;
-            var adultCount = roomFormData.adultCount;
-            var childCount = roomFormData.childrenCount;
-            var roomCount = roomFormData.roomsCount;
-            var requestBody = new
-            {
-                arrivalDate,
-                departureDate,
-                companyCode,
-                adultCount,
-                childCount,
-                roomCount,
-                orgOUD,
-                city = (string)null
-            };
-            var roomBody = JsonConvert.SerializeObject(requestBody);
-            var roomContent = new StringContent(roomBody, Encoding.UTF8, "application/json");
+            if (roomFormData != null) {
+                string? token = "";
+                var b = await _authenticationManager.identificationValid();
+                token = b.UserData.Token;
+                var dt = DateRangeParser.parseDateRange(roomFormData.Date);
+                var arrivalDateString = dt.startDateString.Trim();
+                var departureDateString = dt.endDateString.Trim();
+                DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                roomFormData.ArrivalDate = arrivalDate;
+                roomFormData.DepartureDate = departureDate;
+                var roomFormDatajson = JsonConvert.SerializeObject(roomFormData);
+                HttpContext.Session.SetString("RoomFormData", roomFormDatajson);
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                var companyCode = roomFormData.orgCode;
+                var orgOUD = roomFormData.oud;
+                var adultCount = roomFormData.adultCount;
+                var childCount = roomFormData.childrenCount;
+                var roomCount = roomFormData.roomsCount;
+                var requestBody = new
+                {
+                    arrivalDate,
+                    departureDate,
+                    companyCode,
+                    adultCount,
+                    childCount,
+                    roomCount,
+                    orgOUD,
+                    city = (string)null
+                };
+                var roomBody = JsonConvert.SerializeObject(requestBody);
+                var roomContent = new StringContent(roomBody, Encoding.UTF8, "application/json");
 
-            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await _v7Client.PostAsync("hotel/getrooms", roomContent);
-            if (response.IsSuccessStatusCode)
-            {
-                string data = await response.Content.ReadAsStringAsync();
-                var availableRooms = data != null ? JsonConvert.DeserializeObject<GetRooms>(data) : new GetRooms();
-                HttpContext.Session.SetString("AvailabilityViewModel", data);
-                return Ok();
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage response = await _v7Client.PostAsync("hotel/getrooms", roomContent);
+                if (response.IsSuccessStatusCode)
+                {
+                    string data = await response.Content.ReadAsStringAsync();
+                    var availableRooms = data != null ? JsonConvert.DeserializeObject<GetRooms>(data) : new GetRooms();
+                    if (availableRooms != null)
+                    {
+                        availableRooms.HotelName = roomFormData.Name;
+                    }
+                    var availableRoomsString = JsonConvert.SerializeObject(availableRooms);
+                    if (data != null)
+                    {
+                        HttpContext.Session.SetString("AvailabilityViewModel", availableRoomsString);
+                    }
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
-            else
-            {
+            else 
+            { 
                 return BadRequest();
             }
+            
         }
 
         public async Task<IActionResult> Hoteldetail([FromBody] RoomFormData roomFormData)
@@ -326,6 +349,38 @@ namespace HulubejeBooking.Controllers.HotelController
             };
             var numberOfDay = numberOfNights;
 
+            if (numberOfDay <= 0)
+            {
+                numberOfDay = 1;
+            }
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var param = new
+            {
+                companyCode = (string)null,
+                orgOUD = (string)null,
+                arrivalDate,
+                departureDate,
+                adultCount,
+                childCount,
+                roomCount,
+                city,
+                page = page
+            };
+            var paramJson = JsonConvert.SerializeObject(param);
+            var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage gethotelsbycityResponse = await _v7Client.PostAsync($"hotel/gethotelsbycity", content);
+            if (gethotelsbycityResponse.IsSuccessStatusCode)
+            {
+                string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
+                gethotelsbycity = gethotelsbycityData != null ? JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData) : new GetHotelByCity();
+                if (gethotelsbycity != null)
+                {
+                    gethotelsbycity.RoomFormData = data;
+                }
+            }
+            return Json(gethotelsbycity);
+        }
 
     }
 }
