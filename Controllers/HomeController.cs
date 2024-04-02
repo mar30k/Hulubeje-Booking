@@ -28,7 +28,7 @@ namespace HulubejeBooking.Controllers
 		public async Task<IActionResult> Index()
         {
             var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-            var currentUser = await _workWebContext.GetCurrentCustomerAsync();
+            //await _workWebContext.GetCurrentCustomerAsync();
             var identificationResult = await _authenticationManager.identificationValid();
             var Picures = new Images();
             Picures.CookieValidation = identificationResult;
@@ -49,7 +49,8 @@ namespace HulubejeBooking.Controllers
             //var hotel = "whotel";
             //var spa = "wspa";
             //var events = "wevent";
-            //var cinema = "wmovie";
+            //var cinema = "wmovie";00
+
 
             //HttpResponseMessage busResponse = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={bus}");
 
