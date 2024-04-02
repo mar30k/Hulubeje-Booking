@@ -70,7 +70,7 @@ namespace HulubejeBooking.Controllers.Authentication
         public virtual async Task<cookieValidation> identificationValid()
         {
             var validinfo = new cookieValidation();
-            var data = new HulubejeBooking.Models.Authentication.UserData(); // Adjust the namespace here
+            var data = new UserData(); // Adjust the namespace here
             var loggedInCheckerJson = _httpContextAccessor?.HttpContext?.Session.GetString("isLoggedIn");
             var loginChecker = loggedInCheckerJson != null ? JsonConvert.DeserializeObject<bool>(loggedInCheckerJson) : false;
             var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
@@ -82,7 +82,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 var token = usernameClaim?.Value.ToString();
                 if (!string.IsNullOrEmpty(token))
                 {
-                    data = await _buffer.GetCurrentCustomerFromBuffer();
+                    data = await GetUserData(token);
                 }
                 var authenticationProperties = authenticateResult.Properties;
 
@@ -111,7 +111,6 @@ namespace HulubejeBooking.Controllers.Authentication
                 validinfo.UserData = guestUser.Result;
                 validinfo.isValid = false;
                 validinfo.isLoggedIn = loginChecker;
-
                 return validinfo;
             }            
         }
@@ -130,7 +129,7 @@ namespace HulubejeBooking.Controllers.Authentication
             if (authentication.IsSuccessStatusCode)
             {
                 string userDataString = await authentication.Content.ReadAsStringAsync();
-                var userDatas = JsonConvert.DeserializeObject<HulubejeBooking.Models.Authentication.LoginAuthentication>(userDataString);
+                var userDatas = JsonConvert.DeserializeObject<LoginAuthentication>(userDataString);
                 _cachedUser = userDatas?.Data;
             }
             return _cachedUser;
@@ -164,29 +163,29 @@ namespace HulubejeBooking.Controllers.Authentication
             await _httpContextAccessor.HttpContext.SignOutAsync(CNET_WebConstants.CookieScheme);
         }
 
-        public virtual async Task<UserData> GetAuthenticatedCustomerAsync()
-        {
-            //whether there is a cached customer 
-            if (_cachedUser != null)
-                return _cachedUser;
-            var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
-            var customer = new UserData(); // Adjust the namespace here
-            if (!authenticateResult.Succeeded)
-            {
-                return null;
-            }
-            else
-            {
-                var usernameClaim = authenticateResult.Principal.FindFirst(claim => claim.Type == ClaimTypes.Name
-                    && claim.Issuer.Equals(CNET_WebConstants.ClaimsIssuer, StringComparison.InvariantCultureIgnoreCase));
-                var token = usernameClaim?.Value.ToString();
-                if (!string.IsNullOrEmpty(token))
-                {
-                    customer = await GetUserData(token);
-                }
-                _cachedUser = customer !=null ? customer : null;
-            }
-            return _cachedUser;
-        }
+        //public virtual async Task<UserData> GetAuthenticatedCustomerAsync()
+        //{
+        //    //whether there is a cached customer 
+        //    if (_cachedUser != null)
+        //        return _cachedUser;
+        //    var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
+        //    var customer = new UserData(); // Adjust the namespace here
+        //    if (!authenticateResult.Succeeded)
+        //    {
+        //        return null;
+        //    }
+        //    else
+        //    {
+        //        var usernameClaim = authenticateResult.Principal.FindFirst(claim => claim.Type == ClaimTypes.Name
+        //            && claim.Issuer.Equals(CNET_WebConstants.ClaimsIssuer, StringComparison.InvariantCultureIgnoreCase));
+        //        var token = usernameClaim?.Value.ToString();
+        //        if (!string.IsNullOrEmpty(token))
+        //        {
+        //            customer = await GetUserData(token);
+        //        }
+        //        _cachedUser = customer !=null ? customer : null;
+        //    }
+        //    return _cachedUser;
+        //}
     }
 }

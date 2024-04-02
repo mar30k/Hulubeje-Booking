@@ -43,52 +43,52 @@ namespace HulubejeBooking.Controllers
         //    _httpContextAccessor.HttpContext.Response.Cookies.Append(cookieName, consignee, options);
         //}
 
-        public virtual async Task<UserData> GetCurrentCustomerAsync()
-        {
-            _cachedCustomer = await _buffer.GetCurrentCustomerFromBuffer();
+        //public virtual async Task<UserData> GetCurrentCustomerAsync()
+        //{
+        //    //_cachedCustomer = await _buffer.GetCurrentCustomerFromBuffer();
 
-            //whether there is a cached value
-            if (_cachedCustomer != null)
-                return _cachedCustomer;
+        //    //whether there is a cached value
+        //    if (_cachedCustomer != null)
+        //        return _cachedCustomer;
 
 
-            await SetCurrentCustomerAsync();
+        //    //await SetCurrentCustomerAsync();
 
-            return _cachedCustomer;
-        }
+        //    return _cachedCustomer;
+        //}
 
         /// <summary>
         /// Sets the current customer
         /// </summary>
         /// <param name="customer">Current customer</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task SetCurrentCustomerAsync(UserData customer = null)
-        {
-            if (customer == null)
-            {
-                var user = await _authenticationManager.GetAuthenticatedCustomerAsync();
+        //public virtual async Task SetCurrentCustomerAsync(UserData customer = null)
+        //{
+        //    if (customer == null)
+        //    {
+        //        var user = await _authenticationManager.GetAuthenticatedCustomerAsync();
 
-                if (user == null)
-                {
-                    var currentUser = await _authenticationManager.GetOrCreateBackgroundTaskUserAsync();
+        //        if (user == null)
+        //        {
+        //            var currentUser = await _authenticationManager.GetOrCreateBackgroundTaskUserAsync();
 
-                    _cachedCustomer = currentUser;
-                }
+        //            _cachedCustomer = currentUser;
+        //        }
 
-                else
-                {
-                    _cachedCustomer = user;
-                }
-            }
+        //        else
+        //        {
+        //            _cachedCustomer = user;
+        //        }
+        //    }
 
-            else
-            {
-                //SetCustomerCookie(customer.Token);
-                _cachedCustomer = customer;
-            }
+        //    else
+        //    {
+        //        //SetCustomerCookie(customer.Token);
+        //        _cachedCustomer = customer;
+        //    }
 
-            _buffer.AddCustomerToBuffer(_cachedCustomer);
-        }
-        
+        //    _buffer.AddCustomerToBuffer(_cachedCustomer);
+        //}
+
     }
 }
