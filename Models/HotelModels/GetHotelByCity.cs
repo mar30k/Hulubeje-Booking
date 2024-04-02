@@ -26,6 +26,7 @@
     public class GetHotelByCity
     {
         public bool? IsSuccessful { get; set; }
+        public int? HotelsCount { get; set; }
         public List<Hotel>? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }

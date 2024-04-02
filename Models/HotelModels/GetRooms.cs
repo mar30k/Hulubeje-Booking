@@ -34,7 +34,9 @@
 
     public class GetRooms
     {
+        
         public bool? IsSuccessful { get; set; }
+        public string? HotelName { get; set; }
         public List<RoomType>? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }

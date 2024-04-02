@@ -3,6 +3,7 @@
     public class CityDatas
     {
         public int? Id { get; set; }
+        public int? Hotels { get; set; }
         public int? Country { get; set; }
         public string? CountryName { get; set; }
         public string? CityName { get; set; }
