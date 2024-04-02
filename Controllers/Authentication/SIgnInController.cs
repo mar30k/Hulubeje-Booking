@@ -53,7 +53,7 @@ namespace HulubejeBooking.Controllers.Authentication
             {
                 userInformation.Password = data.Password;
                 _authenticationManager.SignIn(userInformation, data.RememberMe);
-                await _workWebContext.SetCurrentCustomerAsync(userInformation);
+                //await _workWebContext.SetCurrentCustomerAsync(userInformation);
                 var signInInformation = HttpContext.Session.GetString("SignInInformation");
                 var signin = "";
                 var isLoggedIn = true;

@@ -93,7 +93,7 @@ namespace HulubejeBooking.Controllers.Authentication
                         //    Token = person?.PhoneNumber,
                         //};
                         _authenticationManager.SignIn(responseData.Data, true);
-                        await _workWebContext.SetCurrentCustomerAsync(responseData.Data);
+                        //await _workWebContext.SetCurrentCustomerAsync(responseData.Data);
                         TempData["InfoMessage"] = "Welcome! You Have Successfully Created Hulubeje Account";
                         return RedirectToAction("Index", "Home");
                     }
