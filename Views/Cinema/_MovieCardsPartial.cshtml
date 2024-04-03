@@ -1,52 +1,77 @@
 ﻿@using System.Web
 @model HulubejeBooking.Models.CInemaModels.Movie;
-@if (Model is not null)
+@{
+    var delay = 0.1;
+}
+@if (Model != null && Model.Data != null)
 {
     <div class="row" id="movieCardsContainer">
-        @if (Model?.Data?.Count > 0)
+        @{
+            // Dictionary to store the companies associated with each movie name
+            Dictionary<string, List<string>> movieCompanies = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        }
+        @foreach (var company in Model.Data)
         {
-            foreach (var company in Model?.Data ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
+            foreach (var movie in company.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
             {
-                var companyCode = company.CompanyCode;
-
+                var movieName = movie.MovieName?.ToLower();
                 var companyName = company.CompanyName;
-@*                 <h3 class="justify-content-center d-flex mt-2">@companyName</h3>
- *@                foreach (var movies in company.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
-                {
-                    int? year = movies.ReleaseDate?.Year;
-                    var delay = 0.1;
-                    <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
-                        <div class="card position-relative">    
-                            <img src="@movies.MoviePoster" alt="Poster Image" class="img-fluid">
 
-                            <div class="button-container">
-                                @{
-                                    var sanitizedOverview = HttpUtility.JavaScriptStringEncode(movies?.Plot);
-                                    var santizedMovieName = HttpUtility.JavaScriptStringEncode(movies?.MovieName);
-                                    var streamUrl = HttpUtility.JavaScriptStringEncode(movies?.StreamUrl);
-                                }
-                                <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@movies?.MoviePoster', '@santizedMovieName', 
-                                    '@movies?.MovieId','@movies?.StreamUrl','@movies?.MovieSchedule','@company.TIN','@company.BranchCode' )">
-                                    @companyName
-                                </button>
-                            </div>
-                            <div class="card-title">
-                                @movies?.MovieName (@year)
-                            </div>
-                        </div>
-                    </div>
-                    delay += 0.1;
+                // Check if the movie name already exists in the dictionary
+                if (!string.IsNullOrEmpty(movieName) && !movieCompanies.ContainsKey(movieName))
+                {
+                    movieCompanies[movieName] = new List<string>();
+                }
+
+                // Add the company name to the list associated with the movie name
+                if (!string.IsNullOrEmpty(movieName) && companyName != null && !movieCompanies[movieName].Contains(companyName))
+                {
+                    movieCompanies[movieName].Add(companyName);
                 }
             }
         }
-        else
+        @foreach (var movieName in movieCompanies.Keys)
         {
-            <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
-                    <p class="mt-2">We apologize, but it seems there are no movies available for this day.</p>
+            // Get the associated companies for the current movie name
+            var companies = movieCompanies[movieName];
+
+            // Fetch movie details (assuming all movies with the same name share the same details)
+            var movie = Model!.Data!.SelectMany(company => company.Movies).FirstOrDefault(m => m.MovieName == movieName);
+
+            if (movie != null)
+            {
+                var movieId = movie?.MovieId;
+                var moviePoster = movie?.MoviePoster;
+                var plot = movie?.Plot;
+                var year = movie?.ReleaseDate?.Year;
+                var streamUrl = movie?.StreamUrl;
+
+                <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
+                    <div class="card position-relative">
+                        <img src="@moviePoster" alt="Poster Image" class="img-fluid">
+                        <div class="button-container">
+                            @foreach (var companyName in companies)
+                            {
+                                var company = Model?.Data?.FirstOrDefault(c => c.CompanyName == companyName);
+                                if (company != null)
+                                {
+                                    var companyCode = company?.CompanyCode;
+                                    var tin = company?.TIN;
+                                    var branchCode = company?.BranchCode;
+
+                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@plot', '@moviePoster', '@movieName','@movieId','@streamUrl','@tin','@branchCode')">
+                                        @companyName
+                                    </button>
+                                }
+                            }
+                        </div>
+                        <div class="card-title">
+                            @movieName (@year)
+                        </div>
+                    </div>
                 </div>
-            </div>
+                delay += 0.1;
+            }
         }
     </div>
 }
@@ -60,7 +85,8 @@ else
     </div>
 }
 <script>
-    function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, movieSchedules, tin, branchCode) {
+    function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, tin, branchCode) {
+        console.log("sadfasf");
         var selectedDate = document.getElementById("selectedDate").value;
         sessionStorage.setItem('selectedMovieName', movieName);
         sessionStorage.setItem('selectedCompanyName ', companyName);
