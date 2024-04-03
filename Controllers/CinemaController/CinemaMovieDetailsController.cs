@@ -49,6 +49,7 @@ namespace HulubejeBooking.Controllers
             }
             else
             {
+                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
                 return RedirectToAction("Index", "Home");
             }
             var code = string.Empty;
@@ -95,10 +96,10 @@ namespace HulubejeBooking.Controllers
 
                 if (movieDetail != null && movieDetail?.results != null && movieDetail.results.Count > 0)
                 {
-                    var result = movieDetail.results[0];
-                    var backdroppath = "https://image.tmdb.org/t/p/w500" + result.backdrop_path;
+                    var result = movieDetail.results.Find(x => x.overview == sanitizedOverview);
+                    var backdroppath = "https://image.tmdb.org/t/p/w500" + result?.backdrop_path;
                     movieDetails.BackdropPath = backdroppath;
-                    tmdbMovieId = result.id;
+                    tmdbMovieId = result?.id;
                 }
             }
             string videoId = streamUrl?.Substring(streamUrl.IndexOf("v=") + 2) ?? "";
