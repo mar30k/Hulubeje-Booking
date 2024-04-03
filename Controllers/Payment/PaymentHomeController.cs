@@ -75,9 +75,6 @@ namespace HulubejeBooking.Controllers.Payment
             var b = await _authenticationManager.identificationValid();
             string? code = b.UserData.Code;
             string? token = b?.UserData?.Token;
-            //var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
-            //var user = JsonConvert.DeserializeObject<UserInformation>(userDataCookie);
-            //code = user?.phoneNumber;
             var vCode = HttpContext.Session.GetString("VoucherCode");
 
             if (HttpContext.Session.TryGetValue("PaymentModels", out var model))
