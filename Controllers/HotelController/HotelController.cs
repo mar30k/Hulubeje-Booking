@@ -142,10 +142,10 @@ namespace HulubejeBooking.Controllers.HotelController
             {
                 string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
                 gethotelsbycity = gethotelsbycityData != null ? JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData) : new GetHotelByCity();
-                if (gethotelsbycity != null && citiesJson != null)
+                if (gethotelsbycity != null && citiesJson!=null)
                 {
-                    var cityData = citiesJson.Data.FirstOrDefault(c => c.Id == city);
-                    int hotelsCount = (int)(cityData != null ? cityData.Hotels : 0);
+                    var cityData = citiesJson?.Data?.FirstOrDefault(c => c.Id == city);
+                    int hotelsCount = (int)(cityData?.Hotels != null ? cityData.Hotels : 0);
                     gethotelsbycity.HotelsCount = (int)Math.Ceiling((double)hotelsCount / 10);
                     gethotelsbycity.RoomFormData = data;
                 }
