@@ -9,7 +9,7 @@ namespace HulubejeBooking.Controllers.Authentication
     {
         private readonly AuthenticationManager _authenticationManager;
         private readonly IHttpClientFactory _httpClientFactory;
-        private IHttpContextAccessor? _httpContextAccessor;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
         public ChangePasswordController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;

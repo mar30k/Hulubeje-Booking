@@ -20,19 +20,17 @@ namespace HulubejeBooking.Controllers.Authentication
 {
     public class AuthenticationManager
     {
-        private IHttpContextAccessor _httpContextAccessor;
-        private HotelListBuffer _hotelListBuffer;
-        private IBuffer _buffer;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IBuffer _buffer;
         private UserData? _cachedUser;
-        private IHttpClientFactory _httpClientFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
         //private WorkWebContext _workWebContext;
         public AuthenticationManager(
-                IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, HotelListBuffer hotelListBuffer, Buffers buffer
+                IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, Buffers buffer
                 )
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
-            _hotelListBuffer = hotelListBuffer;
             _buffer = buffer;
         }
 
@@ -72,7 +70,7 @@ namespace HulubejeBooking.Controllers.Authentication
             var validinfo = new cookieValidation();
             var data = new UserData(); // Adjust the namespace here
             var loggedInCheckerJson = _httpContextAccessor?.HttpContext?.Session.GetString("isLoggedIn");
-            var loginChecker = loggedInCheckerJson != null ? JsonConvert.DeserializeObject<bool>(loggedInCheckerJson) : false;
+            var loginChecker = loggedInCheckerJson != null && JsonConvert.DeserializeObject<bool>(loggedInCheckerJson);
             var authenticateResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
 
             if (authenticateResult.Succeeded)
@@ -107,7 +105,7 @@ namespace HulubejeBooking.Controllers.Authentication
             }
             else
             {
-                var guestUser = GetOrCreateBackgroundTaskUserAsync();
+                var guestUser = GetOrCreateBackgroundTaskUserAsync(Get_cachedUser());
                 validinfo.UserData = guestUser.Result;
                 validinfo.isValid = false;
                 validinfo.isLoggedIn = loginChecker;
@@ -134,7 +132,13 @@ namespace HulubejeBooking.Controllers.Authentication
             }
             return _cachedUser;
         }
-        public async Task<UserData> GetOrCreateBackgroundTaskUserAsync()
+
+        public UserData? Get_cachedUser()
+        {
+            return _cachedUser;
+        }
+
+        public async Task<UserData> GetOrCreateBackgroundTaskUserAsync(UserData? _cachedUser)
         {
             var loginresponseData = new LoginAuthentication();
             var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");

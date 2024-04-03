@@ -325,7 +325,7 @@
                                                 @{
                                                     var dynamicRating = string.IsNullOrEmpty(hotel?.HotelRating?.ToString())
                                                     ? 0
-                                                    : (int)Math.Round(double.Parse(hotel.HotelRating.ToString(), CultureInfo.InvariantCulture));
+                                                    : (int)Math.Round(double.Parse(hotel.HotelRating.ToString() ?? "0", CultureInfo.InvariantCulture));
                                                 }
 
                                                 @for (var i = 0; i < dynamicRating; i++)
