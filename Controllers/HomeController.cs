@@ -27,11 +27,15 @@ namespace HulubejeBooking.Controllers
 
 		public async Task<IActionResult> Index()
         {
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-            //await _workWebContext.GetCurrentCustomerAsync();
             var identificationResult = await _authenticationManager.identificationValid();
-            var Picures = new Images();
-            Picures.CookieValidation = identificationResult;
+            while (identificationResult==null || identificationResult?.UserData?.FirstName == null)
+            {
+                identificationResult = await _authenticationManager.identificationValid();
+            }
+            var Picures = new Images
+            {
+                CookieValidation = identificationResult
+            };
             if (identificationResult != null)
             {
                 ViewBag.FirstName = identificationResult?.UserData.FirstName;
