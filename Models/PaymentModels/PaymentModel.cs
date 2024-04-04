@@ -35,6 +35,7 @@ namespace HulubejeBooking.Models.PaymentModels
     public class PaymentTransactionRequest
     {
         public string? UserMobileNumber { get; set; }
+        public string? PaymentProcessorUnitName { get; set; }
         public int? OperationMode { get; set; }
         public int? SupplierConsigneeId { get; set; }
         public int? SupplierConsigneeUnit { get; set; }

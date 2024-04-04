@@ -18,7 +18,7 @@ namespace HulubejeBooking.Controllers.Payment
     public class PaymentHomeController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private IHttpContextAccessor? _httpContextAccessor;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
         private readonly AuthenticationManager _authenticationManager;
 
         public PaymentHomeController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
@@ -100,6 +100,7 @@ namespace HulubejeBooking.Controllers.Payment
                     supplierConsigneeId = paymentModelData?.CompanyCode,
                     paymentProcessorConsigneeUnit = data?.PaymentProcessorConsigneeUnit,
                     paymentProcessorConsigneeId = data?.PaymentProcessorConsigneeId,
+                    paymentProcessorUnitName = data?.PaymentProcessorName,
                     amount = paymentModelData?.Amount,
                     //amount = 0.1,
                     operationmode = data?.OperationMode,
