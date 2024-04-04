@@ -1,9 +1,11 @@
 ﻿using HulubejeBooking.Controllers.Authentication;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Models.PaymentModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Text;
 
 namespace HulubejeBooking.Controllers.Payment
 {
@@ -48,8 +50,21 @@ namespace HulubejeBooking.Controllers.Payment
                 ViewBag.PhoneNumber = identificationResult?.UserData.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
-
-            return View();
+            var authorizaion = new PaymentAuthorizationResponse();
+            var paymentntTranscion = new PaymentTransactionRequest();
+            if (HttpContext.Session.TryGetValue("PaymentAuthorizationResponse", out var authorizationBytes) && HttpContext.Session.TryGetValue("PaymentTransactionRequest", out var paymentTransactionBytes))
+            {
+                var authorizationString = Encoding.UTF8.GetString(authorizationBytes);
+                var paymentTransactionResponse = Encoding.UTF8.GetString(paymentTransactionBytes);
+                authorizaion = JsonConvert.DeserializeObject<PaymentAuthorizationResponse>(authorizationString);
+                paymentntTranscion = JsonConvert.DeserializeObject<PaymentTransactionRequest>(paymentTransactionResponse);
+            }
+            var model = new Wrapping
+            {
+                PaymentAuthorizationResponse = authorizaion,
+                PaymentTransactionRequest = paymentntTranscion
+            };
+            return View(model);
         }
     }
 }
