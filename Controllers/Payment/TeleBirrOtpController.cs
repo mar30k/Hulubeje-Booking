@@ -50,21 +50,19 @@ namespace HulubejeBooking.Controllers.Payment
                 ViewBag.PhoneNumber = identificationResult?.UserData.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
-            var authorizaion = new PaymentAuthorizationResponse();
-            var paymentntTranscion = new PaymentTransactionRequest();
-            if (HttpContext.Session.TryGetValue("PaymentAuthorizationResponse", out var authorizationBytes) && HttpContext.Session.TryGetValue("PaymentTransactionRequest", out var paymentTransactionBytes))
+
+            PaymentTransactionRequest? paymentntTranscion;
+            if (HttpContext.Session.TryGetValue("PaymentTransactionRequest", out var paymentTransactionBytes))
             {
-                var authorizationString = Encoding.UTF8.GetString(authorizationBytes);
                 var paymentTransactionResponse = Encoding.UTF8.GetString(paymentTransactionBytes);
-                authorizaion = JsonConvert.DeserializeObject<PaymentAuthorizationResponse>(authorizationString);
                 paymentntTranscion = JsonConvert.DeserializeObject<PaymentTransactionRequest>(paymentTransactionResponse);
             }
-            var model = new Wrapping
+            else
             {
-                PaymentAuthorizationResponse = authorizaion,
-                PaymentTransactionRequest = paymentntTranscion
-            };
-            return View(model);
+                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                return RedirectToAction("Index", "Home");
+            }
+            return View(paymentntTranscion);
         }
     }
 }
