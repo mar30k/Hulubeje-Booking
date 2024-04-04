@@ -27,7 +27,7 @@
                 if (!string.IsNullOrEmpty(movieName) && companyName != null && !movieCompanies[movieName].Contains(companyName))
                 {
                     movieCompanies[movieName].Add(companyName);
-                }
+                }                
             }
         }
         @foreach (var movieName in movieCompanies.Keys)
@@ -36,7 +36,7 @@
             var companies = movieCompanies[movieName];
 
             // Fetch movie details (assuming all movies with the same name share the same details)
-            var movie = Model!.Data!.SelectMany(company => company.Movies).FirstOrDefault(m => m.MovieName == movieName);
+            var movie = Model!.Data!.SelectMany(company => company.Movies).FirstOrDefault(m => m.MovieName?.ToLower() == movieName);
 
             if (movie != null)
             {
@@ -66,7 +66,7 @@
                             }
                         </div>
                         <div class="card-title">
-                            @movieName (@year)
+                                @movieName (@year)
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,6 @@ else
 }
 <script>
     function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, tin, branchCode) {
-        console.log("sadfasf");
         var selectedDate = document.getElementById("selectedDate").value;
         sessionStorage.setItem('selectedMovieName', movieName);
         sessionStorage.setItem('selectedCompanyName ', companyName);

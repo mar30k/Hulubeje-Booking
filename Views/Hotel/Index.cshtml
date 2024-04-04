@@ -419,15 +419,6 @@
 
             var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
 
-            sessionStorage.setItem('city', city);
-            sessionStorage.setItem('dateRange', dateRange);
-            sessionStorage.setItem('adultCount', adultCount);
-            sessionStorage.setItem('childrenCount', childrenCount);
-            sessionStorage.setItem('roomsCount', roomsCount);
-            sessionStorage.setItem('numberOfNights', numberOfNights);
-
-
-
             var formData = {
                 city: city,
                 dateRange: dateRange,
@@ -454,13 +445,6 @@
 
     $(document).ready(function () {
         $('.cardB').on('click', function () {
-            sessionStorage.setItem("oud", $(this).data('oud'));
-            sessionStorage.setItem('orgTin', $(this).data('org-code'));
-            sessionStorage.setItem("hotelName", $(this).data('hotel-name'));
-            sessionStorage.setItem("branchName", $(this).data('branch-name'));
-
-
-
             var data = 
             {
                 oud: $(this).data('oud'),

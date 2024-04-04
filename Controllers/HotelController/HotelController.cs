@@ -157,9 +157,8 @@ namespace HulubejeBooking.Controllers.HotelController
         public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
         {
             if (roomFormData != null) {
-                string? token = "";
                 var b = await _authenticationManager.identificationValid();
-                token = b.UserData.Token;
+                string? token = b.UserData.Token;
                 var dt = DateRangeParser.parseDateRange(roomFormData.Date);
                 var arrivalDateString = dt.startDateString.Trim();
                 var departureDateString = dt.endDateString.Trim();
@@ -221,9 +220,8 @@ namespace HulubejeBooking.Controllers.HotelController
         public async Task<IActionResult> Hoteldetail([FromBody] RoomFormData roomFormData)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            var token = "";
             var b = await _authenticationManager.identificationValid();
-            token = b.UserData.Token;
+            string? token = b.UserData.Token;
             try
             {
                 _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -325,6 +323,7 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpGet]
         public async Task<IActionResult> AdditionalPages(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange, int page)
         {
+            var numberOfDay = numberOfNights <= 0 ? 1 : numberOfNights;
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var gethotelsbycity = new GetHotelByCity();
             var identificationResult = await _authenticationManager.identificationValid();
@@ -347,12 +346,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 DepartureDate = departureDate,
                 ArrivalDate = arrivalDate,
             };
-            var numberOfDay = numberOfNights;
 
-            if (numberOfDay <= 0)
-            {
-                numberOfDay = 1;
-            }
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var param = new
             {
@@ -364,7 +358,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 childCount,
                 roomCount,
                 city,
-                page = page
+                page
             };
             var paramJson = JsonConvert.SerializeObject(param);
             var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
