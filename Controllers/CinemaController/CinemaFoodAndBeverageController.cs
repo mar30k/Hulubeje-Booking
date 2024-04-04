@@ -12,9 +12,9 @@ namespace CinemaSeatBooking.Controllers
 {
     public class CinemaFoodAndBeverageController : Controller
     {
-        private IHttpContextAccessor? _httpContextAccessor;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
         private readonly AuthenticationManager _authenticationManager;
-        private IHttpClientFactory _httpClientFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
         public CinemaFoodAndBeverageController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager, IHttpClientFactory httpClientFactory)
         {
             _httpContextAccessor = httpContextAccessor;

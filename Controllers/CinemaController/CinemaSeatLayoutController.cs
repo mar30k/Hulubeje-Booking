@@ -16,8 +16,7 @@ using Tweetinvi.Core.Extensions;
 public class CinemaSeatLayoutController : Controller
 {
     private readonly AuthenticationManager _authenticationManager;
-    private readonly HttpClient _httpClient;
-    private IHttpContextAccessor? _httpContextAccessor;
+    private readonly IHttpContextAccessor? _httpContextAccessor;
     private readonly IHttpClientFactory _httpClientFactory;
 
     public CinemaSeatLayoutController(AuthenticationManager authenticationManager, IHttpContextAccessor? httpContextAccessor, IHttpClientFactory httpClientFactory)

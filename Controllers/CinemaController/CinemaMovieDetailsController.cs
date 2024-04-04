@@ -14,7 +14,7 @@ namespace HulubejeBooking.Controllers
         private readonly AuthenticationManager _authenticationManager;
         private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly IHttpClientFactory _httpClientFactory;
-        private IHttpContextAccessor? _httpContextAccessor;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
 
         public CinemaMovieDetailsController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
@@ -35,12 +35,12 @@ namespace HulubejeBooking.Controllers
 
                 if (company != null && company.Movies != null)
                 {
-                    var movie = company.Movies.FirstOrDefault(m => m.MovieName == movieName);
+                    var movie = company.Movies.FirstOrDefault(m => m.MovieName?.ToLower() == movieName);
                     if (movie != null && movie.MovieSchedule != null )
                     {
                         movieSchedule = movie.MovieSchedule;
                     }
-                    if (movie != null && movie.Date != null &&movie.Article!=null)
+                    if (movie != null && movie.Date != null &&movie.Article!=null)    
                     {
                         selectedDate = (DateTime)movie.Date;
                         articleCode = movie.Article;
@@ -70,7 +70,6 @@ namespace HulubejeBooking.Controllers
                 ViewBag.PhoneNumber = identificationResult?.UserData.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
             var _tmdbClient = _httpClientFactory.CreateClient("MovieDb");
             var movieDetails = new MovieModel
             {
