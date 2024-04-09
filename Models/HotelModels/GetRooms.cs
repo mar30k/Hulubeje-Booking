@@ -3,6 +3,7 @@
     public class RoomType
     {
         public int? RoomTypeCode { get; set; }
+        public bool? IsTaxInclusive { get; set; }
         public string? RoomTypeDescription { get; set; }
         public string? RoomDescription { get; set; }
         public int? RateCode { get; set; }
@@ -34,7 +35,7 @@
 
     public class GetRooms
     {
-        
+        public RoomFormData? RoomFormData { get; set; }
         public bool? IsSuccessful { get; set; }
         public string? HotelName { get; set; }
         public List<RoomType>? Data { get; set; }
