@@ -41,7 +41,7 @@ namespace HulubejeBooking.Controllers.HotelController
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
-                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isValild = identificationResult.isValid;
                 ViewBag.isLoggedIn = identificationResult.isLoggedIn;
                 ViewBag.FirstName = identificationResult?.UserData.FirstName;
                 ViewBag.LastName = identificationResult?.UserData.LastName;
