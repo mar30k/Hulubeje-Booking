@@ -15,7 +15,40 @@
 }
 <title>Hotel List</title>
 <style>
+    .search-container {
 
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; 
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        outline: none;
+    }
+
+    .search-button {
+        background-color: #007bff;
+        border: none;
+        padding: 10px;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
     h4 {
         font-size: 18px;
         font-weight: 500;
@@ -88,240 +121,248 @@
         border-radius: 5px;
     }
 </style>
+<body class="bg-light">
+    <div class="container">
 
-<div class="container">
+        <div class="row my-3 mx-1" style="padding-bottom:10px;">
+            <div class="col-md-4">
+                <div class="d-md-none">
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
+                        <span class="bi bi-filter"></span> Filters
+                    </button>
+                </div>
+                <div class="collapse d-md-block" id="filtersCollapse">
+                    <div class="row" style="padding-right: 0px; padding-left:0px;">
+                        <form>
+                            <fieldset>
+                                <div class="row">
+                                    <legend>Filter by Amenities</legend>
 
-    <div class="row m-1" style="padding-bottom:10px;">
-        <div class="col-md-4">
-            <div class="row" style="padding-right: 0px; padding-left:0px;">
-                <form>
-                    <fieldset>
-                        <div class="row">
-                            <legend>Filter by Amenities</legend>
+                                    <div class=" col-md-6 hotelAmenities border bg-white">
 
-                            <div class=" col-md-6 hotelAmenities" style="border: 1px solid #928F63; border-right: none;">
+                                        <label><strong>Hotel Amenities</strong></label>
+                                        <div>
+                                            <input type="checkbox" id="buisnessCenter" name="hotelAmenities" value="Business center">
+                                            <label for="buisnessCenter">Business Center</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="gym" name="hotelAmenities" value="Gym">
+                                            <label for="gym">Gym</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="conferenceFacilities" name="hotelAmenities" value="Conference facilities">
+                                            <label for="conferenceFacilities">Conference Facilities</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="parking" name="hotelAmenities" value="Parking">
+                                            <label for="parking">Parking</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="restaurantBar" name="hotelAmenities" value="Restaurant & Bar">
+                                            <label for="restaurantBar">Restaurant & Bar</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="roomService" name="hotelAmenities" value="Room Service">
+                                            <label for="roomService">Room Service</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="spa" name="hotelAmenities" value="Spa">
+                                            <label for="spa">Spa</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="elevator" name="hotelAmenities" value="Elevator">
+                                            <label for="elevator">Elevator</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="laundry" name="hotelAmenities" value="Laundry">
+                                            <label for="laundry">Laundry</label>
+                                        </div>
+                                    </div>
+                                    <div class=" col-md-6 roomAmenities  border bg-white">
 
-                                <label>Hotel Amenities</label>
-                                <div>
-                                    <input type="checkbox" id="buisnessCenter" name="hotelAmenities" value="Business center">
-                                    <label for="buisnessCenter">Business Center</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="gym" name="hotelAmenities" value="Gym">
-                                    <label for="gym">Gym</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="conferenceFacilities" name="hotelAmenities" value="Conference facilities">
-                                    <label for="conferenceFacilities">Conference Facilities</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="parking" name="hotelAmenities" value="Parking">
-                                    <label for="parking">Parking</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="restaurantBar" name="hotelAmenities" value="Restaurant & Bar">
-                                    <label for="restaurantBar">Restaurant & Bar</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="roomService" name="hotelAmenities" value="Room Service">
-                                    <label for="roomService">Room Service</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="spa" name="hotelAmenities" value="Spa">
-                                    <label for="spa">Spa</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="elevator" name="hotelAmenities" value="Elevator">
-                                    <label for="elevator">Elevator</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="laundry" name="hotelAmenities" value="Laundry">
-                                    <label for="laundry">Laundry</label>
-                                </div>
+                                        <label><strong>Room Amenities</strong></label>
+                                        <div>
+                                            <input type="checkbox" id="charging" name="roomAmenities" value="Charging">
+                                            <label for="charging">Charging</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="doubleBed" name="roomAmenities" value="Double Bed">
+                                            <label for="doubleBed">Double Bed</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="freeBottledWater" name="roomAmenities" value="Free Bottled Water">
+                                            <label for="freeBottledWater">Free Bottled Water</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="guestChair" name="roomAmenities" value="Guest chair">
+                                            <label for="guestChair">Guest Chair</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="miniBar" name="roomAmenities" value="Mini Bar">
+                                            <label for="miniBar">Mini Bar</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="safebox" name="roomAmenities" value="Safe Box">
+                                            <label for="safebox">Safebox</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="satelliteTV" name="roomAmenities" value="Satelite TV">
+                                            <label for="satelliteTV">Satellite TV</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="showerBox" name="roomAmenities" value="Shower Box">
+                                            <label for="showerBox">Shower Box</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="singleBed" name="roomAmenities" value="Single Bed">
+                                            <label for="singleBed">Single Bed</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="slippersAndTowels" name="roomAmenities" value="Slippers & Towls">
+                                            <label for="slippersAndTowels">Slippers and Towels</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="telephone" name="roomAmenities" value="Telephone">
+                                            <label for="telephone">Telephone</label>
+                                        </div>
+
+                                        <div>
+                                            <input type="checkbox" id="wifi" name="roomAmenities" value="WIFI">
+                                            <label for="wifi">WiFi</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="airConditioner" name="roomAmenities" value="Air conditioner">
+                                            <label for="airConditioner">Air Conditioner</label>
+                                        </div>
+
+                                        <div>
+                                            <input type="checkbox" id="coffeeMaker" name="roomAmenities" value="Coffee Maker">
+                                            <label for="coffeeMaker">Coffee Maker</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="livingArea" name="roomAmenities" value="Living Area">
+                                            <label for="livingArea">Living Area</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="bathTub" name="roomAmenities" value="Bath tab">
+                                            <label for="bathTub">Bath Tub</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="hairDryer" name="roomAmenities" value="Hair drier">
+                                            <label for="hairDryer">Hair Dryer</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="workingDesk" name="roomAmenities" value="Working desk">
+                                            <label for="workingDesk">Working Desk</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="balcony" name="roomAmenities" value="Balcony">
+                                            <label for="balcony">Balcony</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="toothpasteAndBrush" name="roomAmenities" value="Toothpaste & Brush">
+                                            <label for="toothpasteAndBrush">Toothpaste and Brush</label>
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="bedNet" name="roomAmenities" value="Bed net">
+                                            <label for="bedNet">Bed Net</label>
+                                        </div>
 
 
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                            <div class="row mt-2 gx-1">
+                                <div class=" col-md-6 pb-5 mb-2 cardPrice pt-2 border-lg-start border bg-white">
+                                    <legend>Filter By Price</legend>
+                                    <div class="price-content">
+                                        <div>
+                                            <label for="filter-min-value">Min</label>
+                                            <p id="min-value" style="font-size: 12px;">ETB 0</p>
+                                        </div>
+                                        <div>
+                                            <label for="filter-max-value">Max</label>
+                                            <p id="max-value" style="font-size: 12px;">ETB 0</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="range-slider">
+                                        <div class="range-fill"></div>
+                                        <input id="filter-min-value" type="range" class="min-price" value="0" min="0" max="10" step="10" />
+                                        <input id="filter-max-value" type="range" class="max-price" value="20000" min="0" max="20000" step="10" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6  mb-2 filter pt-2 border bg-white">
+                                    <legend>Sort</legend>
+                                    <div>
+                                        <input type="checkbox" id="defaultFilter" name="sort" checked>
+                                        <label for="defaultFilter">Default</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="lowToHighFilter" name="sort">
+                                        <label for="lowToHighFilter">Price: Low To High</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="highToLowFilter" name="sort">
+                                        <label for="highToLowFilter">Price: High To Low</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="sortByNameAZ" name="sort" value=" ">
+                                        <label for="sortByNameAZ">Name: A - Z</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="sortByNameZA" name="sort" value=" ">
+                                        <label for="sortByNameZA">Name: Z - A</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="sortDecresingStar" name="sort" value=" ">
+                                        <label for="sortDecresingStar">Star: High to Low</label>
+                                    </div><div>
+                                        <input type="checkbox" id="sortIncresingStar" name="sort" value=" ">
+                                        <label for="sortIncresingStar">Star: Low to High</label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class=" col-md-6 roomAmenities" style="border: 1px solid #928F63;">
-                                @* <div class="vertical-line" style="position: absolute; border-right: 1px solid #eee; height: 100%; margin-top: 5px; padding-right:10px;"></div> *@
-
-                                <label>Room Amenities</label>
-                                <div>
-                                    <input type="checkbox" id="charging" name="roomAmenities" value="Charging">
-                                    <label for="charging">Charging</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="doubleBed" name="roomAmenities" value="Double Bed">
-                                    <label for="doubleBed">Double Bed</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="freeBottledWater" name="roomAmenities" value="Free Bottled Water">
-                                    <label for="freeBottledWater">Free Bottled Water</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="guestChair" name="roomAmenities" value="Guest chair">
-                                    <label for="guestChair">Guest Chair</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="miniBar" name="roomAmenities" value="Mini Bar">
-                                    <label for="miniBar">Mini Bar</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="safebox" name="roomAmenities" value="Safe Box">
-                                    <label for="safebox">Safebox</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="satelliteTV" name="roomAmenities" value="Satelite TV">
-                                    <label for="satelliteTV">Satellite TV</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="showerBox" name="roomAmenities" value="Shower Box">
-                                    <label for="showerBox">Shower Box</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="singleBed" name="roomAmenities" value="Single Bed">
-                                    <label for="singleBed">Single Bed</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="slippersAndTowels" name="roomAmenities" value="Slippers & Towls">
-                                    <label for="slippersAndTowels">Slippers and Towels</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="telephone" name="roomAmenities" value="Telephone">
-                                    <label for="telephone">Telephone</label>
-                                </div>
-
-                                <div>
-                                    <input type="checkbox" id="wifi" name="roomAmenities" value="WIFI">
-                                    <label for="wifi">WiFi</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="airConditioner" name="roomAmenities" value="Air conditioner">
-                                    <label for="airConditioner">Air Conditioner</label>
-                                </div>
-
-                                <div>
-                                    <input type="checkbox" id="coffeeMaker" name="roomAmenities" value="Coffee Maker">
-                                    <label for="coffeeMaker">Coffee Maker</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="livingArea" name="roomAmenities" value="Living Area">
-                                    <label for="livingArea">Living Area</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="bathTub" name="roomAmenities" value="Bath tab">
-                                    <label for="bathTub">Bath Tub</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="hairDryer" name="roomAmenities" value="Hair drier">
-                                    <label for="hairDryer">Hair Dryer</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="workingDesk" name="roomAmenities" value="Working desk">
-                                    <label for="workingDesk">Working Desk</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="balcony" name="roomAmenities" value="Balcony">
-                                    <label for="balcony">Balcony</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="toothpasteAndBrush" name="roomAmenities" value="Toothpaste & Brush">
-                                    <label for="toothpasteAndBrush">Toothpaste and Brush</label>
-                                </div>
-                                <div>
-                                    <input type="checkbox" id="bedNet" name="roomAmenities" value="Bed net">
-                                    <label for="bedNet">Bed Net</label>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </fieldset>
-                    <div class="row mt-2 gx-1">
-                        <div class=" col-md-6  cardPrice pt-2 border-lg-start" style="border: 1px solid #928F63; border-right: none;">
-                        <legend >Filter By Price</legend>
-                            @* <div class="price-content">
-                                <div>
-                                    <label for="filter-min-value">Min</label>
-                                    <p id="min-value" style="font-size: 12px;">ETB @minTotalPrice</p>
-                                </div>
-                                <div>
-                                    <label for="filter-max-value">Max</label>
-                                    <p id="max-value" style="font-size: 12px;">ETB @maxTotalPrice</p>
-                                </div>
-                            </div>
-
-                            <div class="range-slider">
-                                <div class="range-fill"></div>
-                                <input id="filter-min-value" type="range" class="min-price" value="@minTotalPrice" min="@minTotalPrice" max="@(maxTotalPrice + 10)"  step="10"/>
-                                <input id="filter-max-value" type="range" class="max-price" value="@maxTotalPrice" min="@minTotalPrice" max="@(maxTotalPrice + 10)" step="10"/>
-                            </div> *@
-                        </div>
-                        <div class="col-md-6 filter pt-2" style="border: 1px solid #928F63;">
-                            <legend>Sort</legend>
-                            <div>
-                                <input type="checkbox" id="defaultFilter" name="sort"  checked>
-                                <label for="defaultFilter">Default</label>
-                            </div>
-                            <div>
-                                <input type="checkbox" id="lowToHighFilter" name="sort" >
-                                <label for="lowToHighFilter">Price: Low To High</label>
-                            </div>
-                            <div>
-                                <input type="checkbox" id="highToLowFilter" name="sort" >
-                                <label for="highToLowFilter">Price: High To Low</label>
-                            </div>
-                            <div>
-                                <input type="checkbox" id="sortByNameAZ" name="sort" value=" ">
-                                <label for="sortByNameAZ">Name: A - Z</label>
-                            </div>
-                            <div>
-                                <input type="checkbox" id="sortByNameZA" name="sort" value=" ">
-                                <label for="sortByNameZA">Name: Z - A</label>
-                            </div>
-                            <div>
-                                <input type="checkbox" id="sortDecresingStar" name="sort" value=" ">
-                                <label for="sortDecresingStar">Star: High to Low</label>
-                            </div><div>
-                                <input type="checkbox" id="sortIncresingStar" name="sort" value=" ">
-                                <label for="sortIncresingStar">Star: Low to High</label>
-                            </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
 
-
-
-        </div>
-
-        <div class="col-md-8 hotelsContainer" id="hotelContainer">
-            @if (Model?.Data?.Count > 0)
-            {
-                var count = 0;
-                @foreach (var hotel in Model.Data)
+            <div class="col-md-8 hotelsContainer" id="hotelContainer">
+                <div class="search-container mt-2">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search Hotels by Name" style="font-size: 14px;">
+                    <button class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                @if (Model?.Data?.Count > 0)
                 {
-                    count += 1;
-                    <div class="cardH hotelCards card w-100 mt-3"
-                         data-hotel-ratings="@hotel?.HotelRating"
-                         data-hotel-name = "@hotel?.OrganizationName"
-                         data-original-count="@count"
-                         data-hotel-price = "@hotel?.TotalPrice"
-                         data-hotel-amenities="@string.Join(",", hotel?.RoomAminities ?? Enumerable.Empty<string>())"
-                         data-room-amenities="@string.Join(",", hotel?.HotelAminities ?? Enumerable.Empty<string>())"
-                         data-min-room-value="@hotel?.MinRoomValue"
-                         data-tin="@hotel?.OrgTin" data-oud="@hotel?.BranchCode"
-                         data-hotelRating="@hotel?.HotelRating">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <img src="@hotel?.PortraitPicture" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
-                            </div>
-                            <div class="col-sm-8">
+                    var count = 0;
+                    @foreach (var hotel in Model.Data)
+                    {
+                        count += 1;
+                        <div class="cardH hotelCards card w-100 mt-3"
+                             data-hotel-ratings="@hotel?.HotelRating"
+                             data-hotel-name="@hotel?.OrganizationName"
+                             data-original-count="@count"
+                             data-hotel-price="@hotel?.TotalPrice"
+                             data-hotel-amenities="@string.Join(",", hotel?.RoomAminities ?? Enumerable.Empty<string>())"
+                             data-room-amenities="@string.Join(",", hotel?.HotelAminities ?? Enumerable.Empty<string>())"
+                             data-min-room-value="@hotel?.MinRoomValue"
+                             data-tin="@hotel?.OrgTin" data-oud="@hotel?.BranchCode"
+                             data-hotelRating="@hotel?.HotelRating">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <img src="@hotel?.PortraitPicture" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
+                                </div>
+                                <div class="col-sm-8">
 
 
-                                <div class="card-body">
-                                    <div class="row align-items-start ">
-                                        <div class="col">
-                                            <a href="#"><h5 class="card-title">@hotel?.OrganizationName</h5></a>
+                                    <div class="card-body">
+                                        <div class="row align-items-start ">
+                                            <div class="col">
+                                                <a href="#"><h5 class="card-title">@hotel?.OrganizationName</h5></a>
                                                 @{
                                                     var dynamicRating = string.IsNullOrEmpty(hotel?.HotelRating?.ToString())
                                                     ? 0
@@ -330,81 +371,83 @@
 
                                                 @for (var i = 0; i < dynamicRating; i++)
                                                 {
-                                                    <i class="bi bi-star-fill"></i>
+                                                    <i class="bi bi-star-fill text-warning" ></i>
                                                 }
 
                                                 @for (var j = dynamicRating; j < 5; j++)
                                                 {
-                                                    <i class="bi bi-star"></i>
+                                                    <i class="bi bi-star text-primary"></i>
                                                 }
-                                            <p class="card-text"><small class="text-body-secondary">@hotel?.BranchName</small></p>
-                                            <div>
-                                                <span><i class="bi bi-geo-alt-fill"></i> @hotel?.SpecificLocation</span>
-                                            </div>
-                                            <div>
-                                                <span class="p-1 rounded"style="display: inline-block; background-color: green; color: white;">@hotel?.RateDescription</span>
-                                            </div>
-                                        </div>
-                                        <span class="mt-2">
-                                            <i class="bi bi-cash-stack"></i>Starting from: ETB @((hotel?.MinRoomValue ?? 0).ToString("N2", new System.Globalization.CultureInfo("am-ET")))
-                                        </span>
-                                        <div>
-                                        </div>
-                                        <div class="col-md-3">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mt-2">
-                                                <div style="border-left: 1px solid black; padding-left: 8px;">
-                                                    <span type="text" data-toggle="tooltip" data-placement="bottom" title="">
-                                                        Type Of Rooms: @hotel?.HotelRoomsCount
-                                                    </span>
-                                                    <br>
-                                                    <span type="text"
-                                                          data-toggle="tooltip"
-                                                          data-placement="bottom"
-                                                          title=""
-                                                          style="color: @(hotel?.IsTaxInclusive == true ? "green" : "red")">
-                                                        @(hotel?.IsTaxInclusive == true? "Tax Inclusive" : "Tax Exclusive")
-                                                    </span>
-
+                                                <p class="card-text"><small class="text-body-secondary">@hotel?.BranchName</small></p>
+                                                <div>
+                                                    <span><i class="bi bi-geo-alt-fill"></i> @hotel?.SpecificLocation</span>
+                                                </div>
+                                                <div>
+                                                    <span class="p-1 rounded" style="display: inline-block; background-color: green; color: white;">@hotel?.RateDescription</span>
                                                 </div>
                                             </div>
+                                            <span class="mt-2">
+                                                <i class="bi bi-cash-stack"></i>Starting from: ETB @((hotel?.MinRoomValue ?? 0).ToString("N2", new System.Globalization.CultureInfo("am-ET")))
+                                            </span>
+                                            <div>
+                                            </div>
+                                            <div class="col-md-3">
+                                            </div>
                                         </div>
-                                        <div class="col-6">
-                                            <h5>Total Price: ETB @string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:N2}", hotel?.TotalPrice ?? 0)</h5>
-                                            <button class="btn btn-primary btn-sm viewAvailabilityBtn"
-                                                    data-org-code="@hotel?.OrganizationCode"
-                                                    data-cityname="@hotel?.CityName"
-                                                    data-hotel="@hotel?.OrganizationName"
-                                                    data-oud="@hotel?.BranchCode"
-                                                    data-branch="@hotel?.BranchName">
-                                                View Availability
-                                            </button>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="mt-2">
+                                                    <div style="border-left: 1px solid black; padding-left: 8px;">
+                                                        <span type="text" data-toggle="tooltip" data-placement="bottom" title="">
+                                                            Type Of Rooms: @hotel?.HotelRoomsCount
+                                                        </span>
+                                                        <br>
+                                                        <span type="text"
+                                                              data-toggle="tooltip"
+                                                              data-placement="bottom"
+                                                              title=""
+                                                              style="color: @(hotel?.IsTaxInclusive == true ? "green" : "red")">
+                                                            @(hotel?.IsTaxInclusive == true ? "Tax Inclusive" : "Tax Exclusive")
+                                                        </span>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <h5>Total Price: ETB @string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:N2}", hotel?.TotalPrice ?? 0)</h5>
+                                                <button class="btn btn-primary btn-sm viewAvailabilityBtn"
+                                                        data-org-code="@hotel?.OrganizationCode"
+                                                        data-cityname="@hotel?.CityName"
+                                                        data-hotel="@hotel?.OrganizationName"
+                                                        data-oud="@hotel?.BranchCode"
+                                                        data-branch="@hotel?.BranchName">
+                                                    View Availability
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    }
+                }
+                else
+                {
+                    <div class="justify-content-center d-flex mt-3">
+                        <h2>No Match!</h2>
                     </div>
                 }
-            }
-            else
-            {
-                <div class="justify-content-center d-flex mt-3" >
-                    <h2>No Match!</h2>
-                </div>
-            }
-            <div class="d-flex justify-content-center mt-2"  style="display: none;">
-                <!-- Add your loading spinner here -->
-                <div class="spinner-border text-primary" id="loadingSpinner" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                <div class="d-flex justify-content-center mt-2" style="display: none;">
+                    <!-- Add your loading spinner here -->
+                    <div class="spinner-border text-primary" id="loadingSpinner" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</body>
+
 
 @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @* <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -414,11 +457,27 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> *@
 
-@* <script>
+<script>
     $(document).ready(function () {
-        
+        function filterHotelsByName() {
+            var input, filter, cards, card, hotelName, i;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase().trimEnd();
+            cards = document.querySelectorAll('.hotelCards');
+
+            cards.forEach(function (card) {
+                hotelName = card.getAttribute('data-hotel-name').toUpperCase();
+                if (hotelName.indexOf(filter) > -1) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+        $('.search-button').on('click', filterHotelsByName);
+        $('#searchInput').on('keyup', filterHotelsByName);
     });
-</script> *@
+</script>
 <script>
     function generateStarRatings(rating) {
         var dynamicRating = rating ? Math.round(parseFloat(rating)) : 0;
