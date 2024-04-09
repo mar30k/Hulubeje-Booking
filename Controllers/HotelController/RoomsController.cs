@@ -27,6 +27,8 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpGet]
         public async Task<IActionResult> IndexAsync()
         {
+            var roomForm = HttpContext.Session.GetString("RoomFormData");
+            var roomFormData = roomForm!=null ? JsonConvert.DeserializeObject<RoomFormData>(roomForm) : null;
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
@@ -64,12 +66,19 @@ namespace HulubejeBooking.Controllers.HotelController
 
             var viewModelJson = HttpContext.Session.GetString("AvailabilityViewModel");
             var viewModel = new GetRooms();
-            if (!string.IsNullOrEmpty(viewModelJson))
+            if (!string.IsNullOrEmpty(viewModelJson) && !string.IsNullOrEmpty(roomForm))
             {
                 //HttpContext.Session.Remove("AvailabilityViewModel");
                 viewModel = JsonConvert.DeserializeObject<GetRooms>(viewModelJson);
-            }
-            return View(viewModel);
+                roomFormData = JsonConvert.DeserializeObject<RoomFormData>(roomForm);
+                viewModel.RoomFormData = roomFormData;
+                return View(viewModel);
+			}
+            else
+            {
+				TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+				return RedirectToAction("Index", "Home");
+			}
         }
 
     }
