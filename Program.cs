@@ -5,21 +5,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+var configuration = new ConfigurationBuilder()
+	   .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+	   .Build();
+var baseUrl = configuration.GetValue<string>("CnetApiBaseUrl");
+var cnetPayment = configuration.GetValue<string>("CnetPayment");
+var busBookingApi = configuration.GetValue<string>("BusBooking");
+var v6Api = configuration.GetValue<string>("V6Api");
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("CnetHulubeje", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("https://api-hulubeje.cnetcommerce.com/api");
+    httpClient.BaseAddress = new Uri(v6Api);
 });
 builder.Services.AddHttpClient("Payment", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("https://payment.cnetcommerce.com");
+    httpClient.BaseAddress = new Uri(cnetPayment);
 });
 builder.Services.AddHttpClient("BusBooking", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("http://196.189.126.8:8008/api/");
+    httpClient.BaseAddress = new Uri(busBookingApi);
     httpClient.DefaultRequestHeaders.Add("x-api-key", "9BE090F9-7F52-4297-93A1-32D03D361DE9");
 });
 builder.Services.AddAuthentication("cnet.erp.v6")
@@ -30,7 +36,7 @@ builder.Services.AddAuthentication("cnet.erp.v6")
      });
 builder.Services.AddHttpClient("HulubejeBooking", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("https://v7-hulubeje.cnetcommerce.com/api/");
+    httpClient.BaseAddress = new Uri(baseUrl);
     httpClient.DefaultRequestHeaders.Add("x-api-key", "5D5EAFF4-D29A-485B-BDB9-785EF86FFFAE");
 });
 builder.Services.AddHttpClient("HulubejeCache", httpClient =>
