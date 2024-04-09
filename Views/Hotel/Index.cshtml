@@ -138,6 +138,43 @@
                 height: 50px !important;
             }
         }
+        /* Styles for the search container */
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 300px; /* Adjust the maximum width as needed */
+            margin: 0 auto; /* Center the search bar */
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: width 0.3s ease-in-out; /* Add animation for width changes */
+        }
+
+        /* Styles for the search input */
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        /* Styles for the search button */
+        .search-button {
+            background-color: #007bff; /* Change button color as needed */
+            border: none;
+            padding: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out; /* Add animation for color changes */
+        }
+
+            /* Change button color on hover */
+            .search-button:hover {
+                background-color: #0056b3; /* Change button hover color as needed */
+            }
+
     </style>
 </head>
 @{
@@ -218,47 +255,84 @@
         </div>
     </div>
 </div>
-<div class="container">
-    @{
-        var random = new Random();
-        var shuffledHotels = Model?.Companies?.Data?.OrderBy(x => random.Next()).Take(20).ToList();
-        var ordered = shuffledHotels?.OrderBy(x => x.BrandName).ToList();
-    }
-    <div class="row mt-3">
-        @foreach (var hotel in Model?.Companies?.Data   ?? new List<Companies>())
-        {
-            foreach (var branch in hotel.Branches ?? new List<Branch>())
+<div class="bg-light">
+    <div class="container pt-2">
+        <div class="search-container ">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search hotels" onkeyup="filterHotels()">
+            <button class="search-button" onclick="filterHotels()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-12 justify-content-center " id="searchMessage" style="display: none;">
+                <strong>No hotels found.</strong>
+            </div>
+        </div>
+        <div class="row mt-3">
+            @foreach (var hotel in Model?.Companies?.Data ?? new List<Companies>())
             {
-                <div class="col-md-6 mb-3">
-                    <a class="card cardB clickable-card" 
-                       data-oud="@branch?.Code"
-                       data-cityName="@branch?.City"
-                       data-org-code="@hotel?.Code"
-                       data-org-tin="@hotel?.Tin"
-                       data-hotel-name="@hotel?.BrandName"
-                       data-branch-note="@branch?.Description"
-                        data-branch-name="@branch?.Name"
-                        data-city="" >
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="@branch?.Logo" class="img-fluid rounded-start" alt="...">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">@hotel?.BrandName</h5>
-                                    <p class="card-text">@branch?.City @(branch?.SpecificAddress != null ? $",{branch.SpecificAddress}" : "")</p>
-                                    <p class="card-text"><strong class="text-body-secondary">@branch?.Name </strong> </p>
+                foreach (var branch in hotel.Branches ?? new List<Branch>())
+                {
+                    <div class="col-md-6 mb-3 hotelbranches" id="@branch?.City">
+                        <a class="card cardB clickable-card"
+                           data-oud="@branch?.Code"
+                           data-cityName="@branch?.City"
+                           data-org-code="@hotel?.Code"
+                           data-org-tin="@hotel?.Tin"
+                           data-hotel-name="@hotel?.BrandName"
+                           data-branch-note="@branch?.Description"
+                           data-branch-name="@branch?.Name"
+                           data-city="@branch?.CityId">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="@branch?.Logo" class="img-fluid rounded-start" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@hotel?.BrandName</h5>
+                                        <p class="card-text">@branch?.City @(branch?.SpecificAddress != null ? $",{branch.SpecificAddress}" : "")</p>
+                                        <p class="card-text"><strong class="text-body-secondary">@branch?.Name </strong> </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
+                }
             }
-        }
+        </div>
+        <script>
+            function filterHotels() {
+                var input, filter, cards, card, hotelName, i, txtValue, matchFound;
+                input = document.getElementById("searchInput");
+                filter = input.value.toUpperCase();
+                cards = document.getElementsByClassName("hotelbranches");
+                matchFound = false;
+
+                for (i = 0; i < cards.length; i++) {
+                    card = cards[i];
+                    hotelName = card.getElementsByClassName("card-title")[0];
+                    if (hotelName) {
+                        txtValue = hotelName.textContent || hotelName.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            card.style.display = "";
+                            matchFound = true;
+                        } else {
+                            card.style.display = "none";
+                        }
+                    }
+                }
+
+                var messageElement = document.getElementById("searchMessage");
+                if (matchFound) {
+                    messageElement.style.display = "none";
+                } else {
+                    messageElement.style.display = "flex";
+                    messageElement.style.height = "20vh";
+                    messageElement.style.marginTop = "25px"; // Corrected the syntax error here
+                }
+            }
+        </script>
     </div>
-
-
-
 </div>
 
 
