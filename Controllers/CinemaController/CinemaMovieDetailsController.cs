@@ -101,7 +101,7 @@ namespace HulubejeBooking.Controllers
                     tmdbMovieId = result?.id;
                 }
             }
-            string videoId = streamUrl?.Substring(streamUrl.IndexOf("v=") + 2) ?? "";
+            string videoId = streamUrl?[(streamUrl.IndexOf("v=") + 2)..] ?? "";
             movieDetails.YoutubeKey = videoId;
             string detailsApiUrl = $"movie/{tmdbMovieId}?api_key={_tmdbApiKey}&append_to_response=release_dates";
             HttpResponseMessage detailsResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + detailsApiUrl);
