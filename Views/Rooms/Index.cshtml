@@ -6,248 +6,289 @@
 	var isLoggedIN = ViewBag.isLoggedIn;
 }
 <style>
+	.custom-line {
+		border: none;
+		border-top: 1px solid #777;
+	}
+
 	.roomimages:hover{
 		cursor: pointer;
 	}
 
-/* 	@@media (max-width: 500px) {
-		.additionalroomimages {
-			display: none;
-		}
-	} */
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
+	}
+
+	.hidden-amenities {
+		display: none;
+	}
+
+	.toggle-amenities:checked ~ .hidden-amenities {
+		display: flex;
+	}
+
+	.toggle-label::after {
+		content: "Show More";
+	}
+
+	.toggle-amenities:checked ~ .toggle-label::after {
+		content: "Show Less";
+	}
+
+	.toggle-label.show-less {
+		display: none;
+	}
+
+	.toggle-amenities:checked ~ .toggle-label.show-less {
+		display: block;
+	}
 </style>
 <script>
 	sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
 	sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <title>Rooms</title>
-<div class="container">
-
-
-	@{
-		var AllPictureUrls = new List<string>();
-		foreach (var rooms in Model.Data ?? new List<RoomType>())
-		{
-			foreach (var picture in rooms.PictureUrls ?? new List<string>())
+<body class="bg-light">
+	<div class="container">
+		@{
+			var AllPictureUrls = new List<string>();
+			foreach (var rooms in Model.Data ?? new List<RoomType>())
 			{
-				AllPictureUrls.Add(picture);
-			}
-		}
-	}
-
-
-	<div class="row mt-2 g-2">
-
-		<a href="#" id="hotelLink"><h5 class="card-title">@Model.HotelName</h5></a>
-		<div class="col-6">
-			<div class="row">
-				@if (AllPictureUrls?.Count > 0)
+				foreach (var picture in rooms.PictureUrls ?? new List<string>())
 				{
-					@for (int i = 1; i < 5 && i < AllPictureUrls?.Count; i++)
-					{
-						<div class="col-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
-							padding-right: 5px;">
-							<img src="@AllPictureUrls[i]" alt="Room Picture" class="roomimages w-100  " />
-						</div>
-					}
+					AllPictureUrls.Add(picture);
 				}
-			</div>
-		</div>
-		@if (AllPictureUrls?.Count > 1)
-		{
-			<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
-				<img src="@AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  " />
-			</div>
-		}
-
-
-
-	</div>
-	<div class="row g-2 additionalroomimages">
-		@if (AllPictureUrls?.Count > 0)
-		{
-			@for (int i = 1; i < 5 && i < AllPictureUrls.Count; i++)
-			{
-				<div class="col-md-3 col-6 mb-2 " style="padding-left: 5px;
-							padding-right: 5px;">
-					<img src="@AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages  " />
-				</div>
 			}
 		}
-	</div>
 
-	<script>
-		$(document).ready(function () {
-			$('.roomimages').click(function (e) {
-				e.preventDefault();
-				$('#modal1').modal('show');
-			});
-			$('#modal1').on('click', '.close', function (e) {
-				$('#modal1').modal('hide');
-			});
-		});
-	</script>
-
-	<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1Label" aria-hidden="true">
-		<div class="modal-dialog modal-xl">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="imageModalLabel">All Images</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
+		<div class="row mt-2 g-2">
+			<a href="#" id="hotelLink"><h5 class="card-title"><strong>@Model.HotelName</strong></h5></a>
+			<div class="col-6">
+				<div class="row">
+					@if (AllPictureUrls?.Count > 0)
+					{
+						@for (int i = 1; i < 5 && i < AllPictureUrls?.Count; i++)
+						{
+							<div class="col-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
+							padding-right: 5px;">
+								<img src="@AllPictureUrls[i]" alt="Room Picture" class="roomimages w-100  " />
+							</div>
+						}
+					}
 				</div>
-				<div class="modal-body">
-					<div class="row">
-						<div class="d-flex flex-wrap">
-							@foreach (var roomPic in Model?.Data ?? new List<RoomType>())
-							{
-								@foreach (var pictureUrl in roomPic.PictureUrls ?? new List<string>())
+			</div>
+			@if (AllPictureUrls?.Count > 1)
+			{
+				<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
+					<img src="@AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  " />
+				</div>
+			}
+
+
+
+		</div>
+		<div class="row g-2 additionalroomimages">
+			@if (AllPictureUrls?.Count > 0)
+			{
+				@for (int i = 1; i < 5 && i < AllPictureUrls.Count; i++)
+				{
+					<div class="col-md-3 col-6 mb-2 " style="padding-left: 5px;
+							padding-right: 5px;">
+						<img src="@AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages  " />
+					</div>
+				}
+			}
+		</div>
+
+		<script>
+			$(document).ready(function () {
+				$('.roomimages').click(function (e) {
+					e.preventDefault();
+					$('#modal1').modal('show');
+				});
+				$('#modal1').on('click', '.close', function (e) {
+					$('#modal1').modal('hide');
+				});
+				$('.show-more-amenities').click(function () {
+					var target = $(this).data('target');
+					var expanded = $(this).data('expanded');
+					if (expanded === "false") {
+						$(this).text("Show More ");
+					} else {
+						$(this).text("Show Less ");
+					}
+					$(this).data('expanded', (expanded === "false" ? "true" : "false"));
+					$(target).collapse('toggle');
+				});
+			});
+		</script>
+
+		<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1Label" aria-hidden="true">
+			<div class="modal-dialog modal-xl">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="imageModalLabel">All Images</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="d-flex flex-wrap">
+								@foreach (var roomPics in Model?.Data ?? new List<RoomType>())
 								{
-									<div class="col-lg-4 col-md-4 col-sm-4 mb-3">
-										<img src="@pictureUrl" class="img-fluid shadow-1-strong rounded mb-4 w-100 h-200" alt="Hotel Room" />
-									</div>
+									@foreach (var pictureUrl in roomPics.PictureUrls ?? new List<string>())
+									{
+										<div class="col-lg-4 col-md-4 col-sm-4 mb-3">
+											<img src="@pictureUrl" class="img-fluid shadow-1-strong rounded mb-4 w-100 h-200" alt="Hotel Room" />
+										</div>
+									}
 								}
-							}
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-
-	@foreach (var roomPic in Model?.Data ?? new List<RoomType>())
-	{
-		<div class="row g-1">
+		<h5><strong>Amenities</strong></h5>
+		@{
+			var roomPic = Model?.Data?.SelectMany(room => room.Aminities ?? Enumerable.Empty<Aminity>())?.ToList(); ;
+		}
+		<div class="row g-1 mt-1">
 			<div class="d-flex flex-wrap">
-
-				@if (roomPic == Model?.Data?.First())
+				@foreach (var amenity in roomPic?.Take(20) ?? new List<Aminity>())
 				{
-					@foreach (var amenity in roomPic.Aminities ?? new List<Aminity>())
-					{
-						<div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-2" style="padding-left: 5px; padding-right: 5px;">
-							<div class="border">
-								<div class="d-flex align-items-center">
-									<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
-									<span>@amenity.Name</span>
+					<div class="col-lg-2 col-md-3 col-sm-4 col-6  amenity-item" style="padding-left: 5px; padding-right: 5px;">
+						<div class="border border-2 mt-1 bg-white">
+							<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+							<span style="font-size: small;">@amenity.Name</span>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+		<div class="my-5">
+			<div>
+				<h3 class="font-monospace">Rooms</h3>
+			</div>
+			@foreach (var room in Model?.Data ?? new List<RoomType>())
+			{
+				var roompics = room?.PictureUrls?.ToList();
+				<div class="card px-3 py-3 my-2  shadow-sm">
+					<div class="row">
+						<div class="col-lg-6">
+							@if (roompics?.Count >= 1)
+							{
+								<img src="@roompics?[0]" alt="Room Picture" class="w-100" />
+							}
+						</div>
+						<div class="col-lg-6">
+							<div class="mb-lg-5">
+								<p><strong><i class="fas fa-bed" style="color: #6c757d;"></i> Room Type :</strong> <span style="color: #007bff; font-weight: bold;">@(" " + room?.RoomTypeDescription)</span></p>
+								<p><strong><i class="fas fa-money-bill"></i> Rate Per Night :</strong> @room?.AverageAmount?.ToString("N2", new System.Globalization.CultureInfo("am-ET")) ETB</p>
+								<strong style="
+								font-size: 14px;
+								background-color: white;
+								padding: 3px;
+								white-space: nowrap;
+								margin-bottom: 2px;
+								color: @(room?.AvailableRoom >= 5 ? "green" : "red")
+										">
+									@(room?.AvailableRoom == 1 ? $"{room?.AvailableRoom} Room Left" : (room?.AvailableRoom <= 10 ? $"{room?.AvailableRoom} Rooms Left" : "Available"))
+								</strong>
+							</div>
+
+							<hr class="custom-line">
+							<div class="d-flex justify-content-between">
+								<div class="px-1">
+									<p>
+										Price for @Model?.RoomFormData?.adultCount @(Model?.RoomFormData?.adultCount > 1 ? "Ãdults" : "Adult") and @Model?.RoomFormData?.numberOfNights
+										@(Model?.RoomFormData?.numberOfNights > 1 ? "Nights" : "Night")
+									</p>
+								</div>
+								<div class="p-1">
+									<div class="row">
+										<div class="col-md-12 text-md-right">
+											<p class="mb-0"><strong style="color: blue">ETB @room?.TotalAmount?.ToString("0.00")</strong></p>
+											<small style="color: @(room?.IsTaxInclusive == false ? "Red" : "Green")">@(room?.IsTaxInclusive == false ? "Doesn't Include Tax And Charges" : "Includes Tax")</small>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-					}
-				}
 
-			</div>
-		</div>
-	}
-
-	<div class="row">
-		<div class="col-12">
-			<table class="table table-image">
-				<thead>
-					<tr>
-						<th scope="col" hidden style="display:none">Room Type </th>
-						<th scope="col" hidden style="display:none">Image</th>
-						<th scope="col" hidden style="display:none">Price</th>
-					</tr>
-				</thead>
-				<tbody>
-
-
-
-					@foreach (var room in Model?.Data ?? new List<RoomType>())
-					{
-						<tr class="w-50">
-
-							<th scope="row">@room.RoomTypeDescription</th>
-							@if (room.PictureUrls != null && room.PictureUrls.Any())
-							{
-								<td>
-									@{
-										var pictureUrls = room.PictureUrls.ToList();
-										var numberOfPictures = pictureUrls.Count;
-									}
-
-									@if (numberOfPictures >= 3)
-									{
-										<div class="row">
-											<div class="col-10" style="padding-left: 5px;  padding-right: 5px;">
-												<img src="@pictureUrls[0]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
-											</div>
-										</div>
-										<div class="row">
-											<div class="col-5" style="padding-left: 5px;  padding-right: 5px;">
-												<img src="@pictureUrls[1]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
-											</div>
-											<div class="col-5" style="padding-left: 5px;  padding-right: 5px;">
-												<img src="@pictureUrls[2]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
-											</div>
-										</div>
-									}
-									else if (numberOfPictures == 2)
-									{
-										<div class="row">
-											<div class="col-5" style="padding-left: 5px;  padding-right: 5px;">
-												<img src="@pictureUrls[0]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
-											</div>
-											<div class="col-5 " style="padding-left: 5px;  padding-right: 5px;">
-												<img src="@pictureUrls[1]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
-											</div>
-										</div>
-									}
-									else if (numberOfPictures == 1)
-									{
-										<div class="row">
-											<div class="col-10">
-												<img src="@pictureUrls[0]" alt="Room Picture" class="w-100 shadow-1-strong rounded mb-2" />
-											</div>
-										</div>
-									}
-									<div class="row g-1">
-										<div class="d-flex flex-wrap">
-											@foreach (var amenity in room.Aminities ?? new List<Aminity>())
-											{
-												<div class="col-lg-2 col-md-3 col-sm-4 my-1" style="padding-left: 5px;  padding-right: 5px;">
-													<div class="border d-flex flex-column align-items-center">
-
-														<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
-														<span style="font-size: small; text-align: center;">@amenity.Name</span>
-													</div>
-												</div>
-											}
+						<div class="mt-2">
+							<div class="d-flex flex-wrap amenities-list">
+								@foreach (var amenity in room?.Aminities?.Take(6) ?? new List<Aminity>())
+								{
+									<div class="col-lg-2 col-md-3 col-sm-4 col-12 amenity-item" style="padding-left: 5px; padding-right: 5px;">
+										<div class="border border-2 mt-1">
+											<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+											<span style="font-size: small;">@amenity.Name</span>
 										</div>
 									</div>
+								}
+								<div class="col-12 collapse additional-amenities" id="additionalAmenities-@(room?.RoomTypeCode)">
+									<div class="row">
+										@foreach (var amenity in room?.Aminities?.Skip(6) ?? new List<Aminity>())
+										{
+											<div class="col-lg-2 col-md-3 col-sm-4 col-12 my-1 amenity-item" style="padding-left: 5px; padding-right: 5px;">
+												<div class="border border-2 ">
+													<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+													<span style="font-size: small;">@amenity.Name</span>
+												</div>
+											</div>
+										}
+									</div>
+								</div>
+								@if (room?.Aminities?.Count > 6)
+								{
+									<button class="show-more-amenities mt-2" type="button" data-toggle="collapse" data-target="#additionalAmenities-@(room?.RoomTypeCode)" style="
+										border: none;
+										background: none;
+										padding: 0;
+										margin: 0;
+										font-family: inherit;
+										font-size: inherit;
+										cursor: pointer;
+										color: #007bff;
+										text-decoration: underline;">
+										Show More
+									</button>
 
-
-								</td>
-							}
-
-
-							<td class="d-flex flex-column">
-								Price: ETB @room.TotalAmount?.ToString("N2", new System.Globalization.CultureInfo("am-ET"))
-								<strong style="font-size: 14px; background-color: white; padding: 3px; white-space: nowrap; margin-bottom: 2px; color: @(room.AvailableRoom >= 5 ? "green" : "red")">
-									@(room.AvailableRoom == 1 ? $"{room.AvailableRoom} Room Left" : (room.AvailableRoom <= 10 ? $"{room.AvailableRoom} Rooms Left" : "Available"))
-								</strong>
-								<button class="btn btn-primary btn-sm mt-auto submit" style="white-space: nowrap"
-										data-rate-policy="@room.RatePolicy"
-										data-room-type-description="@room.RoomTypeDescription"
-										data-room-pakages="@room.Packagelist"
-										data-room-total-price="@room.TotalAmount"
-										data-room-average-amount="@room.AverageAmount"
-										data-room-type-code="@room.RoomTypeCode"
-										data-room-type="@room.RoomTypeDescription"
-										data-rate-code ="@room.RateCode"
-										data-rate-code-detail="@room.RateCodeDetail">
+								}
+							</div>
+							<div class="d-flex justify-content-center mt-2">
+								<button class="btn btn-primary  btn-sm mt-auto  submit" style="white-space: nowrap"
+										data-rate-policy="@room?.RatePolicy"
+										data-room-type-description="@room?.RoomTypeDescription"
+										data-room-pakages="@room?.Packagelist"
+										data-room-total-price="@room?.TotalAmount"
+										data-room-average-amount="@room?.AverageAmount"
+										data-room-type-code="@room?.RoomTypeCode"
+										data-room-type="@room?.RoomTypeDescription"
+										data-rate-code="@room?.RateCode"
+										data-rate-code-detail="@room?.RateCodeDetail">
 									Book This Room
 								</button>
-							</td>
-						</tr>
-					}
+							</div>
 
-				</tbody>
-			</table>
+						</div>
+
+					</div>
+				</div>
+			}
 		</div>
 	</div>
-</div>
+</body>
+
 
 
 
@@ -256,7 +297,7 @@
 
 
 <script>
-
+	
 	document.addEventListener("DOMContentLoaded", function () {
 		if (sessionStorage.getItem("hotelName")) {
 			var hotelLink = document.getElementById("hotelLink");
