@@ -1,9 +1,9 @@
 ﻿@{
-    var isValild = ViewBag.isValid;
+    var isValid = ViewBag.isValid;
     var isLoggedIN = ViewBag.isLoggedIn;
 }
 <script>
-    sessionStorage.setItem("isValid", @Json.Serialize(@isValild));
+    sessionStorage.setItem("isValid", @Json.Serialize(@isValid));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <title>Guest Information</title>
@@ -135,12 +135,20 @@
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("forMeCheckBox").addEventListener("change", function () {
             var isChecked = this.checked;
-            var dob = "@ViewBag.Dob";
-            dob = dob.split('T')[0];
+
             if (isChecked) {
+                var dob = "@ViewBag.Dob"; // Ensure that this variable is properly rendered and available
+                var dobDatePart = dob.split(" ")[0];
+
+                console.log("dob", dobDatePart);
+
                 document.getElementById("name1").value = "@ViewBag.FirstName";
                 document.getElementById("middle1").value = "@ViewBag.MiddleName";
                 document.getElementById("last1").value = "@ViewBag.LastName";
+                var dateInputElement = document.getElementById("date1");
+                dateInputElement.valueAsDate = new Date(dobDatePart);
+
+
                 var gender = "@ViewBag.Gender".toLowerCase();
                 if (gender === "male") {
                     document.getElementById("male1").checked = true;
@@ -158,6 +166,7 @@
                 document.getElementById("female1").checked = false;
                 document.getElementById("email1").value = "";
                 document.getElementById("phone1").value = "";
+                document.getElementById("date1").value = "";
             }
         });
     });
