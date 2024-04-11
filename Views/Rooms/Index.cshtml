@@ -55,7 +55,7 @@
 	sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <title>Rooms</title>
-<body class="bg-light">
+<body style="background-color: rgb(235, 235, 235);">
 	<div class="container">
 		@{
 			var AllPictureUrls = new List<string>();
@@ -157,7 +157,7 @@
 				</div>
 			</div>
 		</div>
-		<h5><strong>Amenities</strong></h5>
+		<h5 class="font-monospace">Hotel Amenities</h5>
 		@{
 			var roomPic = Model?.Data?.SelectMany(room => room.Aminities ?? Enumerable.Empty<Aminity>())?.ToList(); ;
 		}
@@ -176,7 +176,7 @@
 		</div>
 		<div class="my-5">
 			<div>
-				<h3 class="font-monospace">Rooms</h3>
+				<h4 class="font-monospace">Rooms</h4>
 			</div>
 			@foreach (var room in Model?.Data ?? new List<RoomType>())
 			{
@@ -216,7 +216,7 @@
 								<div class="p-1">
 									<div class="row">
 										<div class="col-md-12 text-md-right">
-											<p class="mb-0"><strong style="color: blue">ETB @room?.TotalAmount?.ToString("0.00")</strong></p>
+												<p class="mb-0"><strong style="color: blue">ETB @room?.TotalAmount?.ToString("N2", new System.Globalization.CultureInfo("am-ET"))</strong></p>
 											<small style="color: @(room?.IsTaxInclusive == false ? "Red" : "Green")">@(room?.IsTaxInclusive == false ? "Doesn't Include Tax And Charges" : "Includes Tax")</small>
 										</div>
 									</div>
