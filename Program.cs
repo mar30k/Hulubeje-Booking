@@ -11,6 +11,8 @@ var configuration = new ConfigurationBuilder()
 var baseUrl = configuration.GetValue<string>("CnetApiBaseUrl");
 var cnetPayment = configuration.GetValue<string>("CnetPayment");
 var busBookingApi = configuration.GetValue<string>("BusBooking");
+var hulubejeCahceApi = configuration.GetValue<string>("HulubejeCahce");
+var tmdbApi = configuration.GetValue<string>("TmdbApi");
 var v6Api = configuration.GetValue<string>("V6Api");
 
 builder.Services.AddHttpClient();
@@ -41,12 +43,12 @@ builder.Services.AddHttpClient("HulubejeBooking", httpClient =>
 });
 builder.Services.AddHttpClient("HulubejeCache", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("https://cache.cnetcommerce.com/api/cache/");
+    httpClient.BaseAddress = new Uri(hulubejeCahceApi);
     httpClient.DefaultRequestHeaders.Add("x-api-key", "3e1a8b15-ygqa-3965-l5es-509a88f53477");
 });
 builder.Services.AddHttpClient("MovieDb", httpClient =>
 {
-    httpClient.BaseAddress = new Uri("https://api.themoviedb.org/3/");
+    httpClient.BaseAddress = new Uri(tmdbApi);
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<HotelListBuffer>();
