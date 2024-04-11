@@ -10,33 +10,36 @@
             // Dictionary to store the companies associated with each movie name
             Dictionary<string, List<string>> movieCompanies = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
         }
+
         @foreach (var company in Model.Data)
         {
             foreach (var movie in company.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>())
             {
-                var movieName = movie.MovieName?.ToLower();
+                var movieNameLower = movie.MovieName?.ToLower(); // Lowercase movie name
+                var movieNameOriginal = movie.MovieName; // Original movie name
                 var companyName = company.CompanyName;
 
                 // Check if the movie name already exists in the dictionary
-                if (!string.IsNullOrEmpty(movieName) && !movieCompanies.ContainsKey(movieName))
+                if (!string.IsNullOrEmpty(movieNameLower) && !movieCompanies.ContainsKey(movieNameLower))
                 {
-                    movieCompanies[movieName] = new List<string>();
+                    movieCompanies[movieNameLower] = new List<string>();
                 }
 
                 // Add the company name to the list associated with the movie name
-                if (!string.IsNullOrEmpty(movieName) && companyName != null && !movieCompanies[movieName].Contains(companyName))
+                if (!string.IsNullOrEmpty(movieNameLower) && companyName != null && !movieCompanies[movieNameLower].Contains(companyName))
                 {
-                    movieCompanies[movieName].Add(companyName);
-                }                
+                    movieCompanies[movieNameLower].Add(companyName);
+                }
             }
         }
-        @foreach (var movieName in movieCompanies.Keys)
+
+        @foreach (var movieNameLower in movieCompanies.Keys)
         {
             // Get the associated companies for the current movie name
-            var companies = movieCompanies[movieName];
+            var companies = movieCompanies[movieNameLower];
 
             // Fetch movie details (assuming all movies with the same name share the same details)
-            var movie = Model!.Data!.SelectMany(company => company.Movies).FirstOrDefault(m => m.MovieName?.ToLower() == movieName);
+            var movie = Model!.Data!.SelectMany(company => company.Movies ?? new List<HulubejeBooking.Models.CInemaModels.Movies>()).FirstOrDefault(m => m.MovieName?.ToLower() == movieNameLower);
 
             if (movie != null)
             {
@@ -45,6 +48,7 @@
                 var plot = movie?.Plot;
                 var year = movie?.ReleaseDate?.Year;
                 var streamUrl = movie?.StreamUrl;
+                var movieNameOriginal = movie?.MovieName; 
 
                 <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
                     <div class="card position-relative">
@@ -59,14 +63,14 @@
                                     var tin = company?.TIN;
                                     var branchCode = company?.BranchCode;
 
-                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@plot', '@moviePoster', '@movieName','@movieId','@streamUrl','@tin','@branchCode')">
+                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@plot', '@moviePoster', '@movieNameOriginal','@movieId','@streamUrl','@tin','@branchCode')">
                                         @companyName
                                     </button>
                                 }
                             }
                         </div>
                         <div class="card-title">
-                                @movieName (@year)
+                            @movieNameOriginal (@year)
                         </div>
                     </div>
                 </div>

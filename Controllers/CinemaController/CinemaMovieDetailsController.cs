@@ -35,7 +35,7 @@ namespace HulubejeBooking.Controllers
 
                 if (company != null && company.Movies != null)
                 {
-                    var movie = company.Movies.FirstOrDefault(m => m.MovieName?.ToLower() == movieName);
+                    var movie = company.Movies.FirstOrDefault(m => m.MovieName?.ToLower() == movieName.ToLower());
                     if (movie != null && movie.MovieSchedule != null )
                     {
                         movieSchedule = movie.MovieSchedule;
