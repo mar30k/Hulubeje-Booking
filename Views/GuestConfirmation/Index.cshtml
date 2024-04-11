@@ -8,6 +8,7 @@
 </script>
 @model HulubejeBooking.Models.HotelModels.GuestModelWrapper
 <partial name="_Navigation" />
+<title>Guest Confirmation</title>
 <div class="container mt-2">
     <div class="d-flex justify-content-center">
         <h3>Guest Detail</h3>
@@ -124,15 +125,15 @@
     {
         <text>
             var guestObj = {
-                phoneNo: '@guest.PhoneNumber', // Assuming PhoneNumber is the property name
+                phoneNo: '@guest.PhoneNumber', 
                 FirstName: '@guest.FirstName',
                 middleName: '@guest.MiddleName',
                 lastName: '@guest.LastName',
                 email: '@guest.Email',
                 idNumber: "",
                 idType: "kebele",
-                dateOfBirth: '@guest.DateOfBirth', // Assuming DateOfBirth is the property name
-                gender: '@guest.Gender' // Assuming Gender is the property name
+                dateOfBirth: '@guest.DateOfBirth',
+                gender: '@guest.Gender'
             };
         guestsData.push(guestObj);
         </text>
