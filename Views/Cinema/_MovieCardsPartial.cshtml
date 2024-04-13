@@ -48,8 +48,9 @@
                 var plot = movie?.Plot;
                 var year = movie?.ReleaseDate?.Year;
                 var streamUrl = movie?.StreamUrl;
-                var movieNameOriginal = movie?.MovieName; 
-
+                var movieNameOriginal = movie?.MovieName;
+                var santizedMovieName = HttpUtility.JavaScriptStringEncode(movieNameOriginal);
+                var sanitizedOverview = HttpUtility.JavaScriptStringEncode(plot);
                 <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
                     <div class="card position-relative">
                         <img src="@moviePoster" alt="Poster Image" class="img-fluid">
@@ -63,7 +64,7 @@
                                     var tin = company?.TIN;
                                     var branchCode = company?.BranchCode;
 
-                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@plot', '@moviePoster', '@movieNameOriginal','@movieId','@streamUrl','@tin','@branchCode')">
+                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@moviePoster', '@santizedMovieName','@movieId','@streamUrl','@tin','@branchCode')">
                                         @companyName
                                     </button>
                                 }
