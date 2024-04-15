@@ -6,20 +6,19 @@ namespace HulubejeBooking.Controllers.HotelController
     {
         public static Models.HotelModels.DateRange parseDateRange(string dateRange)
         {
-            Models.HotelModels.DateRange result = new Models.HotelModels.DateRange(); // Initialize to a non-null default value
+            Models.HotelModels.DateRange result = new();
 
             if (!string.IsNullOrWhiteSpace(dateRange))
             {
                 var splited = dateRange?.Split("-");
-                if (splited != null && splited.Count() > 1)
+                if (splited != null && splited.Length > 1)
                 {
-                    DateTime startDate, endDate;
-                    result.startDate = DateTime.TryParse(splited[0], out startDate) ? (DateTime?)startDate : null;
-                    result.endDate = DateTime.TryParse(splited[1], out endDate) ? (DateTime?)endDate : null;
+                    result.startDate = DateTime.TryParse(splited[0], out DateTime startDate) ? (DateTime?)startDate : null;
+                    result.endDate = DateTime.TryParse(splited[1], out DateTime endDate) ? (DateTime?)endDate : null;
                     result.startDateString = splited[0];
                     result.endDateString = splited[1];
                 }
-            }
+            }  
 
             return result;
         }
