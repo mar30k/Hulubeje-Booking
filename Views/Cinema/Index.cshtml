@@ -26,6 +26,10 @@
     </style>
 </head>
 @{
+    var alldistinctmovies = Model?.Data?.SelectMany(company => company.Movies?.Select(movie => movie.MovieName) ?? Enumerable.Empty<string>())
+                                       .Distinct()
+                                       .OrderBy(movie => movie)
+                                       .ToList();
     var isVaild = ViewBag.isVaild;
     var isLoggedIN = ViewBag.isLoggedIn;
 }
@@ -47,12 +51,24 @@
                 </div>
                 <div class="CompanyFilter">
                     <div class="input-group">
-                        <input type="text" id="companyFilter" class="form-control small-text" placeholder="Cinema Search" style="width: 100%; border-color: #FEBB02; height: 60px; border-radius: 5px;" />
+                        <input type="text" id="companyFilterInput" class="form-control small-text" placeholder="Cinema Search" style="width: 100%; border-color: #FEBB02; height: 60px; border-radius: 5px;" list="companyFilterList" />
+                        <datalist id="companyFilterList">
+                            @foreach (var company in Model?.Data?.OrderBy(c=> c.CompanyName).ToList() ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
+                            {
+                                <option value="@company?.CompanyName"></option>
+                            }
+                        </datalist>
                     </div>
                 </div>
                 <div class="CompanyFilter">
                     <div class="input-group">
-                        <input type="text" id="movieFilter" class="form-control small-text" placeholder="Movies Search" style="width: 100%; border-color: #FEBB02; height: 60px; border-radius: 5px;" />
+                        <input type="text" id="movieFilterInput" class="form-control small-text" placeholder="Movies Search" style="width: 100%; border-color: #FEBB02; height: 60px; border-radius: 5px;" list="movieFilterList" />
+                        <datalist id="movieFilterList">
+                            @foreach (var movie in alldistinctmovies ?? new List<string?>())
+                            {
+                                <option value="@movie">@movie</option>
+                            }
+                        </datalist>
                     </div>
                 </div>
             </div>
@@ -71,9 +87,9 @@
     @section Scripts {
         <script>
             function filterByCompany() {
-                var companyFilterText = document.getElementById('companyFilter').value.trim().toLowerCase();
+                var companyFilterText = document.getElementById('companyFilterInput').value.trim().toLowerCase();
                 var moviesContainer = document.getElementById('moviesContainer');
-                var movieFilterInput = document.getElementById('movieFilter');
+                var movieFilterInput = document.getElementById('movieFilterInput');
                 var filteredCardsContainer = document.getElementById('filteredCardsContainer');
                 filteredCardsContainer.classList.add('filtered-cards-container');
 
@@ -114,8 +130,8 @@
             }
 
             function filterByMovie() {
-                var movieFilterText = document.getElementById('movieFilter').value.trim().toLowerCase();
-                var companyFilterInput = document.getElementById('companyFilter');
+                var movieFilterText = document.getElementById('movieFilterInput').value.trim().toLowerCase();
+                var companyFilterInput = document.getElementById('companyFilterInput');
                 var moviesContainer = document.getElementById('moviesContainer');
                 var filteredCardsContainer = document.getElementById('filteredCardsContainer');
 
@@ -145,21 +161,21 @@
                 }
             }
 
-            document.getElementById('companyFilter').addEventListener('input', function () {
-                if (document.getElementById('movieFilter').value.trim().length > 0) {
-                    document.getElementById('companyFilter').disabled = true;
+            document.getElementById('companyFilterInput').addEventListener('input', function () {
+                if (document.getElementById('movieFilterInput').value.trim().length > 0) {
+                    document.getElementById('companyFilterInput').disabled = true;
                 } else {
                     filterByCompany();
-                    document.getElementById('companyFilter').disabled = false;
+                    document.getElementById('companyFilterInput').disabled = false;
                 }
             });
 
-            document.getElementById('movieFilter').addEventListener('input', function () {
-                if (document.getElementById('companyFilter').value.trim().length > 0) {
-                    document.getElementById('movieFilter').disabled = true;
+            document.getElementById('movieFilterInput').addEventListener('input', function () {
+                if (document.getElementById('companyFilterInput').value.trim().length > 0) {
+                    document.getElementById('movieFilterInput').disabled = true;
                 } else {
                     filterByMovie();
-                    document.getElementById('movieFilter').disabled = false;
+                    document.getElementById('movieFilterInput').disabled = false;
                 }
             });
 
