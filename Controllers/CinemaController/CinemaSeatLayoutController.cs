@@ -178,4 +178,36 @@ public class CinemaSeatLayoutController : Controller
         return seats != null ? View(seats) : View(null);
 
     }
+
+
+    [HttpPost]
+    public async Task<IActionResult> FetchSeatStatus([FromBody] string seatCacheKey)
+    {
+        var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
+        string cache;
+
+        HttpResponseMessage seatCacheresponse = await _seatCacheClient.GetAsync($"getEntriesContainsKey?key={seatCacheKey}");
+
+        if (seatCacheresponse.IsSuccessStatusCode)
+        {
+            cache = await seatCacheresponse.Content.ReadAsStringAsync();
+
+            // Deserialize the JSON string to a list of Seat objects
+            var seats = JsonConvert.DeserializeObject<List<SeatStatus>>(cache);
+
+            // Convert seats to a format suitable for JSON serialization
+            var serializedSeats = seats.Select(seat => new
+            {
+                value = seat.Value.ToString(),
+                status = seat.Status
+            }).ToList();
+
+            return Json(serializedSeats);
+        }
+        else
+        {
+            // Handle error response
+            return BadRequest("Error fetching seat status from cache.");
+        }
+    }
 }

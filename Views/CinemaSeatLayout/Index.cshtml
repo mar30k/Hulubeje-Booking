@@ -126,12 +126,12 @@
         var key = "cinema_" +'@Model?.Data?.CompanyTinNumber' + '_' + '@Model?.Data?.BranchCode' + '_' + '@Model?.Data?.MovieScheduleCode';
         var seatCacheKey = key +"_" +'@Model?.Data?.PhoneNumber';
         function fetchSeatStatus() {
+            var data = seatCacheKey;
             $.ajax({
-                url: 'https://cache.cnetcommerce.com/api/cache/getEntriesContainsKey?key=' + seatCacheKey,
-                headers: {
-                    "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
-                },
-                method: "GET",
+                url: '/CinemaSeatLayout/FetchSeatStatus',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
                 success: function (response) {
                     var fetchedSeatIds = response.map(function (seat) {
                         return seat.value.toString();
@@ -156,8 +156,8 @@
                         }
                     });
                 },
-                error: function (xhr, status, error) {
-                    console.error("Error fetching seat status:", error);
+                error: function (error) {
+                    console.error('Error:', error);
                 }
             });
         }
