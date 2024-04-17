@@ -43,10 +43,25 @@
         public int Y { get; set; }
         public string? Type { get; set; }
     }
-    public class SeatStatus 
+    public class SeatStatus
     {
         public string? Status { get; set; }
         public int Value { get; set; }
     }
-
+    public class EntryExtension
+    {
+        public string? Key { get; set; }
+        public int? Extension { get; set; }
+        public string? ExtensionDeligate { get; set; }
+    }
+    public class SafePushEntry
+    {
+        public string? Key { get; set; }
+        public int? Value { get; set; }
+    }
+    public class SafePushEntryResponse
+    {
+        public string? Status { get; set; }
+        public bool? IsSuccessful { get; set; }
+    }
 }
