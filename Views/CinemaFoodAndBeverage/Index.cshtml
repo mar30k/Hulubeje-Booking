@@ -358,32 +358,30 @@
         var secondsAdded = sessionStorage.getItem('secondsAdded') === 'true';
 
         var updatedRemainingTime;
-
-        if (countdownStarted) {
-            $.ajax({
-                url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
-                headers: {
-                    "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                    "Content-Type": "application/json"
-                },
-                method: "POST",
-                cache: false,
-                data: JSON.stringify({
-                    "key": "@Model?.SeatCacheKey",
-                    "extensionDeligate": "on_invoice",
-                    "extension": 60
-                }),
-                success: function (response) {
-                    updatedRemainingTime = parseInt(response);
-                    if (updatedRemainingTime >0) {
-                        startCountdownTimer(updatedRemainingTime);
+        $(document).ready(function () {
+            var entryData = {
+                key: "@Model?.SeatCacheKey",
+                extensionDeligate: "on_invoice",
+                extension: 60
+            };
+            if (countdownStarted) {
+                $.ajax({
+                    url: '/CinemaSeatLayout/EntryExtensions',
+                    method: "POST",
+                    data: JSON.stringify(entryData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        updatedRemainingTime = parseInt(response);
+                        if (updatedRemainingTime > 0) {
+                            startCountdownTimer(updatedRemainingTime);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error fetching seat status:", error);
                     }
-                },
-                error: function (xhr, status, error) {
-                    console.error("Error fetching seat status:", error);
-                }
-            });
-        }
+                });
+            }
+        });
 
 
         var seatCacheKey = "@Model?.SeatCacheKey";
