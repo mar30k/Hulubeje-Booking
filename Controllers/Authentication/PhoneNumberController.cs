@@ -108,7 +108,7 @@ namespace HulubejeBooking.Controllers.Authentication
             string? code;
             if (index != -1)
             {
-                code = phoneNumber.Substring(0, index) + "0" + phoneNumber[(index + 4)..];
+                code = phoneNumber[..index] + "0" + phoneNumber[(index + 4)..];
             }
             else
             {
