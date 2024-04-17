@@ -210,4 +210,60 @@ public class CinemaSeatLayoutController : Controller
             return BadRequest("Error fetching seat status from cache.");
         }
     }
+
+
+
+
+    [HttpPost]
+    public async Task<IActionResult> GetEntryLifeSpan([FromBody] string seatCacheKey)
+    {
+        var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
+
+        HttpResponseMessage getEntryLifeSpan = await _seatCacheClient.GetAsync($"getEntryLifeSpan?key={seatCacheKey}");
+
+        if (getEntryLifeSpan.IsSuccessStatusCode)
+        {
+
+            var responseJson = await getEntryLifeSpan.Content.ReadAsStringAsync();
+            var updatedRemainingTime = int.Parse(responseJson);
+
+            return Json(updatedRemainingTime);
+        }
+        else
+        {
+            return BadRequest("Error fetching seat status from cache.");
+        }
+    }
+    //[HttpPost]
+    //public async Task<IActionResult> PopEntry([FromBody] SafePushEntry pushEntry)
+    //{
+    //    var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCahce");
+
+    //    var data = new
+    //    {
+    //        key = pushEntry.Key,
+    //        value = pushEntry.Value,
+    //    };
+    //    var paramJson = JsonConvert.SerializeObject(data);
+    //    var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
+
+    //    // Create a cancellation token (optional)
+    //    var cancellationToken = CancellationToken.None;
+
+    //    HttpResponseMessage entryExtensionresponse = await _seatCacheClient.DeleteAsync($"popEntry", content);
+
+
+    //    if (entryExtensionresponse.IsSuccessStatusCode)
+    //    {
+
+    //        var responseJson = await entryExtensionresponse.Content.ReadAsStringAsync();
+    //        var response = JsonConvert.DeserializeObject<SafePushEntryResponse>(responseJson);
+    //        return Ok(response);
+    //    }
+    //    else
+    //    {
+    //        // Handle error response
+    //        return BadRequest("Error fetching seat status from cache.");
+    //    }
+    //}
 }
