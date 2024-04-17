@@ -225,7 +225,7 @@ namespace HulubejeBooking.Controllers.HotelController
             try
             {
                 _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage getcompanyscheduleResponse = await _v7Client.GetAsync($"routing/getcompanyschedule?companyCode={roomFormData.orgTin}&branchCode={roomFormData.oud}&industryType=1989");
+                HttpResponseMessage getcompanyscheduleResponse = await _v7Client.GetAsync($"routing/getcompanyschedule?companyCode={roomFormData.orgCode}&branchCode={roomFormData.oud}&industryType=1989");
                 var getsupplierpaymentoptions = new PaymentProcessorResponse();
                 var getcompanyschedule = new GetCompanySchedule();
                 var getcompanyimages = new GetCompanyImages();
