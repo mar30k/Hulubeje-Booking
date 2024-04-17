@@ -222,18 +222,16 @@
             var index = selectedSeats.indexOf(seatCode);
 
             if (!isDisabled && index === -1) {
+                var seatData = {
+                    key: seatCacheKey,
+                    value: parseInt(seatCode)
+                }
                 if (selectedSeats.length < maxSeats) {
                     $.ajax({
-                        url: 'https://cache.cnetcommerce.com/api/cache/safePushEntry',
-                        headers: {
-                            "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                            "Content-Type": "application/json"
-                        },
+                        url: '/CinemaSeatLayout/SafePushEntry',
                         method: "POST",
-                        data: JSON.stringify({
-                            "key": seatCacheKey,
-                            "value": parseInt(seatCode)
-                        }),
+                        data: JSON.stringify(seatData),
+                        contentType: 'application/json',
                         success: function (response) {
                             if (response.isSuccessful) {
                                 selectedSeats.push(seatCode);
@@ -248,12 +246,12 @@
                                 }
                                 updateButtonStatus();
                                 if (countdownreset == true) {
+                                    
                                     $.ajax({
-                                        url: 'https://cache.cnetcommerce.com/api/cache/getEntryLifeSpan?key=' + seatCacheKey,
-                                        headers: {
-                                            "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
-                                        },
-                                        method: "GET",
+                                        url: '/CinemaSeatLayout/GetEntryLifeSpan',
+                                        method: "POST",
+                                        data: JSON.stringify(seatCacheKey),
+                                        contentType: 'application/json',
                                         cache: false,
                                         success: function (response) {
                                             countdown = parseInt(response);
@@ -278,7 +276,7 @@
                         error: function (xhr, status, error) {
                             console.error("Error fetching seat status:", error);
                         }
-                    });                
+                    });
                 } else {
                     var alertElement = document.getElementById("seatLimitAlert");
                     alertElement.style.display = "block";
@@ -403,11 +401,10 @@
             $('#okButton').one('click', function () {
                 $('#bookingModal').modal('hide');
                 $.ajax({
-                    url: 'https://cache.cnetcommerce.com/api/cache/getEntryLifeSpan?key=' + seatCacheKey,
-                    headers: {
-                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
-                    },
-                    method: "GET",
+                    url: '/CinemaSeatLayout/GetEntryLifeSpan',
+                    method: "POST",
+                    data: JSON.stringify(seatCacheKey),
+                    contentType: 'application/json',
                     cache: false,
                     success: function (response) {
                         countdown = parseInt(response);
@@ -424,11 +421,10 @@
             var countdownStarted = sessionStorage.getItem('countdownStarted');
             if (countdownStarted === 'true' && retrieveSelectedSeatsFromStorage().length >0) {
                 $.ajax({
-                    url: 'https://cache.cnetcommerce.com/api/cache/getEntryLifeSpan?key=' + seatCacheKey,
-                    headers: {
-                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477"
-                    },
-                    method: "GET",
+                    url: '/CinemaSeatLayout/GetEntryLifeSpan',
+                    method: "POST",
+                    data: JSON.stringify(seatCacheKey),
+                    contentType: 'application/json',
                     cache: false,
                     success: function (response) {
                         countdown = parseInt(response);
@@ -447,7 +443,6 @@
             return storedSelectedSeats ? JSON.parse(storedSelectedSeats) : [];
         }
         function selectedSeatsCountUpdate() {
-            console.log("called");
             var selectedSeatsDisplay = document.getElementById("selectedSeatsDisplay");
             var selectedSeatsCountArray = sessionStorage.getItem('selectedSeats');
             var selectedSeatsArray = JSON.parse(selectedSeatsCountArray);
