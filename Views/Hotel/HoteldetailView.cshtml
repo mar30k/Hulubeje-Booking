@@ -39,9 +39,12 @@
         color: #fff;
         background: #063970;
         font-size: 14px;
-        text-transform: uppercase;
         border-radius: 4px;
         box-shadow: 0 4px 0 darken(#063970, 5%);
+    }
+
+    .startbooking {
+        text-transform: uppercase;
     }
 
         button:active {
@@ -191,7 +194,7 @@
                 </div>
             </div>
             <div>
-                <button class="btn btn-primary m" type="button" id="searchButton" style="border-color:#FEBB02; height:60px; font-size: 16px;" >Start Booking</button>
+                <button class="btn btn-primary startbooking" type="button" id="searchButton" style="border-color:#FEBB02; height:60px; font-size: 16px;" >Start Booking</button>
             </div>
         </div>
     </div>
@@ -449,17 +452,6 @@
                 }
 
                 var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
-
-                // sessionStorage.setItem('dateRange', dateRange);
-                // sessionStorage.setItem('hotelName', 'Model');
-                // sessionStorage.setItem('adultCount', adultCount);
-                // sessionStorage.setItem('childrenCount', childrenCount);
-                // sessionStorage.setItem('roomsCount', roomsCount);
-                // sessionStorage.setItem('numberOfNights', numberOfNights);
-                // sessionStorage.setItem('orgCode', '@Model?.CompanyCode');
-                // sessionStorage.setItem('oud', '@Model?.OrgOUD');
-
-
 
                 var formData = {
                     orgCode:'@Model?.CompanyCode',
