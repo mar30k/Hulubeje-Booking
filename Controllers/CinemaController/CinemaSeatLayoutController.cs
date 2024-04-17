@@ -210,9 +210,36 @@ public class CinemaSeatLayoutController : Controller
             return BadRequest("Error fetching seat status from cache.");
         }
     }
+    [HttpPost]
+    public async Task<IActionResult> EntryExtensions([FromBody] EntryExtension extensions)
+    {
+        var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
 
+        var data = new
+        {
+            key = extensions.Key,
+            extension = extensions.Extension,
+            extensionDeligate = extensions.ExtensionDeligate,
+        };
+        var paramJson = JsonConvert.SerializeObject(data);
+        var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
+        HttpResponseMessage entryExtensionresponse = await _seatCacheClient.PostAsync($"entryExtension", content);
 
+        if (entryExtensionresponse.IsSuccessStatusCode)
+        {
 
+            var responseJson = await entryExtensionresponse.Content.ReadAsStringAsync();
+            var updatedRemainingTime = int.Parse(responseJson);
+
+            return Json(updatedRemainingTime);
+        }
+        else
+        {
+            // Handle error response
+            return BadRequest("Error fetching seat status from cache.");
+        }
+    }
+    [HttpPost]
     public async Task<IActionResult> SafePushEntry([FromBody] SafePushEntry pushEntry)
     {
         var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
