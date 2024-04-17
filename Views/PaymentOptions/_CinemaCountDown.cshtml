@@ -13,20 +13,17 @@
 
     var countdownStarted = sessionStorage.getItem('countdownStarted') === 'true';
     var seatCacheKey = sessionStorage.getItem('seatCacheKey');
+    var entryData = {
+        key: seatCacheKey,
+        extensionDeligate: "on_payment_options",
+        extension: 60
+    };
     if (countdownStarted) {
         $.ajax({
-            url: 'https://cache.cnetcommerce.com/api/cache/entryExtension',
-            headers: {
-                "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                "Content-Type": "application/json"
-            },
+            url: '/CinemaSeatLayout/EntryExtensions',
             method: "POST",
-            cache: false,
-            data: JSON.stringify({
-                "key": seatCacheKey,
-                "extensionDeligate": "on_payment_options",
-                "extension": 60
-            }),
+            data: JSON.stringify(entryData),
+            contentType: 'application/json',
             success: function (response) {
                 updatedRemainingTime = parseInt(response);
                 if (updatedRemainingTime > 0) {
@@ -37,7 +34,7 @@
                 console.error("Error fetching seat status:", error);
             }
         });
-    }else{
+    } else {
         document.querySelector('header').style.display = 'none';
     }
     function startCountdownTimer() {
