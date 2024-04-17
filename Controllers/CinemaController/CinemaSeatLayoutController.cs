@@ -213,6 +213,32 @@ public class CinemaSeatLayoutController : Controller
 
 
 
+    public async Task<IActionResult> SafePushEntry([FromBody] SafePushEntry pushEntry)
+    {
+        var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
+
+        var data = new
+        {
+            key = pushEntry.Key,
+            value = pushEntry.Value,
+        };
+        var paramJson = JsonConvert.SerializeObject(data);
+        var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
+        HttpResponseMessage entryExtensionresponse = await _seatCacheClient.PostAsync($"safePushEntry", content);
+
+        if (entryExtensionresponse.IsSuccessStatusCode)
+        {
+
+            var responseJson = await entryExtensionresponse.Content.ReadAsStringAsync();
+            var response = JsonConvert.DeserializeObject<SafePushEntryResponse>(responseJson);
+            return Ok(response);
+        }
+        else
+        {
+            // Handle error response
+            return BadRequest("Error fetching seat status from cache.");
+        }
+    }
 
     [HttpPost]
     public async Task<IActionResult> GetEntryLifeSpan([FromBody] string seatCacheKey)
