@@ -50,7 +50,6 @@
                 var streamUrl = movie?.StreamUrl;
                 var movieNameOriginal = movie?.MovieName;
                 var santizedMovieName = HttpUtility.JavaScriptStringEncode(movieNameOriginal);
-                var sanitizedOverview = HttpUtility.JavaScriptStringEncode(plot);
                 <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
                     <div class="card position-relative">
                         <img src="@moviePoster" alt="Poster Image" class="img-fluid">
@@ -64,7 +63,7 @@
                                     var tin = company?.TIN;
                                     var branchCode = company?.BranchCode;
 
-                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@companyName', '@sanitizedOverview', '@moviePoster', '@santizedMovieName','@movieId','@streamUrl','@tin','@branchCode')">
+                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@santizedMovieName')">
                                         @companyName
                                     </button>
                                 }
@@ -90,22 +89,11 @@ else
     </div>
 }
 <script>
-    function onCompanyButtonClick(companyCode,companyName, sanitizedOverview, moviePoster, movieName, movieId, streamUrl, tin, branchCode) {
+    function onCompanyButtonClick(companyCode,movieName) {
         var selectedDate = document.getElementById("selectedDate").value;
-        sessionStorage.setItem('selectedMovieName', movieName);
-        sessionStorage.setItem('selectedCompanyName ', companyName);
-        sessionStorage.setItem('selectedDate', selectedDate);
         var form = $('<form action="/cinemamoviedetails" method="post"></form>');
-        form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '">');
-        form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
-        form.append('<input type="hidden" name="sanitizedOverview" value="' + sanitizedOverview + '">');
-        form.append('<input type="hidden" name="posterUrl" value="' + moviePoster + '">');
-        form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
-        form.append('<input type="hidden" name="movieId" value="' + movieId + '">');
-        form.append('<input type="hidden" name="streamUrl" value="' + streamUrl + '">');
         form.append('<input type="hidden" name="companyCode" value="' + companyCode + '">');
-        form.append('<input type="hidden" name="tin" value="' + tin + '">');
-        form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
+        form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
 
         $('body').append(form);
         form.submit();

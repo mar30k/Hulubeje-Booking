@@ -23,28 +23,35 @@ namespace HulubejeBooking.Controllers
             _authenticationManager = authenticationManager;
         }
         public async Task<IActionResult> Index(int companyCode, DateTime selectedDate, string movieCode, string companyName, string sanitizedOverview,
-             string posterUrl, string movieName, int movieId, string streamUrl, string tin, int branchCode)
+             string posterUrl, string movieName, string streamUrl, string tin, int branchCode)
         {
             int? articleCode = 0;
             var movieJson = HttpContext.Session.GetString("movies");
-            var movieData = movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) : new Movie();
+            var movieData = GetMovieDataFromSession();
             var movieSchedule = new List<MovieSchedules>();
             if (movieData != null && movieData.Data != null)
             {
+                
                 var company = movieData.Data.FirstOrDefault(c => c.CompanyCode == companyCode);
-
+                branchCode = company?.BranchCode ?? 0;
+                companyName = company?.CompanyName ?? companyName;
+                tin = company?.TIN ?? tin;
                 if (company != null && company.Movies != null)
                 {
-                    var movie = company.Movies.FirstOrDefault(m => m.MovieName?.ToLower() == movieName.ToLower());
-                    if (movie != null && movie.MovieSchedule != null )
+                    var movie = company.Movies.FirstOrDefault(m => m?.MovieName == movieName);
+
+                    if (movie != null)
                     {
-                        movieSchedule = movie.MovieSchedule;
+                        movieSchedule = movie?.MovieSchedule ?? movieSchedule;
+                        sanitizedOverview = movie?.Plot ?? sanitizedOverview;
+                        movieName = movie?.MovieName ?? movieName;
+                        streamUrl = movie?.StreamUrl ?? streamUrl;
+                        sanitizedOverview = movie?.Plot?.ToString() ?? sanitizedOverview;
+                        selectedDate = movie?.Date != null ? (DateTime)movie.Date : selectedDate;
+                        articleCode = movie?.Article ?? articleCode;
+                        posterUrl = movie?.MoviePoster ?? posterUrl;
                     }
-                    if (movie != null && movie.Date != null &&movie.Article!=null)    
-                    {
-                        selectedDate = (DateTime)movie.Date;
-                        articleCode = movie.Article;
-                    }
+
                 }
             }
             else
@@ -141,6 +148,11 @@ namespace HulubejeBooking.Controllers
             movieDetails.PhoneNumber = code;
             movieDetails.ArticleCode = articleCode.ToString();
             return View(movieDetails);   
+        }
+        private Movie GetMovieDataFromSession()
+        {
+            var movieJson = HttpContext.Session.GetString("movies");
+            return movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) ?? new Movie(): new Movie();
         }
     }
 }
