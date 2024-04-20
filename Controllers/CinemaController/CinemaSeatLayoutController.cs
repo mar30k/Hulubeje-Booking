@@ -287,36 +287,51 @@ public class CinemaSeatLayoutController : Controller
             return BadRequest("Error fetching seat status from cache.");
         }
     }
-    //[HttpPost]
-    //public async Task<IActionResult> PopEntry([FromBody] SafePushEntry pushEntry)
-    //{
-    //    var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCahce");
+    [HttpPost]
+    public async Task<IActionResult> PopEntry([FromBody] SafePushEntry pushEntry)
+    {
+        try
+        {
+            var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
+            var Url = _seatCacheClient.BaseAddress?.OriginalString.ToString() + "popEntry";
+            var data = new
+            {
+                key = pushEntry.Key,
+                value = pushEntry.Value,
+            };
+            var paramJson = JsonConvert.SerializeObject(data); 
+            var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
 
-    //    var data = new
-    //    {
-    //        key = pushEntry.Key,
-    //        value = pushEntry.Value,
-    //    };
-    //    var paramJson = JsonConvert.SerializeObject(data);
-    //    var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Delete,
+                RequestUri = new Uri(Url),
+                Content = content
+            };
 
-    //    // Create a cancellation token (optional)
-    //    var cancellationToken = CancellationToken.None;
+            HttpResponseMessage entryExtensionresponse = await _seatCacheClient.SendAsync(request);
 
-    //    HttpResponseMessage entryExtensionresponse = await _seatCacheClient.DeleteAsync($"popEntry", content);
-
-
-    //    if (entryExtensionresponse.IsSuccessStatusCode)
-    //    {
-
-    //        var responseJson = await entryExtensionresponse.Content.ReadAsStringAsync();
-    //        var response = JsonConvert.DeserializeObject<SafePushEntryResponse>(responseJson);
-    //        return Ok(response);
-    //    }
-    //    else
-    //    {
-    //        // Handle error response
-    //        return BadRequest("Error fetching seat status from cache.");
-    //    }
-    //}
+            if (entryExtensionresponse.IsSuccessStatusCode)
+            {
+                var responseJson = await entryExtensionresponse.Content.ReadAsStringAsync();
+                return Ok(responseJson);
+            }
+            else
+            {
+                return BadRequest("Error fetching seat status from cache.");
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            return StatusCode(500, "Internal server error: " + ex.Message);
+        }
+        catch (TaskCanceledException e)
+        {
+            return StatusCode(408, "Request timed out.");
+        }  
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Internal server error: " + ex.Message);
+        }
+    }
 }

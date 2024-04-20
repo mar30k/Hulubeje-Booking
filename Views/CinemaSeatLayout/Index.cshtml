@@ -220,12 +220,12 @@
             var button = document.getElementById(seatCode);
             var maxSeats = parseInt("@Model?.Data?.MaxSeats", 10);
             var index = selectedSeats.indexOf(seatCode);
-
+            var seatData = {
+                key: seatCacheKey,
+                value: parseInt(seatCode)
+            }
             if (!isDisabled && index === -1) {
-                var seatData = {
-                    key: seatCacheKey,
-                    value: parseInt(seatCode)
-                }
+                
                 if (selectedSeats.length < maxSeats) {
                     $.ajax({
                         url: '/CinemaSeatLayout/SafePushEntry',
@@ -287,16 +287,10 @@
                 }
             } else if (!isDisabled) {
                 $.ajax({
-                    url: 'https://cache.cnetcommerce.com/api/cache/popEntry',
-                    headers: {
-                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                        "Content-Type": "application/json"
-                    },
-                    method: "DELETE",
-                    data: JSON.stringify({
-                        "key": seatCacheKey,
-                        "value": parseInt(seatCode)
-                    }),
+                    url: '/CinemaSeatLayout/PopEntry',
+                    method: "POST",
+                    data: JSON.stringify(seatData),
+                    contentType: 'application/json',
                     success: function (response) {
                         selectedSeats.splice(index, 1);
                         var updatedSeatNames = selectedSeats.map(function (code) {
@@ -329,18 +323,17 @@
             clearInterval(countdownInterval);
             var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
             var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
+            
             selectedSeats.forEach(function (selectedSeat) {
+                var seatData = {
+                    key: seatCacheKey,
+                    value: parseInt(selectedSeat)
+                }
                 $.ajax({
-                    url: 'https://cache.cnetcommerce.com/api/cache/popEntry',
-                    headers: {
-                        "x-api-key": "3e1a8b15-ygqa-3965-l5es-509a88f53477",
-                        "Content-Type": "application/json"
-                    },
-                    method: "DELETE",
-                    data: JSON.stringify({
-                        "key": seatCacheKey,
-                        "value": parseInt(selectedSeat)
-                    }),
+                    url: '/CinemaSeatLayout/PopEntry',
+                    method: "POST",
+                    data: JSON.stringify(seatData),
+                    contentType: 'application/json',
                     success: function (response) {
                         // Reset the background color of the button associated with the seat
                         var button = document.getElementById(selectedSeat);
@@ -593,7 +586,7 @@
                                                                 buttonClass += "blocked";
                                                                 isButtonDisabled = true;
                                                             }
-                                                        }
+                                                        } 
                                                         else
                                                         {
                                                             buttonClass += " buttons";
@@ -672,9 +665,9 @@
                                         </div>
                                         @{
                                             var seatCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked") ?? 0;
-                                            int takenSeatCount = Model.SeatStatus.Count(status => status.Status == "taken");
-                                            int bookedSeatsCount = Model.SeatStatus.Count(status => status.Status == "booked");
-                                            int soldSeatsCount = Model.SeatStatus.Count(status => status.Status == "sold");
+                                            int? takenSeatCount = Model?.SeatStatus?.Count(status => status.Status == "taken");
+                                            int? bookedSeatsCount = Model?.SeatStatus?.Count(status => status.Status == "booked");
+                                            int? soldSeatsCount = Model?.SeatStatus?.Count(status => status.Status == "sold");
                                         }
                                         <div class="col-4" style="text-align: center">
                                             <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
