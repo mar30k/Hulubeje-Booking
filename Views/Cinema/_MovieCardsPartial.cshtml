@@ -3,7 +3,7 @@
 @{
     var delay = 0.1;
 }
-@if (Model != null && Model.Data != null)
+@if (Model != null && Model?.Data?.Count > 0)
 {
     <div class="row" id="movieCardsContainer">
         @{
