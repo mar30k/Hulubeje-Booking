@@ -144,7 +144,17 @@
                             $(this).addClass("buttons");
                         }
                     });
-
+                    var totaltakenSeats = response.filter(function (seat) {
+                        return seat.status === "taken";
+                    }).length;
+                    var takenSeatsCount = totaltakenSeats - selectedSeats.length;
+                    var bookedSeatsCount = response.filter(function (seat) {
+                        return seat.status === "booked";
+                    }).length;
+                    var soldSeatsCount = response.filter(function (seat) {
+                        return seat.status === "sold";
+                    }).length;
+                    console.log(totaltakenSeats, takenSeatsCount);
                     response.forEach(function (seat) {
                         var buttonId = seat.value.toString();
                         var button = document.getElementById(buttonId);
@@ -155,6 +165,9 @@
                             button.classList.add(seat.status);
                         }
                     });
+                    $(".takenSeatCount").text(takenSeatsCount);
+                    $(".soldSeatsCount").text(soldSeatsCount);
+                    $(".bookedSeatCount").text(bookedSeatsCount);
                 },
                 error: function (error) {
                     console.error('Error:', error);
@@ -310,7 +323,7 @@
                             countdownreset = true;
                         }
                         selectedSeatsCountUpdate();
-                    },
+                    }, 
                     error: function (xhr, status, error) {
                         console.error("Error fetching seat status:", error);
                     }
@@ -518,7 +531,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <div class="d-flex justify-content-between align-items-center w-100 ml-5">
+                <div class="d-flex justify-content-between align-items-center w-100 ml-lg-5">
                     <div class="Popcorn ">
                         <h4>Seats</h4>
                     </div>
@@ -540,7 +553,7 @@
     <div class="container-xl">
         <div id="seatInfoContainer">
             <div class="row mt-3">
-                <div class="col-lg-10 mb-3">
+                <div class="col-lg-10 mb-3 order-lg-1 order-2">
                     <div style="background: lightgrey; padding: 20px;" class="mr-2">
                         @if (Model != null && Model.Data?.Seats != null && Model.Data.Seats.Any())
                         {
@@ -627,8 +640,8 @@
                         <button id="skipButton" class="btn btn-outline-primary">Skip</button>
                     </div>
                 </div>
-                <div class="col-lg-2 ml-0">
-                    <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:280px; ">
+                <div class="col-lg-2 ml-0 order-lg-2 order-1 mb-2">
+                    <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center;">
                         <div class="row">
                             <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.Data?.CompanyName</h4>
                             <div style="text-align: left;">
@@ -664,14 +677,15 @@
                                             <p style="color:black">Available seats</p>
                                         </div>
                                         @{
-                                            var seatCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked") ?? 0;
+                                            int seatCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked") ?? 0;
                                             int? takenSeatCount = Model?.SeatStatus?.Count(status => status.Status == "taken");
                                             int? bookedSeatsCount = Model?.SeatStatus?.Count(status => status.Status == "booked");
                                             int? soldSeatsCount = Model?.SeatStatus?.Count(status => status.Status == "sold");
+                                            int? availableSeatCount = seatCount - (takenSeatCount + bookedSeatsCount + soldSeatsCount);
                                         }
                                         <div class="col-4" style="text-align: center">
-                                            <p style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
-                                                @seatCount
+                                            <p class="availableSeatCount" style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
+                                                @availableSeatCount
                                             </p>
                                         </div>
                                     </div>
@@ -682,7 +696,7 @@
                                             <p style="color:black">Booked seats</p>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <p style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@bookedSeatsCount</p>
+                                            <p class="bookedSeatCount"style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@bookedSeatsCount</p>
                                         </div>
                                     </div>
                                 </div>
@@ -692,7 +706,7 @@
                                             <p style="color:black">Taken seats</p>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <p style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@takenSeatCount</p>
+                                            <p class="takenSeatCount" style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@takenSeatCount</p>
                                         </div>
                                     </div>
                                 </div>
@@ -702,7 +716,7 @@
                                             <p style="color:black">Sold seats</p>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <p style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@soldSeatsCount</p>
+                                            <p class="soldSeatsCount" style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@soldSeatsCount</p>
                                         </div>
                                     </div>
                                 </div>
