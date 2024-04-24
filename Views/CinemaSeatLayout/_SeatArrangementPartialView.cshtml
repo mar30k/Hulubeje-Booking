@@ -64,7 +64,7 @@
                         @for (int y = Model.Data.MaxY; y >= 1; y--)
                         {
                             <tr>
-                                @for (int x = 1; x <= Model.Data.MaxX; x++)
+                                @for (int x = 1; x <= Model?.Data.MaxX; x++)
                                 {
                                     <td style="height: 30px !important; width: 30px !important">
                                         @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && !string.IsNullOrWhiteSpace(seat.Name)))

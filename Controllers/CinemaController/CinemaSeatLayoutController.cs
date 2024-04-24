@@ -3,15 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using HulubejeBooking.Controllers.Authentication;
 namespace CinemaSeatBooking.Controllers;
-using HulubejeBooking.Controllers;
-
-using HulubejeBooking.Models.Authentication;
-using NuGet.Common;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Tweetinvi.Core.Extensions;
 
 public class CinemaSeatLayoutController : Controller
 {
@@ -97,7 +92,7 @@ public class CinemaSeatLayoutController : Controller
             };
             var paramJson = JsonConvert.SerializeObject(param);
             HttpContext.Session.SetString("cinmaValues", paramJson);
-            if (!identificationResult.isValid && !identificationResult.isLoggedIn)
+            if (identificationResult!=null &&!identificationResult.isValid && !identificationResult.isLoggedIn)
             {
                 string validation = "Cinema";
                 var validationJson = JsonConvert.SerializeObject(validation);
@@ -196,7 +191,7 @@ public class CinemaSeatLayoutController : Controller
             var seats = JsonConvert.DeserializeObject<List<SeatStatus>>(cache);
 
             // Convert seats to a format suitable for JSON serialization
-            var serializedSeats = seats.Select(seat => new
+            var serializedSeats = seats?.Select(seat => new
             {
                 value = seat.Value.ToString(),
                 status = seat.Status
@@ -327,7 +322,7 @@ public class CinemaSeatLayoutController : Controller
         }
         catch (TaskCanceledException e)
         {
-            return StatusCode(408, "Request timed out.");
+            return StatusCode(408, "Request timed out." + e.Message +e.Source);
         }  
         catch (Exception ex)
         {
