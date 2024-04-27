@@ -15,7 +15,6 @@ namespace HulubejeBooking.Controllers.CinemaController
     {
         private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor _httpContextAccessor;
-        private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly IHttpClientFactory _httpClientFactory;
         public CinemaController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
         {

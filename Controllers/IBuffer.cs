@@ -8,6 +8,6 @@ namespace HulubejeBooking.Controllers
     {
         void AddCustomerToBuffer(UserData customer);
         void DeleteCurrentCustomerFromBuffer();
-        Task<UserData> GetCurrentCustomerFromBuffer();
+        UserData GetCurrentCustomerFromBuffer();
     }
 }

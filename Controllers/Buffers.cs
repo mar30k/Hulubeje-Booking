@@ -18,9 +18,9 @@ namespace HulubejeBooking.Controllers
             _customer = null;
         }
 
-        public virtual async Task<UserData> GetCurrentCustomerFromBuffer()
+        public  UserData GetCurrentCustomerFromBuffer()
         {
-            return _customer;
+            return _customer ?? new UserData();
         }
     }
 }
