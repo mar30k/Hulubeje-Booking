@@ -646,11 +646,7 @@
                             <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.Data?.CompanyName</h4>
                             <div style="text-align: left;">
                                 <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                                    @{
-                                        var decodedMovieName = Regex.Unescape(Model?.Data?.MovieName ?? "");
-                                    }
-
-                                    <strong>Movie:</strong>&nbsp; @decodedMovieName
+                                    <strong>Movie:</strong>&nbsp; @Regex.Unescape(Model?.Data?.MovieName ?? "")
                                 </p>
                                 <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
                                     <strong>Hall Name:</strong>&nbsp; @Model?.Data?.HallName
