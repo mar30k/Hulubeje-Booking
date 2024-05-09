@@ -45,7 +45,7 @@ namespace HulubejeBooking.Controllers.Payment
             {   
                 string transactionIdData = await transactionIdResponse.Content.ReadAsStringAsync();
                 var transactionId = JsonConvert.DeserializeObject<TransactionId>(transactionIdData);
-                if (transactionId != null)
+                if (transactionId != null && transactionId.Data!=null)
                 {
                     HttpContext.Session.SetString("VoucherCode", transactionId.Data);
                 }
@@ -77,7 +77,7 @@ namespace HulubejeBooking.Controllers.Payment
             string? token = b?.UserData?.Token;
             var vCode = HttpContext.Session.GetString("VoucherCode");
 
-            if (HttpContext.Session.TryGetValue("PaymentModels", out var model))
+            if (HttpContext.Session.TryGetValue("PaymentModels", out var model) && !string.IsNullOrWhiteSpace(vCode))
             {
                 string paymentModel = Encoding.UTF8.GetString(model);
                 var paymentModelData = JsonConvert.DeserializeObject<PaymentModel>(paymentModel);
@@ -106,11 +106,9 @@ namespace HulubejeBooking.Controllers.Payment
                     operationmode = data?.OperationMode,
                     pin = "",
                 };
-                string jsonBody = JsonConvert.SerializeObject(param);
-                string activityLogjson = JsonConvert.SerializeObject(ActivityLog);
-                HttpContext.Session.SetString("PaymentTransactionRequest", jsonBody);
-                HttpContext.Session.SetString("ActivityLog", activityLogjson);
-                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                HttpContext.Session.SetString("PaymentTransactionRequest", JsonConvert.SerializeObject(param));
+                HttpContext.Session.SetString("ActivityLog", JsonConvert.SerializeObject(ActivityLog));
+                var content = new StringContent(JsonConvert.SerializeObject(param), Encoding.UTF8, "application/json");
                 HttpResponseMessage authorizationResponse = await _v7Client.PostAsync($"payment/authorization", content);
                 if (authorizationResponse.IsSuccessStatusCode)
                 {

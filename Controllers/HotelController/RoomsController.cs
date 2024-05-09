@@ -10,17 +10,15 @@ namespace HulubejeBooking.Controllers.HotelController
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly HotelListBuffer _hotelListBuffer;
         private readonly AuthenticationManager _authenticationManager;
 
         public RoomsController(
             IHttpClientFactory httpClientFactory,
             AuthenticationManager authenticationManager,
-            HotelListBuffer hotelListBuffer, IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor)
         {
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
-            _hotelListBuffer = hotelListBuffer;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -65,13 +63,16 @@ namespace HulubejeBooking.Controllers.HotelController
             }
 
             var viewModelJson = HttpContext.Session.GetString("AvailabilityViewModel");
-            var viewModel = new GetRooms();
+
             if (!string.IsNullOrEmpty(viewModelJson) && !string.IsNullOrEmpty(roomForm))
             {
                 //HttpContext.Session.Remove("AvailabilityViewModel");
-                viewModel = JsonConvert.DeserializeObject<GetRooms>(viewModelJson);
+                GetRooms? viewModel = JsonConvert.DeserializeObject<GetRooms>(viewModelJson);
                 roomFormData = JsonConvert.DeserializeObject<RoomFormData>(roomForm);
-                viewModel.RoomFormData = roomFormData;
+                if (roomFormData != null && viewModel!=null)
+                {
+                    viewModel.RoomFormData = roomFormData;
+                }
                 return View(viewModel);
 			}
             else

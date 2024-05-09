@@ -6,9 +6,9 @@ namespace HulubejeBooking.Controllers
     public class WorkWebContext
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private UserData _cachedCustomer;
-        private AuthenticationManager _authenticationManager;
-        private IBuffer _buffer;
+        private readonly AuthenticationManager _authenticationManager;
+        private readonly IBuffer _buffer;
+
         public WorkWebContext(AuthenticationManager authenticationManager, Buffers buffer, IHttpContextAccessor httpContextAccessor)
         {
             _authenticationManager = authenticationManager;

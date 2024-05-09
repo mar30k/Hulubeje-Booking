@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using HulubejeBooking.Models.HotelModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
     public class DateRangeParser
     {
-        public static Models.HotelModels.DateRange parseDateRange(string dateRange)
+        public static DateRange ParseDateRange(string? dateRange)
         {
-            Models.HotelModels.DateRange result = new();
+            DateRange result = new();
 
             if (!string.IsNullOrWhiteSpace(dateRange))
             {
@@ -21,6 +22,6 @@ namespace HulubejeBooking.Controllers.HotelController
             }  
 
             return result;
-        }
+        } 
     }
 }

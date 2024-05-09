@@ -2,12 +2,6 @@
 
 namespace HulubejeBooking.Models.HotelModels
 {
-	public class PaymentOption
-    {
-        public string? PaymentMethodName { get; set; }
-        public string? PaymentMethodOud { get; set; }
-        public string? PaymentMethodImage { get; set; }
-    }
     public class GetCompanyImages
     {
         public bool IsSuccessful { get; set; }

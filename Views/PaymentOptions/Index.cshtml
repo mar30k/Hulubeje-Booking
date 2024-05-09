@@ -101,7 +101,7 @@
                             if (response.additionalParameters.type === "ussdpush" && response.additionalParameters.isAsyncMode === true) {
                                 window.location.href = '/UssdPush';
                             } else if (response.additionalParameters.type === "otp" && response.additionalParameters.isAsyncMode === false) {
-                                window.location.href = '/telebirrotp';
+                                window.location.href = '/otppayment';
                             }
                             else {
                                 window.open(response.additionalParameters.redirectUrl, '_blank');

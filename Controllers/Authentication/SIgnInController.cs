@@ -13,14 +13,12 @@ namespace HulubejeBooking.Controllers.Authentication
         private readonly IHttpClientFactory _httpClientFactory;
 
         private readonly AuthenticationManager _authenticationManager;
-        private readonly WorkWebContext _workWebContext;
         public SignInController(ILogger<SignInController> logger, IHttpClientFactory httpClientFactory,
-            AuthenticationManager authenticationManager, WorkWebContext workWebContext)
+            AuthenticationManager authenticationManager)
         {
             _logger = logger;
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
-            _workWebContext = workWebContext;
         }
         public async Task<IActionResult> IndexAsync()
         {

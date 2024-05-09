@@ -13,18 +13,16 @@ namespace HulubejeBooking.Controllers.HotelController
     {
         private readonly ILogger<HotelController> _logger;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly HotelListBuffer _hotelListBuffer;
         private readonly AuthenticationManager _authenticationManager;
         private readonly IHttpContextAccessor? _httpContextAccessor;
 
         public HotelController(ILogger<HotelController> logger,
             IHttpClientFactory httpClientFactory, AuthenticationManager authenticationManager,
-             HotelListBuffer hotelListBuffer, IHttpContextAccessor? httpContextAccessor)
+             IHttpContextAccessor? httpContextAccessor)
         {
             _authenticationManager = authenticationManager;
             _logger = logger;
             _httpClientFactory = httpClientFactory;
-            _hotelListBuffer = hotelListBuffer;
             _httpContextAccessor = httpContextAccessor;
         }
         [HttpGet]
@@ -99,7 +97,7 @@ namespace HulubejeBooking.Controllers.HotelController
             string? token = identificationResult?.UserData.Token;
             var childCount = childrenCount;
             var roomCount = roomsCount;
-            var dt = DateRangeParser.parseDateRange(dateRange);
+            var dt = DateRangeParser.ParseDateRange(dateRange);
             var arrivalDateString = dt.startDateString.Trim();
             var departureDateString = dt.endDateString.Trim();
             DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
@@ -159,7 +157,7 @@ namespace HulubejeBooking.Controllers.HotelController
             if (roomFormData != null) {
                 var b = await _authenticationManager.identificationValid();
                 string? token = b.UserData.Token;
-                var dt = DateRangeParser.parseDateRange(roomFormData.Date);
+                var dt = DateRangeParser.ParseDateRange(roomFormData.Date);
                 var arrivalDateString = dt.startDateString.Trim();
                 var departureDateString = dt.endDateString.Trim();
                 DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
@@ -330,7 +328,7 @@ namespace HulubejeBooking.Controllers.HotelController
             string? token = identificationResult?.UserData.Token;
             var childCount = childrenCount;
             var roomCount = roomsCount;
-            var dt = DateRangeParser.parseDateRange(dateRange);
+            var dt = DateRangeParser.ParseDateRange(dateRange);
             var arrivalDateString = dt.startDateString.Trim();
             var departureDateString = dt.endDateString.Trim();
             DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
