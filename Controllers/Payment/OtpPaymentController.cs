@@ -9,12 +9,12 @@ using System.Text;
 
 namespace HulubejeBooking.Controllers.Payment
 {
-    public class TeleBirrOtpController : Controller
+    public class OtpPaymentController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
         private readonly AuthenticationManager _authenticationManager;
-        public TeleBirrOtpController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
+        public OtpPaymentController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
