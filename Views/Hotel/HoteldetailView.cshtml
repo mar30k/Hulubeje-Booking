@@ -212,7 +212,7 @@
                     @foreach (var image in Model?.ImageModel?.Data?.OrderBy(x => Guid.NewGuid()).Take(5).ToList() ?? new List<string>())
                     {
                         <div class="col-6">
-                            <img src="@image" class="img-fluid image mb-2" alt="@image" style="max-width: 100%; height: auto;" />
+                            <img src="@image" class="img-fluid image mb-2" alt="Hotel Image" style="max-width: 100%; height: auto;" />
                         </div>
                     }
                 </div>
