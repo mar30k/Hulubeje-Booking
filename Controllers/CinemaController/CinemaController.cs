@@ -45,14 +45,21 @@ namespace HulubejeBooking.Controllers.CinemaController
             }
             var movies = new Movie();
             var cachedMovies = new List<CompanyData>();
-            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage responseMessage =await _v7Client.GetAsync($"service/cinema/getConsolidatedMovies");
+            var trendingMovies = new List<CompanyData>();
+            HttpResponseMessage responseMessage = await _v7Client.GetAsync($"service/cinema/getConsolidatedMovies");
             if (responseMessage.IsSuccessStatusCode)
             {
                 string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
-                cachedMovies = responseMessageData!=null ?JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
+                cachedMovies = responseMessageData != null ? JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
+            }
+            HttpResponseMessage trendingMoviesResponse = await _v7Client.GetAsync($"service/cinema/getTrendingMovies");
+            if (trendingMoviesResponse.IsSuccessStatusCode)
+            {
+                string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                trendingMovies = responseMessageData != null ? JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
             }
             movies.Data = cachedMovies;
+            movies.TrendingMovies = trendingMovies;
             var moviesJson = JsonConvert.SerializeObject(movies);
             HttpContext.Session.SetString("movies", moviesJson);
             return View(movies);
