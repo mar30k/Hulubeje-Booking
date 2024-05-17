@@ -124,7 +124,7 @@ public class CinemaSeatLayoutController : Controller
             priceValue = seatValues?.Price;
             companyCode = seatValues?.CompanyCode;
             id = seatValues?.Id;
-            speceId = seatValues.SpaceId;
+            speceId = seatValues != null ?seatValues.SpaceId : 0;
             articleCode = seatValues?.ArticleCode;
         }
         else
@@ -145,7 +145,7 @@ public class CinemaSeatLayoutController : Controller
             string seatReasponseData = await seatresponse.Content.ReadAsStringAsync();
             seats = JsonConvert.DeserializeObject<SeatLayouts>(seatReasponseData);
         }
-        HttpResponseMessage seatCacheresponse = await _seatCacheClient.GetAsync($"getEntriesContainsKey?key={key}");
+        HttpResponseMessage seatCacheresponse = await _seatCacheClient.GetAsync($"cache/getEntriesContainsKey?key={key}");
         if (seatCacheresponse.IsSuccessStatusCode && seats!=null)
         {
             string cache = await seatCacheresponse.Content.ReadAsStringAsync();
@@ -181,7 +181,7 @@ public class CinemaSeatLayoutController : Controller
         var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
         string cache;
 
-        HttpResponseMessage seatCacheresponse = await _seatCacheClient.GetAsync($"getEntriesContainsKey?key={seatCacheKey}");
+        HttpResponseMessage seatCacheresponse = await _seatCacheClient.GetAsync($"cache/getEntriesContainsKey?key={seatCacheKey}");
 
         if (seatCacheresponse.IsSuccessStatusCode)
         {
@@ -218,7 +218,7 @@ public class CinemaSeatLayoutController : Controller
         };
         var paramJson = JsonConvert.SerializeObject(data);
         var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
-        HttpResponseMessage entryExtensionresponse = await _seatCacheClient.PostAsync($"entryExtension", content);
+        HttpResponseMessage entryExtensionresponse = await _seatCacheClient.PostAsync($"cache/entryExtension", content);
 
         if (entryExtensionresponse.IsSuccessStatusCode)
         {
@@ -246,7 +246,7 @@ public class CinemaSeatLayoutController : Controller
         };
         var paramJson = JsonConvert.SerializeObject(data);
         var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
-        HttpResponseMessage entryExtensionresponse = await _seatCacheClient.PostAsync($"safePushEntry", content);
+        HttpResponseMessage entryExtensionresponse = await _seatCacheClient.PostAsync($"cache/safePushEntry", content);
 
         if (entryExtensionresponse.IsSuccessStatusCode)
         {
@@ -267,7 +267,7 @@ public class CinemaSeatLayoutController : Controller
     {
         var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
 
-        HttpResponseMessage getEntryLifeSpan = await _seatCacheClient.GetAsync($"getEntryLifeSpan?key={seatCacheKey}");
+        HttpResponseMessage getEntryLifeSpan = await _seatCacheClient.GetAsync($"cache/getEntryLifeSpan?key={seatCacheKey}");
 
         if (getEntryLifeSpan.IsSuccessStatusCode)
         {
@@ -288,7 +288,7 @@ public class CinemaSeatLayoutController : Controller
         try
         {
             var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
-            var Url = _seatCacheClient.BaseAddress?.OriginalString.ToString() + "popEntry";
+            var Url = _seatCacheClient.BaseAddress?.OriginalString.ToString() + "cache/popEntry";
             var data = new
             {
                 key = pushEntry.Key,
