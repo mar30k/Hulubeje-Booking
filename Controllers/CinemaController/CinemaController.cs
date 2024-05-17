@@ -24,7 +24,7 @@ namespace HulubejeBooking.Controllers.CinemaController
         }
         public async Task<IActionResult> Index()
         {
-            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeCache");
             var identificationResult = await _authenticationManager.identificationValid();
 
             string? token = identificationResult?.UserData?.Token;
@@ -44,15 +44,15 @@ namespace HulubejeBooking.Controllers.CinemaController
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
             var movies = new Movie();
-            DateTime dateTime = DateTime.Now;
-            string formattedDate = dateTime.ToString("yyyy-MM-dd");
+            var cachedMovies = new List<CompanyData>();
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage responseMessage =await _v7Client.GetAsync($"cinema/getconsolidatedmovies?Date={formattedDate}");
+            HttpResponseMessage responseMessage =await _v7Client.GetAsync($"service/cinema/getConsolidatedMovies");
             if (responseMessage.IsSuccessStatusCode)
             {
                 string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
-                movies = responseMessageData!=null ?JsonConvert.DeserializeObject<Movie>(responseMessageData) : new Movie();
+                cachedMovies = responseMessageData!=null ?JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
             }
+            movies.Data = cachedMovies;
             var moviesJson = JsonConvert.SerializeObject(movies);
             HttpContext.Session.SetString("movies", moviesJson);
             return View(movies);
@@ -62,7 +62,6 @@ namespace HulubejeBooking.Controllers.CinemaController
         {
             var identificationResult = await _authenticationManager.identificationValid();
             string? token = identificationResult?.UserData?.Token;
-            string? code = identificationResult?.UserData?.Code;
             try
             {
                 var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
