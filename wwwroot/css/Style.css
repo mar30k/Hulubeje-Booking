@@ -7,35 +7,35 @@ body {
 /* Extra small devices (portrait phones, less than 576px) */
 /* Small devices (up to 412.99999px) */
 @media (max-width: 412.99999px) {
-    .col {
+    .cols {
         flex: 0 0 50%;
         max-width: 50%;
     }
 
-    .card {
+    .cards {
         height: 300px !important;
     }
 }
 
 /* Small devices (413px to 575.99999px) */
 @media (min-width: 413px) and (max-width: 575.99999px) {
-    .col {
+    .cols {
         flex: 0 0 50%;
         max-width: 50%;
     }
 
-    .card {
+    .cards {
         height: 350px !important;
     }
 }
 
 @media (min-width: 576px) and (max-width: 991.99999px) {
-    .col {
+    .cols {
         flex: 0 0 33.33%;
         max-width: 33.33%;
     }
 
-    .card {
+    .cards {
         height: 400px !important;
     }
 }
@@ -43,22 +43,22 @@ body {
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.999999px) {
-    .col {
+    .cols {
         flex: 0 0 25%;
         max-width: 25%;
     }
-    .card {
+    .cards {
         height: 450px !important;
     }
 }
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-    .col {
+    .cols {
         flex: 0 0 20%;
         max-width: 20%;
     }
-    .card {
+    .cards {
         height: 470px !important;
     }
 }
@@ -67,7 +67,7 @@ body {
     padding-left: 15px; /* Adjust the left padding as needed */
     padding-right: 15px; /* Adjust the right padding as needed */
 }
-.card {
+.cards {
     position: relative;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
     height: 470px;
@@ -79,19 +79,19 @@ body {
     overflow: hidden;
 }
 
-    .card img {
+    .cards img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s;
     }
 
-    .card:hover img {
+    .cards:hover img {
         transform: scale(1.1);
         height: 100%;
     }
 
-    .card .button-container {
+    .cards .button-container {
         position: absolute;
         left: 0;
         right: 0;
@@ -108,12 +108,12 @@ body {
         z-index: 1;
     }
 
-    .card:hover .button-container {
+    .cards:hover .button-container {
         opacity: 1;
         transform: translateY(0);
     }
 
-.card .button {
+.cards .button {
     height: 40px;
     padding: 1px;
     margin: 0px;
@@ -129,19 +129,19 @@ body {
     z-index: 2;
 }
 
-.card .button:hover {
+.cards .button:hover {
     background-color: #abaeb1;
 }
 
-.card .button:first-child {
+.cards .button:first-child {
     margin-top: 20px;
 }
 
-.card .button:not(:last-child) {
+.cards .button:not(:last-child) {
     margin-bottom: 10px;
 }
 
-.card-title {
+.cards-title {
     position: absolute;
     bottom: -10px;
     left: 0;
@@ -157,7 +157,7 @@ body {
     box-sizing: border-box;
 }
 
-.card:hover .card-title {
+.cards:hover .cards-title {
     opacity: 0
 }
 
