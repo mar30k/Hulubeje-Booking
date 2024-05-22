@@ -55,7 +55,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             HttpResponseMessage trendingMoviesResponse = await _v7Client.GetAsync($"service/cinema/getTrendingMovies");
             if (trendingMoviesResponse.IsSuccessStatusCode)
             {
-                string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                string responseMessageData = await trendingMoviesResponse.Content.ReadAsStringAsync();
                 trendingMovies = responseMessageData != null ? JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
             }
             movies.Data = cachedMovies;
