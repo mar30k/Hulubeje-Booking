@@ -1,0 +1,219 @@
+﻿@model HulubejeBooking.Models.CInemaModels.Movie;
+@using HulubejeBooking.Models.CInemaModels;
+<div class="mt-2 d-flex justify-content-between">
+    <h5>Trending Movies</h5>
+    <div class="dropdown-container ml-3">
+        <button type="button" class="btn btn-primary dropdown-toggle"  data-toggle="dropdown">
+            Filter By
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+            <label class="dropdown-item">
+                <input type="radio" name="filterOption" id="filterLast24" class="mr-2" value="Last 24 Hours"> Last 24 Hours
+            </label>
+            <label class="dropdown-item">
+                <input type="radio" name="filterOption" id="filterThisWeek" class="mr-2" value="This Week" checked> This Week
+            </label>
+            <label class="dropdown-item">
+                <input type="radio" name="filterOption" id="filterThisMonth" class="mr-2" value="This Month"> This Month
+            </label>
+        </div>
+    </div>
+</div>
+<div class="row mt-2">
+    <div class="scrolling-wrapper-flexbox" id="movieCards">
+        @foreach (var companies in Model?.TrendingMovies ?? new List<HulubejeBooking.Models.CInemaModels.CompanyData>())
+        {
+            foreach (var trendingMovies in companies.Movies ?? new List<Movies>())
+            {
+                <div class="card trending"
+                     data-thisweek= "@companies?.Stat?.Count?.Week"
+                     data-last24="@companies?.Stat?.Count?.Day"
+                     data-thismonth="@companies?.Stat?.Count?.Month"
+                     data-rankday="@companies?.Stat?.Place?.Day"
+                     data-rankweek="@companies?.Stat?.Place?.Week"
+                     data-rankmonth="@companies?.Stat?.Place?.Month"
+                     style="width: 12rem; margin-right: 1rem;"
+                     onclick="onCompanyCardClick('@companies?.CompanyCode', '@trendingMovies?.MovieName');">
+                    <img class="card-img-top" src="@trendingMovies?.MoviePoster" alt="movie poster">
+                    <div class="p-2 text-center">
+                        <div class="movie-name-container">
+                            <p class="m-0">@trendingMovies?.MovieName</p>
+                        </div>
+                        <div>
+                            <i class="fas fa-users text-sm-start" style="font-size: small"></i>
+                            <small class="peopleInterested">@FormatNumber(companies?.Stat?.Count?.Week ?? 0) interested</small>
+                        </div>
+                        @if (companies?.IsTrendingUp ?? false)
+                        {
+                            <i class="fas fa-angle-double-up text-success"></i>
+                        }
+                        else if (companies?.IsTrendingDown ?? false)
+                        {
+                            <i class="fas fa-angle-double-down text-danger"></i>
+                        }
+                        <small class="rank">@companies?.Stat?.Place?.Week in this Week</small>
+                        <hr class="my-1">
+                        <p class="text-center mb-0">@companies?.CompanyName</p>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script>
+    function onCompanyCardClick(companyCode, movieName) {
+        var selectedDate = document.getElementById("selectedDate").value;
+        var form = $('<form action="/cinemamoviedetails" method="post"></form>');
+        form.append('<input type="hidden" name="companyCode" value="' + companyCode + '">');
+        form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
+
+        $('body').append(form);
+        form.submit();
+    }
+    document.querySelectorAll('input[type="radio"]').forEach(function (item) {
+        item.addEventListener('change', function () {
+            var selectedFilter = this.id;
+            switch (selectedFilter) {
+                case 'filterLast24':
+                    sortMovies('data-last24');
+                    break;
+                case 'filterThisWeek':
+                    sortMovies('data-thisweek');
+                    break;
+                case 'filterThisMonth':
+                    sortMovies('data-thismonth');
+                    break;
+                default:
+                    console.log("Invalid filter selected");
+            }
+        });
+    });
+
+    function sortMovies(dataAttribute) {
+        const container = document.getElementById('movieCards');
+        const cards = Array.from(container.getElementsByClassName('trending'));
+
+        cards.sort((a, b) => {
+            const aValue = parseInt(a.getAttribute(dataAttribute)) || 0;
+            const bValue = parseInt(b.getAttribute(dataAttribute)) || 0;
+            return bValue - aValue;
+        });
+        cards.forEach(card => container.appendChild(card));
+        cards.forEach(card => {
+            const interestedPeople = card.querySelector('.peopleInterested');
+            let interestedPeopleText = '';
+            switch (dataAttribute) {
+                case 'data-thisweek':
+                    interestedPeopleText = `${formatNumber(card.dataset.thisweek)} interested`;
+                    break;
+                case 'data-last24':
+                    interestedPeopleText = `${formatNumber(card.dataset.last24)} interested`;
+                    break;
+                case 'data-thismonth':
+                    interestedPeopleText = `${formatNumber(card.dataset.thismonth)} interested`;
+                    break;
+                default:
+                    console.log("Invalid filter selected");
+            }
+
+            interestedPeople.textContent = interestedPeopleText;
+        });
+        cards.forEach(card => {
+            const rank = card.querySelector('.rank');
+            let ranktext = '';
+            switch (dataAttribute) {
+                case 'data-thisweek':
+                    ranktext = `${card.dataset.rankweek} in this week`;
+                    break;
+                case 'data-last24':
+                    ranktext = `${card.dataset.rankday} in the last 24 hours`;
+                    break;
+                case 'data-thismonth':
+                    ranktext = `${card.dataset.rankmonth} in this month`;
+                    break;
+                default:
+                    console.log("Invalid filter selected");
+            }
+
+            rank.textContent = ranktext;
+        });
+    }
+    function formatNumber(numbers) {
+        var number = parseInt(numbers);
+        console.log(number);
+        if (number >= 1000000000)
+            return (number / 1000000000).toFixed(1) + "B";
+        else if (number >= 1000000)
+            return (number / 1000000).toFixed(1) + "M";
+        else if (number >= 1000)
+            return (number / 1000).toFixed(1) + "k";
+        else
+            return number.toString();
+    }
+</script>
+
+<style>
+    .trending:hover{
+        cursor: pointer;
+    }
+    .scrolling-wrapper-flexbox {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
+    }
+    .scrolling-wrapper-flexbox .card {
+        flex: 0 0 auto;
+    }
+    .card-img-top {
+        height: 250px !important;
+        width: auto;
+        max-width: 100%;
+        aspect-ratio: 2 / 3;
+    }
+    .movie-name-container {
+        overflow: hidden;
+        white-space: nowrap;
+        box-sizing: border-box;
+        width: 100%;
+        position: relative;
+    }
+    .marquee {
+        overflow: hidden;
+        white-space: nowrap;
+        box-sizing: border-box;
+        width: 100%;
+        position: relative;
+    }
+    .marquee p {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 10s linear infinite;
+    }
+    @@keyframes marquee {
+        from {
+            transform: translateX(100%);
+        }
+        to {
+            transform: translateX(-100%);
+        }
+    }
+</style>
+@functions {
+    public static string FormatNumber(double number)
+    {
+        if (number >= 1000000000)
+            return (number / 1000000000D).ToString("0.#") + "B";
+        else if (number >= 1000000)
+            return (number / 1000000D).ToString("0.#") + "M";
+        else if (number >= 1000)
+            return (number / 1000D).ToString("0.#") + "k";
+        else
+            return number.ToString();
+    }
+}
+<div class="mt-2">
+    <h5>Movies in Cinemas</h5>
+</div>
