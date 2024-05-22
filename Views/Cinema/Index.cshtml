@@ -38,7 +38,7 @@
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <html>
-    <body>
+    <body class="bg-light">
     <div class="row pt-2" style="background-color: #063970; ">
         <div class="container">
             <div class="pt-2" style="display: grid; grid-template-columns: repeat(3, 1fr);">
@@ -75,6 +75,9 @@
         </div>
     </div>
     <div class="custom-container">
+        <div id="trendingMoviesContainer">
+            <partial name="_TrendingMoviesPartial" />
+        </div>
         <div class="row mt-3">
             <div id="filteredCardsContainer" class="card-container row flex-wrap" style="display: none;">
                 <!-- Filtered cards will be dynamically added here -->
@@ -151,7 +154,7 @@
                     var cards = Array.from(moviesContainer.querySelectorAll('.movie-card'));
 
                     cards.forEach(function (card) {
-                        var movieTitle = card.querySelector('.card-title').textContent.trim().toLowerCase();
+                        var movieTitle = card.querySelector('.cards-title').textContent.trim().toLowerCase();
 
                         if (movieTitle.includes(movieFilterText)) {
                             var clonedCard = card.cloneNode(true);

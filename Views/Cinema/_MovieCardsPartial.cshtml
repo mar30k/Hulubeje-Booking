@@ -50,8 +50,8 @@
                 var streamUrl = movie?.StreamUrl;
                 var movieNameOriginal = movie?.MovieName;
                 var santizedMovieName = HttpUtility.JavaScriptStringEncode(movieNameOriginal);
-                <div class="col mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
-                    <div class="card position-relative">
+                <div class="cols mb-2 mt-2 movie-card" style="animation-delay: @(delay)s;">
+                    <div class="cards card position-relative">
                         <img src="@moviePoster" alt="Poster Image" class="img-fluid">
                         <div class="button-container">
                             @foreach (var companyName in companies)
@@ -69,7 +69,7 @@
                                 }
                             }
                         </div>
-                        <div class="card-title">
+                        <div class="cards-title">
                             @movieNameOriginal (@year)
                         </div>
                     </div>
