@@ -5,7 +5,10 @@
     <h2>Schedules</h2>
     @if (Model != null)
     {
-        @foreach (var schedule in Model.MovieSchedules ?? new List<MovieSchedules>())
+        var reorderedSchedules = Model?.MovieSchedules
+        ?.OrderBy(s => s.Status == "CLOSED").ToList();
+
+        @foreach (var schedule in reorderedSchedules ?? new List<MovieSchedules>())
         {
             <div class="card mb-3 p-2">
                 <div  style="display: flex; align-items: center; text-align: center;">
