@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Globalization;
 using HulubejeBooking.Controllers.Authentication;
 using System.Security.Policy;
+using System.Text;
 namespace HulubejeBooking.Controllers
 {
     public class CinemaMovieDetailsController : Controller
@@ -25,6 +26,7 @@ namespace HulubejeBooking.Controllers
         public async Task<IActionResult> Index(int companyCode, DateTime selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, string streamUrl, string tin, int branchCode)
         {
+            DateTime? releaseDate = DateTime.MinValue;
             int? articleCode = 0;
             var movieJson = HttpContext.Session.GetString("movies");
             var movieData = GetMovieDataFromSession();
@@ -42,6 +44,7 @@ namespace HulubejeBooking.Controllers
 
                     if (movie != null)
                     {
+                        releaseDate = movie.ReleaseDate;
                         movieSchedule = movie?.MovieSchedule ?? movieSchedule;
                         sanitizedOverview = movie?.Plot ?? sanitizedOverview;
                         movieName = movie?.MovieName ?? movieName;
@@ -80,6 +83,7 @@ namespace HulubejeBooking.Controllers
             var _tmdbClient = _httpClientFactory.CreateClient("MovieDb");
             var movieDetails = new MovieModel
             {
+                ReleaseDate = releaseDate,
                 MovieCode = movieCode,
                 CompanyName = companyName,
                 Overview = sanitizedOverview,
@@ -88,7 +92,7 @@ namespace HulubejeBooking.Controllers
                 SelectedDate = selectedDate,
                 MovieSchedules = movieSchedule,
                 CompanyCode = companyCode.ToString(),
-                CompanyTinNumber = tin.ToString(),
+                CompanyTinNumber = tin?.ToString(),
                 BranchCode = branchCode
             };
             var movieTitle = Uri.EscapeDataString(movieName ?? string.Empty);
@@ -147,6 +151,7 @@ namespace HulubejeBooking.Controllers
             movieDetails.MovieName = movieName;
             movieDetails.PhoneNumber = code;
             movieDetails.ArticleCode = articleCode.ToString();
+            //_ = await UpdateMovieAnalyticsAsync(tin, movieName, posterUrl);
             return View(movieDetails);   
         }
         private Movie GetMovieDataFromSession()
@@ -154,5 +159,38 @@ namespace HulubejeBooking.Controllers
             var movieJson = HttpContext.Session.GetString("movies");
             return movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) ?? new Movie(): new Movie();
         }
+        private async Task<bool> UpdateMovieAnalyticsAsync(string? orgTin, string? movieName, string posterUrl)
+        {
+            var param = new
+            {
+                orgTin,
+                movieName,
+                posterUrl
+            };
+            var jsonRequest = JsonConvert.SerializeObject(param);
+
+            var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+            var _redCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
+            try
+            {
+                HttpResponseMessage responseMessage = await _redCacheClient.PostAsync($"service/cinema/updateMovieAnayltics", content);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                    if (bool.TryParse(responseMessageData, out bool result))
+                    {
+                        return result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }
+
+            return false;
+        }
+
     }
 }
