@@ -13,6 +13,7 @@
         public int? BranchCode { get; set; }
         public string? MoviePreviewImageUrl { get; set; }
         public int? ReleaseYear { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public string? CompanyTinNumber { get; set; }
         public DateTime? SelectedDate { get; set; }
         public string? PosterUrl { get; set; }

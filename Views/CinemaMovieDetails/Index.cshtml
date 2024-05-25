@@ -220,6 +220,14 @@
                                 <p class="details" style="display: inline-block;">@Model?.PgRating</p>
                             }
                         </div>
+                        <div>
+                            @if (Model?.ReleaseDate is not null)
+                            {
+                                <h4 style="display: inline-block; margin-right: 10px;">Release Year:</h4>
+                                var releaseDate = Model?.ReleaseDate?.ToString("yyyy-MM-dd");
+                                <p class="details" style="display: inline-block;">@releaseDate</p>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
