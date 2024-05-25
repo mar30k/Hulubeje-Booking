@@ -290,8 +290,19 @@
                                 <div class="col-lg-8">
                                     <div class="card-body">
                                         <h5 class="card-title">@hotel?.BrandName</h5>
-                                        <p class="card-text">@branch?.City @(branch?.SpecificAddress != null ? $",{branch.SpecificAddress}" : "")</p>
+                                        <p class="card-text">
+                                            <i class="fas fa-map-marker-alt text-danger"></i>
+                                            @branch?.City@(branch?.SpecificAddress != null ? $", {branch.SpecificAddress}" : "")
+                                        </p>
                                         <p class="card-text"><strong class="text-body-secondary">@branch?.Name </strong> </p>
+                                        <small class="mb-0 text-sm">
+                                            @for(var i= 0; i < branch?.StarRating; i++)
+                                            {
+                                                <span class="text-warning">
+                                                    <i class="fa-solid fa-star"></i>
+                                                </span>
+                                            }
+                                        </small>
                                     </div>
                                 </div>
                             </div>
