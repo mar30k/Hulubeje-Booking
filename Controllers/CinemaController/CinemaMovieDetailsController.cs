@@ -130,24 +130,8 @@ namespace HulubejeBooking.Controllers
                 }
             }
             string castApiUrl = $"movie/{tmdbMovieId}/credits?api_key={_tmdbApiKey}";
-            HttpResponseMessage castResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + castApiUrl);
-
-            if (castResponse.IsSuccessStatusCode)
-            {
-                string castResponseData = await castResponse.Content.ReadAsStringAsync();
-                var castDetails = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(castResponseData);
-                if (castDetails != null)
-                {
-                    var castList = ((IEnumerable<dynamic>)castDetails["cast"])
-                    .Select(c => new CastMember
-                    {
-                        Name = c["name"].ToString(),
-                        ProfilePath = "https://image.tmdb.org/t/p/w500" + c["profile_path"].ToString()
-                    })
-                    .ToList();
-                    movieDetails.Cast = castList;                                
-                }
-            }
+            var castLists = await GetCastMembers(castApiUrl);
+            movieDetails.Cast = castLists;
             movieDetails.MovieName = movieName;
             movieDetails.PhoneNumber = code;
             movieDetails.ArticleCode = articleCode.ToString();
@@ -192,5 +176,29 @@ namespace HulubejeBooking.Controllers
             return false;
         }
 
+        private async Task<List<CastMember>> GetCastMembers(string castApiUrl)
+        {
+            var _tmdbClient = _httpClientFactory.CreateClient("MovieDb");
+
+            HttpResponseMessage castResponse = await _tmdbClient.GetAsync(_tmdbClient.BaseAddress + castApiUrl);
+
+            if (castResponse.IsSuccessStatusCode)
+            {
+                string castResponseData = await castResponse.Content.ReadAsStringAsync();
+                var castDetails = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(castResponseData);
+                if (castDetails != null)
+                {
+                    var castList = ((IEnumerable<dynamic>)castDetails["cast"])
+                    .Select(c => new CastMember
+                    {
+                        Name = c["name"].ToString(),
+                        ProfilePath = "https://image.tmdb.org/t/p/w500" + c["profile_path"].ToString()
+                    })
+                    .ToList();
+                    return castList;
+                }
+            }
+            return new List<CastMember>();
+        }
     }
 }
