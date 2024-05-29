@@ -194,7 +194,7 @@
                                     }
                                 }
                             }
-                            @if (Model?.Genres is not null)
+                            @if (Model?.Genres?.Count > 0)
                             {
                                 <h4 class="details">Genres</h4>
                                 @foreach (var genre in Model.Genres)
@@ -237,11 +237,12 @@
     <!-- Existing code ... -->
 
     <div class="container py-5">
-        <h4 style="color: black">
-            Casts
-        </h4>
-        @if (Model?.Cast is not null)
+        
+        @if (Model?.Cast?.Count >0)
         {
+            <h4 style="color: black">
+                Casts
+            </h4>
             <div class="cast-section">
                 @foreach (var castMember in Model.Cast.Take(10))
                 {

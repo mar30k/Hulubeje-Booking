@@ -483,20 +483,20 @@
         var dynamicRating = rating ? Math.round(parseFloat(rating)) : 0;
         var starsHtml = '';
         for (var i = 0; i < dynamicRating; i++) {
-            starsHtml += '<i class="bi bi-star-fill"></i>';
+            starsHtml += '<i class="bi bi-star-fill text-warning"></i>';
         }
         for (var j = dynamicRating; j < 5; j++) {
-            starsHtml += '<i class="bi bi-star"></i>';
+            starsHtml += '<i class="bi bi-star text-primary"></i>';
         }
         return starsHtml;
     }
     var page = @Model?.HotelsCount;
     var currentPage = 2;
     var isLoading = false;
-    var count = (currentPage -1 )* 10 + 1;
+    var count = (currentPage -1 )* 5 + 1;
     function loadMoreHotels() {
         if (isLoading) return;
-        if (currentPage > page) {
+        if (currentPage > page * 2) {
             $('#loadingSpinner').hide();
             return;
         }

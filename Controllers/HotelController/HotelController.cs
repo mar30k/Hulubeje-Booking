@@ -326,8 +326,6 @@ namespace HulubejeBooking.Controllers.HotelController
             var gethotelsbycity = new GetHotelByCity();
             var identificationResult = await _authenticationManager.identificationValid();
             string? token = identificationResult?.UserData.Token;
-            var childCount = childrenCount;
-            var roomCount = roomsCount;
             var dt = DateRangeParser.ParseDateRange(dateRange);
             var arrivalDateString = dt.startDateString.Trim();
             var departureDateString = dt.endDateString.Trim();
@@ -340,7 +338,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 childrenCount = childrenCount,
                 adultCount = adultCount,
                 Date = dateRange,
-                numberOfNights = numberOfNights,
+                numberOfNights = numberOfDay,
                 DepartureDate = departureDate,
                 ArrivalDate = arrivalDate,
             };
@@ -353,8 +351,8 @@ namespace HulubejeBooking.Controllers.HotelController
                 arrivalDate,
                 departureDate,
                 adultCount,
-                childCount,
-                roomCount,
+                childCount = childrenCount,
+                roomCount = roomsCount,
                 city,
                 page
             };
