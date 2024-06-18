@@ -1,0 +1,226 @@
+﻿@model HulubejeBooking.Models.BusModels.BusModel
+<title>Operator Detail</title>
+<head>
+    <style>
+        @@media (max-width: 500px) {
+            .searchBar {
+                flex-direction: column;
+                margin: 10px;
+            }
+
+            .select,
+            .selectCity,
+            #travelDate,
+            #searchButton {
+                width: 100% !important;
+                margin-right: 0;
+                margin-bottom: 3px;
+                height: 50px !important;
+            }
+        }
+    </style>
+</head>
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+@{
+    DateTime today = DateTime.Today;
+    string minDate = today.ToString("yyyy-MM-dd");
+    DateTime tomorro = DateTime.Today.AddDays(1);
+    string tomorrow = tomorro.ToString("yyyy-MM-dd");
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<partial name="_Navigation" />
+<div class="row" style="background-color:#063970;">
+    <div class="container">
+        <header class="container-fluid" style="padding-top: 2%;">
+            <div>
+                <h1 style="color: white;">Book Your Bus Journey</h1>
+                <h4 style="color: white;">Discover convenient and hassle-free bus travel with our easy booking platform.</h4>
+            </div>
+        </header>
+    </div>
+    <div class="container mt-5">
+        @{
+            var allRoutes = Model?.RouteModel;
+            var allCities = Model?.RouteModel?.Select(route => route.Routes).ToList();
+        }
+        <div class="d-flex searchBar" style="">
+            <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>
+                <option value="" disabled selected>Select a Departure City</option>
+                @if (allRoutes is not null)
+                {
+                    @foreach (var city in allRoutes)
+                    {
+                        <option value="@city.OriginCityName">@city.OriginCityName</option>
+                    }
+                }
+            </select>
+            <select class="selectCity" style="width:100%; border-color:#FEBB02; height:60px; border-radius:5px;" id="destination" required>
+                <option value="" disabled selected>Select a Destination City</option>
+            </select>
+            <input style="width:50%; border-color:#FEBB02; height:60px;border-radius:5px;" class="select" type="date" value="@minDate" id="travelDate" required>
+            <button id="searchButton" style="border-color:#FEBB02; " class="btn btn-primary">Search</button>
+        </div>
+    </div>
+
+</div>
+<div style="height: 50vh" class="bg-light">
+    @if (Model != null)
+    {
+        <div class="container">
+            <div class="row p-3 p-1">
+                <div class="col-md-6 p-2 border rounded rounded-2 bg-white mt-3" style="min-height: 100px">
+                    <h4 class="ml-lg-3">About Us</h4>
+                    @*                         <p class="ml-lg-2 " style="  color: #333;">@Model?.Description</p>
+                *@
+                </div>
+                <div class="col-md-6 p-lg-3 p-2">
+                    <div class="row">
+                        @* @foreach (var image in Model?.ImageModel?.Data?.OrderBy(x => Guid.NewGuid()).Take(5).ToList() ?? new List<string>())
+                    {
+                    <div class="col-6">
+                    <img src="@image" class="img-fluid image mb-2" alt="Hotel Image" style="max-width: 100%; height: auto;" />
+                    </div>
+                    } *@
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+                            $('.image').click(function (e) {
+                                e.preventDefault();
+                                $('#imageModal').modal('show');
+                            });
+                            $('#imageModal').on('click', '.cancel', function (e) {
+                                $('#imageModal').modal('hide');
+                            });
+
+                            $('#imageModal').on('click', '.close', function (e) {
+                                $('#imageModal').modal('hide');
+                            });
+                        });
+                    </script>
+                    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="imageModalLabel">All Images</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        @* @foreach (var image in Model?.ImageModel?.Data ?? new List<string>())
+                                    {
+                                    <div class="col-lg-3 col-md-4 col-sm-6">
+                                    <img src="@image" class="img-fluid mb-2" alt="Hotel Image" style="max-height:auto;" />
+                                    </div>
+                                    } *@
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary close" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row p-1">
+                <div class="col-md-6">
+                    <h4 class="bg-light p-2 text-center"> Work Hours </h4>
+                    @* @if (Model?.CompanySchedule?.Data?.Aminities?.Count > 0)
+                {
+                <div class="p-lg-3 p-1 row">
+                @foreach (var amenity in Model?.CompanySchedule?.Data?.Aminities ?? new List<HulubejeBooking.Models.HotelModels.Amenity>())
+                {
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-2 ">
+                <div class="p-2 border bg-white">
+                <img src="@amenity.ImageUrl" alt="Amenity Image" class="rounded me-2" style="height: 30px; object-fit: contain;">
+                <span>@amenity.Name</span>
+                </div>
+                </div>
+                }
+                </div>
+                } *@
+                </div>
+                <div class="col-md-6">
+                    <h4 class="bg-light p-2 text-center">Accepted Payment Methods</h4>
+                    <div class="row g-3 p-lg-3 p-1">
+                        @* @if (Model?.PaymentOptions?.Data?.Count > 0)
+                    {
+                    @foreach (var paymentMethod in Model.PaymentOptions.Data)
+                    {
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
+                    <div class="card h-100 shadow-sm rounded-3 border-0 p-1">
+                    <div class="card-body p-0">
+                    <img src="@paymentMethod.PaymentProcessorImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentProcessorName" style="max-width: 100%; height: auto;">
+                    <p class="card-title text-center">@paymentMethod?.PaymentProcessorUnitName</p>
+                    </div>
+                    </div>
+                    </div>
+                    }
+                    } *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<partial name="_Footer" />
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function populateDestinationDropdown(selectedDepartureCity) {
+            var destinationSelect = $('#destination');
+            var allCities = @Html.Raw(Json.Serialize(Model?.RouteModel));
+            var selectedDepartureCityObject = allCities.find(city => city.originCityName === selectedDepartureCity);
+            var destinationCitiesList = selectedDepartureCityObject.routes;
+
+            destinationCitiesList.sort((a, b) => a.destinationCityName.localeCompare(b.destinationCityName));
+
+            if (destinationCitiesList) {
+                destinationCitiesList.forEach(city => {
+                    destinationSelect.append($('<option>', {
+                        value: city.routeId,
+                        text: city.destinationCityName + " Via: " + city.viaName + " - From: " + city.originTerminalName
+                    }));
+                });
+            }
+        }
+        $('#departure').change(function () {
+            var selectedDepartureCity = this.value;
+            populateDestinationDropdown(selectedDepartureCity);
+        });
+        $(document).ready(function () {
+            $('#searchButton').click(function () {
+                var selectedDestination = $('#destination').val();
+                var selectedDeparture = $('#departure').val();
+                var operatorId = @Model?.Company?[0]?.Id;
+                var option = "detail";
+                var selectedTravelDate = $('#travelDate').val();
+                if (!selectedDestination || !selectedTravelDate) {
+                    // Display Bootstrap alert for 1 second and then close it
+                    alert("Please select both destination and travel date.");
+                    setTimeout(function () {
+                        $('.alert').alert('close');
+                    }, 2000);
+                    return;
+                }
+                var form = $('<form action="/routeschedule" method="post"></form>');
+                form.append('<input type="hidden" name="destination" value="' + selectedDestination + '">');
+                form.append('<input type="hidden" name="depature" value="' + selectedDeparture + '">');
+                form.append('<input type="hidden" name="travelDate" value="' + selectedTravelDate + '">');
+                form.append('<input type="hidden" name="operatorId" value="' + operatorId + '">');
+                form.append('<input type="hidden" name="option" value="' + option + '">');
+                $('body').append(form);
+                form.submit();
+            });
+            var initialDepartureCity = $('#departure').val();
+            populateDestinationDropdown(initialDepartureCity);
+        });
+    });
+</script>
