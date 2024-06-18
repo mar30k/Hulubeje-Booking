@@ -48,21 +48,24 @@
             color: #fff;
         }
 </style>
+@{
+    var seatLayout = Model?.SeatLayout;
+    var seats = seatLayout?.Seats;
+    var soldSeats = Model?.SoldSeats;
+}
 <head>
     <title>Seat Layout</title>
 </head>
 <div class="row mt-3">
     <div class="col-lg-10">
-        <div style="background: lightgrey; padding: 20px;" class="ml-3 mb-4">
-            <div class="container">
-                <div style="display: flex;justify-content:center; align-items: center; overflow-x: auto; margin-top: 20px;">
-                    <table>
-                        @{
-                            var seatLayout = Model?.SeatLayout;
-                            var seats = seatLayout?.Seats;
-                            var soldSeats = Model?.SoldSeats;
+        @if (seatLayout != null && seats != null && soldSeats != null)
+        {
+            <div style="background: lightgrey; padding: 20px;" class="ml-3 mb-4">
+                <div class="container">
+                    <div style="display: flex;justify-content:center; align-items: center; overflow-x: auto; margin-top: 20px;">
+                        <table>
 
-                            if (seatLayout != null && seats != null && soldSeats != null)
+                            @if (seatLayout != null && seats != null && soldSeats != null)
                             {
                                 var maxX = seatLayout.MaxX;
                                 var maxY = seatLayout.MaxY;
@@ -101,15 +104,23 @@
                                     </tr>
                                 }
                             }
-                        }
-                    </table>
-                </div>
 
+                        </table>
+                    </div>
+
+                </div>
             </div>
-        </div>
-        <div id="continue" style="text-align: center; position: relative;  margin-top:10px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
-            <button id="continue" class="btn btn-sm">Continue</button>
-        </div>
+            <div id="continue" style="text-align: center; position: relative;  margin-top:10px; margin-bottom:20px; left: 50%; transform: translateX(-50%);">
+                <button id="continue" class="btn btn-sm">Continue</button>
+            </div>
+        }
+        else
+        {
+            <div class="justify-content-center align-items-center d-flex" style="height: 30vh">
+                <p class="font-monospace">Seat Information Not Available</p>
+            </div>
+        }
+
     </div>
     <div class="col-lg-2 mb-3 ml-0">
         <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
