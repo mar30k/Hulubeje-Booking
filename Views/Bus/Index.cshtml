@@ -40,6 +40,55 @@
         }
 
     }
+
+        .operatorCards {
+            text-decoration: none;
+            color: black;
+            cursor: pointer; /* Set default cursor to pointing cursor */
+        }
+
+            /* Custom CSS for clickable-card on hover */
+            .operatorCards:hover {
+                text-decoration: none; /* Remove text underline on hover */
+                cursor: pointer; /* Change cursor to pointing cursor on hover */
+            }
+        /* Styles for the search container */
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 300px; /* Adjust the maximum width as needed */
+            margin: 0 auto; /* Center the search bar */
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: width 0.3s ease-in-out; /* Add animation for width changes */
+        }
+
+        /* Styles for the search input */
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        /* Styles for the search button */
+        .search-button {
+            background-color: #007bff; /* Change button color as needed */
+            border: none;
+            padding: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out; /* Add animation for color changes */
+        }
+
+            /* Change button color on hover */
+            .search-button:hover {
+                background-color: #0056b3; /* Change button hover color as needed */
+            }
+
 </style>
 </head>
 @{
@@ -50,9 +99,9 @@
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
-<div class="row" style="background-color:#063970;">
+<div class="row" style="background-color:#002f72;">
     <div class="container">
-        <header class="container-fluid" style="padding-top: 5%;">
+        <header class="container-fluid" style="padding-top: 2%;">
             <div>
                 <h1 style="color: white;">Book Your Bus Journey</h1>
                 <h4 style="color: white;">Discover convenient and hassle-free bus travel with our easy booking platform.</h4>
@@ -66,6 +115,7 @@
         }
         <div class="d-flex searchBar" style="">
             <select class="select" style="width:100%; border-color:#FEBB02; height:60px;border-radius:5px;" id="departure" required>
+                <option value="" disabled selected>Select a Departure City</option>
                 @if (allRoutes is not null)
                 {
                     @foreach (var city in allRoutes)
@@ -82,34 +132,48 @@
         </div> 
     </div>
 </div>
-    @{
-        var shuffledModel = Model?.Company?.OrderBy(x => Guid.NewGuid()).ToList();
-    }
-<div class="container">
-    <div class="row mt-3">
-        @if (shuffledModel is not null)
-        {
-            @foreach (var item in shuffledModel)
+<div class=" bg-light pt-2">
+    <div class="container">
+        <div class="search-container ">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search Operators" onkeyup="filterOperators()">
+            <button class="search-button" onclick="filterOperators()">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <div class="row">
+            <div class="col-md-12 justify-content-center " id="searchMessage" style="display: none;">
+                <strong>No Operators found.</strong>
+            </div>
+        </div>
+        <div class="row mt-2">
+            @if (Model?.Company is not null)
             {
-                <div class="col-12 col-sm-6 mb-3">
-                    <div class="card" style="max-width: 540px;">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img class="img-fluid" src="../Assets/bus.png">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">@item.CompanyName</h5>
-                                    <p class="card-text">The detail information will be posted here.</p>
-                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                @foreach (var item in Model?.Company ?? new List<CompanyModel>())
+                {
+                    <div class="col-12 col-md-6 mb-3 operator">
+                        <div class="card">
+                            <a class="operatorCards"
+                               data-operator-id="@item?.Id"
+                               data-operator-tin="@item?.TIN"
+                               data-operator-name="@item?.CompanyName">
+                                <div class="row g-0">
+                                    <div class="col-lg-4">
+                                        <img class="img-fluid" src="@(item?.ImgUrl!=null? item.ImgUrl : "../Assets/bus.png")">
+                                    </div>
+                                    <div class="col-lg-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title">@item?.CompanyName</h5>
+                                            <p class="card-text">@item?.CityName, @item?.CountryName </p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
-                </div>
+                }
             }
-        }
-    </div>  
+        </div>
+    </div>
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -157,6 +221,58 @@
             var initialDepartureCity = $('#departure').val();
             populateDestinationDropdown(initialDepartureCity);
         });
+    });
+    function filterOperators() {
+        var input, filter, cards, card, operatorName, i, txtValue, matchFound;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        cards = document.getElementsByClassName("operator");
+        matchFound = false;
+
+        for (i = 0; i < cards.length; i++) {
+            card = cards[i];
+            operatorName = card.getElementsByClassName("card-title")[0];
+            if (operatorName) {
+                txtValue = operatorName.textContent || operatorName.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    card.style.display = "";
+                    matchFound = true;
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+
+        var messageElement = document.getElementById("searchMessage");
+        if (matchFound) {
+            messageElement.style.display = "none";
+        } else {
+            messageElement.style.display = "flex";
+            messageElement.style.height = "20vh";
+            messageElement.style.marginTop = "25px"; // Corrected the syntax error here
+        }
+    }
+
+    $(document).ready(function () {
+        $('.operatorCards').on('click', function () {
+            var operatorId = $(this).data('operator-id');
+            var operatorTin = $(this).data('operator-tin');
+            var operatorName = $(this).data('operator-name');
+
+            console.log("operatorId "+ operatorId);
+            console.log("operatorName " + operatorName);
+            console.log("operatorTin " + operatorTin);
+            var form = $('<form action="/operatordetail" method="post"></form>');
+
+            form.append('<input type="hidden" name="operatorId" value="' + operatorId + '" />');
+            form.append('<input type="hidden" name="operatorName" value="' + operatorName + '" />');
+            form.append('<input type="hidden" name="operatorTin" value="' + operatorTin + '" />');
+
+            $('body').append(form);
+
+            form.submit();
+        });
+
     });
 </script>
 <partial name="_Footer" />
