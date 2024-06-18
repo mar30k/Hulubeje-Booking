@@ -20,7 +20,7 @@ namespace HulubejeBooking.Controllers.BusController
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
         }
-        public async  Task<IActionResult> Index(string depature, string destination, DateTime travelDate)
+        public async  Task<IActionResult> Index(string depature, string destination, DateTime travelDate, int? operatorId, string option)
         {
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
@@ -38,22 +38,50 @@ namespace HulubejeBooking.Controllers.BusController
                 ViewBag.PhoneNumber = identificationResult?.UserData.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
-            var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
-            HttpResponseMessage response = await busSeatLayoutClient.GetAsync($"routeschedule/getschedulesbyroute?route={destination}&date={travelDate}");
-            if(response.IsSuccessStatusCode)
+
+            string apiUrl;
+
+            if (option == "detail")
             {
-                string responseData = await response.Content.ReadAsStringAsync();
-                var scheduleData = responseData != null ? JsonConvert.DeserializeObject<List<VwRouteSchedule>>(responseData) : new List<VwRouteSchedule>();
-                if(scheduleData != null )
-                {
-                    foreach (var schedule in scheduleData)
-                    {
-                        schedule.DepatureCity = depature;
-                    }
-                }
-                return View(scheduleData);
+                apiUrl = $"routeschedule/getschedulesbyrouteandoperator?route={destination}&date={travelDate}&operatorid={operatorId}";
             }
-            return View(null);
+            else
+            {
+                apiUrl = $"routeschedule/getschedulesbyroute?route={destination}&date={travelDate}";
+            }
+
+            var scheduleData = await GetScheduleData(apiUrl, depature);
+            return View(scheduleData);
+        }
+
+        private async Task<List<VwRouteSchedule>> GetScheduleData(string apiUrl, string depature)
+        {
+            try
+            {
+                var busSeatLayoutClient = _httpClientFactory.CreateClient("BusBooking");
+                HttpResponseMessage response = await busSeatLayoutClient.GetAsync(apiUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    var scheduleData = JsonConvert.DeserializeObject<List<VwRouteSchedule>>(responseData);
+                    if (scheduleData != null)
+                    {
+                        foreach (var schedule in scheduleData)
+                        {
+                            schedule.DepatureCity = depature;
+                        }
+                    }
+                    return scheduleData ?? new List<VwRouteSchedule>();
+                }
+                else
+                {
+                    return new List<VwRouteSchedule>();
+                }
+            }
+            catch (Exception ex) { 
+                Console.WriteLine(ex.Message);
+            }
+            return new List<VwRouteSchedule>();
         }
     }
 }
