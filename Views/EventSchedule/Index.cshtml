@@ -1,0 +1,23 @@
+﻿@model HulubejeBooking.Models.EventModels.EventResponse
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<partial name="_Navigation" />
+@if (Model.Data == null)
+{
+    <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
+            <p class="mt-2">We apologize, but it seems there is no available events at the moment.</p>
+        </div>
+    </div>
+}
+else
+{
+}
+<partial name="_Footer" /> 
