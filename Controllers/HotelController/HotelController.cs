@@ -52,7 +52,7 @@ namespace HulubejeBooking.Controllers.HotelController
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage getcitiesResponse = await _v7Client.GetAsync("getcities");
             HttpResponseMessage getcompaniesbytypeResponse = await _v7Client.GetAsync("routing/getcompaniesbytype?industryType=1989");
-            if (getcitiesResponse.IsSuccessStatusCode && getcitiesResponse.IsSuccessStatusCode)
+            if (getcitiesResponse.IsSuccessStatusCode && getcompaniesbytypeResponse.IsSuccessStatusCode)
             {
                 string getcitiesData = await getcitiesResponse.Content.ReadAsStringAsync();
                 string getcompaniesbytypeData = await getcompaniesbytypeResponse.Content.ReadAsStringAsync();

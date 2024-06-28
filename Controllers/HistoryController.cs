@@ -44,11 +44,10 @@ namespace HulubejeBooking.Controllers
                 phoneNumber = identificationResult?.UserData?.Code;
                 token = identificationResult?.UserData?.Token;
             }
-            if (!(identificationResult.isLoggedIn || identificationResult.isValid))
+            if (identificationResult!=null && !(identificationResult.isLoggedIn || identificationResult.isValid))
             {
                 return RedirectToAction("Index", "home");
             }
-
             var historyWrapper = new HistoryWrapper();
             var busClient = _httpClientFactory.CreateClient("BusBooking");
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
