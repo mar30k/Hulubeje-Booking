@@ -6,6 +6,7 @@
         public string? Name { get; set; }
         public int? CityId { get; set; }
         public string? City { get; set; }
+        public List<string>? Cuisine { get; set; }
         public string? SubCity { get; set; }
         public string? Description { get; set; }
         public double? Latitude { get; set; }
@@ -29,6 +30,7 @@
         public string? AddressLine2 { get; set; }
         public string? AddressLine3 { get; set; }
         public DateTime RegisterDate { get; set; }
+        public string? TermsAndConditionsUrl { get; set; }
     }
 
     public class Companies
