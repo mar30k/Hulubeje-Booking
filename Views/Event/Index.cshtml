@@ -1,4 +1,15 @@
-﻿<partial name="_Navigation" />
+﻿@model HulubejeBooking.Models.HotelModels.GetcompaniesbyType
+@using HulubejeBooking.Models.HotelModels
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<partial name="_Navigation" />
+
 <title>Event </title>
 <style>
     .message-container {
@@ -34,8 +45,22 @@
             background-color: #ccc;
             margin-top: 20px;
         }
+
+    .clickable-card:hover {
+        text-decoration: none; /* Remove text underline on hover */
+    }
+
+    .clickable-card {
+        cursor: pointer; /* Set default cursor to pointing cursor */
+    }
+
+        /* Custom CSS for clickable-card on hover */
+        .clickable-card:hover {
+            text-decoration: none; /* Remove text underline on hover */
+            cursor: pointer; /* Change cursor to pointing cursor on hover */
+        }
 </style>
-<div class="container mt-5 mb-5">
+@* <div class="container mt-5 mb-5">
     <div id="message-container" class="message-container m-4 rounded-2" style="display: flex; align-items: center; justify-content: center; height: 50vh; background-size:contain;">
         <div class="d-flex align-items-center">
             <main>
@@ -61,6 +86,91 @@
     changeBackgroundImage();
 
     setInterval(changeBackgroundImage, intervalInMinutes * 60 * 1000);
-</script>
+</script> *@
+<div class="row pb-4" style="background-color:#063970;">
+    <div class="container">
+        <header class="container-fluid" style="padding-top: 2%">
+            <div>
+                <h1 style="color: white;">
+                    Make Every Moment Count
+                </h1>
+                <h4 style="color: white;">Book events, activities, and more for your perfect outing...</h4>
+            </div>
+        </header>
+    </div>
+</div>
+<div class="container py-2">
+    <div class="row my-5">
+        @foreach (var events in Model?.Data ?? new List<Companies>())
+        {
+            foreach (var branch in events.Branches ?? new List<Branch>())
+            {
+                <div class="col-md-6 mb-3 eventbranches" id="@branch?.City">
+                    <a class="card cardB clickable-card"
+                       data-oud="@branch?.Code"
+                       data-cityName="@branch?.City"
+                       data-org-code="@events?.Code"
+                       data-org-tin="@events?.Tin"
+                       data-event-name="@events?.BrandName"
+                       data-branch-note="@branch?.Description"
+                       data-branch-name="@branch?.Name"
+                       data-city="@branch?.CityId">
+                        <div class="row g-0">
+                            <div class="col-lg-4">
+                                <img src="@branch?.Logo" class="img-fluid rounded-start" alt="branch image">
+                            </div>
+                            <div class="col-lg-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@events?.BrandName</h5>
+                                    @if (branch?.SpecificAddress != null)
+                                    {
+                                        <p class="card-text">
+                                            <i class="fas fa-map-marker-alt text-danger"></i>
+                                            @branch?.City@(branch?.SpecificAddress != null ? $", {branch.SpecificAddress}" : "")
+                                        </p>
+                                    }
+                                    <small class="mb-0 text-sm">
+                                        @for (var i = 0; i < branch?.StarRating; i++)
+                                        {
+                                            <span class="text-warning">
+                                                <i class="fa-solid fa-star"></i>
+                                            </span>
+                                        }
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.cardB').on('click', function () {
+            var oud = $(this).data('oud');
+            var branchName = $(this).data('branch-name');
+            var orgCode = $(this).data('org-code');
+            var orgTin = $(this).data('org-tin');
+            var name = $(this).data('event-name');
+            var description = $(this).data('branch-note');
+            var cityname = $(this).data('cityname');
+            console.log("oud", oud);
+            var form = $('<form action="/eventdetails" method="post"></form>');
 
+            form.append('<input type="hidden" name="oud" value="' + oud + '" />');
+            form.append('<input type="hidden" name="branchName" value="' + branchName + '" />');
+            form.append('<input type="hidden" name="orgCode" value="' + orgCode + '" />');
+            form.append('<input type="hidden" name="orgTin" value="' + orgTin + '" />');
+            form.append('<input type="hidden" name="description" value="' + description + '" />');
+            form.append('<input type="hidden" name="cityname" value="' + cityname + '" />');
+            form.append('<input type="hidden" name="name" value="' + name + '" />');
+
+            $('body').append(form);
+            form.submit();
+        });
+
+    });
+</script>
 <partial name="_Footer" />
