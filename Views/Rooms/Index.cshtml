@@ -78,7 +78,7 @@
 						{
 							<div class="col-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
 							padding-right: 5px;">
-								<img src="@AllPictureUrls[i]" alt="Room Picture" class="roomimages w-100  " />
+								<img src="@AllPictureUrls[i]" alt="room picture" class="roomimages w-100  " />
 							</div>
 						}
 					}
@@ -87,7 +87,7 @@
 			@if (AllPictureUrls?.Count > 1)
 			{
 				<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
-					<img src="@AllPictureUrls[1]" alt="Hotel Picture" class="roomimages w-100 h-200  " />
+					<img src="@AllPictureUrls[1]" alt="room picture" class="roomimages w-100 h-200  " />
 				</div>
 			}
 
@@ -101,7 +101,7 @@
 				{
 					<div class="col-md-3 col-6 mb-2 " style="padding-left: 5px;
 							padding-right: 5px;">
-						<img src="@AllPictureUrls[i]" alt="Room Picture" class="w-100 roomimages  " />
+						<img src="@AllPictureUrls[i]" alt="room picture" class="w-100 roomimages  " />
 					</div>
 				}
 			}
@@ -147,7 +147,7 @@
 									@foreach (var pictureUrl in roomPics.PictureUrls ?? new List<string>())
 									{
 										<div class="col-lg-4 col-md-4 col-sm-4 mb-3">
-											<img src="@pictureUrl" class="img-fluid shadow-1-strong rounded mb-4 w-100 h-200" alt="Hotel Room" />
+											<img src="@pictureUrl" class="img-fluid shadow-1-strong rounded mb-4 w-100 h-200" alt="room picture" />
 										</div>
 									}
 								}
@@ -182,7 +182,7 @@
 						{
 							<div class="col-lg-2 col-md-3 col-sm-4 col-12 my-1 amenity-item " style="padding-left: 5px; padding-right: 5px;">
 								<div class="border border-2 bg-white">
-									<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+									<img src="@amenity.ImageUrl" alt="amenity" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
 									<span style="font-size: small;">@amenity.Name</span>
 								</div>
 							</div>
@@ -208,7 +208,7 @@
 				{
 					<div class="col-lg-2 col-md-3 col-sm-4 col-12 amenity-item d-none d-lg-block" style="padding-left: 5px; padding-right: 5px;">
 						<div class="border border-2 mt-1 bg-white">
-							<img src="@amenity.ImageUrl" alt="Amenity Image" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
+							<img src="@amenity.ImageUrl" alt="amenity" style="width: auto; height: 20px;" class="shadow-1-strong rounded me-2" />
 							<span style="font-size: small;">@amenity.Name</span>
 						</div>
 					</div>
