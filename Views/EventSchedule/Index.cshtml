@@ -8,7 +8,11 @@
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <partial name="_Navigation" />
-@if (Model.Data == null)
+@if (Model.Data != null)
+{
+    
+}
+else
 {
     <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
         <div class="d-flex align-items-center">
@@ -17,7 +21,4 @@
         </div>
     </div>
 }
-else
-{
-}
-<partial name="_Footer" /> 
+<partial name="_Footer" />
