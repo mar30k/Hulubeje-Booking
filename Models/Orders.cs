@@ -36,14 +36,14 @@ namespace HulubejeBooking.Models
     public class VoucherData
     {
         public int CompanyCode { get; set; }
-        public string CompanyName { get; set; }
+        public string? CompanyName { get; set; }
         public int BranchCode { get; set; }
-        public string BranchName { get; set; }
+        public string? BranchName { get; set; }
         public int IndustryType { get; set; }
-        public string VoucherCode { get; set; }
+        public string? VoucherCode { get; set; }
         public DateTime IssuedDate { get; set; }
         public decimal GrandTotal { get; set; }
-        public string Logo { get; set; }
+        public string? Logo { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }
