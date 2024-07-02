@@ -11,7 +11,7 @@
             max-width: 300px;
         }
         .customcard{
-            height: 160px;
+            height: 180px;
         }
 
         .companyimage {
@@ -68,11 +68,9 @@
     <div class="tab-content mt-4 ">
         <div class="tab-pane fade show active" id="tab1">
             <div class="customContainer" id="ordersContainer">
-                <!-- Orders will be loaded here -->
             </div>
 
             <div class="pagination justify-content-center" id="pagination">
-                <!-- Pagination links will be loaded here -->
             </div>
 
             <div class="message-container" id="noHistoryMessage" style="display: none;">
@@ -107,7 +105,7 @@
                                                     <div class="col-4">
                                                         <img src="${order.logo}" class="img-fluid companyimage" alt="Supplier Logo" />
                                                     </div>
-                                                    <div class="col-8">
+                                                    <div class="col-8 col-md-4">
                                                         <div>
                                                             <p style="margin: 2px; ">${order.companyName}</p>
                                                             <small style="color: blue">${order.branchName}</small>
@@ -115,6 +113,12 @@
                                                             <p style="margin: 2px; "> ${formattedDateString}</p>
                                                             <p style="margin: 2px; ">${order.grandTotal} Birr</p>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-2 mt-2 d-flex justify-content-center" style="position: absolute; bottom: 0; right: 0;">
+                                                        <a type="button" class="mr-2 mr-md-1 btn btn-primary btn-sm px-2"  target="_blank" 
+                                                        href="https://www.google.com/maps/search/?api=1&query= ${order.latitude},${order.longitude}">Direction</a>
+                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2">Details</button>
+                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal">Review</button>
                                                     </div>
                                                 </div>
                                             </div>`;
@@ -153,6 +157,60 @@
                 });
             </script>
         </div>
+        <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reviewModalLabel">Leave a Review</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="starRating">Rating:</label>
+                            <div id="starRating">
+                                <i class="far fa-star" data-value="1"></i>
+                                <i class="far fa-star" data-value="2"></i>
+                                <i class="far fa-star" data-value="3"></i>
+                                <i class="far fa-star" data-value="4"></i>
+                                <i class="far fa-star" data-value="5"></i>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewText">Share your detail of experience:</label>
+                            <textarea class="form-control" id="reviewText" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $('#reviewModal').on('show.bs.modal', function () {
+                const stars = document.querySelectorAll('#starRating i');
+                stars.forEach(star => {
+                    star.classList.remove('fas', 'text-warning');
+                    star.classList.add('far');
+                });
+                document.getElementById('reviewText').value = ''; // Clear the text area
+            });
+            // Star rating logic
+            const stars = document.querySelectorAll('#starRating i');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    stars.forEach(s => s.classList.remove('fas', 'text-warning'));
+                    star.classList.add('fas', 'text-warning');
+                    let value = star.getAttribute('data-value');
+                    for (let i = 0; i < value; i++) {
+                        stars[i].classList.add('fas', 'text-warning');
+                    }
+                });
+            });
+        </script>
         <div class="tab-pane fade" id="tab2">
             @if (Model?.HistoryModel?.Count() > 0)
             {
@@ -166,7 +224,7 @@
                                     <div class="col-sm-4 mb-2">
                                         <img src="@(route?.ImgUrl ?? "../Assets/bus.png")" class="img-fluid companyimage" alt="Supplier Logo" />
                                     </div>
-                                    <div class="col-sm-8">
+                                    <div class="col-sm-4 ">
                                         <h5 class="card-title">@route?.RouteName</h5>
                                         <p class="card-text">Route Description: @route?.RouteDescription</p>
                                         <p class="card-text">Departure Date: @route?.DepartureDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
