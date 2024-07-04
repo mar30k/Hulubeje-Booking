@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.BusModels;
+using Newtonsoft.Json;
 
 namespace HulubejeBooking.Models
 {
@@ -32,19 +33,35 @@ namespace HulubejeBooking.Models
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }
     }
-
+    public class RatingResponse
+    {
+        public bool? IsSuccessful { get; set; }
+        public bool? Data { get; set; }
+        public List<string>? ErrorMessages { get; set; }
+        public List<string>? AdditionalParameters { get; set; }
+    }
     public class VoucherData
     {
-        public int CompanyCode { get; set; }
+        public int? CompanyCode { get; set; }
         public string? CompanyName { get; set; }
-        public int BranchCode { get; set; }
+        public int? BranchCode { get; set; }
         public string? BranchName { get; set; }
-        public int IndustryType { get; set; }
+        public int? IndustryType { get; set; }
         public string? VoucherCode { get; set; }
         public DateTime IssuedDate { get; set; }
-        public decimal GrandTotal { get; set; }
+        public decimal? GrandTotal { get; set; }
         public string? Logo { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public object? Articles { get; set; }
+    }
+
+    public class Ratings
+    {
+        public int? BranchCode { get; set; }
+        public int? Rating { get; set; }
+        public string? Review { get; set; }
+        public string? Code { get; set; }
+        public object? Article { get; set; }
     }
 }
