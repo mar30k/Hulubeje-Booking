@@ -1,0 +1,86 @@
+﻿@model HulubejeBooking.Models.GetHistoryDetailResposne
+<title>Order Detail</title>
+<partial name="_Navigation" />
+<style>
+    .bill-header {
+        background-color: #007bff;
+    }
+
+        .bill-header h2 {
+            margin-bottom: 0;
+        }
+</style>
+<div class="container mt-3 mb-5">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="bill-header text-center mb-2 text-white p-2">
+                <h5 class="m-0">Bill Details</h5>
+            </div>
+            <div class="p-lg-2 pt-0">
+                @* Check if the response was successful *@
+                @if (Model.IsSuccessful ?? false)
+                {
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-3 ">
+                            <p>Desc</p>
+                        </div>
+                        <div class="col-3 d-flex justify-content-center">
+                            <p>Qty</p>
+                        </div>
+                        <div class="col-3 d-flex justify-content-center">
+                            <p>Price</p>
+                        </div>
+                        <div class="col-3 text-right">
+                            <p>Amount</p>
+                        </div>
+                    </div>
+                    @if (Model.Data?.LineItems != null && Model.Data.LineItems.Any())
+                    {
+                        @foreach (var item in Model.Data.LineItems)
+                        {
+                            <div class="row d-flex justify-content-around">
+                                <div class="col-3">
+                                    <p>@item.Name</p>
+                                </div>
+                                <div class="col-3 d-flex justify-content-center">
+                                    <p>@(item.Quantity.HasValue ? item.Quantity.Value.ToString("N0") : "-")</p>
+                                </div>
+                                <div class="col-3 d-flex justify-content-center">
+                                    <p>@item.UnitAmount?.ToString("N2")</p>
+                                </div>
+                                <div class="col-3 text-right">
+                                    <p>@(item.TaxableAmount?.ToString("C") ?? "-")</p>
+                                </div>
+                            </div>
+
+                        }
+                    }
+                    <hr />
+                    @if (Model.Data?.ExtraCharge != null)
+                    {
+                        <div class="row">
+                            <div class="col-6"><p>TXBL 1:</p></div>
+                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TXBL1?.ToString("C") ?? "-")</p></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6"><p>TXBL 15%:</p></div>
+                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TAX115?.ToString("C") ?? "-")</p></div>
+                        </div>
+                        <hr />
+                    }
+                    <div class="row">
+                        <div class="col-6"><p>Grand Total</p></div>
+                        <div class="col-6 text-right"><p>@((Model?.Data?.GrandTotal ?? 0).ToString("C"))</p></div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Error:</strong> Failed to retrieve bill details. Please try again later.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_Footer" />
