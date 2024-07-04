@@ -2,11 +2,14 @@
 @using HulubejeBooking.Models.BusModels;
 <partial name="_Navigation" />
 <head>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <title>History</title>
     <style>
+        .btn:focus {
+            outline: none;
+            box-shadow: none;
+        }
         .wide-tab {
             max-width: 300px;
         }
@@ -117,8 +120,10 @@
                                                     <div class="col-md-4 mb-2 mt-2 d-flex justify-content-center" style="position: absolute; bottom: 0; right: 0;">
                                                         <a type="button" class="mr-2 mr-md-1 btn btn-primary btn-sm px-2"  target="_blank" 
                                                         href="https://www.google.com/maps/search/?api=1&query= ${order.latitude},${order.longitude}">Direction</a>
-                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2">Details</button>
-                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal">Review</button>
+                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2 details-btn" data-companyCode="${order.companyCode}" 
+                                                        data-industryType="${order.industryType}" data-voucherCode="${order.voucherCode}" data-issuedDate="${order.issuedDate}">Details</button>
+                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal" data-company="${order.companyName}" 
+                                                        data-article="${order.articles}" data-branchcode="${order.branchCode}">Review</button>
                                                     </div>
                                                 </div>
                                             </div>`;
@@ -161,14 +166,14 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="reviewModalLabel">Leave a Review</h5>
+                        <h5 class="modal-title" id="reviewModalLabel"></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="starRating">Rating:</label>
+                            <label for="starRating">How was it?</label>
                             <div id="starRating">
                                 <i class="far fa-star" data-value="1"></i>
                                 <i class="far fa-star" data-value="2"></i>
@@ -184,33 +189,112 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary btn-sm">Submit</button>
+                        <button type="button" class="btn btn-primary btn-sm submit" data-dismiss="modal">Submit</button>
                     </div>
                 </div>
             </div>
         </div>
         <script>
-            $('#reviewModal').on('show.bs.modal', function () {
-                const stars = document.querySelectorAll('#starRating i');
-                stars.forEach(star => {
-                    star.classList.remove('fas', 'text-warning');
-                    star.classList.add('far');
+            $(document).ready(function () {
+                var companyName;
+                var branchCode;
+                var article;
+                $('#reviewModal').on('show.bs.modal', function (event) {
+                    const button = $(event.relatedTarget); // Button that triggered the modal
+                    companyName = button.data('company'); // Extract info from data-* attributes
+                    article = button.data('article'); // Extract info from data-* attributes
+                    branchCode = button.data('branchcode'); // Extract info from data-* attributes
+
+                    const modal = $(this);
+                    modal.find('.modal-title').text(companyName); // Set the company name to the modal label
+
+                    const stars = modal.find('#starRating i');
+                    stars.removeClass('fas text-warning').addClass('far');
+                    modal.find('#reviewText').val(''); // Clear the text area
                 });
-                document.getElementById('reviewText').value = ''; // Clear the text area
-            });
-            // Star rating logic
-            const stars = document.querySelectorAll('#starRating i');
-            stars.forEach(star => {
-                star.addEventListener('click', () => {
-                    stars.forEach(s => s.classList.remove('fas', 'text-warning'));
-                    star.classList.add('fas', 'text-warning');
-                    let value = star.getAttribute('data-value');
-                    for (let i = 0; i < value; i++) {
-                        stars[i].classList.add('fas', 'text-warning');
+
+                // Star rating logic
+                $('#reviewModal').on('click', '#starRating i', function () {
+                    const stars = $(this).parent().find('i');
+                    const rating = stars.index($(this)) + 1; // Calculate the rating based on the clicked star index
+
+                    // Toggle all stars up to the clicked one
+                    stars.removeClass('fas text-warning').addClass('far');
+                    stars.slice(0, rating).removeClass('far').addClass('fas text-warning');
+                });
+                $('#reviewModal').on('click', '.submit', function (e) {
+                    e.preventDefault();
+                    const stars = $('#starRating i.fas');
+                    const rating = stars.length;
+                    const reviewText = $('#reviewText').val().trim();
+                    const companyName = $('#companyNameInput').val();
+
+                    if (rating === 0) {
+                        alert('Please select a star rating before submitting.');
+                        return;
                     }
+
+                    const data = JSON.stringify({
+                        branchCode: branchCode,
+                        rating: rating,
+                        review: reviewText,
+                        article: article
+                    });
+
+                    $.ajax({
+                        type: 'POST',
+                        contentType: 'application/json',
+                        url: '/history/SubmitRating',
+                        data: data,
+                        cache: false,
+                        success: function (response) {
+                            if (response.isSuccessful) {
+                                alert('Review submitted successfully.');
+                            } else {
+                                alert(response.errorMessages.join(', '));
+                            }
+                        },
+                        error: function (error) {
+                            $('#reviewModal').modal('hide');
+                            alert('An error occurred while submitting your review. Please try again.');
+                        }
+                    });
+
+                    return false;
+                });
+                // Event listener to reset modal content when modal is hidden
+                $('#reviewModal').on('hidden.bs.modal', function () {
+                    $('#reviewText').val(''); // Clear review text input
+                    $('#starRating i.fas').removeClass('fas text-warning').addClass('far'); // Reset star rating
+                });
+
+
+                $(document).on('click', '.details-btn', function () {
+                    // Get data attributes from the button
+                    const companyCode = $(this).data('companycode');
+                    const industryType = $(this).data('industrytype');
+                    const voucherCode = $(this).data('vouchercode');
+                    const issuedDate = $(this).data('issueddate');
+
+                    // Create a form dynamically
+                    var form = $('<form>', {
+                        action: '/history/orderdetail',
+                        method: 'post'
+                    });
+
+                    // Add hidden input fields with the data
+                    form.append($('<input>', { type: 'hidden', name: 'CompanyCode', value: companyCode }));
+                    form.append($('<input>', { type: 'hidden', name: 'IssuedDate', value: issuedDate }));
+                    form.append($('<input>', { type: 'hidden', name: 'IndustryType', value: industryType }));
+                    form.append($('<input>', { type: 'hidden', name: 'VoucherCode', value: voucherCode }));
+
+                    // Append the form to the body and submit it
+                    $('body').append(form);
+                    form.submit();
                 });
             });
         </script>
+
         <div class="tab-pane fade" id="tab2">
             @if (Model?.HistoryModel?.Count() > 0)
             {
