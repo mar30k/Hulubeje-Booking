@@ -8,6 +8,7 @@ using HulubejeBooking.Controllers.Authentication;
 using Tweetinvi.Core.Models;
 using NuGet.Common;
 using System.Net.Http.Headers;
+using System.Text;
 namespace HulubejeBooking.Controllers
 {
     public class HistoryController : Controller
@@ -25,7 +26,7 @@ namespace HulubejeBooking.Controllers
 
         public async Task<IActionResult> IndexAsync(string? phoneNumber)
         {
-            string? token ="";
+            string? token = "";
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
@@ -44,7 +45,7 @@ namespace HulubejeBooking.Controllers
                 phoneNumber = identificationResult?.UserData?.Code;
                 token = identificationResult?.UserData?.Token;
             }
-            if (identificationResult!=null && !(identificationResult.isLoggedIn || identificationResult.isValid))
+            if (identificationResult != null && !(identificationResult.isLoggedIn || identificationResult.isValid))
             {
                 return RedirectToAction("Index", "home");
             }
@@ -69,5 +70,39 @@ namespace HulubejeBooking.Controllers
             return View(historyWrapper);
 
         }
+        public async Task<IActionResult> SubmitRating([FromBody] Ratings? rating)
+        {
+            string? token = "";
+            string? phoneNumber = "";
+
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (identificationResult != null)
+            {
+                phoneNumber = identificationResult?.UserData?.Code;
+                token = identificationResult?.UserData?.Token;
+            }
+            if (rating != null)
+            {
+                rating.Code = phoneNumber;
+                rating.BranchCode = 45;
+            }
+            var jsonBody = JsonConvert.SerializeObject(rating);
+            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            if (rating == null) { return BadRequest("Error"); }
+            else
+            {
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage ratingResponse = await _v7Client.PostAsync($"review/save", content);
+                if (ratingResponse.IsSuccessStatusCode)
+                {
+                    string responseData = await ratingResponse.Content.ReadAsStringAsync();
+                    var review = JsonConvert.DeserializeObject<RatingResponse>(responseData);
+                    return Json(review);
+                }
+                return BadRequest("Error");
+            }
+
+        }    
     }
 }
