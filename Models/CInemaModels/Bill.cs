@@ -19,14 +19,6 @@ namespace HulubejeBooking.Models.CInemaModels
         public decimal? TAX115 { get; set; }
     }
 
-    public class Data
-    {
-        public List<LineItem>? LineItems { get; set; }
-        public ExtraCharge? ExtraCharge { get; set; }
-        public decimal? GrandTotal { get; set; }
-        public Dictionary<string, object>? ExtraInformation { get; set; }
-        public Dictionary<string, object>? ExtraData { get; set; }
-    }
 
     public class Bill
     {

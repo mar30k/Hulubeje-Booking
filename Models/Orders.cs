@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.BusModels;
+using HulubejeBooking.Models.CInemaModels;
 using Newtonsoft.Json;
 
 namespace HulubejeBooking.Models
@@ -63,5 +64,31 @@ namespace HulubejeBooking.Models
         public string? Review { get; set; }
         public string? Code { get; set; }
         public object? Article { get; set; }
+    }
+
+    public class GetHistoryDetailResposne
+    {
+        public bool? IsSuccessful { get; set; }
+        public Data? Data { get; set; }
+        public List<string>? ErrorMessages { get; set; }
+        public List<string>? AdditionalParameters { get; set; }
+    }
+
+    public class Data
+    {
+        public List<LineItem>? LineItems { get; set; }
+        public ExtraCharge? ExtraCharge { get; set; }
+        public decimal? GrandTotal { get; set; }
+        public Dictionary<string, object>? ExtraInformation { get; set; }
+        public ExtraData? ExtraData { get; set; }
+    }
+
+    public class ExtraData
+    {
+        public int? VoucherId { get; set; }
+        public string? Tin { get; set; }
+        [JsonProperty("status:")]
+        public string? Status { get; set; }
+
     }
 }
