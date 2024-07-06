@@ -72,6 +72,7 @@ namespace HulubejeBooking.Models
         public Data? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }
+        public string? QRCodeImage { get; set; }
     }
 
     public class Data
