@@ -53,6 +53,7 @@ builder.Services.AddHttpClient("MovieDb", httpClient =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<HotelListBuffer>();
 builder.Services.AddSingleton<Buffers>();
+builder.Services.AddTransient<IQRCodeGeneratorService, QRCodeGeneratorService>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
  
 builder.Services.AddSession(options =>
