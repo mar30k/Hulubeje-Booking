@@ -102,6 +102,19 @@
                 },
                 seats: seats,
             },
+            onSuccess: {
+                firstName: '@ViewBag?.FirstName',
+                company: '@Model?.CompanyName',
+                branch: '@Model?.CompanyName',
+                seats: selectedSeatNames,
+                movieName: '@Model?.MovieName',
+                movieDimension: '@Model?.Dimension',
+                hallName: '@Model?.HallName',
+                time: '@Model?.ScheduleTime',
+                date: '@Model?.ScheduleDate', 
+                picture: '',
+                scheduleDateTime: '@Model?.ScheduleDate'
+            }
         };
         $.ajax({
             url: '/PaymentHome/Index',

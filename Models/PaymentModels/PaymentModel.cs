@@ -96,6 +96,21 @@ namespace HulubejeBooking.Models.PaymentModels
         public string? SpecialRequirement { get; set; }
         public string? CashReceiptVoucher { get; set; }
     }
+    public class OnSuccess
+    {
+        public string? FirstName { get; set; }
+        public string? Company { get; set; }
+        public string? Branch { get; set; }
+        public int? NightCount { get; set; }
+        public List<string>? Seats { get; set; }
+        public string? MovieName { get; set; }
+        public string? MovieDimension { get; set; }
+        public string? HallName { get; set; }
+        public string? Time { get; set; }
+        public string? Date { get; set; }
+        public string? Picture { get; set; }
+        public string? ScheduleDateTime { get; set; }
+    }
     public class PaymentModel
     {
         public decimal? Amount { get; set; }
@@ -107,6 +122,7 @@ namespace HulubejeBooking.Models.PaymentModels
         public string? PaymentMethod { get; set; }
         public string? TransactionReference { get; set; }
         public PaymentInfo? PaymentInfo { get; set; }
+        public OnSuccess? OnSuccess { get; set; }
         public int Latitude { get; set; } = 0;
         public int Longitude { get; set; } = 0;
         public string Platform { get; set; } = "Web";
