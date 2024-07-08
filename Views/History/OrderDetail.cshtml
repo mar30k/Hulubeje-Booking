@@ -1,5 +1,5 @@
 ﻿@model HulubejeBooking.Models.GetHistoryDetailResposne
-<title>Order Detail</title>
+<title>Order</title>
 <partial name="_Navigation" />
 <style>
     .bill-header {
@@ -10,19 +10,35 @@
             margin-bottom: 0;
         }
 </style>
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
 <div class="container mb-5">
     <div class="row">
         <div class="col-lg-6 mt-3">
+            <div class="text-right">
+                <p>Date: @(Model?.Data?.IssuedDate != null ? DateTime.Parse(Model.Data.IssuedDate.ToString()).ToString("ddd, MMM dd yyyy") : "")</p>
+            </div>
+            <div>
+                <p><strong>Company</strong>: @Model?.Data?.CompanyName</p>
+                <p><strong>Company TIN</strong>: @Model?.Data?.ExtraData?.Tin</p>
+                <p><strong>Voucher Code</strong>: @Model?.Data?.VoucherCode</p>
+            </div>
             <div class="bill-header text-center mb-2 text-white p-2">
                 <h5 class="m-0">Bill Details</h5>
             </div>
             <div class="p-lg-2 pt-0">
                 @* Check if the response was successful *@
-                @if (Model.IsSuccessful ?? false)
+                @if (Model?.IsSuccessful ?? false)
                 {
                     <div class="row d-flex justify-content-between">
                         <div class="col-3 ">
-                            <p>Desc</p>
+                            <p>Description</p>
                         </div>
                         <div class="col-3 d-flex justify-content-center">
                             <p>Qty</p>
@@ -49,7 +65,7 @@
                                     <p>@item.UnitAmount?.ToString("N2")</p>
                                 </div>
                                 <div class="col-3 text-right">
-                                    <p>@(item.TaxableAmount?.ToString("C") ?? "-")</p>
+                                    <p>@(item.TaxableAmount?.ToString("N2") ?? "-")</p>
                                 </div>
                             </div>
 
@@ -60,17 +76,17 @@
                     {
                         <div class="row">
                             <div class="col-6"><p>TXBL 1:</p></div>
-                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TXBL1?.ToString("C") ?? "-")</p></div>
+                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TXBL1?.ToString("0.00") ?? "-")</p></div>
                         </div>
                         <div class="row">
                             <div class="col-6"><p>TXBL 15%:</p></div>
-                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TAX115?.ToString("C") ?? "-")</p></div>
+                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TAX115?.ToString("0.00") ?? "-")</p></div>
                         </div>
                         <hr />
                     }
                     <div class="row">
-                        <div class="col-6"><p>Grand Total</p></div>
-                        <div class="col-6 text-right"><p>@((Model?.Data?.GrandTotal ?? 0).ToString("C"))</p></div>
+                        <div class="col-6"><strong>Grand Total</strong></div>
+                        <div class="col-6 text-right"><strong>@((Model?.Data?.GrandTotal ?? 0).ToString("0.00"))</strong></div>
                     </div>
                 }
                 else
