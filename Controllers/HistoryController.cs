@@ -298,6 +298,31 @@ namespace HulubejeBooking.Controllers
             }
             return Convert.ToBase64String(encryptedBytes);
         }
+
+
+        public static string Decrypt(string cipherText, string password)
+        {
+            string plaintext;
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = Encoding.UTF8.GetBytes(password);
+                aesAlg.IV = Encoding.UTF8.GetBytes(password);
+
+                aesAlg.Padding = PaddingMode.PKCS7;
+                aesAlg.Mode = CipherMode.CBC;
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using MemoryStream msDecrypt = new(cipherBytes);
+                using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
+                using StreamReader srDecrypt = new(csDecrypt);
+                plaintext = srDecrypt.ReadToEnd();
+            }
+            return plaintext;
+        }
+
         public IActionResult GenerateQRCode(string text)
         {
             byte[] qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(text);
