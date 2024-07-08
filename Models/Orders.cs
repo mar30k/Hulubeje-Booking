@@ -73,6 +73,7 @@ namespace HulubejeBooking.Models
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }
         public string? QRCodeImage { get; set; }
+
     }
 
     public class Data
@@ -82,6 +83,12 @@ namespace HulubejeBooking.Models
         public decimal? GrandTotal { get; set; }
         public Dictionary<string, object>? ExtraInformation { get; set; }
         public ExtraData? ExtraData { get; set; }
+        public DateTime? IssuedDate { get; set; }
+        public int? BranchCode { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? CompanyName { get; set; }
+        public string? VoucherCode { get; set; }
+
     }
 
     public class ExtraData

@@ -121,7 +121,7 @@
                                                         <a type="button" class="mr-2 mr-md-1 btn btn-primary btn-sm px-2"  target="_blank" 
                                                         href="https://www.google.com/maps/search/?api=1&query= ${order.latitude},${order.longitude}">Direction</a>
                                                         <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2 details-btn" data-companyCode="${order.companyCode}" 
-                                                        data-industryType="${order.industryType}" data-voucherCode="${order.voucherCode}" data-issuedDate="${order.issuedDate}">Details</button>
+                                                        data-industryType="${order.industryType}" data-voucherCode="${order.voucherCode}" data-issuedDate="${order.issuedDate}" data-vouchercode="${order.companyName}">Details</button>
                                                         <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal" data-company="${order.companyName}" 
                                                         data-article="${order.articles}" data-branchcode="${order.branchCode}">Review</button>
                                                     </div>
@@ -275,6 +275,7 @@
                     const industryType = $(this).data('industrytype');
                     const voucherCode = $(this).data('vouchercode');
                     const issuedDate = $(this).data('issueddate');
+                    const issuedDate = $(this).data('companyname');
 
                     // Create a form dynamically
                     var form = $('<form>', {
@@ -283,6 +284,7 @@
                     });
 
                     // Add hidden input fields with the data
+                    form.append($('<input>', { type: 'hidden', name: 'CompanyName', value: companyname }));
                     form.append($('<input>', { type: 'hidden', name: 'CompanyCode', value: companyCode }));
                     form.append($('<input>', { type: 'hidden', name: 'IssuedDate', value: issuedDate }));
                     form.append($('<input>', { type: 'hidden', name: 'IndustryType', value: industryType }));
