@@ -18,6 +18,7 @@
         public string? SeatCacheKey { get; set; }
         public string? NumberOfSeats { get; set; }
         public string? BranchCode { get; set; }
+        public string? BranchName { get; set; }
         public decimal Price { get; set; }
         public Bill? Bill { get; set; }
         public List<SelectedItem>? SelectedItems { get; set; }
