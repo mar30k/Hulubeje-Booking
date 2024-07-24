@@ -121,7 +121,7 @@
                                                         <a type="button" class="mr-2 mr-md-1 btn btn-primary btn-sm px-2"  target="_blank" 
                                                         href="https://www.google.com/maps/search/?api=1&query= ${order.latitude},${order.longitude}">Direction</a>
                                                         <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2 details-btn" data-companyCode="${order.companyCode}" 
-                                                        data-industryType="${order.industryType}" data-voucherCode="${order.voucherCode}" data-issuedDate="${order.issuedDate}" data-vouchercode="${order.companyName}">Details</button>
+                                                        data-industryType="${order.industryType}" data-voucherCode="${order.voucherCode}" data-issuedDate="${order.issuedDate}" data-company="${order.companyName}">Details</button>
                                                         <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal" data-company="${order.companyName}" 
                                                         data-article="${order.articles}" data-branchcode="${order.branchCode}">Review</button>
                                                     </div>
@@ -275,7 +275,7 @@
                     const industryType = $(this).data('industrytype');
                     const voucherCode = $(this).data('vouchercode');
                     const issuedDate = $(this).data('issueddate');
-                    const issuedDate = $(this).data('companyname');
+                    const companyname = $(this).data('company');
 
                     // Create a form dynamically
                     var form = $('<form>', {
