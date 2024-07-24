@@ -24,7 +24,7 @@ namespace CinemaSeatBooking.Controllers
         [HttpPost]
         public async Task<IActionResult> IndexAsync([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string branchCode, [FromForm] string companyName, [FromForm] string movieName,
                     [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType,
-                    [FromForm] string articleCode, [FromForm] string numberOfElements, [FromForm] string seatCacheKey, [FromForm] string companyCode)
+                    [FromForm] string articleCode, [FromForm] string numberOfElements, [FromForm] string seatCacheKey, [FromForm] string companyCode, [FromForm] string branchName)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 

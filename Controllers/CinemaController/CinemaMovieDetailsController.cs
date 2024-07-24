@@ -24,7 +24,7 @@ namespace HulubejeBooking.Controllers
             _authenticationManager = authenticationManager;
         }
         public async Task<IActionResult> Index(int companyCode, DateTime selectedDate, string movieCode, string companyName, string sanitizedOverview,
-             string posterUrl, string movieName, string streamUrl, string tin, int branchCode)
+             string posterUrl, string movieName, string streamUrl, string tin, int branchCode, string branchName, string phoneNumber)
         {
             DateTime? releaseDate = DateTime.MinValue;
             int? articleCode = 0;
@@ -33,11 +33,12 @@ namespace HulubejeBooking.Controllers
             var movieSchedule = new List<MovieSchedules>();
             if (movieData != null && movieData.Data != null)
             {
-                
+
                 var company = movieData.Data.FirstOrDefault(c => c.CompanyCode == companyCode);
                 branchCode = company?.BranchCode ?? 0;
                 companyName = company?.CompanyName ?? companyName;
                 tin = company?.TIN ?? tin;
+                branchName = company?.BranchName ?? branchName;
                 if (company != null && company.Movies != null)
                 {
                     var movie = company.Movies.FirstOrDefault(m => m?.MovieName == movieName);
@@ -64,11 +65,12 @@ namespace HulubejeBooking.Controllers
             }
             var code = string.Empty;
             var identificationResult = await _authenticationManager.identificationValid();
-            
+
             if (identificationResult != null)
             {
-                ViewBag.isVaild = identificationResult.isValid;
-                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+                phoneNumber = identificationResult?.UserData?.Code ?? phoneNumber;
+                ViewBag.isVaild = identificationResult?.isValid;
+                ViewBag.isLoggedIn = identificationResult?.isLoggedIn;
                 ViewBag.FirstName = identificationResult?.UserData.FirstName;
                 ViewBag.LastName = identificationResult?.UserData.LastName;
                 ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
@@ -93,7 +95,9 @@ namespace HulubejeBooking.Controllers
                 MovieSchedules = movieSchedule,
                 CompanyCode = companyCode.ToString(),
                 CompanyTinNumber = tin?.ToString(),
-                BranchCode = branchCode
+                BranchCode = branchCode,
+                BranchName = branchName,
+                PhoneNumber = phoneNumber
             };
             var movieTitle = Uri.EscapeDataString(movieName ?? string.Empty);
             var tmdbClient = _httpClientFactory.CreateClient("MovieDb");
@@ -121,7 +125,7 @@ namespace HulubejeBooking.Controllers
             {
                 // Read and parse the movie details response content
                 string detailsResponseData = await detailsResponse.Content.ReadAsStringAsync();
-                        
+
                 var movieDetail = JsonConvert.DeserializeObject<MovieModel>(detailsResponseData);
                 if (movieDetail != null)
                 {
@@ -135,13 +139,14 @@ namespace HulubejeBooking.Controllers
             movieDetails.MovieName = movieName;
             movieDetails.PhoneNumber = code;
             movieDetails.ArticleCode = articleCode.ToString();
+            movieDetails.PhoneNumber = phoneNumber.ToString();
             //_ = await UpdateMovieAnalyticsAsync(tin, movieName, posterUrl);
-            return View(movieDetails);   
+            return View(movieDetails);
         }
         private Movie GetMovieDataFromSession()
         {
             var movieJson = HttpContext.Session.GetString("movies");
-            return movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) ?? new Movie(): new Movie();
+            return movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) ?? new Movie() : new Movie();
         }
         private async Task<bool> UpdateMovieAnalyticsAsync(string? orgTin, string? movieName, string posterUrl)
         {
@@ -150,7 +155,7 @@ namespace HulubejeBooking.Controllers
                 orgTin,
                 movieName,
                 posterUrl
-            };
+            };  
             var jsonRequest = JsonConvert.SerializeObject(param);
 
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
@@ -199,6 +204,54 @@ namespace HulubejeBooking.Controllers
                 }
             }
             return new List<CastMember>();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteEntry([FromBody] SafePushEntry pushEntry)
+        {
+            try
+            {
+                var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
+                var Url = _seatCacheClient.BaseAddress?.OriginalString.ToString() + "cache/deleteEntry";
+                var data = new
+                {
+                    key = pushEntry.Key,
+                };
+                var paramJson = JsonConvert.SerializeObject(data);
+                var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
+
+                var request = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(Url),
+                    Content = content
+                };
+
+                HttpResponseMessage entryExtensionresponse = await _seatCacheClient.SendAsync(request);
+
+                if (entryExtensionresponse.IsSuccessStatusCode)
+                {
+                    var responseJson = await entryExtensionresponse.Content.ReadAsStringAsync();
+                    return Ok(responseJson);
+                }
+                else
+                {
+                    return BadRequest("Error fetching seat status from cache.");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+            catch (TaskCanceledException e)
+            {
+                return StatusCode(408, "Request timed out." + e.Message + e.Source);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
         }
     }
 }
