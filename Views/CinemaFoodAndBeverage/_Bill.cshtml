@@ -52,7 +52,25 @@
 <script>
     $('#confirmButton').on('click', function () {
         var lineItems = [];
+        let inputDateTimeString = "@Model?.ScheduleDate";
+        let dateTime = new Date(inputDateTimeString);
+        dateTime.setHours(dateTime.getHours());
+        let formattedDateTimeString = dateTime.toISOString().replace('Z', '');
 
+        let inputDateString = "@Model?.ScheduleDate";
+        let date = new Date(inputDateString);
+        date.setHours(0, 0, 0, 0);
+        let formattedDateString = date.toISOString().replace('Z', '');
+
+        function pad(number) {
+            return number < 10 ? '0' + number : number;
+        }
+
+        let hours = pad(dateTime.getHours());
+        let minutes = pad(dateTime.getMinutes());
+        let seconds = pad(dateTime.getSeconds());
+
+        let formattedTimeString = `${hours}:${minutes}:${seconds}`;
         @foreach (var item in Model?.SelectedItems ?? new List<HulubejeBooking.Models.CInemaModels.SelectedItem>())
         {
             <text>
@@ -111,11 +129,13 @@
                 movieDimension: '@Model?.Dimension',
                 hallName: '@Model?.HallName',
                 time: '@Model?.ScheduleTime',
-                date: '@Model?.ScheduleDate', 
+                date: formattedDateString,
                 picture: '',
-                scheduleDateTime: '@Model?.ScheduleDate'
+                scheduleDateTime: formattedDateTimeString
             }
         };
+
+        console.log(v7data);
         $.ajax({
             url: '/PaymentHome/Index',
             type: 'POST',
@@ -129,4 +149,4 @@
             }
         });
     });
-</script>
+</script> 
