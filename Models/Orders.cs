@@ -32,14 +32,14 @@ namespace HulubejeBooking.Models
         public bool? IsSuccessful { get; set; }
         public List<VoucherData>? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
-        public List<string>? AdditionalParameters { get; set; }
+        public Dictionary<string, string>? AdditionalParameters { get; set; }
     }
     public class RatingResponse
     {
         public bool? IsSuccessful { get; set; }
         public bool? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
-        public List<string>? AdditionalParameters { get; set; }
+        public Dictionary<string, string>? AdditionalParameters { get; set; }
     }
     public class VoucherData
     {
@@ -98,5 +98,14 @@ namespace HulubejeBooking.Models
         [JsonProperty("status:")]
         public string? Status { get; set; }
 
+    }
+
+
+    public class HulubejeResponse<T>
+    {
+        public bool? IsSuccessful { get; set; }
+        public T? Data { get; set; }
+        public List<string>? ErrorMessages { get; set; }
+        public Dictionary<string, string>? AdditionalParameters { get; set; }
     }
 }
