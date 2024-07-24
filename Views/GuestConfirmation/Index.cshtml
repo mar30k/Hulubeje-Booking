@@ -131,9 +131,10 @@
                 lastName: '@guest.LastName',
                 email: '@guest.Email',
                 idNumber: "",
-                idType: "kebele",
+                idType: 0,
                 dateOfBirth: '@guest.DateOfBirth',
-                gender: '@guest.Gender'
+                gender: '@guest.Gender',
+                idNumber: '@guest.ResidentId'
             };
         guestsData.push(guestObj);
         </text>
@@ -153,13 +154,6 @@
             var departureDate = departureDateString.toISOString();
 
             sessionStorage.setItem('countdownStarted', false);
-            // sessionStorage.setItem("name", $('#name').val());
-            // sessionStorage.setItem("middle", $('#middle').val());
-            // sessionStorage.setItem("last", $('#last').val());
-            // sessionStorage.setItem("DOB", $('#date').val());
-            // sessionStorage.setItem("email", $('#email').val());
-            // sessionStorage.setItem("phone", $('#phone').val());
-            // sessionStorage.setItem("nationality", $('#nationality').val());
             var lineItems = [];
 
             var data = {
@@ -183,6 +177,13 @@
                     specialRequirement: "@Model?.SpecialRequirement",
                     cashReceiptVoucher: "",
                     guests: guestsData,
+                },
+                onSuccess: {
+                    firstName: '@ViewBag?.FirstName',
+                    company: '',
+                    branch: '',
+                    date: arrivalDate,
+                    scheduleDateTime: arrivalDate
                 }
             };
             console.log("data", data);
