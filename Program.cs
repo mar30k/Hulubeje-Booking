@@ -1,6 +1,9 @@
 using HulubejeBooking.Models.HotelModels;
 using HulubejeBooking.Controllers.Authentication;
 using HulubejeBooking.Controllers;
+using DevExpress.AspNetCore.Reporting.WebDocumentViewer.Native.Services;
+using DevExpress.AspNetCore.Reporting.WebDocumentViewer;
+using DevExpress.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -55,7 +58,7 @@ builder.Services.AddSingleton<HotelListBuffer>();
 builder.Services.AddSingleton<Buffers>();
 builder.Services.AddTransient<IQRCodeGeneratorService, QRCodeGeneratorService>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
- 
+builder.Services.AddDevExpressControls();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -80,6 +83,9 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 
+// ...);
+//...
+app.UseDevExpressControls();
 
 app.UseAuthorization();
 
@@ -88,3 +94,9 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+public partial class CustomWebDocumentViewerController : WebDocumentViewerController
+{
+    public CustomWebDocumentViewerController(IWebDocumentViewerMvcControllerService controllerService) : base(controllerService)
+    {
+    }
+}
