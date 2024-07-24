@@ -9,10 +9,11 @@ namespace HulubejeBooking.Models.HotelModels
         public string LastName { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public string IdPicture { get; set; } = "";
+        public string IdPicture { get; set; } 
         public string DateOfBirth { get; set; }
         public string Gender { get; set; }
         public string Nationality { get; set; }
+        public string ResidentId { get; set; }
     }
     public class GuestModelWrapper
     {
