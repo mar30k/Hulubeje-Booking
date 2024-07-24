@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc.ViewEngines;
 using System.Security.Cryptography;
 using System.Drawing.Imaging;
 using System.Drawing;
+using CNET_ERP_V7_VoucherPrintDialogue.Models;
+using HulubejeBooking.Models.EventModels;
 namespace HulubejeBooking.Controllers
 {
     public class HistoryController : Controller
@@ -73,6 +75,7 @@ namespace HulubejeBooking.Controllers
                 var history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
                 historyWrapper.OrdersModel = history;
             }
+
             return View(historyWrapper);
 
         }
@@ -101,7 +104,7 @@ namespace HulubejeBooking.Controllers
                 _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 HttpResponseMessage ratingResponse = await _v7Client.PostAsync($"review/save", content);
                 if (ratingResponse.IsSuccessStatusCode)
-                { 
+                {
                     string responseData = await ratingResponse.Content.ReadAsStringAsync();
                     var review = JsonConvert.DeserializeObject<RatingResponse>(responseData);
                     return Json(review);
@@ -113,9 +116,8 @@ namespace HulubejeBooking.Controllers
         [Route("order")]
         public async Task<IActionResult> OrderDetail(string voucher)
         {
-            string removeSpace = ReplaceSpacesWithPlus(voucher);
             //var decryptedVoucher = Decrypt("hlJcqfPlYWTTUFbm+g0VSg==", "MAKV2SPBNI992121");
-            var decryptedVoucher = Decrypt(removeSpace, "MAKV2SPBNI992121");
+            string decryptedVoucher = await Decrypt(voucher);
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
@@ -168,10 +170,45 @@ namespace HulubejeBooking.Controllers
             }
             return View(review);
         }
-        public static string ReplaceSpacesWithPlus(string input)
+
+        [Route("print")]
+        public async Task<IActionResult> VoucherLineItemPrintViewer(string voucher)
         {
-            return input.Replace(" ", "+");
+            ////var decryptedVoucher = Decrypt("hlJcqfPlYWTTUFbm+g0VSg==", "MAKV2SPBNI992121");
+            string decryptedVoucher = await Decrypt(voucher.ToString());
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (identificationResult != null)
+            {
+                ViewBag.isVaild = identificationResult?.isValid;
+                ViewBag.isLoggedIn = identificationResult?.isLoggedIn;
+                ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData.IdType;
+                ViewBag.Dob = identificationResult?.UserData.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData.Email;
+            }
+
+            var review = new HulubejeResponse<VoucherPrintModel>();
+            //HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"voucher/printvoucher?VoucherId={voucher}");
+            HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"voucher/printvoucher?VoucherId={decryptedVoucher}");
+            if (gethistorydetailResponse.IsSuccessStatusCode)
+            {
+                string responseData = await gethistorydetailResponse.Content.ReadAsStringAsync();
+                review = responseData != null ? JsonConvert.DeserializeObject<HulubejeResponse<VoucherPrintModel>>(responseData) : new HulubejeResponse<VoucherPrintModel>();
+            }
+            return View(review.Data);
         }
+        
+        //public static string ReplaceSpacesWithPlus(string input)
+        //{
+        //    return input.Replace(" ", "+");
+        //}
         [Route("history/orderdetail")]
         public async Task<IActionResult> OrderDetail([FromForm] VoucherData? voucherData)
         {
@@ -215,10 +252,11 @@ namespace HulubejeBooking.Controllers
             var qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(encrypt);
 
 
-            if(review!=null & review?.Data?.ExtraData?.Status == "Reedemed")
+            if (review != null & review?.Data?.ExtraData?.Status == "Reedemed")
             {
-                review.Data.CompanyName = voucherData.CompanyName;
-                review.Data.VoucherCode = voucherData.VoucherCode;
+                review.Data.CompanyName = voucherData?.CompanyName;
+                review.Data.VoucherCode = voucherData?.VoucherCode;
+                review.Data.IssuedDate = voucherData?.IssuedDate;
                 string overlayImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Assets", "redeemed_icon.jpg");
                 byte[] overlayImageBytes = System.IO.File.ReadAllBytes(overlayImagePath);
 
@@ -317,27 +355,18 @@ namespace HulubejeBooking.Controllers
         }
 
 
-        public static string Decrypt(string cipherText, string password)
+        public async Task<string> Decrypt(string cipherText)
         {
-            string plaintext;
-            byte[] cipherBytes = Convert.FromBase64String(cipherText);
-
-            using (Aes aesAlg = Aes.Create())
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"decrypt?encryptedText={cipherText}");
+            if (gethistorydetailResponse.IsSuccessStatusCode)
             {
-                aesAlg.Key = Encoding.UTF8.GetBytes(password);
-                aesAlg.IV = Encoding.UTF8.GetBytes(password);
+                string plaintext = await gethistorydetailResponse.Content.ReadAsStringAsync();
 
-                aesAlg.Padding = PaddingMode.PKCS7;
-                aesAlg.Mode = CipherMode.CBC;
-
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                using MemoryStream msDecrypt = new(cipherBytes);
-                using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
-                using StreamReader srDecrypt = new(csDecrypt);
-                plaintext = srDecrypt.ReadToEnd();
+                return plaintext;
             }
-            return plaintext;
+            return "";
+
         }
 
         public IActionResult GenerateQRCode(string text)
