@@ -116,93 +116,105 @@ namespace HulubejeBooking.Controllers
         [Route("order")]
         public async Task<IActionResult> OrderDetail(string voucher)
         {
-            //var decryptedVoucher = Decrypt("hlJcqfPlYWTTUFbm+g0VSg==", "MAKV2SPBNI992121");
-            string decryptedVoucher = await Decrypt(voucher);
-            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            var identificationResult = await _authenticationManager.identificationValid();
-            if (identificationResult != null)
-            {
-                ViewBag.isVaild = identificationResult?.isValid;
-                ViewBag.isLoggedIn = identificationResult?.isLoggedIn;
-                ViewBag.FirstName = identificationResult?.UserData.FirstName;
-                ViewBag.LastName = identificationResult?.UserData.LastName;
-                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
-                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
-                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
-                ViewBag.Idtype = identificationResult?.UserData.IdType;
-                ViewBag.Dob = identificationResult?.UserData.Dob;
-                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
-                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
-                ViewBag.EmailAddress = identificationResult?.UserData.Email;
+            try {
+                string decryptedVoucher = await Decrypt(voucher);
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                var identificationResult = await _authenticationManager.identificationValid();
+                if (identificationResult != null)
+                {
+                    ViewBag.isVaild = identificationResult?.isValid;
+                    ViewBag.isLoggedIn = identificationResult?.isLoggedIn;
+                    ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                    ViewBag.LastName = identificationResult?.UserData.LastName;
+                    ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                    ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                    ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                    ViewBag.Idtype = identificationResult?.UserData.IdType;
+                    ViewBag.Dob = identificationResult?.UserData.Dob;
+                    ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                    ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                    ViewBag.EmailAddress = identificationResult?.UserData.Email;
+                }
+
+                var review = new GetHistoryDetailResposne();
+                HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"voucher/gethistorydetailbyid?" +
+                    $"voucherId={decryptedVoucher}");
+                if (gethistorydetailResponse.IsSuccessStatusCode)
+                {
+                    string responseData = await gethistorydetailResponse.Content.ReadAsStringAsync();
+                    review = responseData != null ? JsonConvert.DeserializeObject<GetHistoryDetailResposne>(responseData) : new GetHistoryDetailResposne();
+                }
+
+                var text = $"CNET_REDEEM,{review?.Data?.ExtraData?.Tin},{review?.Data?.BranchCode?.ToString()},{review?.Data?.PhoneNumber}," +
+                    $"{review?.Data?.ExtraData?.VoucherId},{review?.Data?.IssuedDate?.ToString("MM/dd/yyyy hh:mm:ss tt")}," +
+                    $"{review?.Data?.GrandTotal?.ToString("0.00")}";
+                var encrypt = Encrypt(text, "MAKV2SPBNI992121");
+                var qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(encrypt);
+
+
+                if (review != null & review?.Data?.ExtraData?.Status == "Reedemed")
+                {
+                    string overlayImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Assets", "redeemed_icon.jpg");
+                    byte[] overlayImageBytes = System.IO.File.ReadAllBytes(overlayImagePath);
+
+                    byte[] overlaidImageBytes = OverlayImages(qrCodeBytes, overlayImageBytes);
+
+                    // Convert the overlaid image to a base64 string
+                    var base64OverlaidImage = Convert.ToBase64String(overlaidImageBytes);
+                    review.QRCodeImage = $"data:image/png;base64,{base64OverlaidImage}";
+                }
+                else
+                {
+                    var base64QRCode = Convert.ToBase64String(qrCodeBytes);
+                    review.QRCodeImage = $"data:image/png;base64,{base64QRCode}";
+                }
+                return View(review);
             }
-
-            var review = new GetHistoryDetailResposne();
-            HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"voucher/gethistorydetailbyid?" +
-                $"voucherId={decryptedVoucher}");
-            if (gethistorydetailResponse.IsSuccessStatusCode)
+            catch
             {
-                string responseData = await gethistorydetailResponse.Content.ReadAsStringAsync();
-                review = responseData != null ? JsonConvert.DeserializeObject<GetHistoryDetailResposne>(responseData) : new GetHistoryDetailResposne();
+                return View();
             }
-
-            var text = $"CNET_REDEEM,{review?.Data?.ExtraData?.Tin},{review?.Data?.BranchCode?.ToString()},{review?.Data?.PhoneNumber}," +
-                $"{review?.Data?.ExtraData?.VoucherId},{review?.Data?.IssuedDate?.ToString("MM/dd/yyyy hh:mm:ss tt")}," +
-                $"{review?.Data?.GrandTotal?.ToString("0.00")}";
-            var encrypt = Encrypt(text, "MAKV2SPBNI992121");
-            var qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(encrypt);
-
-
-            if (review != null & review?.Data?.ExtraData?.Status == "Reedemed")
-            {
-                string overlayImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Assets", "redeemed_icon.jpg");
-                byte[] overlayImageBytes = System.IO.File.ReadAllBytes(overlayImagePath);
-
-                byte[] overlaidImageBytes = OverlayImages(qrCodeBytes, overlayImageBytes);
-
-                // Convert the overlaid image to a base64 string
-                var base64OverlaidImage = Convert.ToBase64String(overlaidImageBytes);
-                review.QRCodeImage = $"data:image/png;base64,{base64OverlaidImage}";
-            }
-            else
-            {
-                var base64QRCode = Convert.ToBase64String(qrCodeBytes);
-                review.QRCodeImage = $"data:image/png;base64,{base64QRCode}";
-            }
-            return View(review);
+            
         }
 
         [Route("print")]
         public async Task<IActionResult> VoucherLineItemPrintViewer(string voucher)
         {
-            ////var decryptedVoucher = Decrypt("hlJcqfPlYWTTUFbm+g0VSg==", "MAKV2SPBNI992121");
-            string decryptedVoucher = await Decrypt(voucher.ToString());
-            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            var identificationResult = await _authenticationManager.identificationValid();
-            if (identificationResult != null)
+            try 
             {
-                ViewBag.isVaild = identificationResult?.isValid;
-                ViewBag.isLoggedIn = identificationResult?.isLoggedIn;
-                ViewBag.FirstName = identificationResult?.UserData.FirstName;
-                ViewBag.LastName = identificationResult?.UserData.LastName;
-                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
-                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
-                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
-                ViewBag.Idtype = identificationResult?.UserData.IdType;
-                ViewBag.Dob = identificationResult?.UserData.Dob;
-                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
-                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
-                ViewBag.EmailAddress = identificationResult?.UserData.Email;
-            }
+                string decryptedVoucher = await Decrypt(voucher?.ToString());
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                var identificationResult = await _authenticationManager.identificationValid();
+                if (identificationResult != null)
+                {
+                    ViewBag.isVaild = identificationResult?.isValid;
+                    ViewBag.isLoggedIn = identificationResult?.isLoggedIn;
+                    ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                    ViewBag.LastName = identificationResult?.UserData.LastName;
+                    ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                    ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
+                    ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
+                    ViewBag.Idtype = identificationResult?.UserData.IdType;
+                    ViewBag.Dob = identificationResult?.UserData.Dob;
+                    ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
+                    ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                    ViewBag.EmailAddress = identificationResult?.UserData.Email;
+                }
 
-            var review = new HulubejeResponse<VoucherPrintModel>();
-            //HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"voucher/printvoucher?VoucherId={voucher}");
-            HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"voucher/printvoucher?VoucherId={decryptedVoucher}");
-            if (gethistorydetailResponse.IsSuccessStatusCode)
-            {
-                string responseData = await gethistorydetailResponse.Content.ReadAsStringAsync();
-                review = responseData != null ? JsonConvert.DeserializeObject<HulubejeResponse<VoucherPrintModel>>(responseData) : new HulubejeResponse<VoucherPrintModel>();
+                var review = new HulubejeResponse<VoucherPrintModel>();
+                HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"voucher/printvoucher?VoucherId={decryptedVoucher}");
+                if (gethistorydetailResponse.IsSuccessStatusCode)
+                {
+                    string responseData = await gethistorydetailResponse.Content.ReadAsStringAsync();
+                    review = responseData != null ? JsonConvert.DeserializeObject<HulubejeResponse<VoucherPrintModel>>(responseData) : new HulubejeResponse<VoucherPrintModel>();
+                }
+                return View(review.Data);
             }
-            return View(review.Data);
+            catch (Exception ex) 
+            {
+                return View(null);
+            }
+            
         }
         
         //public static string ReplaceSpacesWithPlus(string input)
@@ -355,7 +367,7 @@ namespace HulubejeBooking.Controllers
         }
 
 
-        public async Task<string> Decrypt(string cipherText)
+        public async Task<string> Decrypt(string? cipherText)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             HttpResponseMessage gethistorydetailResponse = await _v7Client.GetAsync($"decrypt?encryptedText={cipherText}");
