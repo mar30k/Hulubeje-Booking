@@ -9,6 +9,7 @@
 @{
     var isVaild = ViewBag.isVaild;
     var isLoggedIN = ViewBag.isLoggedIn;
+    int? redeemedSeatsCount = Model?.Data?.Seats?.Where(c => c.Type == "redeemed").Count();
 }
 <script>
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
@@ -83,6 +84,35 @@
             height: 30px;
         }
 
+        .redeemed {
+            background-color: purple;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            width: 30px;
+            height: 30px;
+        }
+
+        .reserved{
+            background-color: #0dcaf0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 400;
+            border: 1px solid #1ea83c;
+            border-radius: 2px;
+            width: 30px;
+            height: 30px;
+        }
         .sold {
             background-color: red;
             color: white;
@@ -146,7 +176,7 @@
                     $(".buttonSeats").each(function () {
                         var buttonId = $(this).attr("id");
                         if (buttonId && fetchedSeatIds.indexOf(buttonId) === -1) {
-                            $(this).removeClass("taken booked sold");
+                            $(this).removeClass("taken booked sold reserved");
                             $(this).addClass("buttons");
                         }
                     });
@@ -157,8 +187,8 @@
                     var bookedSeatsCount = response.filter(function (seat) {
                         return seat.status === "booked" && listOfSeats.includes(seat.value.toString());
                     }).length;
-
-                    var soldSeatsCount = response.filter(function (seat) {
+                    bookedSeatsCount -= @redeemedSeatsCount;
+                    var soldSeatsCount = response.filter(function (seat) { 
                         return seat.status === "sold" && listOfSeats.includes(seat.value.toString());
                     }).length;
                     var availableSeatsCount = @seatsCount - (totaltakenSeats + bookedSeatsCount + soldSeatsCount);
@@ -193,13 +223,16 @@
                     var seatStatus = event.target.getAttribute('data-seat-status');
 
                     var isBooked = seatStatus === 'booked';
+                    var isRedeemed = seatStatus === 'redeemed';
                     var isSold = seatStatus === 'sold';
+                    var isReserved = seatStatus === 'reserved';
+                    var isBlocked = seatStatus === 'blocked';
                     if (!isBookingStarted) {
                         startBooking(seatCode);
                         isBookingStarted = true;
                     }
                     
-                    toggleSeatSelection(seatCode, isBooked || isSold );
+                    toggleSeatSelection(seatCode, isBooked || isSold || isRedeemed || isReserved || isBlocked);
                 }
             });
         });
@@ -356,7 +389,6 @@
                     data: JSON.stringify(seatData),
                     contentType: 'application/json',
                     success: function (response) {
-                        // Reset the background color of the button associated with the seat
                         var button = document.getElementById(selectedSeat);
                         if (button) {
                             button.style.backgroundColor = "";
@@ -573,7 +605,7 @@
                                             @for (int x = 1; x <= Model?.Data?.MaxX; x++)
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
-                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && (seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type =="blocked")))
+                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && (seat.Type != "aile")))
                                                     {
                                                         var seat = Model.Data.Seats.First(seat => seat.X == x && seat.Y == y);
                                                         var seatStatuses = Model?.SeatStatus;
@@ -582,37 +614,47 @@
                                                         var seatStatusess = "Available";
                                                         var isButtonDisabled = false;
 
-                                                        if (seatStatus != null)
+                                                        if (seat.Type != "aile")
                                                         {
-                                                            if (seatStatus.Status == "taken")
+                                                            if (seat.Type == "taken")
                                                             {
                                                                 seatStatusess = "taken";
                                                                 buttonClass += " taken buttons";
                                                             }
-                                                             if (seatStatus.Status == "booked")
+                                                            else if (seat.Type == "booked")
                                                             {
                                                                 seatStatusess = "booked";
-                                                                buttonClass += " booked  ";
+                                                                buttonClass += " booked ";
                                                                 isButtonDisabled = true;
                                                             }
-                                                            else if (seatStatus.Status == "sold")
+                                                            else if (seat.Type == "sold")
                                                             {
                                                                 seatStatusess = "sold";
-                                                                buttonClass += " sold  ";
+                                                                buttonClass += " sold";
                                                                 isButtonDisabled = true;
                                                             }
-                                                            else if (seatStatus.Status == "blocked")
+                                                            else if (seat.Type == "reserved")
                                                             {
-                                                                seatStatusess = "blocked";
-                                                                buttonClass += "blocked";
+                                                                seatStatusess = "reserved";
+                                                                buttonClass += "reserved";
                                                                 isButtonDisabled = true;
+                                                            }
+                                                            else if (seat.Type == "redeemed")
+                                                            {
+                                                                seatStatusess = "redeemed";
+                                                                buttonClass += " redeemed  ";
+                                                                isButtonDisabled = true;
+                                                            }
+                                                            else
+                                                            {
+                                                                buttonClass += " buttons";
                                                             }
                                                         } 
                                                         else
                                                         {
                                                             buttonClass += " buttons";
                                                         }
-                                                        <button data-seat-status="@seatStatusess" id="@seat.Id" class="@buttonClass buttonSeats" @(isButtonDisabled ? "disabled" : "") >
+                                                        <button data-seat-status="@seat.Type" id="@seat.Id" class="@buttonClass buttonSeats" @(isButtonDisabled ? "disabled" : "") >
                                                             @seat.Name
                                                         </button>
                                                     }
@@ -632,7 +674,7 @@
                         }
                         else
                         {
-                            <div style="display: flex; align-items: center; justify-content: center; height: 100vh;">
+                            <div style="display: flex; align-items: center; justify-content: center; height: 40vh;">
                                 <div class="d-flex align-items-center">
                                     <i class="bi bi-exclamation-circle" style="font-size: 48px; color: red;"></i>
                                     <p>No seats available.</p>
@@ -673,29 +715,41 @@
                                 </p>
                             </div>
                         </div>
+                        @{
+                            int? bookedSeatsCount = Model?.Data?.Seats?.Where(c => c.Type == "booked").Count();
+                            int? soldSeatsCount = Model?.Data?.Seats?.Where(c => c.Type == "sold").Count();
+                            int? blockedSeatsCount = Model?.Data?.Seats?.Where(c => c.Type == "blocked").Count();
+                            int? reservedSeatsCount = Model?.Data?.Seats?.Where(c => c.Type == "reserved").Count();
+
+                            var listOfSeatss = Model?.Data?.Seats?.Select(seat => seat.Id).ToList();
+                            int seatCount = Model?.Data?.Seats?.Count(seat => seat.Type != "aile") ?? 0;
+                            int? takenSeatCount = Model?.SeatStatus?
+                            .Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
+                            .Count(status => status.Status == "taken");
+                            // int? bookedSeatsCount = Model?.SeatStatus?.
+                            // Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
+                            // .Count(status => status.Status == "booked") - redeemedSeatsCount;
+                            // int? soldSeatsCount = Model?.SeatStatus?
+                            // .Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
+                            // .Count(status => status.Status == "sold");
+                            // int? blockedSeatsCount = Model?.SeatStatus?
+                            // .Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
+                            // .Count(status => status.Status == "blocked");
+                            // int? reservedSeatsCount = Model?.SeatStatus?
+                            // .Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
+                            // .Count(status => status.Status == "reserved");
+                            int? availableSeatCount = seatCount - (takenSeatCount + bookedSeatsCount + soldSeatsCount + redeemedSeatsCount + blockedSeatsCount + reservedSeatsCount);
+                        }
                         <div style="margin-top: 10px; color: white; font-size: 15px; background-color: #F9F7F5; padding: 10px; text-align: left">
                             <div class="row">
                                 <div class="col-10">
                                     <div class="row">
-                                        <div class="col-8 mt-1">
+                                        <div class="col-8 ">
                                             <p style="color:black">Available seats</p>
                                         </div>
-                                        @{
-                                            var listOfSeatss = Model?.Data?.Seats?.Select(seat => seat.Id).ToList();
-                                            int seatCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked") ?? 0;
-                                            int? takenSeatCount = Model?.SeatStatus?
-                                            .Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
-                                            .Count(status => status.Status == "taken");
-                                            int? bookedSeatsCount = Model?.SeatStatus?.
-                                            Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
-                                            .Count(status => status.Status == "booked");
-                                            int? soldSeatsCount = Model?.SeatStatus?
-                                            .Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
-                                            .Count(status => status.Status == "sold");
-                                            int? availableSeatCount = seatCount - (takenSeatCount + bookedSeatsCount + soldSeatsCount);
-                                        }
                                         <div class="col-4" style="text-align: center">
-                                            <p class="availableSeatCount" style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px; border: 1px solid white; margin-right: 5px;">
+                                            <p class="availableSeatCount" style="background-color: white;  color: green;padding: 4px 4px; border-radius: 10px;
+                                                border: 1px solid white; margin-right: 5px;">
                                                 @availableSeatCount
                                             </p>
                                         </div>
@@ -703,41 +757,78 @@
                                 </div>
                                 <div class="col-10">
                                     <div class="row">
-                                        <div class="col-8 mt-1">
+                                        <div class="col-8 ">
                                             <p style="color:black">Booked seats</p>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <p class="bookedSeatCount"style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid blue; margin-right: 5px;">@bookedSeatsCount</p>
+                                            <p class="bookedSeatCount"style="background-color: blue;  color: white;padding: 4px 4px; border-radius: 10px;
+                                                border: 1px solid blue; margin-right: 5px;">
+                                                @bookedSeatsCount
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-10">
                                     <div class="row">
-                                        <div class="col-8 mt-1">
+                                        <div class="col-8 ">
                                             <p style="color:black">Taken seats</p>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <p class="takenSeatCount" style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid darkorange; margin-right: 5px;">@takenSeatCount</p>
+                                            <p class="takenSeatCount" style="background-color: darkorange;  color: white;padding: 4px 4px; border-radius: 10px;
+                                                border: 1px solid darkorange; margin-right: 5px;">
+                                                @takenSeatCount
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-10">
                                     <div class="row">
-                                        <div class="col-8 mt-1">
+                                        <div class="col-8 ">
                                             <p style="color:black">Sold seats</p>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <p class="soldSeatsCount" style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid red; margin-right: 5px;">@soldSeatsCount</p>
+                                            <p class="soldSeatsCount" style="background-color: red;  color: white;padding: 4px 4px; border-radius: 10px;
+                                                border: 1px solid red; margin-right: 5px;">
+                                                @soldSeatsCount
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-10">
                                     <div class="row">
-                                        <div class="col-8 mt-1">
+                                        <div class="col-8 ">
+                                            <p style="color:black">Redeemed seats</p>
+                                        </div>
+                                        <div class="col-4" style="text-align: center">
+                                            <p class="redeemedSeatsCount" style="background-color: purple;  color: white;padding: 4px 4px; border-radius: 10px;
+                                                border: 1px solid purple; margin-right: 5px;">
+                                                @redeemedSeatsCount
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-8 ">
+                                            <p style="color:black">Reserved seats</p>
+                                        </div>
+                                        <div class="col-4" style="text-align: center">
+                                            <p class="reservedSeatsCount" style="background-color: #0dcaf0;  color: white;padding: 4px 4px; border-radius: 10px;
+                                                border: 1px solid #0dcaf0; margin-right: 5px;">
+                                                @reservedSeatsCount
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="row">
+                                        <div class="col-8 ">
                                             <p style="color:black">Selected seats</p>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <p id="selectedSeatsDisplay" style="background-color: green;  color: white;padding: 4px 4px; border-radius: 10px; border: 1px solid green; margin-right: 5px;"></p>
+                                            <p id="selectedSeatsDisplay" style="background-color: green;  color: white;padding: 4px 4px; border-radius: 10px;
+                                                border: 1px solid green; margin-right: 5px;">
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
