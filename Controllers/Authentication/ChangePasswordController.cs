@@ -46,19 +46,19 @@ namespace HulubejeBooking.Controllers.Authentication
         {
             var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
             string? phoneNumber;
-            if (changePassword?.RepeatPassword?.Length < 6)
+            if (changePassword?.Oldpassword?.Length < 6)
             {
                 TempData["ErrorMessage"] = "Incorrect Old Password!";
                 return View();
             }
             else if (changePassword?.Newpassword?.Length < 6 || changePassword?.RepeatPassword?.Length < 6)
             {
-                TempData["ErrorMessage"] = "password lenght should be atleast 6 characters ";
+                TempData["ErrorMessage"] = "Password lenght should be atleast 6 characters!";
                 return View();
             }
             else if (changePassword?.RepeatPassword != changePassword?.Newpassword)
             {
-                TempData["ErrorMessage"] = "new passwords should match!";
+                TempData["ErrorMessage"] = "New passwords should match!";
                 return View();
             }
             else
