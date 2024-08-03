@@ -71,6 +71,7 @@ namespace HulubejeBooking.Controllers.HotelController
             };
             return View(viewModel);
         }
+        [Route("hotellist")]
         [HttpPost]
         public async Task<IActionResult> HotelList(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange)
         {
