@@ -1,65 +1,133 @@
-﻿<partial name="_Navigation" />
-<title>Spa</title>
-<style>
-    .message-container {
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        text-align: center;
-    }
-
-    .coming-soon-message {
-        font-size: 24px;
-        color: #333;
-        margin: 20px 0;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s ease-in, box-shadow 0.3s ease;
-    }
-
-        .coming-soon-message:hover {
-            background-color: #e0e0e0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
+﻿@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment _appEnvironment;
+@if (_appEnvironment.EnvironmentName == "Development")
+{
+    <partial name="_Navigation" />
+    <title>Spa</title>
+    <style>
+        .clickable-card:hover {
+            text-decoration: none; /* Remove text underline on hover */
         }
 
-        .coming-soon-message::after {
-            content: '';
-            display: block;
-            width: 100%;
-            height: 2px;
-            background-color: #ccc;
-            margin-top: 20px;
+        .clickable-card {
+            cursor: pointer; /* Set default cursor to pointing cursor */
         }
-</style>
-<div class="container mt-5 mb-5">
-    <div id="message-container" class="message-container m-4 rounded-2" style="display: flex; align-items: center; justify-content: center; height: 50vh; background-size:contain;">
-        <div class="d-flex align-items-center">
-            <main>
-                <section class="coming-soon-section">
-                    <p class="coming-soon-message rounded-2">Sorry, this feature is currently under development. Stay tuned!</p>
-                </section>
-            </main>
+
+            /* Custom CSS for clickable-card on hover */
+            .clickable-card:hover {
+                text-decoration: none; /* Remove text underline on hover */
+                cursor: pointer; /* Change cursor to pointing cursor on hover */
+            }
+    </style>
+    <div class="row pb-4" style="background-color:#063970;">
+        <div class="container">
+            <header class="container-fluid" style="padding-top: 2%">
+                <div>
+                    <h1 style="color: white;">
+                        Relax and Rejuvenate
+                    </h1>
+                    <h4 style="color: white;">Book spa treatments, therapies, salon services and more for your perfect relaxation...</h4>
+                </div>
+            </header>
         </div>
     </div>
-</div>
-<script>
-    const images = ["url('https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-        "url('https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"];
-    const intervalInMinutes = 0.1;
-    let currentIndex = 0;
-    const messageContainer = document.getElementById('message-container');
+    <div class="container py-2">
+        <partial name="_Companies" />
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('.cardB').on('click', function () {
+                var oud = $(this).data('oud');
+                var branchName = $(this).data('branch-name');
+                var orgCode = $(this).data('org-code');
+                var orgTin = $(this).data('org-tin');
+                var name = $(this).data('event-name');
+                var description = $(this).data('branch-note');
+                var cityname = $(this).data('cityname');
+                console.log("oud", oud);
+                var form = $('<form action="/spadetails" method="post"></form>');
 
-    function changeBackgroundImage() {
-        messageContainer.style.backgroundImage = images[currentIndex];
-        currentIndex = (currentIndex + 1) % images.length;
-    }
+                form.append('<input type="hidden" name="oud" value="' + oud + '" />');
+                form.append('<input type="hidden" name="branchName" value="' + branchName + '" />');
+                form.append('<input type="hidden" name="orgCode" value="' + orgCode + '" />');
+                form.append('<input type="hidden" name="orgTin" value="' + orgTin + '" />');
+                form.append('<input type="hidden" name="description" value="' + description + '" />');
+                form.append('<input type="hidden" name="cityname" value="' + cityname + '" />');
+                form.append('<input type="hidden" name="name" value="' + name + '" />');
 
-    changeBackgroundImage();
+                $('body').append(form);
+                form.submit();
+            });
 
-    setInterval(changeBackgroundImage, intervalInMinutes * 60 * 1000);
-</script>
+        });
+    </script>
+    <partial name="_Footer" />
+}
+else
+{
+    <partial name="_Navigation" />
+    <title>Spa</title>
+    <style>
+        .message-container {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
 
-<partial name="_Footer" />
+        .coming-soon-message {
+            font-size: 24px;
+            color: #333;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease-in, box-shadow 0.3s ease;
+        }
+
+            .coming-soon-message:hover {
+                background-color: #e0e0e0;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                cursor: pointer;
+            }
+
+            .coming-soon-message::after {
+                content: '';
+                display: block;
+                width: 100%;
+                height: 2px;
+                background-color: #ccc;
+                margin-top: 20px;
+            }
+    </style>
+    <div class="container mt-5 mb-5">
+        <div id="message-container" class="message-container m-4 rounded-2" style="display: flex; align-items: center; justify-content: center; height: 50vh; background-size:contain;">
+            <div class="d-flex align-items-center">
+                <main>
+                    <section class="coming-soon-section">
+                        <p class="coming-soon-message rounded-2">Sorry, this feature is currently under development. Stay tuned!</p>
+                    </section>
+                </main>
+            </div>
+        </div>
+    </div>
+    <script>
+        const images = ["url('https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+            "url('https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"];
+        const intervalInMinutes = 0.1;
+        let currentIndex = 0;
+        const messageContainer = document.getElementById('message-container');
+
+        function changeBackgroundImage() {
+            messageContainer.style.backgroundImage = images[currentIndex];
+            currentIndex = (currentIndex + 1) % images.length;
+        }
+
+        changeBackgroundImage();
+
+        setInterval(changeBackgroundImage, intervalInMinutes * 60 * 1000);
+    </script>
+
+    <partial name="_Footer" />
+}
