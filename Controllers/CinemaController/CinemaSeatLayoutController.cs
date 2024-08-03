@@ -66,7 +66,7 @@ public class CinemaSeatLayoutController : Controller
         {
             login = JsonConvert.DeserializeObject<string>(loginInfo);
         }
-        //HttpContext.Session.Remove("IsLogin");
+        HttpContext.Session.Remove("IsLogin");
         if (login != "Yes")
         {
             var param = new SeatLayout
@@ -104,7 +104,7 @@ public class CinemaSeatLayoutController : Controller
 
         }
         var seatValuesJson = HttpContext.Session.GetString("cinmaValues");
-        //HttpContext.Session.Remove("cinmaValues");
+        HttpContext.Session.Remove("cinmaValues");
         if (seatValuesJson != null )
         {
             var seatValues = JsonConvert.DeserializeObject<SeatLayout>(seatValuesJson);
@@ -139,7 +139,7 @@ public class CinemaSeatLayoutController : Controller
         var seats = new SeatLayouts();
 
         _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        HttpResponseMessage seatresponse = await _v7Client.GetAsync($"cinema/getcinemaseatarrangement?code={companyCode}&spaceId={speceId}&id={id}");
+        HttpResponseMessage seatresponse = await _v7Client.GetAsync($"cinema/getcinemaseatarrangement?code={companyCode}&spaceId={speceId}&scheduleId={id}");
         if (seatresponse.IsSuccessStatusCode)
         {
             string seatReasponseData = await seatresponse.Content.ReadAsStringAsync();
