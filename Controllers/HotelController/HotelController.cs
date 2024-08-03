@@ -268,7 +268,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 return BadRequest(ex.Message);
             }
         }
-
+        [Route("hoteldetail")]
         public async Task<IActionResult> HoteldetailViewAsync()
         {
             var userDataCookie = _httpContextAccessor?.HttpContext?.Request.Cookies[CNET_WebConstants.IdentificationCookie];
