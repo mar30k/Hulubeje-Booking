@@ -100,51 +100,7 @@
     </div>
 </div>
 <div class="container py-2">
-    <div class="row my-5">
-        @foreach (var events in Model?.Data ?? new List<Companies>())
-        {
-            foreach (var branch in events.Branches ?? new List<Branch>())
-            {
-                <div class="col-md-6 mb-3 eventbranches" id="@branch?.City">
-                    <a class="card cardB clickable-card"
-                       data-oud="@branch?.Code"
-                       data-cityName="@branch?.City"
-                       data-org-code="@events?.Code"
-                       data-org-tin="@events?.Tin"
-                       data-event-name="@events?.BrandName"
-                       data-branch-note="@branch?.Description"
-                       data-branch-name="@branch?.Name"
-                       data-city="@branch?.CityId">
-                        <div class="row g-0">
-                            <div class="col-lg-4">
-                                <img src="@branch?.Logo" class="img-fluid rounded-start" alt="branch image">
-                            </div>
-                            <div class="col-lg-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">@events?.BrandName</h5>
-                                    @if (branch?.SpecificAddress != null)
-                                    {
-                                        <p class="card-text">
-                                            <i class="fas fa-map-marker-alt text-danger"></i>
-                                            @branch?.City@(branch?.SpecificAddress != null ? $", {branch.SpecificAddress}" : "")
-                                        </p>
-                                    }
-                                    <small class="mb-0 text-sm">
-                                        @for (var i = 0; i < branch?.StarRating; i++)
-                                        {
-                                            <span class="text-warning">
-                                                <i class="fa-solid fa-star"></i>
-                                            </span>
-                                        }
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            }
-        }
-    </div>
+    <partial name="_Companies" />
 </div>
 <script>
     $(document).ready(function () {
