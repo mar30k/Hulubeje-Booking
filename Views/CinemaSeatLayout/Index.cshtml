@@ -176,7 +176,7 @@
                     $(".buttonSeats").each(function () {
                         var buttonId = $(this).attr("id");
                         if (buttonId && fetchedSeatIds.indexOf(buttonId) === -1) {
-                            $(this).removeClass("taken booked sold reserved");
+                            $(this).removeClass("taken");
                             $(this).addClass("buttons");
                         }
                     });
@@ -605,7 +605,7 @@
                                             @for (int x = 1; x <= Model?.Data?.MaxX; x++)
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
-                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && (seat.Type != "aile")))
+                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && (seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked" || seat.Type == "reserved" || seat.Type == "taken")))
                                                     {
                                                         var seat = Model.Data.Seats.First(seat => seat.X == x && seat.Y == y);
                                                         var seatStatuses = Model?.SeatStatus;
