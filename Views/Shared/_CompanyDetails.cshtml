@@ -1,0 +1,100 @@
+﻿@model HulubejeBooking.Models.HotelModels.CompanyDetailModel
+@if (Model != null)
+{
+    <div class="container">
+        <div class="row p-3 p-1">
+            <div class="col-md-6 p-2 border rounded rounded-2 bg-white mt-3" style="min-height: 100px">
+                <h4 class="ml-lg-3">About Us</h4>
+                <p class="ml-lg-2 " style="  color: #333;">@Model?.Description</p>
+            </div>
+            <div class="col-md-6 p-lg-3 p-2">
+                <div class="row">
+                    @foreach (var image in Model?.ImageModel?.Data?.OrderBy(x => Guid.NewGuid()).Take(5).ToList() ?? new List<string>())
+                    {
+                        <div class="col-6">
+                            <img src="@image" class="img-fluid image mb-2" alt="Hotel Image" style="max-width: 100%; height: auto;" />
+                        </div>
+                    }
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        $('.image').click(function (e) {
+                            e.preventDefault();
+                            $('#imageModal').modal('show');
+                        });
+                        $('#imageModal').on('click', '.cancel', function (e) {
+                            $('#imageModal').modal('hide');
+                        });
+
+                        $('#imageModal').on('click', '.close', function (e) {
+                            $('#imageModal').modal('hide');
+                        });
+                    });
+                </script>
+                <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="imageModalLabel">All Images</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    @foreach (var image in Model?.ImageModel?.Data ?? new List<string>())
+                                    {
+                                        <div class="col-lg-3 col-md-4 col-sm-6">
+                                            <img src="@image" class="img-fluid mb-2" alt="Hotel Image" style="max-height:auto;" />
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary close" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row p-1">
+            <div class="col-md-6">
+                <h4 class="bg-light p-2 text-center"> Amenities </h4>
+                @if (Model?.CompanySchedule?.Data?.Aminities?.Count > 0)
+                {
+                    <div class="p-lg-3 p-1 row">
+                        @foreach (var amenity in Model?.CompanySchedule?.Data?.Aminities ?? new List<HulubejeBooking.Models.HotelModels.Amenity>())
+                        {
+                            <div class="col-lg-6 col-md-6 col-sm-12 mb-2 ">
+                                <div class="p-2 border bg-white">
+                                    <img src="@amenity.ImageUrl" alt="Amenity Image" class="rounded me-2" style="height: 30px; object-fit: contain;">
+                                    <span>@amenity.Name</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="col-md-6">
+                <h4 class="bg-light p-2 text-center">Payment Options</h4>
+                <div class="row g-3 p-lg-3 p-1">
+                    @if (Model?.PaymentOptions?.Data?.Count > 0)
+                    {
+                        @foreach (var paymentMethod in Model.PaymentOptions.Data)
+                        {
+                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 mb-3">
+                                <div class="card h-100 shadow-sm rounded-3 border-0 p-1">
+                                    <div class="card-body p-0">
+                                        <img src="@paymentMethod.PaymentProcessorImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentProcessorName" style="max-width: 100%; height: auto;">
+                                        <p class="card-title text-center">@paymentMethod?.PaymentProcessorUnitName</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
