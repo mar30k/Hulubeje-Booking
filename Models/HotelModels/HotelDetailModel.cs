@@ -10,7 +10,7 @@ namespace HulubejeBooking.Models.HotelModels
         public List<string>? AdditionalParameters { get; set; }
     }
 
-    public class HotelDetailModel
+    public class CompanyDetailModel
     {
         public GetCompanySchedule? CompanySchedule { get; set; }
         public PaymentProcessorResponse? PaymentOptions { get; set; }

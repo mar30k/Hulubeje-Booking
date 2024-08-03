@@ -66,7 +66,7 @@ namespace HulubejeBooking.Controllers.EventController
                     getcompanyimages = JsonConvert.DeserializeObject<GetCompanyImages>(getcompanyimagesData);
                 }
 
-                var HotelDetailModel = new HotelDetailModel
+                var CompanyDetailModel = new CompanyDetailModel
                 {
                     BranchName = branchName,
                     PaymentOptions = getsupplierpaymentoptions,
@@ -78,7 +78,7 @@ namespace HulubejeBooking.Controllers.EventController
                     CityName = cityname,
                     ImageModel = getcompanyimages
                 };
-                return View(HotelDetailModel);
+                return View(CompanyDetailModel);
             }
             catch (Exception ex)
             {

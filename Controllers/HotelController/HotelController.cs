@@ -246,7 +246,7 @@ namespace HulubejeBooking.Controllers.HotelController
                     string getcompanyimagesData = await getcompanyimagesResponse.Content.ReadAsStringAsync();
                     getcompanyimages = JsonConvert.DeserializeObject<GetCompanyImages>(getcompanyimagesData);
                 }
-                var HotelDetailModel = new HotelDetailModel
+                var CompanyDetailModel = new CompanyDetailModel
                 {
                     BranchName = roomFormData.BranchName,
                     PaymentOptions = getsupplierpaymentoptions,
@@ -258,8 +258,8 @@ namespace HulubejeBooking.Controllers.HotelController
                     CityName = roomFormData.CityName,
                     ImageModel = getcompanyimages
                 };
-                var HotelDetailJson = JsonConvert.SerializeObject(HotelDetailModel);
-                HttpContext.Session.SetString("HotelDetailModel", HotelDetailJson);
+                var HotelDetailJson = JsonConvert.SerializeObject(CompanyDetailModel);
+                HttpContext.Session.SetString("CompanyDetailModel", HotelDetailJson);
                 return Ok();
             }
             catch (Exception ex)
@@ -302,12 +302,12 @@ namespace HulubejeBooking.Controllers.HotelController
                 ViewBag.PhoneNumber = identificationResult?.UserData.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
-            var value = HttpContext.Session.GetString("HotelDetailModel");
+            var value = HttpContext.Session.GetString("CompanyDetailModel");
             if (!string.IsNullOrEmpty(value))
             {
                 //HttpContext.Session.Remove("HotelViewModel");
 
-                var viewModel = JsonConvert.DeserializeObject<HotelDetailModel>(value);
+                var viewModel = JsonConvert.DeserializeObject<CompanyDetailModel>(value);
 
                 return View(viewModel);
             }
