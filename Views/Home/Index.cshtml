@@ -40,7 +40,7 @@
 
 
 <body>
-    <div class="container " style="background-color:rgba(255, 255, 255, 0)">
+    <div class="container mt-3" style="background-color:rgba(255, 255, 255, 0); min-height: 75vh">
         @if (TempData["InfoMessage"] != null)
         {
             <div class="alert alert-success mt-2" role="alert" id="errorAlert">
@@ -65,7 +65,7 @@
                 }, 3000);
             </script>
         }
-        <div class="row mt-3 mb-3" >
+        <div class="row mt-3 mb-3 gy-md-2 gy-0" >
             <div class="col-lg-4 col-md-6 mb-3">
                 <a asp-action="Index" asp-controller="hotel">
                     <div id="carouselExample" class="carousel carouselExample slide" data-ride="carousel">
