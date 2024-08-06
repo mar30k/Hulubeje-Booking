@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @inject IWebHostEnvironment _appEnvironment;
-@if (_appEnvironment.EnvironmentName == "Development")
+@if (_appEnvironment.EnvironmentName == "Development" || ViewBag.PhoneNumber == "0912141914")
 {
     <partial name="_Navigation" />
     <title>Spa</title>
@@ -31,8 +31,10 @@
             </header>
         </div>
     </div>
-    <div class="container py-2">
-        <partial name="_Companies" />
+    <div class="bg-light">
+        <div class="container py-2" style="min-height: 60vh">
+            <partial name="_Companies" />
+        </div>
     </div>
     <script>
         $(document).ready(function () {
