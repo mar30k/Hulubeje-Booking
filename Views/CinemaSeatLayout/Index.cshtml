@@ -129,7 +129,7 @@
         }
 
         .blocked {
-            background-color: red;
+            background-color: black;
             color: white;
             display: flex;
             align-items: center;
@@ -605,11 +605,11 @@
                                             @for (int x = 1; x <= Model?.Data?.MaxX; x++)
                                             {
                                                 <td style="height: 30px !important; width: 30px !important">
-                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && (seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked" || seat.Type == "reserved" || seat.Type == "taken")))
+                                                    @if (Model.Data.Seats.Any(seat => seat.X == x && seat.Y == y && (seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" ||
+                                                    seat.Type == "blocked" || seat.Type == "reserved" || seat.Type == "taken" || seat.Type == "redeemed")))
                                                     {
                                                         var seat = Model.Data.Seats.First(seat => seat.X == x && seat.Y == y);
-                                                        var seatStatuses = Model?.SeatStatus;
-                                                        var seatStatus = seatStatuses?.FirstOrDefault(s => s.Value.ToString() == seat.Id);
+                                                        var seatStatus = Model?.SeatStatus?.FirstOrDefault(s => s.Value.ToString() == seat.Id);
                                                         var buttonClass = " rounded ";
                                                         var seatStatusess = "Available";
                                                         var isButtonDisabled = false;
