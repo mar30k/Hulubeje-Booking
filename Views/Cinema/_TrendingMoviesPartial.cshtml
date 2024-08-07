@@ -67,9 +67,9 @@
 <script>
     function onCompanyCardClick(companyCode, movieName) {
         var selectedDate = document.getElementById("selectedDate").value;
-        var form = $('<form action="/moviedetails" method="post"></form>');
-        form.append('<input type="hidden" name="companyCode" value="' + companyCode + '">');
-        form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
+        var form = $('<form action="/moviedetails" method="get"></form>');
+        form.append('<input type="hidden" name="companycode" value="' + companyCode + '">');
+        form.append('<input type="hidden" name="moviename" value="' + movieName + '">');
 
         $('body').append(form);
         form.submit();
