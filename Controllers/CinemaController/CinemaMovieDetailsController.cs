@@ -23,6 +23,7 @@ namespace HulubejeBooking.Controllers
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
         }
+        [Route("moviedetails")]
         public async Task<IActionResult> Index(int companyCode, DateTime selectedDate, string movieCode, string companyName, string sanitizedOverview,
              string posterUrl, string movieName, string streamUrl, string tin, int branchCode, string branchName, string phoneNumber)
         {
