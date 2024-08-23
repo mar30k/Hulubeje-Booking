@@ -273,39 +273,32 @@
                                 </div>
 
                             </fieldset>
-                            <div class="row mt-2 gx-1">
-                                <div class=" col-md-6 pb-5 mb-2 cardPrice pt-2 border-lg-start border bg-white">
-                                    <legend>Filter By Price</legend>
-                                    <div class="price-content">
-                                        <div>
-                                            <label for="filter-min-value">Min</label>
-                                            <p id="min-value" style="font-size: 12px;">ETB 0</p>
-                                        </div>
-                                        <div>
-                                            <label for="filter-max-value">Max</label>
-                                            <p id="max-value" style="font-size: 12px;">ETB 0</p>
-                                        </div>
+                            <div class="row pb-4 my-2 cardPrice pt-2 px-md-4 px-3 border-lg-start border bg-white text-center">
+                                <legend>Filter By Price</legend>
+                                <div class="price-content">
+                                    <div>
+                                        <label for="filter-min-value">Min</label>
+                                        <p id="min-value" style="font-size: 12px;">ETB 0</p>
                                     </div>
-
-                                    <div class="range-slider">
-                                        <div class="range-fill"></div>
-                                        <input id="filter-min-value" type="range" class="min-price" value="0" min="0" max="10" step="10" />
-                                        <input id="filter-max-value" type="range" class="max-price" value="20000" min="0" max="20000" step="10" />
+                                    <div>
+                                        <label for="filter-max-value">Max</label>
+                                        <p id="max-value" style="font-size: 12px;">ETB 0</p>
                                     </div>
                                 </div>
-                                <div class="col-md-6  mb-2 filter pt-2 border bg-white">
-                                    <legend>Sort</legend>
+
+                                <div class="range-slider">
+                                    <div class="range-fill"></div>
+                                    <!-- Inputs without initial values -->
+                                    <input id="filter-min-value" type="range" class="min-price" min="0" step="50" />
+                                    <input id="filter-max-value" type="range" class="max-price" min="0" step="50" />
+                                </div>
+                            </div>
+                            <div class="row  mb-2 filter pt-2 border bg-white">
+                                <legend class="text-center">Sort</legend>
+                                <div class="col-md-6">
                                     <div>
                                         <input type="checkbox" id="defaultFilter" name="sort" checked>
                                         <label for="defaultFilter">Default</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" id="lowToHighFilter" name="sort">
-                                        <label for="lowToHighFilter">Price: Low To High</label>
-                                    </div>
-                                    <div>
-                                        <input type="checkbox" id="highToLowFilter" name="sort">
-                                        <label for="highToLowFilter">Price: High To Low</label>
                                     </div>
                                     <div>
                                         <input type="checkbox" id="sortByNameAZ" name="sort" value=" ">
@@ -321,6 +314,16 @@
                                     </div><div>
                                         <input type="checkbox" id="sortIncresingStar" name="sort" value=" ">
                                         <label for="sortIncresingStar">Star: Low to High</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="padding-left: 0px !important">
+                                    <div style="white-space: nowrap">
+                                        <input type="checkbox" id="lowToHighFilter" name="sort">
+                                        <label for="lowToHighFilter">Price: Low To High</label>
+                                    </div>
+                                    <div style="white-space: nowrap">
+                                        <input type="checkbox" id="highToLowFilter" name="sort">
+                                        <label for="highToLowFilter">Price: High To Low</label>
                                     </div>
                                 </div>
                             </div>
@@ -458,6 +461,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> *@
 
 <script>
+    var minTotalPrice = @minTotalPrice;
+    var maxTotalPrice = @maxTotalPrice;
     $(document).ready(function () {
         function filterHotelsByName() {
             var input, filter, cards, card, hotelName, i;
@@ -477,8 +482,7 @@
         $('.search-button').on('click', filterHotelsByName);
         $('#searchInput').on('keyup', filterHotelsByName);
     });
-</script>
-<script>
+
     function generateStarRatings(rating) {
         var dynamicRating = rating ? Math.round(parseFloat(rating)) : 0;
         var starsHtml = '';
@@ -498,6 +502,9 @@
         if (isLoading) return;
         if (currentPage > page * 2) {
             $('#loadingSpinner').hide();
+            const roundedMinPrice = Math.floor(minTotalPrice / 1000) * 1000;
+            const roundedMaxPrice = Math.ceil(maxTotalPrice / 1000) * 1000;
+            filterByPrice(roundedMinPrice, roundedMaxPrice)
             return;
         }
         isLoading = true;
@@ -516,6 +523,19 @@
             type: 'GET',
             data: data,
             success: function (response) {
+                const hotels = response.data;
+                if (hotels && hotels.length > 0) {
+                    const totalPrices = hotels.map(hotel => hotel.totalPrice);
+                    const tempMaxTotalPrice = Math.max(...totalPrices);
+                    const tempMinTotalPrice = Math.min(...totalPrices);
+
+                    if (tempMaxTotalPrice > maxTotalPrice) {
+                        maxTotalPrice = tempMaxTotalPrice;
+                    }
+                    if (tempMinTotalPrice < minTotalPrice) {
+                        minTotalPrice = tempMinTotalPrice;
+                    }
+                }
                 if (response != null && response.data != null) {
                     response.data.forEach(function (hotel) {
                         var stars = generateStarRatings(hotel.hotelRating);
@@ -598,6 +618,35 @@
                 $('#loadingSpinner').hide();
             }
         });
+        function filterByPrice(minTotalPrice, maxTotalPrice) {
+            // Update range sliders and displayed values
+            const minPriceInput = document.getElementById('filter-min-value');
+            const maxPriceInput = document.getElementById('filter-max-value');
+            const minValueDisplay = document.getElementById('min-value');
+            const maxValueDisplay = document.getElementById('max-value');
+
+            // Set the min, max, and value attributes for the range sliders
+            minPriceInput.min = minTotalPrice;
+            minPriceInput.max = maxTotalPrice;
+            minPriceInput.value = minTotalPrice;
+
+            maxPriceInput.min = minTotalPrice;
+            maxPriceInput.max = maxTotalPrice;
+            maxPriceInput.value = maxTotalPrice;
+
+            // Update the displayed min and max values
+            minValueDisplay.textContent = `ETB ${minTotalPrice}`;
+            maxValueDisplay.textContent = `ETB ${maxTotalPrice}`;
+
+            // Add event listeners to update the displayed values when the slider is moved
+            minPriceInput.addEventListener('input', function () {
+                minValueDisplay.textContent = `ETB ${minPriceInput.value}`;
+            });
+
+            maxPriceInput.addEventListener('input', function () {
+                maxValueDisplay.textContent = `ETB ${maxPriceInput.value}`;
+            });
+        }
     }
     $(document).ready(function () {
         loadMoreHotels();
@@ -711,123 +760,37 @@
         });
         $('[data-toggle="tooltip"]').tooltip();
 
-        function filterCards() {
-            var selectedHotelAmenities = getSelectedValues('hotelAmenities');
-            var selectedRoomAmenities = getSelectedValues('roomAmenities');
-            var userMinPrice = parseFloat($('#filter-min-value').val());
-            var userMaxPrice = parseFloat($('#filter-max-value').val());
+        const $minPriceInput = $('#filter-min-value');
+        const $maxPriceInput = $('#filter-max-value');
+        const $minValueDisplay = $('#min-value');
+        const $maxValueDisplay = $('#max-value');
 
-            $('.cardH').show();
+        $minPriceInput.on('input', function () {
+            const minPrice = parseFloat($minPriceInput.val());
+            const maxPrice = parseFloat($maxPriceInput.val());
+            $minValueDisplay.text(`ETB ${minPrice}`);
+            filterHotelsByPrice(minPrice, maxPrice);
+        });
 
-            $('.cardH').each(function () {
-                var card = $(this);
-                var cardHotelAmenities = card.data('roomAmenities').split(',');
-                var cardRoomAmenities = card.data('hotelAmenities').split(',');
-                var cardMinValue = parseFloat(card.data('minRoomValue'));
+        $maxPriceInput.on('input', function () {
+            const minPrice = parseFloat($minPriceInput.val());
+            const maxPrice = parseFloat($maxPriceInput.val());
+            $maxValueDisplay.text(`ETB ${maxPrice}`);
+            filterHotelsByPrice(minPrice, maxPrice);
+        });
+        function filterHotelsByPrice(minPrice, maxPrice) {
+            $('.hotelCards').each(function () {
+                const hotelPrice = parseFloat($(this).data('hotel-price'));
 
-                var priceRangeMismatch = cardMinValue < userMinPrice || cardMinValue > userMaxPrice;
-
-                if (
-                    (selectedHotelAmenities.length > 0 &&
-                        !selectedHotelAmenities.every(amenity => cardHotelAmenities.includes(amenity))) ||
-                    (selectedRoomAmenities.length > 0 &&
-                        !selectedRoomAmenities.every(amenity => cardRoomAmenities.includes(amenity))) ||
-                    priceRangeMismatch
-                ) {
-                    card.hide();
+                if (hotelPrice >= minPrice && hotelPrice <= maxPrice) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
                 }
             });
-
-            $('#min-value').text('ETB ' + userMinPrice);
-            $('#max-value').text('ETB ' + userMaxPrice);
         }
 
-        $('.hotelAmenities input, .roomAmenities input').change(function () {
-            filterCards();
-        });
-
-        $('#filter-min-value, #filter-max-value').on('input', function () {
-            filterCards();
-        });
-
-        $('input[type=checkbox]').change(filterCards);
-
-        function filterHotels() {
-            var selectedHotelAmenities = getSelectedValues('roomAmenities');
-            var selectedRoomAmenities = getSelectedValues('hotelAmenities');
-
-            $('.cardH').each(function () {
-                var card = $(this);
-                var cardHotelAmenities = card.data('hotel-amenities').split(',');
-                var cardRoomAmenities = card.data('room-amenities').split(',');
-
-                var cardMinValue = parseFloat(card.data('minRoomValue'));
-                var priceRangeMismatch = cardMinValue < userMinPrice || cardMinValue > userMaxPrice;
-
-                var showCard =
-                    (selectedHotelAmenities.length === 0 ||
-                        selectedHotelAmenities.every(function (amenity) {
-                            return cardHotelAmenities.includes(amenity);
-                        })) &&
-                    (selectedRoomAmenities.length === 0 ||
-                        selectedRoomAmenities.every(function (amenity) {
-                            return cardRoomAmenities.includes(amenity);
-                        }) && !priceRangeMismatch);
-
-                card.toggle(showCard);
-            });
-        }
-
-        function getSelectedValues(className) {
-            return $('.' + className + ' input:checked').map(function () {
-                return $(this).val();
-            }).get();
-        }
-
-        filterCards();
     });
-    $(document).ready(function () {
-        $('.card').each(function () {
-            var totalPriceElement = $(this).find('.total-price');
-            var totalPrice = parseFloat(totalPriceElement.text());
-
-            // Check if the TotalPrice is a valid number
-            if (!isNaN(totalPrice)) {
-                var formattedPrice = formatMoney(totalPrice);
-                totalPriceElement.text(formattedPrice);
-            }
-        });
-
-        // Function to format a number as money with commas and two decimal places
-        function formatMoney(number) {
-            return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, 'ETB&,');
-        }
-    });
-
-    $(document).ready(function () {
-        // Use event delegation to handle click events on dynamically added buttons
-        $(document).on('click', '.postAllDataBtn', function () {
-            var selectedCardIndex = $(this).closest('.cardH').index();
-            postSelectedData(selectedCardIndex);
-        });
-
-        function generateStarRating(rating) {
-            var starsContainer = $('<span>');
-
-            for (var i = 0; i < rating; i++) {
-                var filledStar = $('<i>', { class: 'bi bi-star-fill' });
-                starsContainer.append(filledStar);
-            }
-
-            for (var j = 0; j < 5 - rating; j++) {
-                var unfilledStar = $('<i>', { class: 'bi bi-star' });
-                starsContainer.append(unfilledStar);
-            }
-
-            return starsContainer;
-        }
-    });
-
 
     $(document).ready(function () {
         $(".hotelsContainer").on("click", ".viewAvailabilityBtn", function () {
@@ -876,70 +839,10 @@
     });
 
     $(document).ready(function () {
-        // Use event delegation for dynamically added elements
         $(document).on('change', '.filter input[type="checkbox"]', function () {
             $('.filter input[type="checkbox"]').not(this).prop('checked', false);
-
-            if ($(this).is(':checked')) {
-                var sortBy = $(this).attr('id');
-                sortCards(sortBy);
-            }
         });
-
-        function sortCards(sortBy) {
-            var $cardsContainer = $('.filter');
-            var $cards = $cardsContainer.children('.cardH');
-
-            $cards.sort(function (cardA, cardB) {
-                var valueA = parseFloat($(cardA).data('min-room-value')) || 0;
-                var valueB = parseFloat($(cardB).data('min-room-value')) || 0;
-
-                return sortBy === 'lowToHigh' ? valueA - valueB : valueB - valueA;
-            });
-
-            $cards.detach().appendTo($cardsContainer);
-        }
     });
-
-
-
-    // $(document).ready(function () {
-    //     // Use event delegation for dynamically added elements
-    //     $(document).on('change', '.filter input[type="checkbox"]', function () {
-    //         $('.filter input[type="checkbox"]').not(this).prop('checked', false);
-
-    //         if ($(this).is(':checked')) {
-    //             var sortBy = $(this).attr('id');
-    //             sortCards(sortBy);
-    //         }
-    //     });
-
-    //     function sortCards(sortBy) {
-    //         var $cardsContainer = $('.filter');
-    //         var $cards = $cardsContainer.children('.cardH');
-
-    //         $cards.sort(function (cardA, cardB) {
-    //             var valueA = parseFloat($(cardA).data('min-room-value')) || 0;
-    //             var valueB = parseFloat($(cardB).data('min-room-value')) || 0;
-
-    //             if (sortBy === 'lowToHigh') {
-    //                 return valueA - valueB;
-    //             } else if (sortBy === 'highToLow') {
-    //                 return valueB - valueA;
-    //             } else {
-    //                 // Default sorting (no specific checkbox selected)
-    //                 return 0;
-    //             }
-    //         });
-
-    //         $cards.detach().appendTo($cardsContainer);
-    //     }
-    // });
-
-
-   
-
-
 </script>
 
 
