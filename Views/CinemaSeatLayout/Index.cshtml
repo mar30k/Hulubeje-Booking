@@ -516,7 +516,7 @@
                     var companyCode = "@Model?.Data?.CompanyCode";
                     var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
                     var articleCode = "@Model?.Data?.ArticleCode";
-                    var movieName = @Html.Raw(Json.Serialize(santizedMovieName));
+                    var movieName = @Html.Raw(Json.Serialize(Model?.Data?.MovieName));
                     var companyName = "@Model?.Data?.CompanyName";
                     var utcTime = "@Model?.Data?.UtcTime";
                     var selectedDate = "@Model?.Data?.SelectedDate";
@@ -527,7 +527,7 @@
                     var branchCode = "@Model?.Data?.BranchCode";
                     var scheduleCode = "@Model?.Data?.MovieScheduleCode";
                     var phoneNumber = "@Model?.Data?.BranchCode";
-
+                    var spaceId = "@Model?.Data?.SpaceId";
                     var remainingTime = countdown ?? 0;
 
                     var selectedSeatsJson = sessionStorage.getItem('selectedSeats');
@@ -538,23 +538,23 @@
                         sessionStorage.setItem('countdownStarted', true);
                     }
 
-                    var form = $('<form action="/cinemafoodandbeverage" method="post"></form>');
+                    var form = $('<form action="/moviemenu" method="get"></form>');
 
-                    form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber + '" />');
                     form.append('<input type="hidden" name="movieScheduleCode" value="' + movieScheduleCode + '" />');
                     form.append('<input type="hidden" name="movieName" value="' + movieName + '" />');
                     form.append('<input type="hidden" name="companyName" value="' + companyName + '" />');
                     form.append('<input type="hidden" name="hallName" value="' + hallName + '" />');
-                    form.append('<input type="hidden" name="utcTime" value="' + utcTime + '" />');
-                    form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '" />');
+                    form.append('<input type="hidden" name="ScheduleTime" value="' + utcTime + '" />');
+                    form.append('<input type="hidden" name="ScheduleDate" value="' + selectedDate + '" />');
                     form.append('<input type="hidden" name="price" value="' + price + '" />');
                     form.append('<input type="hidden" name="dimension" value="' + dimension + '" />');
                     form.append('<input type="hidden" name="spaceType" value="' + spaceType + '" />');
                     form.append('<input type="hidden" name="articleCode" value="' + articleCode + '" />');
                     form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
-                    form.append('<input type="hidden" name="numberOfElements" value="' + numberOfElements + '" />');
+                    form.append('<input type="hidden" name="seats" value="' + numberOfElements + '" />');
                     form.append('<input type="hidden" name="seatCacheKey" value="' + seatCacheKey + '" />');
                     form.append('<input type="hidden" name="companyCode" value="' + companyCode + '" />');
+                    form.append('<input type="hidden" name="spaceId" value="' + spaceId + '" />');
 
                     $('body').append(form);
 
