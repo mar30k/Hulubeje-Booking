@@ -286,14 +286,11 @@
     </div>
 
     <script>
-        function onScheduleButtonClick(priceValue, id, speceId, price, companyCode, schdetailId, companyTinNumber, branchCode, dimension, movieName, utcTime, hallName, selectedDate, articleCode, spacecode, movieCode, spaceType, code) {
-            sessionStorage.removeItem("remainingTime");
-            sessionStorage.removeItem("countdownStarted");
-            sessionStorage.removeItem("secondsAdded");
-            sessionStorage.removeItem("selectedSeatNames");
-            sessionStorage.removeItem("selectedSeats");
-            sessionStorage.removeItem("secondsAddedInPayement");
-            sessionStorage.removeItem("secondsAddedInOtp");
+        function onScheduleButtonClick(priceValue, id, spaceId, price, companyCode, schdetailId, companyTinNumber, branchCode, dimension,
+            movieName, utcTime, spaceType, hallName, selectedDate, articleCode, spacecode, movieCode, code) {
+            ["remainingTime", "countdownStarted", "secondsAdded", "selectedSeatNames", "selectedSeats",
+            "secondsAddedInPayement", "secondsAddedInOtp"].forEach(item => sessionStorage.removeItem(item));
+
             articleCode = '@Model?.ArticleCode?.ToString()';
             var seatCacheKey = "cinema_" + companyTinNumber + '_' + branchCode + '_' + schdetailId + '_' + "@Model?.PhoneNumber";
             var key = {
@@ -311,25 +308,25 @@
                     console.error("Error fetching seat status:", error);
                 }
             });
-            var form = $('<form action="/cinemaseatlayout" method="post"></form>');
-            form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
-            form.append('<input type="hidden" name="schdetailId" value="' + schdetailId + '">');
+            var form = $('<form action="/cinemaseatlayout" method="get"></form>');
+            // form.append('<input type="hidden" name="spacecode" value="' + spacecode + '">');
+            form.append('<input type="hidden" name="movieScheduleCode" value="' + schdetailId + '">');
             form.append('<input type="hidden" name="id" value="' + id + '">');
             form.append('<input type="hidden" name="companyCode" value="' + companyCode + '">');
-            form.append('<input type="hidden" name="speceId" value="' + speceId + '">');
+            form.append('<input type="hidden" name="spaceId" value="' + spaceId + '">');
             form.append('<input type="hidden" name="companyTinNumber" value="' + companyTinNumber.toString() + '">');
             form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
             // form.append('<input type="hidden" name="companyName" value="' + companyName + '">');
             form.append('<input type="hidden" name="movieName" value="' + movieName + '">');
-            form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
+            // form.append('<input type="hidden" name="movieCode" value="' + movieCode + '">');
             form.append('<input type="hidden" name="dimension" value="' + dimension + '">');
-            form.append('<input type="hidden" name="spaceType" value="' + spaceType + '">');
+            // form.append('<input type="hidden" name="spaceType" value="' + spaceType + '">');
             form.append('<input type="hidden" name="selectedDate" value="' + selectedDate + '">');
-            form.append('<input type="hidden" name="code" value="' + code + '">');
+            // form.append('<input type="hidden" name="code" value="' + code + '">');
             form.append('<input type="hidden" name="price" value="' + price + '">');
             form.append('<input type="hidden" name="hallName" value="' + hallName + '">');
             form.append('<input type="hidden" name="utcTime" value="' + utcTime + '">');
-            form.append('<input type="hidden" name="priceValue" value="' + priceValue + '">');
+            form.append('<input type="hidden" name="price" value="' + priceValue + '">');
             form.append('<input type="hidden" name="articleCode" value="' + articleCode + '">');
 
             $('body').append(form);

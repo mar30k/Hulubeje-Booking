@@ -67,7 +67,7 @@
                                     <button class="btn btn-success col" type="button" style="max-width: 210px;"
                                             onclick="onScheduleButtonClick('@($"{movieSpace.PriceValue:F2}")','@movieSpace.Id', '@movieSpace.SpaceId', '@movieSpace.PriceValue', '@Model?.CompanyCode',
                                                     '@schdetailId', '@Model?.CompanyTinNumber?.ToString()', '@Model?.BranchCode?.ToString()', '@schedule.DimensionName','@santizedMovieName', 
-                                                    '@utcTime.ToString("h.mm tt")', '@movieSpace.CinemaHall','@Model?.SelectedDate.ToString()')">
+                                                    '@utcTime.ToString("h.mm tt")', '@movieSpace.CinemaHall','@schedule?.ParentCinemaHall','@Model?.SelectedDate.ToString()')">
                                                     
                                         Book Now @($"{movieSpace.PriceValue:F2}") Birr
                                     </button>
