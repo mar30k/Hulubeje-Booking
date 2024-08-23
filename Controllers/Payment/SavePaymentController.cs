@@ -39,7 +39,10 @@ namespace HulubejeBooking.Controllers.Payment
             string? token = b?.UserData?.Token;
 
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            var saveResponse = new SaveResponse();
+            var saveResponse = new SaveResponse
+            {
+                ErrorMessages = new List<string>{"Unknown Error Occured. Please try again Later!"}
+            };
             if (
                 HttpContext.Session.TryGetValue("PaymentModels", out var paymentModelBytes) &&
                 HttpContext.Session.TryGetValue("ActivityLog", out var activityLogBytes) &&
