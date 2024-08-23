@@ -1,0 +1,141 @@
+﻿@using HulubejeBooking.Models.Temp
+@model HulubejeBooking.Models.Temp.ReserveTable
+<style>
+    .form-label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-circle {
+        width: 35px;
+        height: 35px;
+        padding: 10px;
+        border-radius: 50%;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .number-display {
+        width: 20px;
+        text-align: center;
+    }
+
+    .d-flex.align-items-center.form-group {
+        gap: 10px;
+    }
+</style>
+<title>Reserve Table</title>
+<div class="container mt-4 ">
+    <div class="mb-4">
+        <h3 class="text-center">Reservation at Romina Restaurant & Bar</h3>
+    </div>
+    @{
+        var serverTime = Model!=null? Model.GetCompany?.Data?.ServerTime.ToUniversalTime() : DateTime.Now;
+        var formattedTime = serverTime?.ToString("HH:mm");
+        var formattedDate = serverTime?.ToString("yyyy-MM-dd");
+    }
+    <form asp-action="Index" asp-controller="ReserveTable" method="post" autocomplete="off">
+        <div class="container">
+            <div class="row mb-2 bg-light p-2 rounded-2 rounded">
+                <div class="col-md-6 form-group">
+                    <label for="date" class="form-label">Choose a date:</label>
+                    <input type="date" id="date" name="date" class="form-control" value="@formattedDate" min="@formattedDate">
+                </div>
+                <div class="col-md-6  d-flex  align-items-center form-group">
+                    <label class="form-label mt-2 mr-3">Number of guests:</label>
+                    <button type="button" class="btn btn-danger btn-circle d-flex align-items-center justify-content-center" onclick="decrement()">-</button>
+                    <div class="number-display mx-3" id="numberDisplay">1</div>
+                    <input type="hidden" id="numberofGuests" name="numberofGuests" value="1">
+                    <button type="button" class="btn btn-success btn-circle d-flex align-items-center justify-content-center" onclick="increment()">+</button>
+                </div>
+            </div>
+            <div class="row mb-2 bg-light p-2 rounded-2 rounded">
+                <div class="col-md-6 form-group">
+                    <label for="time" class="form-label">Arrival time:</label>
+                    <input type="time" id="time" name="time" class="form-control" value="@formattedTime">
+                </div>
+                <div class="col-md-6 d-flex align-items-center form-group">
+                    <label class="form-label mr-5">Duration in Hours:</label>
+                    <button type="button" class="btn btn-danger btn-circle d-flex align-items-center justify-content-center" onclick="decrementTime()">-</button>
+                    <div class="number-display mx-3" id="durationdisplay">1</div>
+                    <input type="hidden" id="duration" name="duration" value="1">
+                    <button type="button" class="btn btn-success btn-circle d-flex align-items-center justify-content-center" onclick="incrementTime()">+</button>
+                </div>
+            </div>
+            <div class="row mb-2 bg-light p-2 rounded-2 rounded">
+                <div class="col-md-6 form-group">
+                    <label for="options" class="form-label">Select the occasion</label>
+                    <select id="options" name="OccasionId" class="form-control">
+                        @foreach (var occasions in Model?.GetCompany?.Data?.Occasions ?? new List<Occasion>())
+                        {
+                            <option value="@occasions.Id">@occasions.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row  bg-light p-2 rounded-2 rounded mb-2">
+                <div class="form-group">
+                    <label for="special-requirements" class="form-label">Special Requirements:</label>
+                    <textarea id="special-requirements" name="specialRequirements" class="form-control" rows="4" ></textarea>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12 bg-light p-2 rounded-2 rounded">
+                    <p class="m-0">Reservation Fee: <strong>@(Model?.GetCompany?.Data?.ReservationFee.ToString() == "0" ? "Free" : @Model?.GetCompany?.Data?.ReservationFee)</strong></p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 d-flex justify-content-center">
+                    <button type="submit" class="btn submit btn-primary btn-sm btn-flat">Reserve Table</button>
+                </div>
+            </div>
+            <input type="hidden" id="reservationfee" name="ReservationFee" value="@Model?.GetCompany?.Data?.ReservationFee">
+        </div>
+    </form>
+</div>
+<script>
+    let currentNumber = 1;
+    let currentDuration = 1;
+    const numberDisplay = document.getElementById('numberDisplay');
+    const duration = document.getElementById('durationdisplay');
+    const numberofGuestsInput = document.getElementById('numberofGuests');
+
+    function increment() {
+        currentNumber++;
+        updateDisplay();
+    }
+
+    function decrement() {
+        if (currentNumber > 1) {
+            currentNumber--;
+            updateDisplay();
+        }
+    }
+
+    function updateDisplay() {
+        numberDisplay.textContent = currentNumber;
+        numberofGuestsInput.value = currentNumber;
+    }
+    function incrementTime() {
+        if (currentDuration < 8) {
+            currentDuration = currentDuration + 0.5;
+            updateDuration();
+        }
+    }
+
+    function decrementTime() {
+        if (currentDuration > 1) {
+            currentDuration = currentDuration - 0.5;
+            updateDuration();
+        }
+    }
+
+    function updateDuration() {
+        duration.textContent = currentDuration;
+        duration.value = currentDuration;
+    }
+</script>
