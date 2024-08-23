@@ -29,8 +29,7 @@ namespace HulubejeBooking.Controllers
         {
             DateTime? releaseDate = DateTime.MinValue;
             int? articleCode = 0;
-            var movieJson = HttpContext.Session.GetString("movies");
-            var movieData = GetMovieDataFromSession();
+            var movieData = GetMovieDataFromSession("movies");
             var movieSchedule = new List<MovieSchedules>();
             if (movieData != null && movieData.Data != null)
             {
@@ -144,9 +143,9 @@ namespace HulubejeBooking.Controllers
             //_ = await UpdateMovieAnalyticsAsync(tin, movieName, posterUrl);
             return View(movieDetails);
         }
-        private Movie GetMovieDataFromSession()
+        private Movie GetMovieDataFromSession(string type)
         {
-            var movieJson = HttpContext.Session.GetString("movies");
+            var movieJson = HttpContext.Session.GetString(type);
             return movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) ?? new Movie() : new Movie();
         }
         private async Task<bool> UpdateMovieAnalyticsAsync(string? orgTin, string? movieName, string posterUrl)
