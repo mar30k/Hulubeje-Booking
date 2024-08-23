@@ -20,24 +20,22 @@ public class CinemaSeatLayoutController : Controller
         _httpContextAccessor = httpContextAccessor;
         _httpClientFactory = httpClientFactory;
     }
-    public async Task<IActionResult> IndexAsync(string? spacecode, string? companyTinNumber, string? branchCode, string? companyName,
-        string? movieName, string? movieCode, string? dimension, string? spaceType, string? selectedDate, string? code,  string? hallName, string? utcTime,
-        int speceId, string? id, string? companyCode, string? schdetailId, decimal? priceValue, string? articleCode)
+    public async Task<IActionResult> IndexAsync(SeatLayout seatLayout)
     {
         int? companyscode = 0;
         if (HttpContext.Session.TryGetValue("movies", out var movies))
         {
             var moviesString = Encoding.UTF8.GetString(movies);
             var movie = JsonConvert.DeserializeObject<Movie>(moviesString);
-            var companyData = movie?.Data?.FirstOrDefault(c => c.BranchCode.ToString() == branchCode);
-            companyTinNumber = companyData?.TIN;
+            var companyData = movie?.Data?.FirstOrDefault(c => c.BranchCode.ToString() == seatLayout.BranchCode);
+            seatLayout.CompanyTinNumber = companyData?.TIN;
             companyscode = companyData?.CompanyCode;
-            companyName = companyData?.CompanyName;
+            seatLayout.CompanyName = companyData?.CompanyName;
         }
         else
         {
             TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home"); 
         }
         string? phoneNumber = "";
         var identificationResult = await _authenticationManager.identificationValid();
@@ -69,28 +67,8 @@ public class CinemaSeatLayoutController : Controller
         HttpContext.Session.Remove("IsLogin");
         if (login != "Yes")
         {
-            var param = new SeatLayout
-            {
-                Id = id,
-                SpaceId = speceId,
-                CompanyCode = companyCode,
-                SpaceCode = spacecode,
-                CompanyTinNumber = companyTinNumber,
-                BranchCode = branchCode,
-                CompanyName = companyName,
-                MovieName = movieName,
-                MovieCode = movieCode,
-                Dimension = dimension,
-                HallName = hallName,
-                SpaceType = spaceType,
-                SelectedDate = selectedDate,
-                Price = priceValue,
-                UtcTime = utcTime,
-                MovieScheduleCode = schdetailId,
-                ArticleCode = articleCode
 
-            };
-            var paramJson = JsonConvert.SerializeObject(param);
+            var paramJson = JsonConvert.SerializeObject(seatLayout);
             HttpContext.Session.SetString("cinmaValues", paramJson);
             if (identificationResult!=null &&!identificationResult.isValid && !identificationResult.isLoggedIn)
             {
@@ -107,25 +85,7 @@ public class CinemaSeatLayoutController : Controller
         HttpContext.Session.Remove("cinmaValues");
         if (seatValuesJson != null )
         {
-            var seatValues = JsonConvert.DeserializeObject<SeatLayout>(seatValuesJson);
-
-            spacecode = seatValues?.SpaceCode;
-            companyTinNumber = seatValues?.CompanyTinNumber;
-            branchCode = seatValues?.BranchCode;
-            companyName = seatValues?.CompanyName;
-            movieName = seatValues?.MovieName;
-            movieCode = seatValues?.MovieCode;
-            hallName = seatValues?.HallName;
-            utcTime = seatValues?.UtcTime;
-            dimension = seatValues?.Dimension;
-            schdetailId = seatValues?.MovieScheduleCode;
-            spaceType = seatValues?.SpaceType;
-            selectedDate = seatValues?.SelectedDate;
-            priceValue = seatValues?.Price;
-            companyCode = seatValues?.CompanyCode;
-            id = seatValues?.Id;
-            speceId = seatValues != null ?seatValues.SpaceId : 0;
-            articleCode = seatValues?.ArticleCode;
+            seatLayout = JsonConvert.DeserializeObject<SeatLayout>(seatValuesJson) ?? new SeatLayout();
         }
         else
         {
@@ -133,13 +93,13 @@ public class CinemaSeatLayoutController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        string key = "cinema_" + companyTinNumber + "_" + branchCode + "_" + schdetailId + "_" + phoneNumber;
+        string key = "cinema_" + seatLayout?.CompanyTinNumber + "_" + seatLayout?.BranchCode + "_" + seatLayout?.MovieScheduleCode + "_" + phoneNumber;
         var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
         var _seatCacheClient = _httpClientFactory.CreateClient("HulubejeCache");
         var seats = new SeatLayouts();
 
         _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        HttpResponseMessage seatresponse = await _v7Client.GetAsync($"cinema/getcinemaseatarrangement?code={companyCode}&spaceId={speceId}&scheduleId={id}");
+        HttpResponseMessage seatresponse = await _v7Client.GetAsync($"cinema/getcinemaseatarrangement?code={seatLayout?.CompanyCode}&spaceId={seatLayout?.SpaceId}&scheduleId={seatLayout?.Id}");
         if (seatresponse.IsSuccessStatusCode)
         {
             string seatReasponseData = await seatresponse.Content.ReadAsStringAsync();
@@ -147,27 +107,25 @@ public class CinemaSeatLayoutController : Controller
         }
         HttpResponseMessage seatCacheresponse = await _seatCacheClient.GetAsync($"cache/getEntriesContainsKey?key={key}");
         if (seatCacheresponse.IsSuccessStatusCode && seats!=null)
-        {
+        {   
             string cache = await seatCacheresponse.Content.ReadAsStringAsync();
             seats.SeatStatus = JsonConvert.DeserializeObject<List<SeatStatus>>(cache);
             System.Diagnostics.Debug.WriteLine(cache);
         }
         if (seats?.Data !=null)
         {
-            seats.Data.CompanyTinNumber = companyTinNumber;
-            seats.Data.CompanyName = companyName;
-            seats.Data.BranchCode = branchCode;
-            seats.Data.MovieScheduleCode = schdetailId;
+            seats.Data.CompanyTinNumber = seatLayout?.CompanyTinNumber;
+            seats.Data.CompanyName = seatLayout?.CompanyName;
+            seats.Data.BranchCode = seatLayout?.BranchCode;
+            seats.Data.MovieScheduleCode = seatLayout?.MovieScheduleCode;
             seats.Data.PhoneNumber = phoneNumber;
-            seats.Data.CompanyCode = companyCode;
-            seats.Data.CompanyName = companyName;
-            seats.Data.Dimension = dimension;
-            seats.Data.HallName = hallName;
-            seats.Data.UtcTime = utcTime;
-            seats.Data.MovieName = movieName;
-            seats.Data.SelectedDate = selectedDate;
-            seats.Data.Price = priceValue;
-            seats.Data.ArticleCode = articleCode;
+            seats.Data.CompanyCode = seatLayout?.CompanyCode;
+            seats.Data.Dimension = seatLayout?.Dimension;
+            seats.Data.HallName = seatLayout?.HallName;
+            seats.Data.UtcTime = seatLayout?.UtcTime;
+            seats.Data.MovieName = seatLayout?.MovieName;
+            seats.Data.SelectedDate = seatLayout?.SelectedDate;
+            seats.Data.Price = seatLayout?.Price;
         }
 
         return seats != null ? View(seats) : View(null);

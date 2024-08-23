@@ -21,14 +21,13 @@ namespace CinemaSeatBooking.Controllers
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
         }
-        [HttpPost]
-        public async Task<IActionResult> IndexAsync([FromForm] string movieScheduleCode, [FromForm] string companyTinNumber, [FromForm] string branchCode, [FromForm] string companyName, [FromForm] string movieName,
-                    [FromForm] string hallName, [FromForm] string utcTime, [FromForm] string selectedDate, [FromForm] decimal price, [FromForm] string dimension, [FromForm] string spaceType,
-                    [FromForm] string articleCode, [FromForm] string numberOfElements, [FromForm] string seatCacheKey, [FromForm] string companyCode, [FromForm] string branchName)
+        [HttpGet]
+        [Route("moviemenu")]
+        public async Task<IActionResult> IndexAsync(ProductsViewModel productsViewModel)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 
-           
+
             var identificationResult = await _authenticationManager.identificationValid();
 
             if (identificationResult != null)
@@ -49,44 +48,57 @@ namespace CinemaSeatBooking.Controllers
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
 
-            var viewModel = new ProductsViewModel
+            var movieData = GetMovieDataFromSession();
+            if (movieData != null && movieData.Data != null)
             {
-                CompanyCode = companyCode,
-                SeatCacheKey = seatCacheKey,
-                BranchCode = branchCode,
-                MovieScheduleCode = movieScheduleCode,
-                CompanyTinNumber = companyTinNumber,
-                CompanyName = companyName,
-                HallName = hallName,
-                ScheduleTime = utcTime,
-                ScheduleDate = selectedDate,
-                MovieName = movieName,
-                Price = price,
-                Dimension = dimension,
-                SpaceType = spaceType,
-                ArticleCode = articleCode,
-                NumberOfSeats = numberOfElements,
-            };
+
+                var company = movieData.Data.FirstOrDefault(c => c.CompanyCode == productsViewModel?.CompanyCode);
+                productsViewModel.BranchCode = company?.BranchCode ?? 0;
+                productsViewModel.CompanyName = company?.CompanyName ?? productsViewModel.CompanyName;
+                productsViewModel.CompanyTinNumber = company?.TIN ?? productsViewModel.CompanyTinNumber;
+                productsViewModel.BranchName = company?.BranchName ?? productsViewModel.BranchName;
+                if (company != null && company.Movies != null)
+                {
+                    var movie = company.Movies.FirstOrDefault(m => m?.MovieName == productsViewModel.MovieName);
+
+                    if (movie != null)
+                    {
+                        productsViewModel.MovieName  = movie?.MovieName ?? productsViewModel.MovieName;
+                        productsViewModel.ScheduleDate = movie?.Date != null ? (DateTime)movie.Date : productsViewModel.ScheduleDate;
+                        productsViewModel.ArticleCode = movie?.Article ?? productsViewModel.ArticleCode;
+                        var movieSchedule = movie?.MovieSchedule?.Where(c => c.SchdetailId == productsViewModel.MovieScheduleCode).FirstOrDefault();
+                        productsViewModel.HallName = movieSchedule?.MovieSpaces?.Where(c => c.SpaceId == productsViewModel.SpaceID).FirstOrDefault()?.CinemaHall ?? productsViewModel.HallName;
+                    }
+
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                return RedirectToAction("Index", "Home");
+            }
+
             string? token = identificationResult?.UserData?.Token;
 
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage response = await _v7Client.GetAsync($"product/getproductsbytype?companyCode={companyCode}&orgOUD={branchCode}&industryType=1988");
+            HttpResponseMessage response = await _v7Client.GetAsync($"product/getproductsbytype?companyCode={productsViewModel.CompanyCode}&" +
+                $"orgOUD={productsViewModel.BranchCode}&industryType=1988");
             if (response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
 
                 var productsData = JsonConvert.DeserializeObject<FoodItem>(responseData);
 
-                viewModel.FoodItem = productsData;
-                return View(viewModel);
+                productsViewModel.FoodItem = productsData;
+                return View(productsViewModel);
             }
             else
             {
-                return View(viewModel);
+                return View(productsViewModel);
             }
         }
-        public async Task<IActionResult> CalculateBill(string movieName,string branchCode,string movieDimension, string date, string time, string company, string hallName,
-            decimal moviePrice, string movieScheduleCode, string companyTin, string movieArticleCode, string numberOfSeats, string selectedItems, string companyCode, string seatCacheKey)
+        public async Task<IActionResult> CalculateBill(string movieName,int branchCode,string movieDimension, DateTime date, string time, string company, string hallName,
+            decimal moviePrice, int movieScheduleCode, string companyTin, int movieArticleCode, string numberOfSeats, string selectedItems, int companyCode, string seatCacheKey)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 
@@ -163,7 +175,7 @@ namespace CinemaSeatBooking.Controllers
                 calculatedModel.ArticleCode = movieArticleCode;
                 calculatedModel.SelectedItems = selectedItemsList;
                 calculatedModel.Price = moviePrice;
-                calculatedModel.NumberOfSeats = numberOfSeats;
+                calculatedModel.Seats = numberOfSeats;
                 calculatedModel.CompanyCode = companyCode;
                 calculatedModel.SeatCacheKey = seatCacheKey;
                 return PartialView("_Bill", calculatedModel);
@@ -173,6 +185,11 @@ namespace CinemaSeatBooking.Controllers
 
                 return PartialView("_Bill", null);
             }
+        }
+        private Movie GetMovieDataFromSession()
+        {
+            var movieJson = HttpContext.Session.GetString("movies");
+            return movieJson != null ? JsonConvert.DeserializeObject<Movie>(movieJson) ?? new Movie() : new Movie();
         }
     }
 
