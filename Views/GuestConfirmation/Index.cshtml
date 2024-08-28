@@ -180,8 +180,8 @@
                 },
                 onSuccess: {
                     firstName: '@ViewBag?.FirstName',
-                    company: '',
-                    branch: '',
+                    company: '@Model?.RoomFormData?.Name',
+                    branch: '@Model?.RoomFormData?.BranchName',
                     date: arrivalDate,
                     scheduleDateTime: arrivalDate
                 }
