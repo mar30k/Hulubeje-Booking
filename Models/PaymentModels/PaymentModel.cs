@@ -72,7 +72,7 @@ namespace HulubejeBooking.Models.PaymentModels
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
         public string? PhoneNo { get; set; }
-        public string? IdType { get; set; }
+        public int? IdType { get; set; }
         public string? IdNumber { get; set; }
         public int Nationality { get; set; } = 1;
         public string? Email { get; set; }
