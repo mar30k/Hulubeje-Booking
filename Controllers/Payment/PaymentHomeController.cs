@@ -53,7 +53,7 @@ namespace HulubejeBooking.Controllers.Payment
                 if (paymentOptionsResponse.IsSuccessStatusCode)
                 {
                     string paymentoptionData = await paymentOptionsResponse.Content.ReadAsStringAsync();
-                    HttpContext.Session.SetString("paymentOptrions", paymentoptionData);
+                    HttpContext.Session.SetString("paymentOptions", paymentoptionData);
                 }
 
                 return Ok();
@@ -98,10 +98,10 @@ namespace HulubejeBooking.Controllers.Payment
                     transactionId = vCode,
                     supplierConsigneeUnit = paymentModelData?.BranchCode,
                     supplierConsigneeId = paymentModelData?.CompanyCode,
+                    amount = paymentModelData?.Amount,
                     paymentProcessorConsigneeUnit = data?.PaymentProcessorConsigneeUnit,
                     paymentProcessorConsigneeId = data?.PaymentProcessorConsigneeId,
                     paymentProcessorUnitName = data?.PaymentProcessorName,
-                    amount = paymentModelData?.Amount,
                     //amount = 0.1,
                     operationmode = data?.OperationMode,
                     pin = "",
