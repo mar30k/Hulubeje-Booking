@@ -42,7 +42,7 @@ namespace HulubejeBooking.Controllers.Payment
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
             string? code = identificationResult?.UserData.Code;
-            var paymentOptionsData = HttpContext.Session.GetString("paymentOptrions");
+            var paymentOptionsData = HttpContext.Session.GetString("paymentOptions");
             var paymentOptions = paymentOptionsData != null ? JsonConvert.DeserializeObject<PaymentProcessorResponse>(paymentOptionsData) : new PaymentProcessorResponse();
 
             return View(paymentOptions);

@@ -96,7 +96,7 @@ namespace HulubejeBooking.Controllers.Payment
                     }
                     else
                     {
-                        return BadRequest();
+                        return BadRequest(saveResponse);
                     }
 
                 }
