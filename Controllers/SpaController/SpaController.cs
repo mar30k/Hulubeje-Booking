@@ -43,7 +43,7 @@ namespace HulubejeBooking.Controllers.SpaController
             }
             var getcompaniesbytype = new GetcompaniesbyType();
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage getcompaniesbytypeResponse = await _v7Client.GetAsync("routing/getcompaniesbytype?industryType=1990");
+            HttpResponseMessage getcompaniesbytypeResponse = await _v7Client.GetAsync("routing/getcompaniesbytype?industryType=1991");
             if (getcompaniesbytypeResponse.IsSuccessStatusCode)
             {
                 string getcompaniesbytypeData = await getcompaniesbytypeResponse.Content.ReadAsStringAsync();
