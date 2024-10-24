@@ -28,13 +28,13 @@
     <partial name="_CompanyDetails" />
 </div>
 <script>
-    var companyCode = @Model?.CompanyCode;
-    var branchCode = @Model?.OrgOUD;
+    var company = @Model?.CompanyCode;
+    var branch = @Model?.OrgOUD;
     $(document).ready(function () {
         $('.submit').click(function () {
-            var form = $('<form action="/eventschedule" method="post">' +
-                '<input type="hidden" name="branchCode" value="' + branchCode + '" />' +
-                '<input type="hidden" name="companyCode" value="' + companyCode + '" />' +
+            var form = $('<form action="/eventschedule" method="get">' +
+                '<input type="hidden" name="branch" value="' + branch + '" />' +
+                '<input type="hidden" name="company" value="' + company + '" />' +
                 '</form>');
             $('body').append(form);
             form.submit();

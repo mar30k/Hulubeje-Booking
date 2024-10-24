@@ -1,4 +1,5 @@
-﻿@model HulubejeBooking.Models.EventModels.EventResponse
+﻿@using HulubejeBooking.Models.EventModels
+@model HulubejeResponse<List<EventResponse>>
 @{
     var isVaild = ViewBag.isVaild;
     var isLoggedIN = ViewBag.isLoggedIn;
