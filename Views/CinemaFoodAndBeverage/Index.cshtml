@@ -4,18 +4,15 @@
 @using Newtonsoft.Json
 @using System.Globalization
 @using System.Text.RegularExpressions
-<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produts</title>
     <style>
-        .custom-container {
+/*         .custom-container {
             padding-left: 35px;
             padding-right: 35px;
         }
-
+ */
         .btn:focus,
         .btn:active {
             outline: none !important;
@@ -66,9 +63,9 @@
         }
 
         .dotted-line {
-            border-bottom: 1px dashed #000; /* Adjust the color and style as needed */
+            border-bottom: 1px dashed #000;
             width: 100%;
-            margin-top: 5px; /* Adjust the spacing as needed */
+            margin-top: 5px;
         }
 
         .Details {
@@ -107,15 +104,14 @@
             border-radius: 3px;
         }
 
-        .btn-outline-primary {
-            color: #28a745; /* Green color */
+        /* .btn-outline-primary {
+            color: #28a745;
             border-color: #28a745;
-        }
-
-        .btn-outline-primary:hover {
-            background-color: #28a745; /* Green color on hover */
-            color: #fff; /* Text color on hover */
-        }
+        } 
+            .btn-outline-primary:hover {
+                background-color: #28a745; 
+                color: #fff;
+            } */
 
         @@media (max-width: 576px) {
             .col-lg-3 {
@@ -127,7 +123,6 @@
             position: relative;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
             height: 100%;
-            min-width: 300px;
             width: 100%;
             text-align: center;
         }
@@ -193,7 +188,6 @@
                                                             <p class="card-text" style="margin: 0; text-align: center;">@String.Format("{0:0.00}", articleProduct?.Price) Birr</p>
                                                             <p class="article" style="display: none;">@articleProduct?.Code</p>
 
-                                                            <!-- Quantity Control Division (Initially Hidden) -->
                                                             <div class="quantity-control " style="margin-top: 5px; text-align: center; display: none !important;">
                                                                 <button class="btn btn-outline-danger btn-circle" style="padding: 6px; font-size: 12px;" onclick="decrementValue(this)">-</button>
                                                                 <p class="quantity" style="padding: 5px; font-size: 12px; margin: 0 ;">0</p>
