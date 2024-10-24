@@ -51,17 +51,17 @@ namespace HulubejeBooking.Controllers
             }
 
 
-            var busResponse = await PicturesResonseAsync("wbus");
-            var cinemaResponse = await PicturesResonseAsync("wmovie");
-            var spaResponse = await PicturesResonseAsync("wspa");
-            var eventResposne = await PicturesResonseAsync("wevent");
-            var hotelResponse = await PicturesResonseAsync("whotel");
+            //var busResponse = await PicturesResonseAsync("wbus");
+            //var cinemaResponse = await PicturesResonseAsync("wmovie");
+            //var spaResponse = await PicturesResonseAsync("wspa");
+            //var eventResposne = await PicturesResonseAsync("wevent");
+            //var hotelResponse = await PicturesResonseAsync("whotel");
 
-            Picures.Bus = busResponse ?? new List<string>();
-            Picures.Cinema = cinemaResponse ?? new List<string>();
-            Picures.Event = eventResposne ?? new List<string>();
-            Picures.Hotel = hotelResponse ?? new List<string>();
-            Picures.Spa = spaResponse ?? new List<string>();
+            //Picures.Bus = busResponse ?? new List<string>();
+            //Picures.Cinema = cinemaResponse ?? new List<string>();
+            //Picures.Event = eventResposne ?? new List<string>();
+            //Picures.Hotel = hotelResponse ?? new List<string>();
+            //Picures.Spa = spaResponse ?? new List<string>();
             
             return View(Picures);
         }
