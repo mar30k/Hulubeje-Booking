@@ -11,44 +11,6 @@
 <partial name="_Navigation" />
 <head>
     <style>
-        .passenger-container {
-            margin-bottom: 10px;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        .passenger-content {
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
-
-        .footer {
-            background-color: #f8f9fa;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .form-group label {
-            width: 150px;
-            margin-right: 10px;
-        }
-
-        .form-group select {
-            display: inline-block;
-            vertical-align: middle;
-            width: 40%;
-        }
-
-        .gender {
-            display: inline-block;
-            vertical-align: middle;
-        }
-
         .extra-small-asterisk {
             font-size: 10px; /* Adjust the size as needed */
         }
@@ -56,83 +18,133 @@
     <title>Passenger Information</title>
 </head>
 <body>
-    <div class="row mt-3 mb-4">
-        <div class="col-lg-9">
+    <div class="row mt-3 mb-4 " style="min-height: 75vh">
+        <div @* class="col-lg-9" *@>
             <div class="content">
                 <div class="container">
-                    <h1>Passenger Information</h1>
-
-                    <form method="post" action="/confirmation">
-                        @for (int i = 1; i <= Model.NoOfSeat; i++)
-                        {
-                            <div class="passenger-container mb-3">
-                                <details open @* @(i == 1 ? "open" : "") *@>
-                                    <summary>Passenger @i - (Seat @GetSeatName(i))</summary>
-                                    <div class="passenger-content">
-                                        <div class="gender form-group mb-1">
-                                            <label for="firstName">First name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="Passengers[@(i - 1)].FirstName" required style="width: 250px;">
-                                        </div>
-                                        <div class="gender form-group mb-1">
-                                            <label for="middleName">Middle Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="Passengers[@(i - 1)].MiddleName" required style="width: 250px;">
-                                        </div>
-                                        <div class="gender form-group mb-1">
-                                            <label for="lastName">Last Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="Passengers[@(i - 1)].LastName" required style="width: 250px;" >
-                                        </div>
-                                        <div class="form-group mb-1">
-                                            <label for="passengerId">Id Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="text" name="Passengers[@(i - 1)].PassengerId" required />
-                                        </div>
-                                        <div class="form-group mb-1">
-                                            <label for="dob">Date of Birth<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="date" name="Passengers[@(i - 1)].DOB" required >
-                                        </div>
-                                        <div class="form-group mb-1">
-                                            <label for="nationality">Nationality</label>
-                                            <select class="form-select" name="Passengers[@(i - 1)].Nationality" id="nationality">
-                                                @foreach (var country in GetCountries())
-                                                {
-                                                    if (country == "Ethiopia")
-                                                    {
-                                                        <option selected>@country</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option>@country</option>
-                                                    }
-                                                }
-                                              @*<option>Ethiopian</option>
-                                                <option>Eritrean </option>*@
-                                            </select>
-                                        </div>
-                                        <div class="form-group mb-1">
-                                            <label>Gender<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span> </label>
-                                            <div class="gender">
-                                                <input type="radio" id="male_@i" name="Passengers[@(i - 1)].Gender" value="Male" required>
-                                                <label for="male_@i">Male</label>
-
-                                                <input type="radio" id="female_@i" name="Passengers[@(i - 1)].Gender" value="Female" required>
-                                                <label for="female_@i">Female</label>
+                    <form id="guestForm" class="ml-lg-2" method="post" action="/confirmation">
+                        <div class="text-center">
+                            <h3>Passenger Information</h3>
+                        </div>
+                        <div class="accordion">
+                            @for (int i = 0; i < Model?.NoOfSeat; i++)
+                            {
+                                <div class="accordion-item mt-2">
+                                    <h2 class="accordion-header" id="heading@(i + 1)">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#collapse@(i + 1)" aria-expanded="true" aria-controls="collapse@(i + 1)">
+                                            Passenger @(i + 1) - (Seat @GetSeatName(i + 1))
+                                        </button>
+                                    </h2>
+                                    <div id="collapse@(i + 1)" class="accordion-collapse collapse show" aria-labelledby="heading@(i + 1)" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body">
+                                            @if (i == 0)
+                                            {
+                                                <div class="form-check mb-2">
+                                                    <input type="checkbox" class="form-check-input" id="forMeCheckBox">
+                                                    <label class="form-check-label" for="forMeCheckBox">For Me</label>
+                                                </div>
+                                            }
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="name@(i + 1)">First Name</label>
+                                                        <input type="text" class="form-control" id="name@(i + 1)" name="Passengers[@i].FirstName" placeholder="First Name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="middle@(i + 1)">Middle Name</label>
+                                                        <input type="text" class="form-control" id="middle@(i + 1)" name="Passengers[@i].MiddleName" placeholder="Middle Name" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <label for="last@(i + 1)">Last Name</label>
+                                                        <input type="text" class="form-control" id="last@(i + 1)" name="Passengers[@i].LastName" placeholder="Last Name" required>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="date@(i + 1)">Date of birth</label>
+                                                        <input type="date" class="form-control" id="date@(i + 1)" name="Passengers[@i].DOB" placeholder="Your birth date" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="nationality@(i + 1)">Nationality</label>
+                                                        <select class="form-select operator" id="nationality@(i + 1)" name="Passengers[@i].Nationality" required>
+                                                            @* <option>Ethiopian</option>
+                                                            <option>Eritrean </option> *@
+                                                            @foreach (var country in GetCountries())
+                                                            {
+                                                                if (country == "Ethiopia")
+                                                                {
+                                                                    <option selected>@country</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option>@country</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <div class="form-group">
+                                                                <label>Gender</label>
+                                                                <div class="form-check">
+                                                                    <input type="radio" class="form-check-input" id="male@(i + 1)" name="Passengers[@i].Gender" value="Male" required>
+                                                                    <label class="form-check-label" for="male@(i + 1)">Male</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="form-group">
+                                                                <label>&nbsp;</label>
+                                                                <div class="form-check">
+                                                                    <input type="radio" class="form-check-input" id="female@(i + 1)" name="Passengers[@i].Gender" value="Female" required>
+                                                                    <label class="form-check-label" for="female@(i + 1)">Female</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-1">
+                                                        <label for="passengerId">Id Number</label>
+                                                        <input type="text" name="Passengers[@i].PassengerId" required class="form-control" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="email@(i + 1)">Email</label>
+                                                        <input type="email" class="form-control" id="email@(i + 1)" name="Passengers[@i].Email" placeholder="Email" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="phone@(i + 1)">Phone</label>
+                                                        <input type="tel" class="form-control" id="phone@(i + 1)" name="Passengers[@i].PhoneNumber" placeholder="Phone" required>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-
-                                        <div class="form-group mb-1">
-                                            <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
-                                            <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required>
-                                        </div>
-
-                                        <div class="form-group mb-1">
-                                            <label for="email">Email:</label>
-                                            <input type="email" name="Passengers[@(i - 1)].Email">
-                                        </div>
                                     </div>
-                                </details>
-                            </div>
-                        }
+                                </div>
+                            }
+                        </div>
+
                         @{
-                            var selectedButtonsId = Model.SeatId; /* as List<string>; */
+                            var selectedButtonsId = Model?.SeatId; /* as List<string>; */
                             if (selectedButtonsId is not null)
                             {
                                 foreach (var item in selectedButtonsId)
@@ -142,7 +154,7 @@
                             }
                         }
                         <input type="hidden" name="Tariff" value="@Model?.Amount">
-                        @for (int i = 0; i < Model?.SeatName?.Count; i++)
+                        @for (int i = 1; i < Model?.SeatName?.Count; i++)
                         {
                             <input type="hidden" name="seatName[@i]" value="@Model.SeatName[i]" />
                         }
@@ -160,12 +172,143 @@
                         <input type="hidden" name="ArrivalDate" value="@Model?.ArrivalDate">
                         <input type="hidden" name="DepartureDate" value="@Model?.DepartureDate">
                         <input type="hidden" name="DestinationTermianl" value="@Model?.DestinationTerminalName">
-                        <button class="btn btn-primary" type="submit">Submit</button>
+
+                        <div class="empty" style="height: 20vh">
+                            <div class="justify-content-center d-flex mb-5 mt-3">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="text-center">
+                        <h3>Passenger Information</h3>
+                    </div>
+                    <form method="post" action="/confirmation">
+                        @for (int i = 1; i <= Model?.NoOfSeat; i++)
+                        {
+                            <div class="passenger-container mb-3 mt-2">
+                                <details open @* @(i == 1 ? "open" : "") *@>
+                                    <summary>Passenger @i - (Seat @GetSeatName(i))</summary>
+                                    <div class="passenger-content">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="firstName">First name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                                    <input type="text" name="Passengers[@(i - 1)].FirstName" required class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="middleName">Middle Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                                    <input type="text" name="Passengers[@(i - 1)].MiddleName" required class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="lastName">Last Name<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                                    <input type="text" name="Passengers[@(i - 1)].LastName" required class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="dob">Date of Birth<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                                    <input type="date" name="Passengers[@(i - 1)].DOB" required class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="nationality">Nationality</label>
+                                                    <select class="form-select" name="Passengers[@(i - 1)].Nationality" id="nationality">
+                                                        @* <option>Ethiopian</option>
+                                                        <option>Eritrean </option> *@
+                                                        @foreach (var country in GetCountries())
+                                                        {
+                                                            if (country == "Ethiopia")
+                                                            {
+                                                                <option selected>@country</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option>@country</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group mb-1">
+                                                            <label>Gender<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span> </label>
+                                                            <div class="form-check">
+                                                                <input type="radio" id="male_@i" name="Passengers[@(i - 1)].Gender" value="Male" required>
+                                                                <label for="male_@i">Male</label>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label>&nbsp;</label>
+                                                            <div class="form-check">
+                                                                <input type="radio" id="female_@i" name="Passengers[@(i - 1)].Gender" value="Female" required>
+                                                                <label for="female_@i">Female</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-1">
+                                                    <label for="passengerId">Id Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk"></i></span></label>
+                                                    <input type="text" name="Passengers[@(i - 1)].PassengerId" required class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-1">
+                                                    <label for="phoneNumber">Phone Number<span style="color: red; margin-left: 5px;"><i class="fas fa-asterisk extra-small-asterisk "></i></span></label>
+                                                    <input type="tel" name="Passengers[@(i - 1)].PhoneNumber" required class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-1">
+                                                    <label for="email">Email</label>
+                                                    <input type="email" class="form-control" name="Passengers[@(i - 1)].Email">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        }
+                        <input type="hidden" name="Distance" value="@Model?.Distance">
+                        <input type="hidden" name="via" value="@Model?.ViaDescription">
+                        <input type="hidden" name="OriginTerminalName" value="@Model?.OriginTerminalName">
+                        <input type="hidden" name="vehicleOperatorId" value="@Model?.VehicleOperatorId">
+                        <input type="hidden" name="routeScheduleId" value="@Model?.Id">
+                        <input type="hidden" name="DepatureCity" value="@Model?.DepatureCity">
+                        <input type="hidden" name="DestinationCity" value="@Model?.DestCityName">
+                        <input type="hidden" name="Terminal" value="@Model?.Terminal">
+                        <input type="hidden" name="OperatorName" value="@Model?.OperatorName">
+                        <input type="hidden" name="Date" value="@Model?.Date">
+                        <input type="hidden" name="PlateNumber" value="@Model?.PlateNumber">
+                        <input type="hidden" name="ArrivalDate" value="@Model?.ArrivalDate">
+                        <input type="hidden" name="DepartureDate" value="@Model?.DepartureDate">
+                        <input type="hidden" name="DestinationTermianl" value="@Model?.DestinationTerminalName">
+                        <div class=" text-center mt-lg-5">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3  mt-2">
+        @* <div class="col-lg-3  mt-2">
             <div class="mb-3" style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 20px; border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
                 <div class="row">
@@ -197,8 +340,8 @@
                         </p>
                     </div>
                 </div>
-            </div>
-            @* <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 0; border-radius: 8px;
+            </div> 
+            <div style="font-family: Arial, sans-serif; margin: 0 auto; border: 1px solid #ccc; background-color:lightgrey; padding: 0; border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); text-align: center; width:285px; ">
             <div>
             @{
@@ -215,8 +358,8 @@
             }
             }
             </div>
-            </div> *@
-        </div>
+            </div> 
+        </div>*@
     </div>
     <div class="footer">
         <partial name="_Footer" />
@@ -266,3 +409,40 @@
         return string.Empty;
     }
 }
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("forMeCheckBox").addEventListener("change", function () {
+            var isChecked = this.checked;
+
+            if (isChecked) {
+                var dob = "@ViewBag.Dob"; // Ensure that this variable is properly rendered and available
+                var dobDatePart = dob.split(" ")[0];
+
+                console.log("dob", dobDatePart);
+
+                document.getElementById("name1").value = "@ViewBag.FirstName";
+                document.getElementById("middle1").value = "@ViewBag.MiddleName";
+                document.getElementById("last1").value = "@ViewBag.LastName";
+
+                var gender = "@ViewBag.Gender".toLowerCase();
+                if (gender === "male") {
+                    document.getElementById("male1").checked = true;
+                } else if (gender === "female") {
+                    document.getElementById("female1").checked = true;
+                }
+                document.getElementById("email1").value = "@ViewBag.EmailAddress";
+                document.getElementById("phone1").value = "@ViewBag.PhoneNumber";
+            } else {
+                // Clear the fields
+                document.getElementById("name1").value = "";
+                document.getElementById("middle1").value = "";
+                document.getElementById("last1").value = "";
+                document.getElementById("male1").checked = false;
+                document.getElementById("female1").checked = false;
+                document.getElementById("email1").value = "";
+                document.getElementById("phone1").value = "";
+            }
+        });
+    });
+</script>
