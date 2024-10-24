@@ -12,7 +12,7 @@
     public class CompanySchedule
     {
         public string? Status { get; set; }
-        public List<object>? Schedules { get; set; }
+        public List<Schedule>? Schedules { get; set; }
         public List<Amenity>? Aminities { get; set; }
     }
 
@@ -22,5 +22,11 @@
         public CompanySchedule? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }
+    }
+    public class Schedule
+    {
+        public string? TimeLabel { get; set; }
+        public string? StartTime { get; set; }
+        public string? EndTime { get; set; }
     }
 }
