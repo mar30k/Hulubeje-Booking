@@ -9,6 +9,8 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
 using NuGet.Common;
 using HulubejeBooking.Models.BusModels;
+using HulubejeBooking.Models.PaymentModels;
+using Movie = HulubejeBooking.Models.CInemaModels.Movie;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
@@ -22,6 +24,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
         }
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeCache");
@@ -44,21 +47,9 @@ namespace HulubejeBooking.Controllers.CinemaController
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
             var movies = new Movie();
-            var cachedMovies = new List<CompanyData>();
-            var trendingMovies = new List<CompanyData>();
-            HttpResponseMessage responseMessage = await _v7Client.GetAsync($"service/cinema/getConsolidatedMovies");
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
-                cachedMovies = responseMessageData != null ? JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
-            }
-            HttpResponseMessage trendingMoviesResponse = await _v7Client.GetAsync($"service/cinema/getTrendingMovies");
-            if (trendingMoviesResponse.IsSuccessStatusCode)
-            {
-                string responseMessageData = await trendingMoviesResponse.Content.ReadAsStringAsync();
-                trendingMovies = responseMessageData != null ? JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
-            }
-            movies.Data = cachedMovies;
+            List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
+            List<CompanyData>? cachedMovies = await GetTrendingMovies(token, "service/cinema/getConsolidatedMovies");
+            movies.Data = cachedMovies != null && cachedMovies.Count > 0 ? cachedMovies : (await Getmovies(DateTime.Today.ToString("yyyy-MM-dd"), token ?? "", "1")) as List<CompanyData> ?? new List<CompanyData>();
             movies.TrendingMovies = trendingMovies;
             var moviesJson = JsonConvert.SerializeObject(movies);
             HttpContext.Session.SetString("movies", moviesJson);
@@ -69,17 +60,18 @@ namespace HulubejeBooking.Controllers.CinemaController
         {
             var identificationResult = await _authenticationManager.identificationValid();
             string? token = identificationResult?.UserData?.Token;
+            
             try
             {
-                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-                var movies = new Movie();
                 string formattedDate = selectedDate.ToString("yyyy-MM-dd");
-                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage responseMessage = await _v7Client.GetAsync($"cinema/getconsolidatedmovies?Date={formattedDate}");
-                if (responseMessage.IsSuccessStatusCode)
+                Movie? movies = (await Getmovies(formattedDate, token ?? "", "2")) as Movie ?? new Movie();
+                string serverTimeString = (await GetServerTime(token ?? "") ?? "").Trim('\"');
+                DateTimeOffset? serverTime = DateTimeOffset.Parse(serverTimeString);
+                DateTime date = serverTime.Value.DateTime;
+                if (selectedDate.ToString("MM/dd/yyyy") == date.ToString("MM/dd/yyyy"))
                 {
-                    string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
-                    movies = JsonConvert.DeserializeObject<Movie>(responseMessageData);
+                    List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
+                    movies.TrendingMovies = trendingMovies?.ToList();
                 }
                 var moviesJson = JsonConvert.SerializeObject(movies);
                 HttpContext.Session.SetString("movies", moviesJson);
@@ -88,6 +80,68 @@ namespace HulubejeBooking.Controllers.CinemaController
             catch (HttpRequestException)
             {
                 return View(null);
+            }
+        }
+        public async Task<object?> Getmovies(string formattedDate, string token, string rt)
+        {
+            try
+            {
+                var movies = new Movie();
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                HttpResponseMessage responseMessage = await _v7Client.GetAsync($"cinema/getconsolidatedmovies?Date={formattedDate}");
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                    movies = JsonConvert.DeserializeObject<Movie>(responseMessageData);
+                }
+
+                var result = movies?.Data?.ToList();
+                return rt == "1" ? result ?? new List<CompanyData>() : movies ?? new Movie();
+            }
+            catch
+            {
+                return new object();
+            }
+
+        }
+
+        public async Task<List<CompanyData>?> GetTrendingMovies(string? token, string endpoint)
+        {
+            try 
+            {
+                var trendingMovies = new List<CompanyData>();
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeCache");
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage responseMessage = await _v7Client.GetAsync(endpoint);
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                    trendingMovies = responseMessageData != null ? JsonConvert.DeserializeObject<List<CompanyData>>(responseMessageData) : new List<CompanyData>();
+                }
+                return trendingMovies ?? new List<CompanyData>();
+            }
+            catch   
+            {
+                return new List<CompanyData>();
+            }
+        }
+        public async Task<string?> GetServerTime(string token)
+        {
+            try
+            {
+                var responseMessageData = "";
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage responseMessage = await _v7Client.GetAsync("setting/getservertime");
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                     responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                }
+                return responseMessageData ?? "";
+            }
+            catch
+            {
+                return "";
             }
         }
     }

@@ -1,24 +1,22 @@
 ﻿
-using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.CInemaModels;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Globalization;
 using HulubejeBooking.Controllers.Authentication;
-using System.Security.Policy;
 using System.Text;
-namespace HulubejeBooking.Controllers
+namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaMovieDetailsController : Controller
     {
+        private readonly IWebHostEnvironment _appEnvironment;
         private readonly AuthenticationManager _authenticationManager;
         private readonly string _tmdbApiKey = "1ba83335ce22421020a77845254a578e";
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IHttpContextAccessor? _httpContextAccessor;
 
-        public CinemaMovieDetailsController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager)
+        public CinemaMovieDetailsController(IHttpClientFactory httpClientFactory, IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager, IWebHostEnvironment appEnvironment)
         {
+            _appEnvironment = appEnvironment;
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
@@ -140,7 +138,10 @@ namespace HulubejeBooking.Controllers
             movieDetails.PhoneNumber = code;
             movieDetails.ArticleCode = articleCode.ToString();
             movieDetails.PhoneNumber = phoneNumber.ToString();
-            //_ = await UpdateMovieAnalyticsAsync(tin, movieName, posterUrl);
+            if (_appEnvironment.EnvironmentName != "Development")
+            {
+                _ = await UpdateMovieAnalyticsAsync(tin, movieName, posterUrl);
+            }
             return View(movieDetails);
         }
         private Movie GetMovieDataFromSession(string type)
@@ -155,7 +156,7 @@ namespace HulubejeBooking.Controllers
                 orgTin,
                 movieName,
                 posterUrl
-            };  
+            };
             var jsonRequest = JsonConvert.SerializeObject(param);
 
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
