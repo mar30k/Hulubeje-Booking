@@ -88,114 +88,120 @@
             transform: translateY(-50%);
             cursor: pointer;
         }
+
+        .custom-container{
+            min-height: 65vh;
+        }
     </style>
 </head>
 <body>
-    
-    <div class="container login-container mb-5 mt-5 py-lg-5 px-lg-3 p-2 border border-5">
-        @if (TempData["InfoMessage"] != null)
-        {
-            <div class="alert alert-success" role="alert" id="errorAlert">
-                <p style="margin: 0;">@TempData["InfoMessage"]</p>
-            </div>
+    <div class="custom-container">
+        <div class="container login-container mb-5 mt-5 py-lg-5 px-lg-3 p-2 border border-5">
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="alert alert-success" role="alert" id="errorAlert">
+                    <p style="margin: 0;">@TempData["InfoMessage"]</p>
+                </div>
 
-            <script>
-                setTimeout(function () {
-                    var errorAlert = document.getElementById('errorAlert');
-                    errorAlert.style.opacity = '0';
+                <script>
                     setTimeout(function () {
-                        errorAlert.style.display = 'none';
-                    }, 500);
-                }, 5000);
-            </script>   
-        }
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger" role="alert" id="errorAlert" style="transition: opacity 0.5s ease-in-out;">
-                <p style="margin: 0;">@TempData["ErrorMessage"]</p>
-            </div>
+                        var errorAlert = document.getElementById('errorAlert');
+                        errorAlert.style.opacity = '0';
+                        setTimeout(function () {
+                            errorAlert.style.display = 'none';
+                        }, 500);
+                    }, 5000);
+                </script>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger" role="alert" id="errorAlert" style="transition: opacity 0.5s ease-in-out;">
+                    <p style="margin: 0;">@TempData["ErrorMessage"]</p>
+                </div>
 
-            <script>
-                setTimeout(function () {
-                    var errorAlert = document.getElementById('errorAlert');
-                    errorAlert.style.opacity = '0';
+                <script>
                     setTimeout(function () {
-                        errorAlert.style.display = 'none';
-                    }, 500);
-                }, 5000);
-            </script>
-        }
-        <div class="mb-4 text-center">
-            <h5 class="h5">Sign In</h5>
-        </div>
-        <section>
-            <div id="signInForm">
-                <form asp-action="Index" asp-controller="SignIn" method="post" autocomplete="off">
-                    @{
-                        var firstError = ViewData.ModelState?.FirstOrDefault(m => m.Value.Errors.Any());
-                        var errorMessage = firstError?.Value?.Errors?.FirstOrDefault()?.ErrorMessage ?? string.Empty;
-                    }
-
-                    @if (!string.IsNullOrEmpty(errorMessage))
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            @errorMessage
-                        </div>
-
-                        <script>
-                            setTimeout(function () {
-                                document.querySelector('.alert').style.display = 'none';
-                            }, 2000);
-                        </script>
-                    }
-                    <div class="form-group has-feedback">
-                        <input asp-for="Phone" type="tel" id="phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
-                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
-                        <span asp-validation-for="Phone"></span>
-                    </div>
-                    <div class="form-group has-feedback">
-                        <div class="custom-password-input">
-                            <input asp-for="Password" type="password" class="form-control" placeholder="Password" autocomplete="off" id="passwordInput" />
-                            <span class="toggle-password" onclick="togglePasswordVisibility()">
-                                <i id="eyeIcon" class="bi bi-eye"></i>
-                            </span>
-                        </div>
-                        <span asp-validation-for="Password"></span>
-                    </div>
-                    <script>
-                        function togglePasswordVisibility() {
-                            var passwordInput = document.getElementById("passwordInput");
-                            var eyeIcon = document.getElementById("eyeIcon");
-
-                            if (passwordInput.type === "password") {
-                                passwordInput.type = "text";
-                                eyeIcon.classList.remove("bi-eye");
-                                eyeIcon.classList.add("bi-eye-slash");
-                            } else {
-                                passwordInput.type = "password";
-                                eyeIcon.classList.remove("bi-eye-slash");
-                                eyeIcon.classList.add("bi-eye");
-                            }
+                        var errorAlert = document.getElementById('errorAlert');
+                        errorAlert.style.opacity = '0';
+                        setTimeout(function () {
+                            errorAlert.style.display = 'none';
+                        }, 500);
+                    }, 5000);
+                </script>
+            }
+            <div class="mb-4 text-center">
+                <h5 class="h5">Sign In</h5>
+            </div>
+            <section>
+                <div id="signInForm">
+                    <form asp-action="Index" asp-controller="SignIn" method="post" autocomplete="off">
+                        @{
+                            var firstError = ViewData.ModelState?.FirstOrDefault(m => m.Value.Errors.Any());
+                            var errorMessage = firstError?.Value?.Errors?.FirstOrDefault()?.ErrorMessage ?? string.Empty;
                         }
-                    </script>
-                    <div class="checkbox icheck">
-                        <input id="rememberMe" asp-for="RememberMe" />
-                        <label asp-for="RememberMe"></label>
-                    </div>
-                    <div class="col-xs-4">
-                        <button type="submit" class="btn submit btn-primary btn-block btn-flat">Login</button>
-                    </div>
-                </form>
-            </div>
-            <div class="forgot-password">
-                <a href="/forgetpasswordphone">Forgot Password?</a>
-            </div>
-            <div class="create-account">
-                <span>Don't have an account? <a href="/phonenumber">Create New Account</a></span>
-            </div>
 
-        </section>
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @errorMessage
+                            </div>
+
+                            <script>
+                                setTimeout(function () {
+                                    document.querySelector('.alert').style.display = 'none';
+                                }, 2000);
+                            </script>
+                        }
+                        <div class="form-group has-feedback">
+                            <input asp-for="Phone" type="tel" id="phone" autofocus="autofocus" class="form-control" autocomplete="off" placeholder="Phone Number">
+                            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                            <span asp-validation-for="Phone"></span>
+                        </div>
+                        <div class="form-group has-feedback">
+                            <div class="custom-password-input">
+                                <input asp-for="Password" type="password" class="form-control" placeholder="Password" autocomplete="off" id="passwordInput" />
+                                <span class="toggle-password" onclick="togglePasswordVisibility()">
+                                    <i id="eyeIcon" class="bi bi-eye"></i>
+                                </span>
+                            </div>
+                            <span asp-validation-for="Password"></span>
+                        </div>
+                        <script>
+                            function togglePasswordVisibility() {
+                                var passwordInput = document.getElementById("passwordInput");
+                                var eyeIcon = document.getElementById("eyeIcon");
+
+                                if (passwordInput.type === "password") {
+                                    passwordInput.type = "text";
+                                    eyeIcon.classList.remove("bi-eye");
+                                    eyeIcon.classList.add("bi-eye-slash");
+                                } else {
+                                    passwordInput.type = "password";
+                                    eyeIcon.classList.remove("bi-eye-slash");
+                                    eyeIcon.classList.add("bi-eye");
+                                }
+                            }
+                        </script>
+                        <div class="checkbox icheck">
+                            <input id="rememberMe" asp-for="RememberMe" />
+                            <label asp-for="RememberMe"></label>
+                        </div>
+                        <div class="col-xs-4">
+                            <button type="submit" class="btn submit btn-primary btn-block btn-flat">Login</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="forgot-password">
+                    <a href="/forgetpasswordphone">Forgot Password?</a>
+                </div>
+                <div class="create-account">
+                    <span>Don't have an account? <a href="/phonenumber">Create New Account</a></span>
+                </div>
+
+            </section>
+        </div>
     </div>
+    
 @* <script>
     $(document).ready(function () {
         $('.submit').on('click', function () {
