@@ -1,4 +1,6 @@
-﻿using HulubejeBooking.Controllers.Authentication;
+﻿using DevExpress.PivotGrid.PivotTable;
+using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models;
 using HulubejeBooking.Models.EventModels;
 using HulubejeBooking.Models.HotelModels;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +21,7 @@ namespace HulubejeBooking.Controllers.EventController
 			_authenticationManager = authenticationManager;
 			_httpClientFactory = httpClientFactory;
 		}
-		public async Task<IActionResult> IndexAsync(int branchCode, int companyCode)
+		public async Task<IActionResult> Index(int branch, int company)
 		{
 			var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 			var token = "";
@@ -40,13 +42,13 @@ namespace HulubejeBooking.Controllers.EventController
 				ViewBag.PhoneNumber = identificationResult?.UserData.Code;
 				ViewBag.EmailAddress = identificationResult?.UserData.Email;
 			}
-			var eventResponse = new EventResponse();
+			var eventResponse = new HulubejeResponse<EventModel>();
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage getEvent = await _v7Client.GetAsync($"event/get?company={companyCode}&branch={branchCode}");
+            HttpResponseMessage getEvent = await _v7Client.GetAsync($"event/get?company={company}&branch={branch}");
             if (getEvent.IsSuccessStatusCode)
             {
                 string getEventData = await getEvent.Content.ReadAsStringAsync();
-				eventResponse = JsonConvert.DeserializeObject<EventResponse>(getEventData);
+				eventResponse = JsonConvert.DeserializeObject<HulubejeResponse<EventModel>>(getEventData);
             }
             return View(eventResponse);
 		}
