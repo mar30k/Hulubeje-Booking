@@ -42,7 +42,7 @@ namespace HulubejeBooking.Controllers.EventController
             try
             {
                 _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage getcompanyscheduleResponse = await _v7Client.GetAsync($"routing/getcompanyschedule?companyCode={orgCode}&branchCode={oud}&industryType=1989");
+                HttpResponseMessage getcompanyscheduleResponse = await _v7Client.GetAsync($"routing/getcompanyschedule?companyCode={orgCode}&branchCode={oud}&industryType=1990");
                 var getsupplierpaymentoptions = new PaymentProcessorResponse();
                 var getcompanyschedule = new GetCompanySchedule();
                 var getcompanyimages = new GetCompanyImages();
@@ -53,7 +53,7 @@ namespace HulubejeBooking.Controllers.EventController
                 }
 
                 HttpResponseMessage getsupplierpaymentoptionsResponse = await _v7Client.GetAsync($"payment/getsupplierpaymentoptions?code={orgCode}&branchCode={oud}");
-                HttpResponseMessage getcompanyimagesResponse = await _v7Client.GetAsync($"routing/getcompanyimages?tin={orgTin}&branchCode={oud}&industryType=1989");
+                HttpResponseMessage getcompanyimagesResponse = await _v7Client.GetAsync($"routing/getcompanyimages?tin={orgTin}&branchCode={oud}&industryType=1990");
 
                 if (getsupplierpaymentoptionsResponse.IsSuccessStatusCode)
                 {
