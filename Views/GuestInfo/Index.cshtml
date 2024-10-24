@@ -10,19 +10,19 @@
 
 <partial name="_Navigation" />
 @model HulubejeBooking.Models.HotelModels.RoomFormData
-<div class="container mb-lg-2 mt-2">
-    <form id="guestForm" class="ml-lg-2" method="post" asp-controller="GuestConfirmation" asp-action="Index">
+<div class="container mb-lg-2 mt-2" style="min-height: 75vh">
+    <form id="guestForm" class="ml-lg-2" method="post" action="/guestconfirmation">
         <div class="accordion" >
             @for (int i = 0; i < Model?.adultCount; i++)
             {
-                <div class="accordion-item">    
+                <div class="accordion-item mt-2">
                     <h2 class="accordion-header" id="heading@(i + 1)">
-                        <button class="accordion-button @(i == 0 ? "": "collapsed")" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#collapse@(i + 1)" aria-expanded="@(i == 0 ? "true": "false")" aria-controls="collapse@(i + 1)">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" 
+                            data-bs-target="#collapse@(i + 1)" aria-expanded="true" aria-controls="collapse@(i + 1)">
                             Guest @(i + 1)
                         </button>
                     </h2>
-                    <div id="collapse@(i + 1)" class="accordion-collapse collapse @(i == 0 ? "show": "")" aria-labelledby="heading@(i + 1)" data-bs-parent="#accordionExample">
+                    <div id="collapse@(i + 1)" class="accordion-collapse collapse show" aria-labelledby="heading@(i + 1)" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                             @if (i == 0)
                             {
@@ -111,7 +111,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="idPicture@(i + 1)">Phone</label>
+                                        <label for="idPicture@(i + 1)">Id Picture</label>
                                         <input type="file" class="form-control" id="idPicture@(i + 1)" name="Guests[@i].IdPicture" placeholder="Resident Id Picture" required>
                                     </div>
                                 </div>
@@ -159,9 +159,6 @@
                 document.getElementById("name1").value = "@ViewBag.FirstName";
                 document.getElementById("middle1").value = "@ViewBag.MiddleName";
                 document.getElementById("last1").value = "@ViewBag.LastName";
-                var dateInputElement = document.getElementById("date1");
-                dateInputElement.valueAsDate = new Date(dobDatePart);
-
 
                 var gender = "@ViewBag.Gender".toLowerCase();
                 if (gender === "male") {
@@ -180,7 +177,6 @@
                 document.getElementById("female1").checked = false;
                 document.getElementById("email1").value = "";
                 document.getElementById("phone1").value = "";
-                document.getElementById("date1").value = "";
             }
         });
     });
