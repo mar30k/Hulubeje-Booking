@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.CInemaModels;
 using HulubejeBooking.Models.HotelModels;
 using HulubejeBooking.Models.PaymentModels;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace HulubejeBooking.Controllers.SpaController
             try
             {
                 _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage getcompanyscheduleResponse = await _v7Client.GetAsync($"routing/getcompanyschedule?companyCode={orgCode}&branchCode={oud}&industryType=1989");
+                HttpResponseMessage getcompanyscheduleResponse = await _v7Client.GetAsync($"routing/getcompanyschedule?companyCode={orgCode}&branchCode={oud}&industryType=1991");
                 var getsupplierpaymentoptions = new PaymentProcessorResponse();
                 var getcompanyschedule = new GetCompanySchedule();
                 var getcompanyimages = new GetCompanyImages();
@@ -50,10 +51,12 @@ namespace HulubejeBooking.Controllers.SpaController
                 {
                     string getcompanyscheduleData = await getcompanyscheduleResponse.Content.ReadAsStringAsync();
                     getcompanyschedule = JsonConvert.DeserializeObject<GetCompanySchedule>(getcompanyscheduleData);
+                    var companyscheduleJson = JsonConvert.SerializeObject(getcompanyschedule);
+                    HttpContext.Session.SetString("companyschedule", companyscheduleJson);
                 }
 
                 HttpResponseMessage getsupplierpaymentoptionsResponse = await _v7Client.GetAsync($"payment/getsupplierpaymentoptions?code={orgCode}&branchCode={oud}");
-                HttpResponseMessage getcompanyimagesResponse = await _v7Client.GetAsync($"routing/getcompanyimages?tin={orgTin}&branchCode={oud}&industryType=1989");
+                HttpResponseMessage getcompanyimagesResponse = await _v7Client.GetAsync($"routing/getcompanyimages?tin={orgTin}&branchCode={oud}&industryType=1991");
 
                 if (getsupplierpaymentoptionsResponse.IsSuccessStatusCode)
                 {
@@ -62,7 +65,7 @@ namespace HulubejeBooking.Controllers.SpaController
                 }
                 if (getcompanyimagesResponse.IsSuccessStatusCode)
                 {
-                    string getcompanyimagesData = await getcompanyimagesResponse.Content.ReadAsStringAsync();
+                    string getcompanyimagesData = await getcompanyimagesResponse.Content.ReadAsStringAsync(); 
                     getcompanyimages = JsonConvert.DeserializeObject<GetCompanyImages>(getcompanyimagesData);
                 }
 
