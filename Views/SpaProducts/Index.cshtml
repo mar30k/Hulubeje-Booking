@@ -1,0 +1,152 @@
+﻿@using HulubejeBooking.Models.SpaModels
+@model SpaProductsView
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<partial name="_Navigation" />
+<style>
+    .card{
+        transition: box-shadow 1s ease;
+    }
+    .card:hover {
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:focus {
+        outline: none;
+        box-shadow: none;
+    }
+</style>
+<title>Services</title>
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<div class="container my-3" style="min-height: 70vh">
+    <div class="position-relative d-flex justify-content-center align-items-center">
+        <h3 class="text-center">Hair Style</h3>
+        <button class="btn btn-outline-primary d-none position-absolute" id="cartTotalButton" style="right: 0;" onclick="cartButton()">
+            <i class="bi bi-cart"></i><span id="totalPrice">0.00</span>
+        </button>
+    </div>
+    <div class="row gy-2 mt-2">
+        @foreach (var service in Model?.Child?.Services ?? new List<Service>())
+        {
+            <div class="col-lg-6">
+                <div class="card p-3 clickable-card" data-department="@service.Code" data-name="@service.Name">
+                    <div class="row">
+                        <div class="col-5">
+                            <img src="@service?.Pictures?.FirstOrDefault()" alt="img" class="img-fluid card-img-top" />
+                        </div>
+                        <div class="col-7">
+                            <p class="mb-0">@service?.Name</p>
+                            <div class="mt-lg-1">
+                                <div class="row d-flex justify-content-center align-items-center">
+                                    <div class="col-5">
+                                        <i class="bi bi-alarm fa-sm">@(" ")@service?.Category min</i>
+                                        <p class="text-danger mb-0">@service?.Price.ToString("C2")</p>
+                                    </div>
+                                    <div class="col-7">
+                                        <button class="btn btn-danger btn-sm rounded rounded-2 ms-auto" id="addToCart_@service?.Code" onclick="addToCart('@service?.Code', @service?.Price)">Add To Cart</button>
+                                        <div class="d-none" id="cartForm_@service?.Code">
+                                            <div class="d-flex align-items-center">
+                                                <button type="button" class="btn btn-danger btn-circle d-flex align-items-center justify-content-center btn-sm py-0 btn-circle" onclick="decrement('@service?.Code', @service?.Price)">-</button>
+                                                <div class="number-display mx-3" id="itemQuantityDisplay_@service?.Code">1</div>
+                                                <button type="button" class="btn btn-success btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="increment('@service?.Code', @service?.Price)">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<partial name="_Footer" />
+
+<script>
+    let cartItems = [];
+    let totalPrice = 0;
+
+    function updateTotalPrice() {
+        document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+        const cartTotalButton = document.getElementById('cartTotalButton');
+        if (cartItems.length > 0) {
+            cartTotalButton.classList.remove('d-none');
+        } else {
+            cartTotalButton.classList.add('d-none');
+        }
+    }
+
+
+    function addToCart(serviceCode, price) {
+        cartItems.push({ code: serviceCode, price: price, quantity: 1 });
+        totalPrice += price;
+        updateTotalPrice();
+        replaceButtonWithCartForm(serviceCode);
+    }
+
+    function replaceButtonWithCartForm(serviceCode) {
+        var addToCartButton = document.getElementById(`addToCart_${serviceCode}`);
+        var cartForm = document.getElementById(`cartForm_${serviceCode}`);
+        if (addToCartButton && cartForm) {
+            addToCartButton.style.display = 'none';
+            cartForm.classList.remove('d-none');
+            cartForm.style.display = 'flex';
+        } else {
+            console.error("Add to Cart button or Cart Form not found.");
+        }
+    }
+
+    function increment(serviceCode, price) {
+        var itemQuantityDisplay = document.getElementById(`itemQuantityDisplay_${serviceCode}`);
+        var currentQuantity = parseInt(itemQuantityDisplay.textContent);
+        currentQuantity++;
+        itemQuantityDisplay.textContent = currentQuantity;
+
+        // Update cart array and total price
+        let cartItem = cartItems.find(item => item.code === serviceCode);
+        if (cartItem) {
+            cartItem.quantity++;
+            totalPrice += price;
+            updateTotalPrice();
+        }
+    }
+
+    function decrement(serviceCode, price) {
+        var itemQuantityDisplay = document.getElementById(`itemQuantityDisplay_${serviceCode}`);
+        var addToCartButton = document.getElementById(`addToCart_${serviceCode}`);
+        var currentQuantity = parseInt(itemQuantityDisplay.textContent);
+        if (currentQuantity > 1) {
+            currentQuantity--;
+            itemQuantityDisplay.textContent = currentQuantity;
+
+            let cartItem = cartItems.find(item => item.code === serviceCode);
+            if (cartItem) {
+                cartItem.quantity--;
+                totalPrice -= price;
+                updateTotalPrice();
+            }
+        }
+
+        if (currentQuantity === 1) {
+            addToCartButton.style.display = 'inline-block';
+            var cartForm = document.getElementById(`cartForm_${serviceCode}`);
+            cartForm.style.display = 'none';
+            cartItems = cartItems.filter(item => item.code !== serviceCode);
+            totalPrice -= price;
+            updateTotalPrice();
+        }
+    }
+
+    function cartButton() {
+        var form = $('<form action="/schedules" method="post"></form>');
+        $('body').append(form);
+        form.submit();
+    }
+</script>
