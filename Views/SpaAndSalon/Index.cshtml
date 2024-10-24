@@ -1,0 +1,61 @@
+﻿@using HulubejeBooking.Models.SpaModels
+@model HulubejeResponse<List<Categorys>>
+<partial name="_Navigation" />
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<style>
+    .card{
+        transition: box-shadow 1s ease;
+    }
+    .card:hover {
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+</style>
+<title>Products</title>
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<div class="container">
+    @foreach (var category in Model.Data ?? new List<Categorys>())
+    {
+        <div class="p-2">
+            <p>@category.Category</p>
+        </div>
+        <div class="row gy-2">
+            @foreach (var child in category.Children ?? new List<Child>())
+            {
+                <div class="col-md-6">
+                    <div class="card p-3 clickable-card" data-department="@category.Code" data-child-department="@child.Code" data-name="@child.Name">
+                        <div class="row">
+                            <div class="col-6">
+                                <img src="@child.Image" alt="img" class="img-fluid card-img-top" />
+                            </div>
+                            <div class="col-6 d-flex align-items-center">
+                                <p>@child.Name</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+<script>
+    $('.clickable-card').on('click', function () {
+        var department = $(this).data('department');
+        var childDepartment = $(this).data('child-department');
+        var name = $(this).data('name');
+        var form = $('<form action="/spaproducts" method="get">' +
+            '<input type="hidden" name="department" value="' + department + '" />' +
+            '<input type="hidden" name="childDepartment" value="' + childDepartment + '" />' +
+            '<input type="hidden" name="name" value="' + name + '" />' +
+            '</form>');
+        $('body').append(form);
+        form.submit();
+        console.log(department, childDepartment, name)
+    });
+</script>
