@@ -1,0 +1,202 @@
+﻿@model ScheduleView
+@using HulubejeBooking.Models.SpaModels
+<partial name="_Navigation" />
+<head>
+    <style>
+        .custom-container {
+            min-height: 75vh;
+            position: relative;
+        }
+
+        #continueButtonContainer {
+            position: absolute;
+            bottom: 3%;
+            width: 100%;
+            display: none;
+        }
+    </style>
+</head>
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<title>Schedules</title>
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<div class="container mt-3 custom-container">
+    <div class="calendar">
+        <form asp-action="Index" method="post" >
+            <div class="calendar">
+                @Html.TextBox("selectedDate", DateTime.Now.ToString("yyyy-MM-dd"), new
+                    {
+                        @class = "form-control",
+                        @type = "date",
+                        // @onchange = "this.form.submit()",
+                        @min = DateTime.Now.ToString("yyyy-MM-dd")
+                    })
+            </div>
+        </form>
+    </div>
+    <div class="mt-2">
+        <h6 class="fw-bold">Selected Services</h6>
+        <p class="text-uppercase bg-light py-1 rounded pl-2 pr-1">1 X Wash and Slip with Clip</p>
+        <h6 class="fw-bold">Available Spots</h6>
+    </div>
+    <div class="row">
+        @if(Model?.Schedules?.Data?.Count() >= 1)
+        {
+            @if (Model?.Schedules.Data?.Where(x => DateTime.Parse(x.StartTime ?? "").Hour < 12).Count() >= 1)
+            {
+                <div class="col-12 mt-1">
+                    <h6>Morning</h6>
+                    <div class="d-flex flex-wrap btn-group-toggle">
+                        @foreach (var timeSlot in Model?.Schedules.Data?.Where(x => DateTime.Parse(x.StartTime ?? "").Hour < 12) ?? new List<Schedules>())
+                        {
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6 p-2">
+                                <label class="btn btn-outline-primary w-100 rounded" data-value="@timeSlot.StartTime">
+                                    <input type="radio" name="selectedTimeSlot" value="@timeSlot.StartTime" autocomplete="off" class="d-none" />
+                                    @DateTime.Parse(timeSlot.StartTime ?? "").ToString("hh:mm tt")
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model?.Schedules.Data?.Where(x => DateTime.Parse(x.StartTime ?? "").Hour >= 12).Count() >= 1)
+            {
+                <div class="col-12 mt-1">
+                    <h6>Afternoon</h6>
+                    <div class="d-flex flex-wrap btn-group-toggle">
+                        @foreach (var timeSlot in Model?.Schedules.Data?.Where(x => DateTime.Parse(x.StartTime ?? "").Hour >= 12) ?? new List<Schedules>())
+                        {
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6 p-2">
+                                <label class="btn btn-outline-primary w-100 rounded" data-value="@timeSlot.StartTime">
+                                    <input type="radio" name="selectedTimeSlot" value="@timeSlot.StartTime" autocomplete="off" class="d-none" />
+                                    @DateTime.Parse(timeSlot.StartTime ?? "").ToString("hh:mm tt")
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+             <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 40vh;">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
+                    <p class="mt-2">No available schedules for this day. Please try another date.</p>
+                </div>
+            </div>    
+        }
+
+    </div>
+
+    <!-- Continue button -->
+    <div class="row mt-3" id="continueButtonContainer">
+        <div class="col-12 text-center">
+            <button id="continueBtn" class="btn btn-primary">Continue</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Enter Your Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="detailsForm">
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="forMe">
+                        <label class="form-check-label" for="forMe">For me</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitForm">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.btn-group-toggle .btn').on('click', function () {
+            $('.btn-group-toggle .btn').removeClass('active');
+            $(this).addClass('active');
+
+            $('#continueButtonContainer').show();
+        });
+
+        $('#continueBtn').on('click', function () {
+            $('#infoModal').modal('show');
+        });
+
+        // Handle the "For me" checkbox change
+        $('#forMe').change(function () {
+            if (this.checked) {
+                // Fill the name and phone fields with ViewBag values
+                $('#name').val('@ViewBag.FirstName');
+                $('#phone').val('@ViewBag.PhoneNumber');
+            } else {
+                // Clear the fields if unchecked
+                $('#name').val('');
+                $('#phone').val('');
+            }
+        });
+
+        // Close the modal when the "Submit" button is clicked
+        $('#infoModal').on('click', '#submitForm', function (e) {
+            // Get the form element
+            const form = $('#detailsForm')[0];
+
+            // Check if the form is valid
+            if (form.checkValidity()) {
+                // Form is valid, proceed with collecting data
+                const name = $('#name').val();
+                const phone = $('#phone').val();
+                const forMe = $('#forMe').is(':checked');
+
+                // Do something with the collected data
+                console.log('Name:', name);
+                console.log('Phone:', phone);
+                console.log('For me:', forMe);
+
+                // Hide the modal if both fields are filled
+                if (name && phone) {
+                    $('#infoModal').modal('hide');             
+                }
+
+                // Reset the form
+                $('#detailsForm')[0].reset();
+            } else {
+                // Trigger the validation message 
+                form.reportValidity();
+            }
+        });
+
+        // Close the modal when clicking on "Close" or "Cancel" buttons
+        $('#infoModal').on('click', '.close, .cancel', function (e) {
+            $('#infoModal').modal('hide');
+        });
+    });
+</script>
+<partial name="_Footer" />
