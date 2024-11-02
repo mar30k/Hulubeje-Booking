@@ -19,7 +19,7 @@
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
-<div class="container">
+<div class="container" style="min-height: 80vh">
     @foreach (var category in Model.Data ?? new List<Categorys>())
     {
         <div class="p-2">
@@ -43,7 +43,7 @@
             }
         </div>
     }
-</div>
+</div> 
 <script>
     $('.clickable-card').on('click', function () {
         var department = $(this).data('department');
@@ -59,3 +59,4 @@
         console.log(department, childDepartment, name)
     });
 </script>
+<partial name="_Footer" />
