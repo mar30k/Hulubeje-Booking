@@ -48,8 +48,8 @@
 <partial name="_Navigation" />
 <body>
     <partial name="_CinemaCountDown" />
-    <div class="container">
-        <div class="row mt-3">
+    <div class="container" style="min-height: 80vh">
+        <div class="row mt-4">
             @foreach (var paymentMethod in Model?.Data ?? new List<PaymentProcessorData>())
             {
                 <div class="col-md-6 mb-3">
