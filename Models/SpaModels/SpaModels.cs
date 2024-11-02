@@ -34,14 +34,14 @@ namespace HulubejeBooking.Models.SpaModels
         public string? EndTime { get; set; }
         public bool? IsAvailable { get; set; }
     }
+    
     public class CartItem
     {
-        public int ProductId { get; set; }
-        public string? ProductName { get; set; }
-        public int Quantity { get; set; }
+        public int? Code { get; set; }
+        public string? Name { get; set; }
         public decimal Price { get; set; }
+        public int Quantity { get; set; }
     }
-
 
     public class ScheduleView
     {
