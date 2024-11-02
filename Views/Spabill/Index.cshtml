@@ -1,0 +1,88 @@
+﻿<partial name="_Navigation" />
+<head>
+    <title>Bill</title>
+</head>
+<div class="container d-flex flex-column" style="min-height: 80vh">
+    <div class="row justify-content-center">
+        <div class="col-md-8 my-3">
+            <div class="text-right">
+                <p><stong>Date</stong> @(DateTime.Today.ToString("ddd, MMM dd yyyy"))@* : @(Model?.Data?.IssuedDate != null ? DateTime.Parse(Model.Data.IssuedDate.ToString()).ToString("ddd, MMM dd yyyy") : "") *@</p>
+            </div>
+            <div>
+                <p><strong>Company</strong>: BOSTON DAY AND SPA</p>
+                <p><strong>Company TIN</strong>: 1001025626</p>
+            </div>
+            <hr />
+            <div class="p-lg-2 pt-0">
+                <div class="row d-flex justify-content-between">
+                    <div class="col-3 ">
+                        <strong>Description</strong>
+                    </div>
+                    <div class="col-3 d-flex justify-content-center">
+                        <strong>Qty</strong>
+                    </div>
+                    <div class="col-3 d-flex justify-content-center">
+                        <strong>Price</strong>
+                    </div>
+                    <div class="col-3 text-right">
+                        <strong>Amount</strong>
+                    </div>
+                </div>
+                <hr />
+                <div class="row d-flex justify-content-around">
+                    <div class="col-3">
+                        <p>WASH AND STYLE WITH CLIP</p>
+                    </div>
+                    <div class="col-3 d-flex justify-content-center">
+                        <p>1</p>
+                    </div>
+                    <div class="col-3 d-flex justify-content-center">
+                        <p>579.71</p>
+                    </div>
+                    <div class="col-3 text-right">
+                        <p>579.71</p>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-6"><strong>ADDCHARGE</strong></div>
+                    <div class="col-6 text-right"><p>28.99</p></div>
+                </div>
+                <div class="row">
+                    <div class="col-6"><strong>TXBL 1:</strong></div>
+                    <div class="col-6 text-right"><p>608.70</p></div>
+                </div>
+                <div class="row">
+                    <div class="col-6"><strong>TXBL 15%:</strong></div>
+                    <div class="col-6 text-right"><p>91.30</p></div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-6"><strong>Grand Total</strong></div>
+                    <div class="col-6 text-right"><strong>700.00</strong></div>
+                </div>
+                <hr />
+            </div>
+        </div>
+    </div>
+    <div class="row px-3 justify-content-center">
+        <div class="col-md-8 bg-light p-2 rounded rounded-3">
+            <div class="row">
+                <div class="col-6"><small>Schedule Date</small></div>
+                <div class="col-6 text-right"><p>@(DateTime.Today.ToString("ddd, MMM dd yyyy"))</p></div>
+            </div>
+            <div class="row">
+                <div class="col-6"><small>Schedule Time</small> </div>
+                <div class="col-6 text-right"><p>@(DateTime.Now.ToString("hh:mm tt"))</p></div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-auto">
+        <div class="col-12 text-center">
+            <button id="continueBtn" class="btn btn-primary">Continue</button>
+        </div>
+    </div>
+</div>
+<div class="mt-2">
+    <partial name="_Footer" />
+</div>
