@@ -175,11 +175,6 @@
                 const phone = $('#phone').val();
                 const forMe = $('#forMe').is(':checked');
 
-                // Do something with the collected data
-                console.log('Name:', name);
-                console.log('Phone:', phone);
-                console.log('For me:', forMe);
-
                 // Hide the modal if both fields are filled
                 if (name && phone) {
                     $('#infoModal').modal('hide');             
@@ -187,8 +182,14 @@
 
                 // Reset the form
                 $('#detailsForm')[0].reset();
+                var a = $('<form action="/spabill" method="get">' +
+                    '<input type="hidden" name="name" value="' + name + '" />' +
+                    '<input type="hidden" name="phone" value="' + phone + '" />' +
+                    '</form>');
+                $('body').append(a);
+                a.submit();
+
             } else {
-                // Trigger the validation message 
                 form.reportValidity();
             }
         });
