@@ -21,6 +21,6 @@ namespace HulubejeBooking.Models.HotelModels
         public int? OrgOUD { get; set; }
         public string? BranchName { get; set; }
         public string? CityName { get; set; }
-
+        public string? Department {  get; set; } 
     }
 }
