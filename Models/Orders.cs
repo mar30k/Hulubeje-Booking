@@ -88,6 +88,7 @@ namespace HulubejeBooking.Models
         public string? PhoneNumber { get; set; }
         public string? CompanyName { get; set; }
         public string? VoucherCode { get; set; }
+        public string? PromoDetail { get; set; }
 
     }
 
