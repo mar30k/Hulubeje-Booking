@@ -17,6 +17,7 @@ namespace HulubejeBooking.Models.CInemaModels
         public decimal? TXBL1 { get; set; }
         [JsonProperty("TAX1 15%")]
         public decimal? TAX115 { get; set; }
+        public decimal? AddCharge { get; set; }
     }
 
 
