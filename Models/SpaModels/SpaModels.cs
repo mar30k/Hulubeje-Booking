@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.CInemaModels;
+using HulubejeBooking.Models.HotelModels;
 
 namespace HulubejeBooking.Models.SpaModels
 {
@@ -47,11 +48,28 @@ namespace HulubejeBooking.Models.SpaModels
     {
         public List<CartItem>? CartItem { get; set; }
         public HulubejeResponse<List<Schedules>>? Schedules { get; set; }
+        public CompanyDetailModel? CompanyDetailModel { get; set; }
     }
     public class SpaProductsView
     {
         public List<CartItem>? CartItem { get; set; }
         public Child? Child { get; set; }
+        public CompanyDetailModel? CompanyDetailModel { get; set; }
     }
+    public class SpaAndSalonView
+    {
+        public HulubejeResponse<List<Categorys>>? Getspareservation { get; set; }
+        public CompanyDetailModel? CompanyDetailModel { get; set; }
+    }
+    public class SpaLineItem
+    {
+        public int? Article { get; set; }
+        public string? Name { get; set; }
+        public object? Parent { get; set; }
+        public string? Note { get; set; }
 
+        public decimal? UnitAmount { get; set; }
+        public int? Quantity { get; set; }
+        public int? Uom { get; set; }
+    }
 }
