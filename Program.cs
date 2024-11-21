@@ -4,6 +4,7 @@ using HulubejeBooking.Controllers;
 using DevExpress.AspNetCore.Reporting.WebDocumentViewer.Native.Services;
 using DevExpress.AspNetCore.Reporting.WebDocumentViewer;
 using DevExpress.AspNetCore;
+using HulubejeBooking.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -55,6 +56,7 @@ builder.Services.AddHttpClient("MovieDb", httpClient =>
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<HotelListBuffer>();
+builder.Services.AddScoped<MiscellaneousApiRequests>();
 builder.Services.AddSingleton<Buffers>();
 builder.Services.AddTransient<IQRCodeGeneratorService, QRCodeGeneratorService>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
