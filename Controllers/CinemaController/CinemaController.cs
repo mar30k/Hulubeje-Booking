@@ -11,23 +11,25 @@ using NuGet.Common;
 using HulubejeBooking.Models.BusModels;
 using HulubejeBooking.Models.PaymentModels;
 using Movie = HulubejeBooking.Models.CInemaModels.Movie;
+using HulubejeBooking.Helpers;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
     {
+        public MiscellaneousApiRequests _miscellaneousApiRequests;
         private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
-        public CinemaController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager)
+        public CinemaController(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, AuthenticationManager authenticationManager, MiscellaneousApiRequests miscellaneousApiRequests)
         {
             _httpClientFactory = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
+            _miscellaneousApiRequests = miscellaneousApiRequests;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var _v7Client = _httpClientFactory.CreateClient("HulubejeCache");
             var identificationResult = await _authenticationManager.identificationValid();
 
             string? token = identificationResult?.UserData?.Token;
@@ -36,7 +38,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                 ViewBag.isVaild = identificationResult.isValid;
                 ViewBag.isLoggedIn = identificationResult.isLoggedIn;
                 ViewBag.FirstName = identificationResult?.UserData.FirstName;
-                ViewBag.LastName = identificationResult?.UserData.LastName;
+                ViewBag.LastName = identificationResult?.UserData.LastName;  
                 ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
                 ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
                 ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
@@ -65,7 +67,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 string formattedDate = selectedDate.ToString("yyyy-MM-dd");
                 Movie? movies = (await Getmovies(formattedDate, token ?? "", "2")) as Movie ?? new Movie();
-                string serverTimeString = (await GetServerTime(token ?? "") ?? "").Trim('\"');
+                string serverTimeString = (await _miscellaneousApiRequests.GetServerTime(token ?? "") ?? "").Trim('\"');
                 DateTimeOffset? serverTime = DateTimeOffset.Parse(serverTimeString);
                 DateTime date = serverTime.Value.DateTime;
                 if (selectedDate.ToString("MM/dd/yyyy") == date.ToString("MM/dd/yyyy"))
@@ -110,9 +112,9 @@ namespace HulubejeBooking.Controllers.CinemaController
             try 
             {
                 var trendingMovies = new List<CompanyData>();
-                var _v7Client = _httpClientFactory.CreateClient("HulubejeCache");
-                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage responseMessage = await _v7Client.GetAsync(endpoint);
+                var _v7Cache = _httpClientFactory.CreateClient("HulubejeCache");
+                _v7Cache.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage responseMessage = await _v7Cache.GetAsync(endpoint);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
@@ -123,25 +125,6 @@ namespace HulubejeBooking.Controllers.CinemaController
             catch   
             {
                 return new List<CompanyData>();
-            }
-        }
-        public async Task<string?> GetServerTime(string token)
-        {
-            try
-            {
-                var responseMessageData = "";
-                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage responseMessage = await _v7Client.GetAsync("setting/getservertime");
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                     responseMessageData = await responseMessage.Content.ReadAsStringAsync();
-                }
-                return responseMessageData ?? "";
-            }
-            catch
-            {
-                return "";
             }
         }
     }
