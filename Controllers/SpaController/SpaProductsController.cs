@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 using HulubejeBooking.Helpers;
+using HulubejeBooking.Models.HotelModels;
 
 namespace HulubejeBooking.Controllers.SpaController
 {
@@ -19,7 +20,7 @@ namespace HulubejeBooking.Controllers.SpaController
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<IActionResult> Index(int department, int childDepartment, string name)
+        public async Task<IActionResult> Index(int department, int childDepartment, string name, int company)
         {
             var token = "";
             var identificationResult = await _authenticationManager.identificationValid();
@@ -52,11 +53,20 @@ namespace HulubejeBooking.Controllers.SpaController
                     .SelectMany(c => c.Children ?? new List<Child>())
                     .Where(child => child.Name == name && child.Code == childDepartment)
                     .FirstOrDefault();
-                List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
+                List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("CartItems") ?? new List<CartItem>();
 
-                var SpaProducts = new SpaProductsView { Child = product, CartItem = cart };
+                var spaProducts = new SpaProductsView
+                {
+                    Child = product,
+                    CartItem = cart,
+                    CompanyDetailModel = new CompanyDetailModel
+                    {
+                        CompanyCode = company, 
+                        Department = department.ToString()
+                    }
+                };
 
-                return View(SpaProducts);
+                return View(spaProducts);
 
             }
             else
@@ -67,32 +77,12 @@ namespace HulubejeBooking.Controllers.SpaController
         }
 
         [HttpPost]
-        public IActionResult AddToCart(int productId, string productName, decimal price, int quantity)
+        public IActionResult SaveCart([FromBody] List<CartItem> cartItems)
         {
-            // Retrieve the cart from the session or create a new one
-            List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
-
-            // Add or update cart items
-            var existingItem = cart.FirstOrDefault(c => c.ProductId == productId);
-            if (existingItem != null)
-            {
-                existingItem.Quantity += quantity;
-            }
-            else
-            {
-                cart.Add(new CartItem
-                {
-                    ProductId = productId,
-                    ProductName = productName,
-                    Price = price,
-                    Quantity = quantity
-                });
-            }
-
-            // Save the updated cart back into the session
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
-
-            return RedirectToAction("Index");
+            // Save the cart items in the session
+            HttpContext.Session.SetObjectAsJson("CartItems", cartItems);
+            return Ok();
         }
+
     }
 }
