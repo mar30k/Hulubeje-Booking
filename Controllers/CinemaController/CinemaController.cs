@@ -37,16 +37,16 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 ViewBag.isVaild = identificationResult.isValid;
                 ViewBag.isLoggedIn = identificationResult.isLoggedIn;
-                ViewBag.FirstName = identificationResult?.UserData.FirstName;
-                ViewBag.LastName = identificationResult?.UserData.LastName;  
-                ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
-                ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
-                ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
-                ViewBag.Idtype = identificationResult?.UserData.IdType;
-                ViewBag.Dob = identificationResult?.UserData.Dob;
-                ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
-                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
-                ViewBag.EmailAddress = identificationResult?.UserData.Email;
+                ViewBag.FirstName = identificationResult?.UserData?.FirstName;
+                ViewBag.LastName = identificationResult?.UserData?.LastName;  
+                ViewBag.MiddleName = identificationResult?.UserData?.MiddleName;
+                ViewBag.Personalattachment = identificationResult?.UserData?.PersonalAttachment;
+                ViewBag.Idnumber = identificationResult?.UserData?.IdNumber;
+                ViewBag.Idtype = identificationResult?.UserData?.IdType;
+                ViewBag.Dob = identificationResult?.UserData?.Dob;
+                ViewBag.Idattachment = identificationResult?.UserData?.IdAttachment;
+                ViewBag.PhoneNumber = identificationResult?.UserData?.Code;
+                ViewBag.EmailAddress = identificationResult?.UserData?.Email;
             }
             var movies = new Movie();
             List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
@@ -90,6 +90,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 var movies = new Movie();
                 var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 HttpResponseMessage responseMessage = await _v7Client.GetAsync($"cinema/getconsolidatedmovies?Date={formattedDate}");
                 if (responseMessage.IsSuccessStatusCode)
                 {
