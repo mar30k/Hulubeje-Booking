@@ -41,7 +41,15 @@
     </div>
     <div class="mt-2">
         <h6 class="fw-bold">Selected Services</h6>
-        <p class="text-uppercase bg-light py-1 rounded pl-2 pr-1">1 X Wash and Slip with Clip</p>
+       <div class="row">
+            @foreach (var item in Model?.CartItem ?? new List<CartItem>())
+            {
+                <div class="col-sm-6">
+                    <p class="text-uppercase bg-light py-1 rounded pl-2 pr-1 m-1">@item.Quantity X @item.Name</p>
+                </div>
+
+            }
+        </div>
         <h6 class="fw-bold">Available Spots</h6>
     </div>
     <div class="row">
@@ -50,7 +58,7 @@
             @if (Model?.Schedules.Data?.Where(x => DateTime.Parse(x.StartTime ?? "").Hour < 12).Count() >= 1)
             {
                 <div class="col-12 mt-1">
-                    <h6>Morning</h6>
+                    <h6>Morning</h6>  
                     <div class="d-flex flex-wrap btn-group-toggle">
                         @foreach (var timeSlot in Model?.Schedules.Data?.Where(x => DateTime.Parse(x.StartTime ?? "").Hour < 12) ?? new List<Schedules>())
                         {
@@ -98,7 +106,7 @@
     <!-- Continue button -->
     <div class="row mt-3" id="continueButtonContainer">
         <div class="col-12 text-center">
-            <button id="continueBtn" class="btn btn-primary">Continue</button>
+            <button id="continueBtn" class="btn btn-primary btn-sm">Continue</button> 
         </div>
     </div>
 </div>
@@ -185,6 +193,7 @@
                 var a = $('<form action="/spabill" method="get">' +
                     '<input type="hidden" name="name" value="' + name + '" />' +
                     '<input type="hidden" name="phone" value="' + phone + '" />' +
+                    '<input type="hidden" name="code" value="' + @Model?.CompanyDetailModel?.CompanyCode + '" />' +
                     '</form>');
                 $('body').append(a);
                 a.submit();
