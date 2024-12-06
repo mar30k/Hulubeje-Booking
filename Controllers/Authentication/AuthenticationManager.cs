@@ -130,7 +130,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 var userDatas = JsonConvert.DeserializeObject<LoginAuthentication>(userDataString);
                 _cachedUser = userDatas?.Data;
             }
-            return _cachedUser;
+            return _cachedUser ?? new UserData();
         }
 
         public UserData? Get_cachedUser()
@@ -144,7 +144,7 @@ namespace HulubejeBooking.Controllers.Authentication
             var _V7client = _httpClientFactory.CreateClient("HulubejeBooking");
             var param = new
             {
-                code = "0000000000",
+                code = "0000000000", 
                 password = "0000000000",
                 isChangePassword = false
             };
@@ -158,7 +158,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 loginresponseData = JsonConvert.DeserializeObject<LoginAuthentication>(loginData);
             }
             _cachedUser = loginresponseData?.Data;
-            return _cachedUser;
+            return _cachedUser ?? new UserData();
         }
         public virtual async void SignOut()
         {
