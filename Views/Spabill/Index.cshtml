@@ -1,3 +1,4 @@
+﻿@model HulubejeBooking.Models.CInemaModels.Bill
 ﻿<partial name="_Navigation" />
 <head>
     <title>Bill</title>
@@ -30,42 +31,52 @@
                 </div>
                 <hr />
                 <div class="row d-flex justify-content-around">
+                    @if (Model?.Data?.LineItems != null)
+                    {
+                        var reversedLineItems = Model.Data?.LineItems.ToList();
+                        reversedLineItems?.Reverse();
+
+                        @foreach (var lineItem in reversedLineItems ?? new List<HulubejeBooking.Models.CInemaModels.LineItem>())
+                        {
                     <div class="col-3">
-                        <p>WASH AND STYLE WITH CLIP</p>
+                                <p>@(lineItem?.Name)</p>
                     </div>
                     <div class="col-3 d-flex justify-content-center">
-                        <p>1</p>
+                                <p>@(lineItem?.Quantity?.ToString("0"))</p>
                     </div>
                     <div class="col-3 d-flex justify-content-center">
-                        <p>579.71</p>
+                                <p>@(lineItem?.UnitAmount?.ToString("0.00"))</p>
                     </div>
                     <div class="col-3 text-right">
-                        <p>579.71</p>
+                                <p>@(lineItem?.TaxableAmount?.ToString("0.00"))</p>
                     </div>
+                        }
+                    }
+                    
                 </div>
                 <hr />
                 <div class="row">
                     <div class="col-6"><strong>ADDCHARGE</strong></div>
-                    <div class="col-6 text-right"><p>28.99</p></div>
+                    <div class="col-6 text-right"><p>@Model?.Data?.ExtraCharge?.AddCharge?.ToString("F2")</p></div>
                 </div>
                 <div class="row">
                     <div class="col-6"><strong>TXBL 1:</strong></div>
-                    <div class="col-6 text-right"><p>608.70</p></div>
+                    <div class="col-6 text-right"><p>@Model?.Data?.ExtraCharge?.TXBL1?.ToString("F2")</p></div>
                 </div>
                 <div class="row">
                     <div class="col-6"><strong>TXBL 15%:</strong></div>
-                    <div class="col-6 text-right"><p>91.30</p></div>
+                    <div class="col-6 text-right"><p>@Model?.Data?.ExtraCharge?.TAX115?.ToString("F2")</p></div>
                 </div>
                 <hr />
                 <div class="row">
                     <div class="col-6"><strong>Grand Total</strong></div>
-                    <div class="col-6 text-right"><strong>700.00</strong></div>
+                    <div class="col-6 text-right"><strong>@Model?.Data?.GrandTotal?.ToString("F2")</strong></div>
                 </div>
                 <hr />
             </div>
         </div>
     </div>
-    <div class="row px-3 justify-content-center">
+    <div class="row px-3 justify-content-center mb-2">
         <div class="col-md-8 bg-light p-2 rounded rounded-3">
             <div class="row">
                 <div class="col-6"><small>Schedule Date</small></div>
@@ -79,7 +90,7 @@
     </div>
     <div class="row mt-auto">
         <div class="col-12 text-center">
-            <button id="continueBtn" class="btn btn-primary">Continue</button>
+            <button id="continueBtn" class="btn btn-primary btn-sm">Continue</button>
         </div>
     </div>
 </div>
