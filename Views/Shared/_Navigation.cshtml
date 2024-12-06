@@ -55,7 +55,7 @@
             transition: white-space 0.3s ease;
         }
 
-        #exampleModal{
+        #logoutmodal{
             top: 20%;
         }
         @@media only screen and (max-width: 320px) {
@@ -113,14 +113,14 @@
         $(document).ready(function () {
             $('#logoutLink').click(function (e) {
                 e.preventDefault(); 
-                $('#exampleModal').modal('show');
+                $('#logoutmodal').modal('show');
             });
-            $('#exampleModal').on('click', '.cancel', function (e) {
-                $('#exampleModal').modal('hide');
+            $('#logoutmodal').on('click', '.cancel', function (e) {
+                $('#logoutmodal').modal('hide');
             });
 
-            $('#exampleModal').on('click', '.close', function (e) {
-                $('#exampleModal').modal('hide');
+            $('#logoutmodal').on('click', '.close', function (e) {
+                $('#logoutmodal').modal('hide');
             });
         });
     </script>
@@ -154,11 +154,11 @@
             </div>
         </div>
     </div>  
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="logoutmodal" tabindex="-1" role="dialog" aria-labelledby="logoutmodalLabel" aria-hidden="true">
         <div class="modal-dialog " role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title text-red" id="exampleModalLabel">Logout</h5>
+                    <h5 class="modal-title text-red" id="logoutmodalLabel">Logout</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
