@@ -54,9 +54,19 @@ namespace HulubejeBooking.Controllers.SpaController
                 getspareservation = JsonConvert.DeserializeObject<HulubejeResponse<List<Categorys>>>(getcompanyscheduleData);
             }
             var spareservation = JsonConvert.SerializeObject(getspareservation);
+            var CompanyDetailModel = new CompanyDetailModel
+            {
+                CompanyCode = company,
+                OrgOUD = branch
+            };
+            var SpaAndSalonView = new SpaAndSalonView
+            {
+                CompanyDetailModel = CompanyDetailModel,
+                Getspareservation = getspareservation,
+            };
             HttpContext.Session.SetString("GetSpaReservation", spareservation);
             
-            return View(getspareservation);
+            return View(SpaAndSalonView);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿@using HulubejeBooking.Models.SpaModels
-@model HulubejeResponse<List<Categorys>>
+@model SpaAndSalonView
 <partial name="_Navigation" />
 @{
     var isVaild = ViewBag.isVaild;
@@ -20,7 +20,7 @@
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <div class="container" style="min-height: 80vh">
-    @foreach (var category in Model.Data ?? new List<Categorys>())
+    @foreach (var category in Model?.Getspareservation?.Data ?? new List<Categorys>())
     {
         <div class="p-2">
             <p>@category.Category</p>
@@ -53,6 +53,7 @@
             '<input type="hidden" name="department" value="' + department + '" />' +
             '<input type="hidden" name="childDepartment" value="' + childDepartment + '" />' +
             '<input type="hidden" name="name" value="' + name + '" />' +
+            '<input type="hidden" name="company" value="' + @Model?.CompanyDetailModel?.CompanyCode + '" />' +
             '</form>');
         $('body').append(form);
         form.submit();
