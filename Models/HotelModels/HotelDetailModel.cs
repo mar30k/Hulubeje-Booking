@@ -22,5 +22,7 @@ namespace HulubejeBooking.Models.HotelModels
         public string? BranchName { get; set; }
         public string? CityName { get; set; }
         public string? Department {  get; set; } 
+        public int? Duration {  get; set; } 
+        public DateTime? SelectedDate { get; set; }
     }
 }
