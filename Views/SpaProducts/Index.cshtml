@@ -6,17 +6,23 @@
 }
 <partial name="_Navigation" />
 <style>
-    .card{
+    .card {
         transition: box-shadow 1s ease;
     }
-    .card:hover {
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+
+        .card:hover {
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
     .btn:focus {
         outline: none;
         box-shadow: none;
+    }
+
+    .customeStyle{
+        padding-right: 5px !important;
+        padding-left: 5px !important;
     }
 </style>
 <title>Services</title>
@@ -26,7 +32,7 @@
 </script>
 <div class="container my-3" style="min-height: 70vh">
     <div class="position-relative d-flex justify-content-center align-items-center">
-        <h3 class="text-center">Hair Style</h3>
+        <h3 class="text-center">@Model?.Child?.Name</h3>
         <button class="btn btn-outline-primary d-none position-absolute" id="cartTotalButton" style="right: 0;" onclick="cartButton()">
             <i class="bi bi-cart"></i><span id="totalPrice">0.00</span>
         </button>
@@ -37,29 +43,56 @@
             <div class="col-lg-6">
                 <div class="card p-3 clickable-card" data-department="@service.Code" data-name="@service.Name">
                     <div class="row">
-                        <div class="col-5">
+                        <div class="col-5 customeStyle">
                             <img src="@service?.Pictures?.FirstOrDefault()" alt="img" class="img-fluid card-img-top" />
                         </div>
-                        <div class="col-7">
+                        <div class="col-7 customeStyle">
                             <p class="mb-0">@service?.Name</p>
                             <div class="mt-lg-1">
                                 <div class="row d-flex justify-content-center align-items-center">
-                                    <div class="col-5">
+                                    <div class="col-5 customeStyle">
                                         <i class="bi bi-alarm fa-sm">@(" ")@service?.Category min</i>
                                         <p class="text-danger mb-0">@service?.Price.ToString("C2")</p>
                                     </div>
-                                    <div class="col-7">
-                                        <button class="btn btn-danger btn-sm rounded rounded-2 ms-auto" id="addToCart_@service?.Code" onclick="addToCart('@service?.Code', @service?.Price)">Add To Cart</button>
+                                    <div class="col-7 customeStyle">
+                                        <button class="btn btn-danger btn-sm rounded rounded-2 ms-auto" id="addToCart_@service?.Code" onclick="addToCart('@service?.Code', '@service?.Name', @service?.Price, @service?.Category)">Add To Cart</button>
                                         <div class="d-none" id="cartForm_@service?.Code">
                                             <div class="d-flex align-items-center">
-                                                <button type="button" class="btn btn-danger btn-circle d-flex align-items-center justify-content-center btn-sm py-0 btn-circle" onclick="decrement('@service?.Code', @service?.Price)">-</button>
+                                                <button type="button" class="btn btn-danger btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="decrement('@service?.Code', @service?.Price, @service?.Category)">-</button>
                                                 <div class="number-display mx-3" id="itemQuantityDisplay_@service?.Code">1</div>
-                                                <button type="button" class="btn btn-success btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="increment('@service?.Code', @service?.Price)">+</button>
+                                                <button type="button" class="btn btn-success btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="increment('@service?.Code', @service?.Price, @service?.Category)">+</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            @* @if (Model?.CartItem?.Any(a => a?.Name?.ToLower() == service?.Name?.ToLower()) == false)
+                            {
+                                
+                            }
+                            else
+                            {
+                                <p class="mb-0">@service?.Name</p>
+                                <div class="mt-lg-1">
+                                    <div class="row d-flex justify-content-center align-items-center">
+                                        <div class="col-5">
+                                            <i class="bi bi-alarm fa-sm">@(" ")@service?.Category min</i>
+                                            <p class="text-danger mb-0">@service?.Price.ToString("C2")</p>
+                                        </div>
+                                        <div class="col-7">
+                                            <button class="btn btn-danger btn-sm rounded rounded-2 ms-auto d-none" id="addToCart_@service?.Code" onclick="addToCart('@service?.Code', '@service?.Name', @service?.Price)">Add To Cart</button>
+
+                                            <div class="d-flex" id="cartForm_@service?.Code">
+                                                <div class="d-flex align-items-center">
+                                                    <button type="button" class="btn btn-danger btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="decrement('@service?.Code', @service?.Price)">-</button>
+                                                    <div class="number-display mx-3" id="itemQuantityDisplay_@service?.Code">1</div>
+                                                    <button type="button" class="btn btn-success btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="increment('@service?.Code', @service?.Price)">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            } *@
                         </div>
                     </div>
                 </div>
@@ -72,7 +105,7 @@
 <script>
     let cartItems = [];
     let totalPrice = 0;
-
+    let totalDuration = 0;
     function updateTotalPrice() {
         document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
         const cartTotalButton = document.getElementById('cartTotalButton');
@@ -83,12 +116,33 @@
         }
     }
 
+    function saveCartToSession() {
+        $.ajax({
+            url: '/SpaProducts/SaveCart', // Adjust to your controller name
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(cartItems),
+            success: function (response) {
+                console.log('Cart saved successfully');
+            },
+            error: function (xhr, status, error) {
+                console.error('Error saving cart:', error);
+            }
+        });
+    }
 
-    function addToCart(serviceCode, price) {
-        cartItems.push({ code: serviceCode, price: price, quantity: 1 });
+    function addToCart(serviceCode, serviceName, price, category) {
+        const existingItem = cartItems.find(item => item.Code === serviceCode);
+        if (existingItem) {
+            existingItem.Quantity++;
+        } else {
+            cartItems.push({ Code: serviceCode, Name: serviceName, Price: price, Quantity: 1 });
+            totalDuration += category;
+        }
         totalPrice += price;
         updateTotalPrice();
         replaceButtonWithCartForm(serviceCode);
+        saveCartToSession(); // Save to session
     }
 
     function replaceButtonWithCartForm(serviceCode) {
@@ -103,22 +157,23 @@
         }
     }
 
-    function increment(serviceCode, price) {
+    function increment(serviceCode, price, category) {
         var itemQuantityDisplay = document.getElementById(`itemQuantityDisplay_${serviceCode}`);
         var currentQuantity = parseInt(itemQuantityDisplay.textContent);
         currentQuantity++;
         itemQuantityDisplay.textContent = currentQuantity;
 
         // Update cart array and total price
-        let cartItem = cartItems.find(item => item.code === serviceCode);
+        let cartItem = cartItems.find(item => item.Code === serviceCode);
         if (cartItem) {
-            cartItem.quantity++;
+            cartItem.Quantity++;
             totalPrice += price;
             updateTotalPrice();
+            saveCartToSession(); // Save to session
         }
     }
 
-    function decrement(serviceCode, price) {
+    function decrement(serviceCode, price, category) {
         var itemQuantityDisplay = document.getElementById(`itemQuantityDisplay_${serviceCode}`);
         var addToCartButton = document.getElementById(`addToCart_${serviceCode}`);
         var currentQuantity = parseInt(itemQuantityDisplay.textContent);
@@ -126,27 +181,34 @@
             currentQuantity--;
             itemQuantityDisplay.textContent = currentQuantity;
 
-            let cartItem = cartItems.find(item => item.code === serviceCode);
+            let cartItem = cartItems.find(item => item.Code === serviceCode);
             if (cartItem) {
-                cartItem.quantity--;
+                cartItem.Quantity--;
                 totalPrice -= price;
                 updateTotalPrice();
+                saveCartToSession(); // Save to session
             }
         }
-
-        if (currentQuantity === 1) {
+        else {
             addToCartButton.style.display = 'inline-block';
             var cartForm = document.getElementById(`cartForm_${serviceCode}`);
             cartForm.style.display = 'none';
-            cartItems = cartItems.filter(item => item.code !== serviceCode);
+            cartItems = cartItems.filter(item => item.Code !== serviceCode);
+            totalDuration -= category;
             totalPrice -= price;
             updateTotalPrice();
+            saveCartToSession(); // Save to session
         }
     }
 
     function cartButton() {
-        var form = $('<form action="/schedules" method="post"></form>');
-        $('body').append(form);
-        form.submit();
+        var form = $('<form action="/schedules" method="get">' +
+                '<input type="hidden" name="company" value="' + @Model?.CompanyDetailModel?.CompanyCode + '" />' +
+            '<input type="hidden" name="department" value="' + @Model?.CompanyDetailModel?.Department + '" />' +
+            '<input type="hidden" name="duration" value="' + totalDuration + '" />' +
+                '</form>');
+            $('body').append(form);
+            form.submit();
+            console.log(totalDuration);
     }
 </script>

@@ -18,6 +18,7 @@
 		<PackageReference Include="DevExpress.AspNetCore.Core" Version="21.2.6" />
 		<PackageReference Include="DevExpress.AspNetCore.Reporting" Version="21.2.6" />
 		<PackageReference Include="FontAwesome" Version="4.7.0" />
+		<PackageReference Include="MessagePack" Version="2.5.192" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.17" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
