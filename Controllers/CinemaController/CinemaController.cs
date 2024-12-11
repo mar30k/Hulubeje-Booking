@@ -16,7 +16,7 @@ namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
     {
-        public MiscellaneousApiRequests _miscellaneousApiRequests;
+        private readonly MiscellaneousApiRequests _miscellaneousApiRequests;
         private readonly AuthenticationManager _authenticationManager;
         private IHttpContextAccessor _httpContextAccessor;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -28,61 +28,45 @@ namespace HulubejeBooking.Controllers.CinemaController
             _miscellaneousApiRequests = miscellaneousApiRequests;
         }
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? date)
         {
-            var identificationResult = await _authenticationManager.identificationValid();
-
-            string? token = identificationResult?.UserData?.Token;
-            if (identificationResult != null)
+            string? token = await AuthenticateAndSetViewData();
+            Console.WriteLine(ViewBag.FirstName);
+            if (date.HasValue)
             {
-                ViewBag.isVaild = identificationResult.isValid;
-                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
-                ViewBag.FirstName = identificationResult?.UserData?.FirstName;
-                ViewBag.LastName = identificationResult?.UserData?.LastName;  
-                ViewBag.MiddleName = identificationResult?.UserData?.MiddleName;
-                ViewBag.Personalattachment = identificationResult?.UserData?.PersonalAttachment;
-                ViewBag.Idnumber = identificationResult?.UserData?.IdNumber;
-                ViewBag.Idtype = identificationResult?.UserData?.IdType;
-                ViewBag.Dob = identificationResult?.UserData?.Dob;
-                ViewBag.Idattachment = identificationResult?.UserData?.IdAttachment;
-                ViewBag.PhoneNumber = identificationResult?.UserData?.Code;
-                ViewBag.EmailAddress = identificationResult?.UserData?.Email;
-            }
-            var movies = new Movie();
-            List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
-            List<CompanyData>? cachedMovies = await GetTrendingMovies(token, "service/cinema/getConsolidatedMovies");
-            movies.Data = cachedMovies != null && cachedMovies.Count > 0 ? cachedMovies : (await Getmovies(DateTime.Today.ToString("yyyy-MM-dd"), token ?? "", "1")) as List<CompanyData> ?? new List<CompanyData>();
-            movies.TrendingMovies = trendingMovies;
-            var moviesJson = JsonConvert.SerializeObject(movies);
-            HttpContext.Session.SetString("movies", moviesJson);
-            return View(movies);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Index(DateTime selectedDate)
-        {
-            var identificationResult = await _authenticationManager.identificationValid();
-            string? token = identificationResult?.UserData?.Token;
-            
-            try
-            {
-                string formattedDate = selectedDate.ToString("yyyy-MM-dd");
-                Movie? movies = (await Getmovies(formattedDate, token ?? "", "2")) as Movie ?? new Movie();
-                string serverTimeString = (await _miscellaneousApiRequests.GetServerTime(token ?? "") ?? "").Trim('\"');
-                DateTimeOffset? serverTime = DateTimeOffset.Parse(serverTimeString);
-                DateTime date = serverTime.Value.DateTime;
-                if (selectedDate.ToString("MM/dd/yyyy") == date.ToString("MM/dd/yyyy"))
+                try
                 {
-                    List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
-                    movies.TrendingMovies = trendingMovies?.ToList();
+                    string? formattedDate = date?.ToString("yyyy-MM-dd");
+                    Movie? movies = (await Getmovies(formattedDate ?? "", token ?? "", "2")) as Movie ?? new Movie();
+                    string serverTimeString = (await _miscellaneousApiRequests.GetServerTime(token ?? "") ?? "").Trim('\"');
+                    DateTimeOffset? serverTime = DateTimeOffset.Parse(serverTimeString);
+                    DateTime serverDate = serverTime.Value.DateTime;
+                    if (date?.ToString("MM/dd/yyyy") == serverDate.ToString("MM/dd/yyyy"))
+                    {
+                        List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
+                        movies.TrendingMovies = trendingMovies?.ToList();
+                    }
+                    var moviesJson = JsonConvert.SerializeObject(movies);
+                    HttpContext.Session.SetString("movies", moviesJson);
+                    return View(movies);
                 }
+                catch (HttpRequestException)
+                {
+                    return View(null);
+                }
+            }
+            else
+            {
+                var movies = new Movie();
+                List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
+                List<CompanyData>? cachedMovies = await GetTrendingMovies(token, "service/cinema/getConsolidatedMovies");
+                movies.Data = cachedMovies != null && cachedMovies.Count > 0 ? cachedMovies : (await Getmovies(DateTime.Today.ToString("yyyy-MM-dd"), token ?? "", "1")) as List<CompanyData> ?? new List<CompanyData>();
+                movies.TrendingMovies = trendingMovies;
                 var moviesJson = JsonConvert.SerializeObject(movies);
                 HttpContext.Session.SetString("movies", moviesJson);
                 return View(movies);
             }
-            catch (HttpRequestException)
-            {
-                return View(null);
-            }
+            
         }
         public async Task<object?> Getmovies(string formattedDate, string token, string rt)
         {
@@ -128,5 +112,30 @@ namespace HulubejeBooking.Controllers.CinemaController
                 return new List<CompanyData>();
             }
         }
+
+
+        // Helper Methods
+        private async Task<string?> AuthenticateAndSetViewData()
+        {
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (identificationResult == null) return null;
+
+            var userData = identificationResult.UserData;
+            ViewBag.isVaild = identificationResult.isValid;
+            ViewBag.isLoggedIn = identificationResult.isLoggedIn;
+            ViewBag.FirstName = userData?.FirstName;
+            ViewBag.LastName = userData?.LastName;
+            ViewBag.MiddleName = userData?.MiddleName;
+            ViewBag.Personalattachment = userData?.PersonalAttachment;
+            ViewBag.Idnumber = userData?.IdNumber;
+            ViewBag.Idtype = userData?.IdType;
+            ViewBag.Dob = userData?.Dob;
+            ViewBag.Idattachment = userData?.IdAttachment;
+            ViewBag.PhoneNumber = userData?.Code;
+            ViewBag.EmailAddress = userData?.Email;
+
+            return userData?.Token ?? "";
+        }
+
     }
 }
