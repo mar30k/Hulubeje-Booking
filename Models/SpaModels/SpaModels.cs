@@ -56,6 +56,11 @@ namespace HulubejeBooking.Models.SpaModels
         public Child? Child { get; set; }
         public CompanyDetailModel? CompanyDetailModel { get; set; }
     }
+    public class SpaBillView
+    {
+        public Bill? Bill { get; set; }
+        public CompanyDetailModel? CompanyDetailModel { get; set; }
+    }
     public class SpaAndSalonView
     {
         public HulubejeResponse<List<Categorys>>? Getspareservation { get; set; }
