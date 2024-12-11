@@ -8,21 +8,23 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
 using DevExpress.Pdf.Native.BouncyCastle.Asn1.Ocsp;
+using HulubejeBooking.Models.HotelModels;
+using DevExpress.Xpo.DB;
 namespace HulubejeBooking.Controllers.SpaController
 {
-    public class Spabill : Controller
+    public class SpaBillController : Controller
     {
         
         private readonly IHttpClientFactory _httpClientFactory;
         private IHttpContextAccessor? _httpContextAccessor;
         private AuthenticationManager _authenticationManager;
-        public Spabill(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager, IHttpClientFactory httpClientFactory)
+        public SpaBillController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager authenticationManager, IHttpClientFactory httpClientFactory)
         {
             _httpContextAccessor = httpContextAccessor;
             _authenticationManager = authenticationManager;
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<IActionResult> Index(string phone, string name, int code)
+        public async Task<IActionResult> Index(string phone, string name, int code, DateTime selectedDate, string selectedTimeSlot)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 
@@ -36,6 +38,7 @@ namespace HulubejeBooking.Controllers.SpaController
                 ViewBag.isVaild = identificationResult.isValid;
                 ViewBag.isLoggedIn = identificationResult.isLoggedIn;
                 ViewBag.FirstName = identificationResult?.UserData.FirstName;
+                ViewBag.Name = name;
                 ViewBag.LastName = identificationResult?.UserData.LastName;
                 ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
                 ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
@@ -43,7 +46,7 @@ namespace HulubejeBooking.Controllers.SpaController
                 ViewBag.Idtype = identificationResult?.UserData.IdType;
                 ViewBag.Dob = identificationResult?.UserData.Dob;
                 ViewBag.Idattachment = identificationResult?.UserData.IdAttachment;
-                ViewBag.PhoneNumber = identificationResult?.UserData.Code;
+                ViewBag.PhoneNumber = phone;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
             List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("CartItems") ?? new List<CartItem>();
@@ -79,7 +82,17 @@ namespace HulubejeBooking.Controllers.SpaController
                 string responseData = await response.Content.ReadAsStringAsync();
                 calculatedBill = responseData!=null ? JsonConvert.DeserializeObject<Bill>(responseData) : new Bill();
             }
-            return View(calculatedBill);
+            var companyDetail = new CompanyDetailModel
+            {
+                CompanyCode = code,
+                SelectedDate = selectedDate,
+            }; 
+            var spaBillView = new SpaBillView
+            {
+                Bill = calculatedBill,
+                CompanyDetailModel = companyDetail
+            };
+            return View(spaBillView);
         }
     }
 }
