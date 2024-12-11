@@ -31,7 +31,6 @@ namespace HulubejeBooking.Controllers.CinemaController
         public async Task<IActionResult> Index(DateTime? date)
         {
             string? token = await AuthenticateAndSetViewData();
-            Console.WriteLine(ViewBag.FirstName);
             if (date.HasValue)
             {
                 try

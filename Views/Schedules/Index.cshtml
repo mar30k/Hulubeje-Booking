@@ -26,18 +26,27 @@
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <div class="container mt-3 custom-container">
-    <div class="calendar">
-        <form asp-action="Index" method="post" >
+    <div class="row">
+        <div class="col-md-3">
             <div class="calendar">
-                @Html.TextBox("selectedDate", DateTime.Now.ToString("yyyy-MM-dd"), new
-                    {
-                        @class = "form-control",
-                        @type = "date",
-                        // @onchange = "this.form.submit()",
-                        @min = DateTime.Now.ToString("yyyy-MM-dd")
-                    })
+                <form asp-action="Index" method="get">
+                    <input type="hidden" name="company" value="@Model?.CompanyDetailModel?.CompanyCode" />
+                    <input type="hidden" name="department" value="@Model?.CompanyDetailModel?.Department" />
+                    <input type="hidden" name="duration" value="@Model?.CompanyDetailModel?.Duration" />
+                    <input type="hidden" name="mode" value="1" />
+                    <div class="calendar">
+                        @Html.TextBox("date", DateTime.Now.ToString("yyyy-MM-dd"), new
+                            {
+                                @class = "form-control",
+                                @id = "selectedDate", // Add an ID
+                                @type = "date",
+                                @onchange = "this.form.submit()",
+                                @min = DateTime.Now.ToString("yyyy-MM-dd")
+                            })
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
     <div class="mt-2">
         <h6 class="fw-bold">Selected Services</h6>
@@ -182,6 +191,8 @@
                 const name = $('#name').val();
                 const phone = $('#phone').val();
                 const forMe = $('#forMe').is(':checked');
+                const selectedDate = $('#selectedDate').val(); // Extract the date value
+                const selectedTimeSlot = $('input[name="selectedTimeSlot"]:checked').val(); // Extract the selected time slot
 
                 // Hide the modal if both fields are filled
                 if (name && phone) {
@@ -193,6 +204,8 @@
                 var a = $('<form action="/spabill" method="get">' +
                     '<input type="hidden" name="name" value="' + name + '" />' +
                     '<input type="hidden" name="phone" value="' + phone + '" />' +
+                    '<input type="hidden" name="selectedDate" value="' + selectedDate + '" />' +
+                    '<input type="hidden" name="selectedTimeSlot" value="' + selectedTimeSlot + '" />' +
                     '<input type="hidden" name="code" value="' + @Model?.CompanyDetailModel?.CompanyCode + '" />' +
                     '</form>');
                 $('body').append(a);
