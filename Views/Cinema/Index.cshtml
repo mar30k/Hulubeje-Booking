@@ -17,7 +17,7 @@
             }
         } */
 
-        #date{
+        #selectedDate {
             width: 100%;
             border-color: #FEBB02;
             height: 60px;
@@ -31,7 +31,7 @@
                 padding-bottom: 2px;
             }
 
-            #companyFilterInput, #date, #movieFilterInput{
+            #companyFilterInput, #selectedDate, #movieFilterInput{
                 height: 40px !important;
             }
 
@@ -62,8 +62,14 @@
                 <div class="calendar">
                     <form asp-action="index" method="get">
                         <div class="calendar">
-                            @Html.TextBox("date", DateTime.Now.ToString("yyyy-MM-dd"), new { @class = "form-control", @type = "date", 
-                            @onchange = "this.form.submit()", @min = DateTime.Now.ToString("yyyy-MM-dd") })
+                            @Html.TextBox("date", DateTime.Now.ToString("yyyy-MM-dd"), new
+                                {
+                                    @class = "form-control",
+                                    @type = "date",
+                                    @id = "selectedDate",
+                                    @onchange = "this.form.submit()", 
+                                    @min = DateTime.Now.ToString("yyyy-MM-dd") 
+                                })
                         </div>
                     </form>
                 </div>

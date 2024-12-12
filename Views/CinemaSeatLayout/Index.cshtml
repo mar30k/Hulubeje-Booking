@@ -11,6 +11,12 @@
     var isLoggedIN = ViewBag.isLoggedIn;
     int? redeemedSeatsCount = Model?.Data?.Seats?.Where(c => c.Type == "redeemed").Count();
 }
+@{
+    var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.Data?.MovieName);
+    var listOfSeats = Model?.Data?.Seats?.Select(seat => seat.Id).ToList();
+    var listOfSeatsJson = JsonConvert.SerializeObject(listOfSeats);
+    int seatCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked" || seat.Type == "redeemed" || seat.Type == "reserved" || seat.Type == "taken") ?? 0;
+}
 <script>
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
@@ -143,12 +149,7 @@
             height: 30px;
         }
     </style>
-    @{
-        var santizedMovieName = HttpUtility.JavaScriptStringEncode(Model?.Data?.MovieName);
-        var listOfSeats = Model?.Data?.Seats?.Select(seat => seat.Id).ToList();
-        var listOfSeatsJson = JsonConvert.SerializeObject(listOfSeats);
-        int seatsCount = Model?.Data?.Seats?.Count(seat => seat.Type == "seat" || seat.Type == "sold" || seat.Type == "booked" || seat.Type == "blocked") ?? 0;
-    }
+
     <script>
         var listOfSeats = @Html.Raw(listOfSeatsJson);
         var countdownreset;
@@ -191,7 +192,7 @@
                     var soldSeatsCount = response.filter(function (seat) { 
                         return seat.status === "sold" && listOfSeats.includes(seat.value.toString());
                     }).length;
-                    var availableSeatsCount = @seatsCount - (totaltakenSeats + bookedSeatsCount + soldSeatsCount);
+                    var availableSeatsCount = @seatCount - (totaltakenSeats + bookedSeatsCount + soldSeatsCount);
                     response.forEach(function (seat) {
                         var buttonId = seat.value.toString();
                         var button = document.getElementById(buttonId);
@@ -722,7 +723,6 @@
                             int? reservedSeatsCount = Model?.Data?.Seats?.Where(c => c.Type == "reserved").Count();
 
                             var listOfSeatss = Model?.Data?.Seats?.Select(seat => seat.Id).ToList();
-                            int seatCount = Model?.Data?.Seats?.Count(seat => seat.Type != "aile") ?? 0;
                             int? takenSeatCount = Model?.SeatStatus?
                             .Where(status => listOfSeatss != null && listOfSeatss.Contains(status.Value.ToString()))
                             .Count(status => status.Status == "taken");
