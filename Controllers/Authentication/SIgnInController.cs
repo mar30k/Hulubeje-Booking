@@ -80,6 +80,13 @@ namespace HulubejeBooking.Controllers.Authentication
                     HttpContext.Session.SetString("IsLogin", validationJson);
                     return RedirectToAction("Index", "CinemaSeatLayout");
                 }
+                else if (signin == "Spa")
+                {
+                    string validation = "Yes";
+                    var validationJson = JsonConvert.SerializeObject(validation);
+                    HttpContext.Session.SetString("IsLogin", validationJson);
+                    return RedirectToAction("Index", "SpaProducts");
+                }
                 else if (signin == "Bus")
                 {
                     string validation = "Yes";
