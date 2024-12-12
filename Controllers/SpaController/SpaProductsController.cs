@@ -23,6 +23,7 @@ namespace HulubejeBooking.Controllers.SpaController
         public async Task<IActionResult> Index(int department, int childDepartment, string name, int company)
         {
             var token = "";
+            CompanyDetailModel companyDetail = new() { Department = department.ToString(), CompanyCode = company, OrgOUD = childDepartment, Name = name };
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
@@ -40,6 +41,38 @@ namespace HulubejeBooking.Controllers.SpaController
                 ViewBag.PhoneNumber = identificationResult?.UserData.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData.Email;
             }
+            var loginInfo = HttpContext.Session.GetString("IsLogin");
+            var login = "";
+            if (loginInfo != null)
+            {
+                login = JsonConvert.DeserializeObject<string>(loginInfo);
+            }
+            HttpContext.Session.Remove("IsLogin");
+            if (login != "Yes")
+            {
+                var paramJson = JsonConvert.SerializeObject(companyDetail);
+                HttpContext.Session.SetString("spaValues", paramJson);
+                if (identificationResult != null && !identificationResult.isValid && !identificationResult.isLoggedIn)
+                {
+                    string validation = "Spa";
+                    var validationJson = JsonConvert.SerializeObject(validation);
+                    HttpContext.Session.SetString("SignInInformation", validationJson);
+                    TempData["ErrorMessage"] = "Please login to proceed further.";
+                    return RedirectToAction("Index", "SignIn");
+
+                }
+            }
+            var seatValuesJson = HttpContext.Session.GetString("spaValues");
+            HttpContext.Session.Remove("spaValues");
+            if (seatValuesJson != null)
+            {
+                companyDetail = JsonConvert.DeserializeObject<CompanyDetailModel>(seatValuesJson) ?? new CompanyDetailModel();
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                return RedirectToAction("Index", "Home");
+            }
             if (HttpContext.Session.TryGetValue("GetSpaReservation", out var getspaReservationBytes))
             {
                  
@@ -49,9 +82,9 @@ namespace HulubejeBooking.Controllers.SpaController
                 : new HulubejeResponse<List<Categorys>>();
 
                 var product = getspaReservation?.Data?
-                    .Where(c => c.Code == department)
+                    .Where(c => c.Code.ToString() == companyDetail.Department)
                     .SelectMany(c => c.Children ?? new List<Child>())
-                    .Where(child => child.Name == name && child.Code == childDepartment)
+                    .Where(child => child.Name == companyDetail.Name && child.Code == companyDetail.OrgOUD)
                     .FirstOrDefault();
                 List<CartItem> cart = HttpContext.Session.GetObjectFromJson<List<CartItem>>("CartItems") ?? new List<CartItem>();
 
@@ -61,8 +94,8 @@ namespace HulubejeBooking.Controllers.SpaController
                     CartItem = cart,
                     CompanyDetailModel = new CompanyDetailModel
                     {
-                        CompanyCode = company, 
-                        Department = department.ToString()
+                        CompanyCode = companyDetail.CompanyCode, 
+                        Department = companyDetail.Department?.ToString()
                     }
                 };
 
