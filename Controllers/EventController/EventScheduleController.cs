@@ -42,13 +42,13 @@ namespace HulubejeBooking.Controllers.EventController
 				ViewBag.PhoneNumber = identificationResult?.UserData.Code;
 				ViewBag.EmailAddress = identificationResult?.UserData.Email;
 			}
-			var eventResponse = new HulubejeResponse<EventModel>();
+			var eventResponse = new HulubejeResponse<List<EventResponse>>(); 
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage getEvent = await _v7Client.GetAsync($"event/get?company={company}&branch={branch}");
             if (getEvent.IsSuccessStatusCode)
             {
                 string getEventData = await getEvent.Content.ReadAsStringAsync();
-				eventResponse = JsonConvert.DeserializeObject<HulubejeResponse<EventModel>>(getEventData);
+				eventResponse = JsonConvert.DeserializeObject<HulubejeResponse<List<EventResponse>>>(getEventData);
             }
             return View(eventResponse);
 		}
