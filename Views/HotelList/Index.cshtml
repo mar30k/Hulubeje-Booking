@@ -16,10 +16,9 @@
 <title>Hotel List</title>
 <style>
     .search-container {
-
         display: flex;
         align-items: center;
-        justify-content: flex-end; 
+        justify-content: flex-end;
         width: 100%;
         max-width: 300px;
         margin: 0 auto;
@@ -49,6 +48,7 @@
         .search-button:hover {
             background-color: #0056b3;
         }
+
     h4 {
         font-size: 18px;
         font-weight: 500;
@@ -356,7 +356,7 @@
                                  data-tin="@hotel?.OrgTin" data-oud="@hotel?.BranchCode"
                                  data-hotelRating="@hotel?.HotelRating">
                                 <div class="row">
-                                    <div class="col-sm-4"> 
+                                    <div class="col-sm-4">
                                         <img src="@hotel?.PortraitPicture" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
                                     </div>
                                     <div class="col-sm-8">
@@ -440,8 +440,8 @@
                             <h2>No Match!</h2>
                         </div>
                     }
-            </div>
-            
+                </div>
+
                 <div class="d-flex justify-content-center mt-2" style="display: none;">
                     <!-- Add your loading spinner here -->
                     <div class="spinner-border text-primary" id="loadingSpinner" role="status">
@@ -832,7 +832,7 @@
     $('.hotelAmenities input, .roomAmenities input').change(function () {
         filterCards();
     });
-        
+
     function getSelectedValues(className) {
         return $('.' + className + ' input:checked').map(function () {
             return $(this).val();
