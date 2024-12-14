@@ -512,7 +512,7 @@
                 roomsCount: roomsCount,
                 numberOfNights: numberOfNights
             };
-            var form = $('<form action="/hotellist" method="post"></form>');
+            var form = $('<form action="/hotellist" method="get"></form>');
 
             form.append('<input type="hidden" name="city" value="' + city + '" />');
             form.append('<input type="hidden" name="dateRange" value="' + dateRange + '" />');

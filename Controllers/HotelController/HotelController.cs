@@ -72,7 +72,7 @@ namespace HulubejeBooking.Controllers.HotelController
             return View(viewModel);
         }
         [Route("hotellist")]
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> HotelList(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange)
         {
             var citiesString = HttpContext.Session.GetString("GetCities");
@@ -347,8 +347,8 @@ namespace HulubejeBooking.Controllers.HotelController
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var param = new
             {
-                companyCode = (string)null,
-                orgOUD = (string)null,
+                companyCode = (string?)null,
+                orgOUD = (string?)null,
                 arrivalDate,
                 departureDate,
                 adultCount,
