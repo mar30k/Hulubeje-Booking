@@ -11,7 +11,7 @@
 <title>Hotel Detail</title>
 <style>
     /*     @@import "bourbon";
-             */
+                 */
     * {
         box-sizing: border-box;
     }
@@ -47,10 +47,10 @@
         text-transform: uppercase;
     }
 
-        button:active {
-            margin-top: 2px;
-            box-shadow: 0 2px 0 darken(#063970, 5%);
-        }
+    button:active {
+        margin-top: 2px;
+        box-shadow: 0 2px 0 darken(#063970, 5%);
+    }
 
     .login-container {
         position: relative;
@@ -110,7 +110,7 @@
         display: block;
     }
 
-    .image:hover{
+    .image:hover {
         cursor: pointer;
     }
 
@@ -194,7 +194,7 @@
                 </div>
             </div>
             <div>
-                <button class="btn btn-primary startbooking" type="button" id="searchButton" style="border-color:#FEBB02; height:60px; font-size: 16px;" >Start Booking</button>
+                <button class="btn btn-primary startbooking" type="button" id="searchButton" style="border-color:#FEBB02; height:60px; font-size: 16px;">Start Booking</button>
             </div>
         </div>
     </div>
@@ -215,180 +215,180 @@
  *@
 <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <script>
+<script>
 
-        jQuery(document).ready(function ($) {
-            $("#form").select2({
-                tags: true,
-                placeholder: "Select an option",
-                allowClear: true,
-            });
-
-            var datepicker = $('#date-range-picker');
-            datepicker.daterangepicker({
-                opens: 'left',
-                autoApply: true,
-                locale: {
-                    format: 'MM/DD/YYYY',
-                },
-                startDate: moment().startOf('day'),
-                endDate: moment().startOf('day').add(1, 'days'),
-            });
-
-            datepicker.on('apply.daterangepicker', function (ev, picker) {
-                if (picker.startDate && picker.endDate) {
-                    datepicker.attr('placeholder', "Checkin" + ' - ' + "Checkout");
-                } else {
-                    datepicker.attr('placeholder', 'Checkin-Checkout');
-                }
-            });
-
-            $('#login-button').click(function (e) {
-                e.stopPropagation();
-                $('.login-form').toggleClass('open');
-            });
-
-            $(document).click(function () {
-                $('.login-form').removeClass('open');
-            });
-
-            $('.login-container').click(function (e) {
-                e.stopPropagation();
-            });
+    jQuery(document).ready(function ($) {
+        $("#form").select2({
+            tags: true,
+            placeholder: "Select an option",
+            allowClear: true,
         });
 
+        var datepicker = $('#date-range-picker');
+        datepicker.daterangepicker({
+            opens: 'left',
+            autoApply: true,
+            locale: {
+                format: 'MM/DD/YYYY',
+            },
+            startDate: moment().startOf('day'),
+            endDate: moment().startOf('day').add(1, 'days'),
+        });
 
-        function changeValue(category, action) {
-            var countElement = $('#' + category + 'Count');
-            var currentCount = parseInt(countElement.text());
-            if (action === 'increment') {
-                countElement.text(currentCount + 1);
-            } else if (action === 'decrement' && currentCount > 1) {
-                countElement.text(currentCount - 1);
+        datepicker.on('apply.daterangepicker', function (ev, picker) {
+            if (picker.startDate && picker.endDate) {
+                datepicker.attr('placeholder', "Checkin" + ' - ' + "Checkout");
+            } else {
+                datepicker.attr('placeholder', 'Checkin-Checkout');
             }
-            updateLoginButtonValue();
-        }
-        function updateLoginButtonValue() {
-            var adultCount = parseInt($('#adultCount').text());
-            var childrenCount = parseInt($('#childrenCount').text());
-            var roomsCount = parseInt($('#roomsCount').text());
+        });
 
-            var defaultValue = 'Adults: ' + adultCount + ', Children: ' + childrenCount + ', Rooms: ' + roomsCount;
-            $('#login-button').val(defaultValue).attr('placeholder', defaultValue);
-        }
-        function hideForm() {
-            $('.login-container').removeClass('.login-form');
-        }
+        $('#login-button').click(function (e) {
+            e.stopPropagation();
+            $('.login-form').toggleClass('open');
+        });
 
-        function submitForm() {
-            var adultCount = parseInt($('#adultCount').text());
-            var childrenCount = parseInt($('#childrenCount').text());
-            var roomsCount = parseInt($('#roomsCount').text());
+        $(document).click(function () {
+            $('.login-form').removeClass('open');
+        });
 
-            updateLoginButtonValue();
-            hideForm();
+        $('.login-container').click(function (e) {
+            e.stopPropagation();
+        });
+    });
 
+
+    function changeValue(category, action) {
+        var countElement = $('#' + category + 'Count');
+        var currentCount = parseInt(countElement.text());
+        if (action === 'increment') {
+            countElement.text(currentCount + 1);
+        } else if (action === 'decrement' && currentCount > 1) {
+            countElement.text(currentCount - 1);
         }
         updateLoginButtonValue();
+    }
+    function updateLoginButtonValue() {
+        var adultCount = parseInt($('#adultCount').text());
+        var childrenCount = parseInt($('#childrenCount').text());
+        var roomsCount = parseInt($('#roomsCount').text());
+
+        var defaultValue = 'Adults: ' + adultCount + ', Children: ' + childrenCount + ', Rooms: ' + roomsCount;
+        $('#login-button').val(defaultValue).attr('placeholder', defaultValue);
+    }
+    function hideForm() {
+        $('.login-container').removeClass('.login-form');
+    }
+
+    function submitForm() {
+        var adultCount = parseInt($('#adultCount').text());
+        var childrenCount = parseInt($('#childrenCount').text());
+        var roomsCount = parseInt($('#roomsCount').text());
+
+        updateLoginButtonValue();
+        hideForm();
+
+    }
+    updateLoginButtonValue();
 
 
-        function getFormData() {
-            var selectedDestination = $('.form-select').val();
-            var dateRange = $('#date-range-picker').attr('placeholder');
-            var adultCount = parseInt($('#adultCount').text());
-            var childrenCount = parseInt($('#childrenCount').text());
-            var roomsCount = parseInt($('#roomsCount').text());
+    function getFormData() {
+        var selectedDestination = $('.form-select').val();
+        var dateRange = $('#date-range-picker').attr('placeholder');
+        var adultCount = parseInt($('#adultCount').text());
+        var childrenCount = parseInt($('#childrenCount').text());
+        var roomsCount = parseInt($('#roomsCount').text());
 
-            return {
-                destination: selectedDestination,
-                dateRange: dateRange,
-                adults: adultCount,
-                children: childrenCount,
-                rooms: roomsCount
+        return {
+            destination: selectedDestination,
+            dateRange: dateRange,
+            adults: adultCount,
+            children: childrenCount,
+            rooms: roomsCount
+        };
+    }
+
+    // function storeFormData() {
+    //     var formData = getFormData();
+    //     localStorage.setItem('formData', JSON.stringify(formData));
+    // }
+
+    // function retrieveFormData() {
+    //     var storedFormData = localStorage.getItem('formData');
+    //     return storedFormData ? JSON.parse(storedFormData) : null;
+    // }
+
+    // $(document).ready(function () {
+    //     var storedData = retrieveFormData();
+    //     if (storedData) {
+    //         // $('.form-select').val(storedData.destination);
+    //         $('#date-range-picker').attr('placeholder', storedData.dateRange);
+    //         $('#adultCount').text(storedData.adults);
+    //         $('#childrenCount').text(storedData.children);
+    //         $('#roomsCount').text(storedData.rooms);
+    //     }
+    // });
+
+    // $(document).ready(function () {
+    //     $('#searchButton').click(function () {
+
+    //         var form = $('#searchForm');
+    //         form.submit();
+    //     });
+    // });
+
+    $(document).ready(function () {
+        $('#searchButton').on('click', function () {
+            var adultCount = parseInt($('#adultCount').text(), 10);
+            var childrenCount = parseInt($('#childrenCount').text(), 10);
+            var roomsCount = parseInt($('#roomsCount').text(), 10);
+            var dateRange = $('#date-range-picker').val();
+
+            var dateParts = dateRange.split(' - ');
+
+            var arrivalDate = new Date(Date.parse(dateParts[0]));
+            var departureDate = new Date(Date.parse(dateParts[1]));
+
+            function calculateNumberOfNights(arrivalDate, departureDate) {
+            var timeDifference = departureDate.getTime() - arrivalDate.getTime();
+                var numberOfNights = Math.round(timeDifference / (1000 * 3600 * 24));
+                return numberOfNights;
+            }
+
+            var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
+
+            var formData = {
+                orgCode:'@Model?.CompanyCode',
+                Date: dateRange ,
+                adultCount: adultCount,
+                childrenCount: childrenCount,
+                roomsCount: roomsCount,
+                numberOfNights: numberOfNights,
+                oud:'@Model?.OrgOUD',
+                name: '@Model?.Name',
+                CityName: '@Model?.CityName',
+                branchName: '@Model?.BranchName'
             };
-        }
-
-        // function storeFormData() {
-        //     var formData = getFormData();
-        //     localStorage.setItem('formData', JSON.stringify(formData));
-        // }
-
-        // function retrieveFormData() {
-        //     var storedFormData = localStorage.getItem('formData');
-        //     return storedFormData ? JSON.parse(storedFormData) : null;
-        // }
-
-        // $(document).ready(function () {
-        //     var storedData = retrieveFormData();
-        //     if (storedData) {
-        //         // $('.form-select').val(storedData.destination);
-        //         $('#date-range-picker').attr('placeholder', storedData.dateRange);
-        //         $('#adultCount').text(storedData.adults);
-        //         $('#childrenCount').text(storedData.children);
-        //         $('#roomsCount').text(storedData.rooms);
-        //     }
-        // });
-
-        // $(document).ready(function () {
-        //     $('#searchButton').click(function () {
-
-        //         var form = $('#searchForm');
-        //         form.submit();
-        //     });
-        // });
-
-        $(document).ready(function () {
-            $('#searchButton').on('click', function () {
-                var adultCount = parseInt($('#adultCount').text(), 10);
-                var childrenCount = parseInt($('#childrenCount').text(), 10);
-                var roomsCount = parseInt($('#roomsCount').text(), 10);
-                var dateRange = $('#date-range-picker').val();
-
-                var dateParts = dateRange.split(' - ');
-
-                var arrivalDate = new Date(Date.parse(dateParts[0]));
-                var departureDate = new Date(Date.parse(dateParts[1]));
-
-                function calculateNumberOfNights(arrivalDate, departureDate) {
-                var timeDifference = departureDate.getTime() - arrivalDate.getTime();
-                    var numberOfNights = Math.round(timeDifference / (1000 * 3600 * 24));
-                    return numberOfNights;
+            console.log(formData);
+            $.ajax({
+                url: '../Hotel/Availability',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function () {
+                    window.location.href = '../rooms';
+                },
+                error: function (error) {
+                    console.error('Error:', error);
                 }
-
-                var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
-
-                var formData = {
-                    orgCode:'@Model?.CompanyCode',
-                    Date: dateRange ,
-                    adultCount: adultCount,
-                    childrenCount: childrenCount,
-                    roomsCount: roomsCount,
-                    numberOfNights: numberOfNights,
-                    oud:'@Model?.OrgOUD',
-                    name: '@Model?.Name',
-                    CityName: '@Model?.CityName',
-                    branchName: '@Model?.BranchName'
-                };
-                console.log(formData);
-                $.ajax({
-                    url: '../Hotel/Availability',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formData),
-                    success: function () {
-                        window.location.href = '../rooms';
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
-                    }
-                });
-
             });
 
         });
 
+    });
 
-    </script>
+
+</script>
 
 
 <partial name="_Footer" />
