@@ -530,29 +530,25 @@
 
     $(document).ready(function () {
         $('.cardB').on('click', function () {
-            var data = 
-            {
-                oud: $(this).data('oud'),
-                branchName: $(this).data('branch-name'),
-                orgCode: $(this).data('org-code'),
-                orgTin: $(this).data('org-tin'),
-                name:  $(this).data('hotel-name'),
-                description: $(this).data('branch-note'),
-                cityName: $(this).data('cityname')
-            }; 
-            console.log(data);
-            $.ajax({
-                url: '/Hotel/Hoteldetail',
-                 type: 'POST',
-                 contentType: 'application/json',
-                 data: JSON.stringify(data),
-                 success: function () {
-                    window.location.href = "/hoteldetail";
-                 },
-                 error: function (error) {
-                     console.error('Error:', error);
-                 }
-             });
+            var oud = $(this).data('oud');
+            var branchName = $(this).data('branch-name');
+            var orgCode = $(this).data('org-code');
+            var orgTin = $(this).data('org-tin');
+            var name = $(this).data('hotel-name');
+            var description = $(this).data('branch-note');
+            var cityname = $(this).data('cityname');
+            var form = $('<form action="/hoteldetail" method="post"></form>');
+
+            form.append('<input type="hidden" name="oud" value="' + oud + '" />');
+            form.append('<input type="hidden" name="branchName" value="' + branchName + '" />');
+            form.append('<input type="hidden" name="orgCode" value="' + orgCode + '" />');
+            form.append('<input type="hidden" name="orgTin" value="' + orgTin + '" />');
+            form.append('<input type="hidden" name="description" value="' + description + '" />');
+            form.append('<input type="hidden" name="cityname" value="' + cityname + '" />');
+            form.append('<input type="hidden" name="name" value="' + name + '" />');
+
+            $('body').append(form);
+            form.submit();
         });
 
     });
