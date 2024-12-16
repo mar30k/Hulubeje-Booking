@@ -32,17 +32,17 @@ namespace HulubejeBooking.Controllers.HotelController
             var roomDetailsJson = JsonConvert.SerializeObject(roomDetails);
             HttpContext.Session.SetString("RoomType", roomDetailsJson);
             var RoomFormData = HttpContext.Session.GetString("RoomFormData");
-            var RoomFormDatajson = new RoomFormData();
-
-			if (RoomFormData != null)
+            HttpContext.Session.Remove("RoomFormData");
+            RoomFormData? RoomFormDatajson;
+            if (RoomFormData != null)
             {
-				RoomFormDatajson = JsonConvert.DeserializeObject<RoomFormData>(RoomFormData);
+                RoomFormDatajson = JsonConvert.DeserializeObject<RoomFormData>(RoomFormData);
             }
             else
             {
-				TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
-				return RedirectToAction("Index", "Home");
-			}
+                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                return RedirectToAction("Index", "Home");
+            }
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
