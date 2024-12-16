@@ -521,7 +521,7 @@
             page: currentPage,
         };
         $.ajax({
-            url: '/hotel/AdditionalPages',
+            url: '/AdditionalPages',
             type: 'GET',
             data: data,
             success: function (response) {
@@ -844,9 +844,15 @@
             var orgCode = $(this).data('org-code');
             var oud = $(this).data('oud');
             var cityName = $(this).data('cityname');
+            var branchName = $(this).data('branch');
             var hotelName = $(this).data('hotel');
             var dateRange = '@Model?.RoomFormData?.Date';
             var dateParts = dateRange.split(' - ');
+
+            var date = '@Model?.RoomFormData?.Date';
+            var childrenCount = parseInt('@Model?.RoomFormData?.childrenCount');
+            var adultCount = parseInt('@Model?.RoomFormData?.adultCount');
+            var roomsCount = parseInt('@Model?.RoomFormData?.roomsCount');
 
             var arrivalDate = new Date(Date.parse(dateParts[0]));
             var departureDate = new Date(Date.parse(dateParts[1]));
@@ -858,30 +864,22 @@
             }
 
             var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
-            var roomFormData = {
-                Date: '@Model?.RoomFormData?.Date',
-                adultCount: parseInt('@Model?.RoomFormData?.adultCount'),
-                childrenCount: parseInt('@Model?.RoomFormData?.adultCount'),
-                roomsCount: parseInt('@Model?.RoomFormData?.adultCount'),
-                orgCode: orgCode,
-                cityName: cityName,
-                oud: oud,
-                Name: hotelName,
-                numberOfNights: numberOfNights,
-                branchName: $(this).data('branch'),
-            };
-            $.ajax({
-                url: '../Hotel/Availability',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(roomFormData),
-                success: function () {
-                    window.location.href = '../rooms';
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
+
+            var form = $('<form action="/rooms" method="get"></form>');
+
+            form.append('<input type="hidden" name="oud" value="' + oud + '" />');
+            form.append('<input type="hidden" name="orgCode" value="' + orgCode + '" />');
+            form.append('<input type="hidden" name="name" value="' + hotelName + '" />');
+            form.append('<input type="hidden" name="cityName" value="' + cityName + '" />');
+            form.append('<input type="hidden" name="numberOfNights" value="' + numberOfNights + '" />');
+            form.append('<input type="hidden" name="childrenCount" value="' + childrenCount + '" />');
+            form.append('<input type="hidden" name="adultCount" value="' + adultCount + '" />');
+            form.append('<input type="hidden" name="roomsCount" value="' + roomsCount + '" />');
+            form.append('<input type="hidden" name="branchName" value="' + branchName + '" />');
+            form.append('<input type="hidden" name="date" value="' + date + '" />');
+
+            $('body').append(form);
+            form.submit();
         });
     });
 

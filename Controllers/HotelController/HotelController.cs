@@ -133,62 +133,6 @@ namespace HulubejeBooking.Controllers.HotelController
             { 
                 return BadRequest();
             }
-            
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> AdditionalPages(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange, int page)
-        {
-            var numberOfDay = numberOfNights <= 0 ? 1 : numberOfNights;
-            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-            var gethotelsbycity = new GetHotelByCity();
-            var identificationResult = await _authenticationManager.identificationValid();
-            string? token = identificationResult?.UserData.Token;
-            var dt = DateRangeParser.ParseDateRange(dateRange);
-            var arrivalDateString = dt.startDateString.Trim();
-            var departureDateString = dt.endDateString.Trim();
-            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            var data = new RoomFormData
-            {
-                city = city,
-                roomsCount = roomsCount,
-                childrenCount = childrenCount,
-                adultCount = adultCount,
-                Date = dateRange,
-                numberOfNights = numberOfDay,
-                DepartureDate = departureDate,
-                ArrivalDate = arrivalDate,
-            };
-
-            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var param = new
-            {
-                companyCode = (string?)null,
-                orgOUD = (string?)null,
-                arrivalDate,
-                departureDate,
-                adultCount,
-                childCount = childrenCount,
-                roomCount = roomsCount,
-                city,
-                page
-            };
-            var paramJson = JsonConvert.SerializeObject(param);
-            var content = new StringContent(paramJson, Encoding.UTF8, "application/json");
-
-            HttpResponseMessage gethotelsbycityResponse = await _v7Client.PostAsync($"hotel/gethotelsbycity", content);
-            if (gethotelsbycityResponse.IsSuccessStatusCode)
-            {
-                string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
-                gethotelsbycity = gethotelsbycityData != null ? JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData) : new GetHotelByCity();
-                if (gethotelsbycity != null)
-                {
-                    gethotelsbycity.RoomFormData = data;
-                }
-            }
-            return Json(gethotelsbycity);
-        }
 
     }
 }
