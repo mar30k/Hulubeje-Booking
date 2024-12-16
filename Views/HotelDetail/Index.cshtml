@@ -339,11 +339,16 @@
 
     $(document).ready(function () {
         $('#searchButton').on('click', function () {
+            var orgCode = '@Model?.CompanyCode';
+            var oud = '@Model?.OrgOUD';
+            var name = '@Model?.Name';
+            var cityName = '@Model?.CityName';
+            var branchName = '@Model?.BranchName';
             var adultCount = parseInt($('#adultCount').text(), 10);
             var childrenCount = parseInt($('#childrenCount').text(), 10);
             var roomsCount = parseInt($('#roomsCount').text(), 10);
             var dateRange = $('#date-range-picker').val();
-
+            
             var dateParts = dateRange.split(' - ');
 
             var arrivalDate = new Date(Date.parse(dateParts[0]));
@@ -357,31 +362,21 @@
 
             var numberOfNights = calculateNumberOfNights(arrivalDate, departureDate);
 
-            var formData = {
-                orgCode:'@Model?.CompanyCode',
-                Date: dateRange ,
-                adultCount: adultCount,
-                childrenCount: childrenCount,
-                roomsCount: roomsCount,
-                numberOfNights: numberOfNights,
-                oud:'@Model?.OrgOUD',
-                name: '@Model?.Name',
-                CityName: '@Model?.CityName',
-                branchName: '@Model?.BranchName'
-            };
-            console.log(formData);
-            $.ajax({
-                url: '../Hotel/Availability',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function () {
-                    window.location.href = '../rooms';
-                },
-                error: function (error) {
-                    console.error('Error:', error);
-                }
-            });
+            var form = $('<form action="/rooms" method="get"></form>');
+
+            form.append('<input type="hidden" name="oud" value="' + oud + '" />');
+            form.append('<input type="hidden" name="orgCode" value="' + orgCode + '" />');
+            form.append('<input type="hidden" name="name" value="' + name + '" />');
+            form.append('<input type="hidden" name="cityName" value="' + cityName + '" />');
+            form.append('<input type="hidden" name="numberOfNights" value="' + numberOfNights + '" />');
+            form.append('<input type="hidden" name="childrenCount" value="' + childrenCount + '" />');
+            form.append('<input type="hidden" name="adultCount" value="' + adultCount + '" />');
+            form.append('<input type="hidden" name="roomsCount" value="' + roomsCount + '" />');
+            form.append('<input type="hidden" name="branchName" value="' + branchName + '" />');
+            form.append('<input type="hidden" name="date" value="' + dateRange + '" />');
+
+            $('body').append(form);
+            form.submit();
 
         });
 
