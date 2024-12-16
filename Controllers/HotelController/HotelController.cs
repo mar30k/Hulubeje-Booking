@@ -72,67 +72,7 @@ namespace HulubejeBooking.Controllers.HotelController
             return View(viewModel);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Availability([FromBody] RoomFormData roomFormData)
-        {
-            if (roomFormData != null) {
-                var b = await _authenticationManager.identificationValid();
-                string? token = b.UserData.Token;
-                var dt = DateRangeParser.ParseDateRange(roomFormData.Date);
-                var arrivalDateString = dt.startDateString.Trim();
-                var departureDateString = dt.endDateString.Trim();
-                DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-                DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-                roomFormData.ArrivalDate = arrivalDate;
-                roomFormData.DepartureDate = departureDate;
-                var roomFormDatajson = JsonConvert.SerializeObject(roomFormData);
-                HttpContext.Session.SetString("RoomFormData", roomFormDatajson);
-                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-                var companyCode = roomFormData.orgCode;
-                var orgOUD = roomFormData.oud;
-                var adultCount = roomFormData.adultCount;
-                var childCount = roomFormData.childrenCount;
-                var roomCount = roomFormData.roomsCount;
-                var requestBody = new
-                {
-                    arrivalDate,
-                    departureDate,
-                    companyCode,
-                    adultCount,
-                    childCount,
-                    roomCount,
-                    orgOUD,
-                    city = (string)null
-                };
-                var roomBody = JsonConvert.SerializeObject(requestBody);
-                var roomContent = new StringContent(roomBody, Encoding.UTF8, "application/json");
-
-                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                HttpResponseMessage response = await _v7Client.PostAsync("hotel/getrooms", roomContent);
-                if (response.IsSuccessStatusCode)
-                {
-                    string data = await response.Content.ReadAsStringAsync();
-                    var availableRooms = data != null ? JsonConvert.DeserializeObject<GetRooms>(data) : new GetRooms();
-                    if (availableRooms != null)
-                    {
-                        availableRooms.HotelName = roomFormData.Name;
-                    }
-                    var availableRoomsString = JsonConvert.SerializeObject(availableRooms);
-                    if (data != null)
-                    {
-                        HttpContext.Session.SetString("AvailabilityViewModel", availableRoomsString);
-                    }
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
-            }
-            else 
-            { 
-                return BadRequest();
-            }
-
+        
+        
     }
 }

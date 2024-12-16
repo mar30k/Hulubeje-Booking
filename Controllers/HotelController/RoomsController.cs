@@ -2,7 +2,8 @@
 using HulubejeBooking.Controllers.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using HulubejeBooking.Models.Authentication;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
@@ -23,10 +24,8 @@ namespace HulubejeBooking.Controllers.HotelController
         }
 
         [HttpGet]
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> Index([FromQuery] RoomFormData roomFormData)
         {
-            var roomForm = HttpContext.Session.GetString("RoomFormData");
-            var roomFormData = roomForm!=null ? JsonConvert.DeserializeObject<RoomFormData>(roomForm) : null;
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
@@ -52,34 +51,75 @@ namespace HulubejeBooking.Controllers.HotelController
             HttpContext.Session.Remove("IsLogin");
             if (login != "Yes")
             {
+                var roomFormDatajson = JsonConvert.SerializeObject(roomFormData);
+                HttpContext.Session.Remove("RoomFormData");
+                HttpContext.Session.SetString("RoomFormData", roomFormDatajson);
                 if (identificationResult!=null && !identificationResult.isValid && !identificationResult.isLoggedIn)
                 {
-                    string validation = "Hotel";
-                    var validationJson = JsonConvert.SerializeObject(validation);
-                    HttpContext.Session.SetString("SignInInformation", validationJson);
+                    HttpContext.Session.SetString("SignInInformation", JsonConvert.SerializeObject("Hotel"));
                     TempData["ErrorMessage"] = "Please login to proceed further.";
                     return RedirectToAction("Index", "Signin");
                 }
             }
 
-            var viewModelJson = HttpContext.Session.GetString("AvailabilityViewModel");
-
-            if (!string.IsNullOrEmpty(viewModelJson) && !string.IsNullOrEmpty(roomForm))
+            var roomFormDatajs = HttpContext.Session.GetString("RoomFormData");
+            if (roomFormDatajs != null)
             {
-                //HttpContext.Session.Remove("AvailabilityViewModel");
-                GetRooms? viewModel = JsonConvert.DeserializeObject<GetRooms>(viewModelJson);
-                roomFormData = JsonConvert.DeserializeObject<RoomFormData>(roomForm);
-                if (roomFormData != null && viewModel!=null)
-                {
-                    viewModel.RoomFormData = roomFormData;
-                }
-                return View(viewModel);
-			}
+                roomFormData = JsonConvert.DeserializeObject<RoomFormData>(roomFormDatajs) ?? new RoomFormData();
+            }
             else
             {
-				TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
-				return RedirectToAction("Index", "Home");
-			}
+                TempData["ErrorMessage"] = "Session Has Expired Please Restart the Booking Process";
+                return RedirectToAction("Index", "Home");
+            }
+
+
+            var dt = DateRangeParser.ParseDateRange(roomFormData.Date);
+            var arrivalDateString = dt.startDateString.Trim();
+            var departureDateString = dt.endDateString.Trim();
+            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            roomFormData.ArrivalDate = arrivalDate;
+            roomFormData.DepartureDate = departureDate;
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var requestBody = new
+            {
+                arrivalDate,
+                departureDate,
+                companyCode = roomFormData.orgCode,
+                adultCount = roomFormData.adultCount,
+                childCount = roomFormData.childrenCount,
+                roomCount = roomFormData.roomsCount,
+                orgOUD = roomFormData.oud,
+                city = (string?)null
+            };
+            var roomBody = JsonConvert.SerializeObject(requestBody);
+            var roomContent = new StringContent(roomBody, Encoding.UTF8, "application/json");
+            string? token = identificationResult?.UserData?.Token;
+
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _v7Client.PostAsync("hotel/getrooms", roomContent);
+            var availableRooms = new GetRooms();
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                availableRooms = data != null ? JsonConvert.DeserializeObject<GetRooms>(data) : new GetRooms();
+                if (availableRooms != null)
+                {
+                    availableRooms.HotelName = roomFormData.Name;
+                    availableRooms.RoomFormData = roomFormData;
+                }
+                return View(availableRooms);
+            }
+            else
+            {
+                if (availableRooms != null)
+                {
+                    availableRooms.HotelName = roomFormData.Name;
+                    availableRooms.RoomFormData = roomFormData;
+                }
+                return View(availableRooms);
+            }
         }
 
     }
