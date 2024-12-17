@@ -10,9 +10,9 @@ namespace HulubejeBooking.Controllers.SpaController
 {
     public class SpaController : Controller
     {
-        private IHttpContextAccessor? _httpContextAccessor;
-        private AuthenticationManager _authenticationManager;
-        private IHttpClientFactory _httpClientFactory;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
+        private readonly AuthenticationManager? _authenticationManager;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public SpaController(IHttpContextAccessor? httpContextAccessor, AuthenticationManager? authenticationManager, IHttpClientFactory httpClientFactory)
         {
