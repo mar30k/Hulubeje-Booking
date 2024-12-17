@@ -56,7 +56,7 @@ public class CinemaSeatLayoutController : Controller
         }
 
         string? token = identificationResult?.UserData?.Token;
-        phoneNumber = identificationResult?.UserData?.Code;
+        phoneNumber = identificationResult?.UserData?.Code ?? "";
 
         var loginInfo = HttpContext.Session.GetString("IsLogin");
         var login = "";
