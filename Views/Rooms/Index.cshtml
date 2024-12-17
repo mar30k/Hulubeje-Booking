@@ -7,47 +7,47 @@
 }
 <style>
 	.custom-line {
-		border: none;
-		border-top: 1px solid #777;
+	border: none;
+	border-top: 1px solid #777;
 	}
 
 	.roomimages:hover{
-		cursor: pointer;
+	cursor: pointer;
 	}
 
 	.visually-hidden {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		border: 0;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
 	}
 
 	.hidden-amenities {
-		display: none;
+	display: none;
 	}
 
 	.toggle-amenities:checked ~ .hidden-amenities {
-		display: flex;
+	display: flex;
 	}
 
 	.toggle-label::after {
-		content: "Show More";
+	content: "Show More";
 	}
 
 	.toggle-amenities:checked ~ .toggle-label::after {
-		content: "Show Less";
+	content: "Show Less";
 	}
 
 	.toggle-label.show-less {
-		display: none;
+	display: none;
 	}
 
 	.toggle-amenities:checked ~ .toggle-label.show-less {
-		display: block;
+	display: block;
 	}
 </style>
 <script>
@@ -66,6 +66,7 @@
 					AllPictureUrls.Add(picture);
 				}
 			}
+			AllPictureUrls = AllPictureUrls.OrderBy(x => Guid.NewGuid()).ToList();
 		}
 
 		<div class="row mt-2 g-2">
