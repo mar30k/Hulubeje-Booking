@@ -387,7 +387,7 @@
 
 
         const showBillButton = document.getElementById('showBillButton');
-        // const confirmButton = document.getElementById('confirmButton');
+        const confirmButton = document.getElementById('confirmButton');
         showBillButton.addEventListener('click', function () {
             var billContainer = document.getElementById('BillContainer');
             var selectedItemsContainer = document.getElementById('selected-items-container');
@@ -400,7 +400,6 @@
                 totalpricecontainer.style.display = 'none';
                 bill();
                 showBillButton.style.display = 'none';
-                confirmButton.style.display = 'block';
             } 
         });
 
@@ -421,7 +420,7 @@
             var date = "@Model?.ScheduleDate";
             var movieDimension = "@Model?.Dimension";
             console.log(selectedItems);
-            $.get("/CinemaFoodAndBeverage/CalculateBill", {
+            $.get("/CalculateBill", {
                 movieName: movieName,
                 companyCode: companyCode,
                 branchCode: branchCode,
@@ -439,6 +438,7 @@
                 selectedItems: JSON.stringify(selectedItems),
             }, function (data) {
                 $("#BillContainer").html(data);
+                confirmButton.style.display = 'block';
             });
         }
         function startCountdownTimer() {
