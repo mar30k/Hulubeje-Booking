@@ -97,6 +97,8 @@ namespace CinemaSeatBooking.Controllers
                 return View(productsViewModel);
             }
         }
+
+        [Route("calculatebill")]
         public async Task<IActionResult> CalculateBill(string movieName,int branchCode,string movieDimension, DateTime date, string time, string company, string hallName,
             decimal moviePrice, int movieScheduleCode, string companyTin, int movieArticleCode, string numberOfSeats, string selectedItems, int companyCode, string seatCacheKey)
         {
