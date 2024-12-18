@@ -50,6 +50,13 @@ namespace HulubejeBooking.Controllers.EventController
                 string getEventData = await getEvent.Content.ReadAsStringAsync();
 				eventResponse = JsonConvert.DeserializeObject<HulubejeResponse<List<EventResponse>>>(getEventData);
             }
+
+            HttpContext.Session.SetString("eventResponse", JsonConvert.SerializeObject(eventResponse));
+            var CompanyDetailModel = new CompanyDetailModel
+            {
+                CompanyCode = company,
+                OrgOUD = branch
+            };
             return View(eventResponse);
 		}
 	}
