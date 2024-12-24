@@ -51,7 +51,7 @@ namespace HulubejeBooking.Controllers.EventController
 				eventResponse = JsonConvert.DeserializeObject<HulubejeResponse<List<EventResponse>>>(getEventData);
             }
 
-            HttpContext.Session.SetString("eventResponse", JsonConvert.SerializeObject(eventResponse));
+            HttpContext.Session.SetString("EventResponse", JsonConvert.SerializeObject(eventResponse));
             var CompanyDetailModel = new CompanyDetailModel
             {
                 CompanyCode = company,
