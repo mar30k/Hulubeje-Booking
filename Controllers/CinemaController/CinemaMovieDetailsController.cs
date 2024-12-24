@@ -105,14 +105,14 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 var tmdbData = await tmdbResponse.Content.ReadAsStringAsync();
                 var movieDetail = JsonConvert.DeserializeObject<MovieDetails>(tmdbData);
-
+                var backdroppath = "https://image.tmdb.org/t/p/w500";
                 if (movieDetail != null && movieDetail?.results != null && movieDetail.results.Count > 0)
                 {
                     var result = movieDetail.results.Find(x => x.overview == sanitizedOverview);
-                    var backdroppath = "https://image.tmdb.org/t/p/w500" + result?.backdrop_path;
-                    movieDetails.BackdropPath = backdroppath;
+                    backdroppath += result?.backdrop_path;
                     tmdbMovieId = result?.id;
                 }
+                movieDetails.BackdropPath = backdroppath;
             }
             string videoId = streamUrl?[(streamUrl.IndexOf("v=") + 2)..] ?? "";
             movieDetails.YoutubeKey = videoId;
