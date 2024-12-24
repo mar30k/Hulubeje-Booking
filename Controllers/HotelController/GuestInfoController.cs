@@ -32,7 +32,6 @@ namespace HulubejeBooking.Controllers.HotelController
             var roomDetailsJson = JsonConvert.SerializeObject(roomDetails);
             HttpContext.Session.SetString("RoomType", roomDetailsJson);
             var RoomFormData = HttpContext.Session.GetString("RoomFormData");
-            HttpContext.Session.Remove("RoomFormData");
             RoomFormData? RoomFormDatajson;
             if (RoomFormData != null)
             {

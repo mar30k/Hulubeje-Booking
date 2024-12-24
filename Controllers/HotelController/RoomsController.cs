@@ -26,6 +26,14 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpGet]
         public async Task<IActionResult> Index([FromQuery] RoomFormData roomFormData)
         {
+            var dt = DateRangeParser.ParseDateRange(roomFormData.Date);
+            var arrivalDateString = dt.startDateString.Trim();
+            var departureDateString = dt.endDateString.Trim();
+            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            roomFormData.ArrivalDate = arrivalDate;
+            roomFormData.DepartureDate = departureDate;
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
@@ -52,7 +60,6 @@ namespace HulubejeBooking.Controllers.HotelController
             if (login != "Yes")
             {
                 var roomFormDatajson = JsonConvert.SerializeObject(roomFormData);
-                HttpContext.Session.Remove("RoomFormData");
                 HttpContext.Session.SetString("RoomFormData", roomFormDatajson);
                 if (identificationResult!=null && !identificationResult.isValid && !identificationResult.isLoggedIn)
                 {
@@ -74,20 +81,13 @@ namespace HulubejeBooking.Controllers.HotelController
             }
 
 
-            var dt = DateRangeParser.ParseDateRange(roomFormData.Date);
-            var arrivalDateString = dt.startDateString.Trim();
-            var departureDateString = dt.endDateString.Trim();
-            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            roomFormData.ArrivalDate = arrivalDate;
-            roomFormData.DepartureDate = departureDate;
-            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+
             var requestBody = new
             {
                 arrivalDate,
                 departureDate,
                 companyCode = roomFormData.orgCode,
-                adultCount = roomFormData.adultCount,
+                roomFormData.adultCount,
                 childCount = roomFormData.childrenCount,
                 roomCount = roomFormData.roomsCount,
                 orgOUD = roomFormData.oud,
