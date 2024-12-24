@@ -27,6 +27,7 @@ namespace HulubejeBooking.Models.CInemaModels
         public Stat? Stat { get; set; }
         public double Rating { get; set; }
         public int RatingCount { get; set; }
+        public List<Companies>? Companies { get; set; }
     }
     public class Stat
     {
@@ -71,6 +72,10 @@ namespace HulubejeBooking.Models.CInemaModels
         public string? Actors { get; set; }
         public string? StreamUrl { get; set; }
         public string? MoviePoster { get; set; }
+        public string? SupplierConsigneeId { get; set; }
+        public string? SupplierConsigneeUnit { get; set; }
+        public string? SupplierConsigneeName { get; set; }
+        public string? SupplierConsigneeUnitName { get; set; }
         public List<MovieSchedules>? MovieSchedule { get; set; }
     }
 
@@ -93,5 +98,9 @@ namespace HulubejeBooking.Models.CInemaModels
         public decimal? PriceValue { get; set; }
         public int? DefaultTax { get; set; }
     }
-
+    public class Companies
+    {
+        public string? Tin { get; set; }
+        public string? BranchCode { get; set; }
+    }
 }
