@@ -9,6 +9,6 @@ namespace HulubejeBooking.Models
 		public List<string>? Event { get; set; }
 		public List<string>? Bus { get; set; }
 		public List<string>? Spa { get; set; }
-		public cookieValidation? CookieValidation { get; set; }
+		public CookieValidation? CookieValidation { get; set; }
 	}
 }
