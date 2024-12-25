@@ -10,7 +10,7 @@ namespace HulubejeBooking.Models.CInemaModels
         public List<CompanyData>? TrendingMovies { get; set; }
         public string[]? ErrorMessages { get; set; }
         public string[]? AdditionalParameters { get; set; }
-        public cookieValidation? CookieValidation { get; set; }
+        public CookieValidation? CookieValidation { get; set; }
 
     }
 

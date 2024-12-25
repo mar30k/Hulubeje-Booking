@@ -23,7 +23,7 @@ namespace HulubejeBooking.Controllers.EventController
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var token = "";
-            var identificationResult = await _authenticationManager.identificationValid();
+            CookieValidation identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
                 token = identificationResult?.UserData?.Token;

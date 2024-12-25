@@ -19,6 +19,6 @@ namespace HulubejeBooking.Models.HotelModels
         public string? orgTin { get; set; }
         public string? Description { get; set; }
         public string? CityName { get; set; }
-        public cookieValidation? CookieValidation { get;  set; }
+        public CookieValidation? CookieValidation { get;  set; }
     }
 }

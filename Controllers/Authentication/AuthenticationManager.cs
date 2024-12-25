@@ -65,9 +65,9 @@ namespace HulubejeBooking.Controllers.Authentication
             _cachedUser = user;
             _buffer.AddCustomerToBuffer(_cachedUser);
         }
-        public virtual async Task<cookieValidation> identificationValid()
+        public virtual async Task<CookieValidation> identificationValid()
         {
-            var validinfo = new cookieValidation();
+            var validinfo = new CookieValidation();
             var data = new UserData(); // Adjust the namespace here
             var loggedInCheckerJson = _httpContextAccessor?.HttpContext?.Session.GetString("isLoggedIn");
             var loginChecker = loggedInCheckerJson != null && JsonConvert.DeserializeObject<bool>(loggedInCheckerJson);
