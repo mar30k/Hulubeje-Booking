@@ -6,44 +6,94 @@
     var isLoggedIN = ViewBag.isLoggedIn;
 }
 <style>
-    .card{
+    .card {
         transition: box-shadow 1s ease;
     }
-    .card:hover {
-        cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+        .card:hover {
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-img-top {
+        width: 100%; /* Make the image fill the width of its container */
+        height: 150px; /* Adjust the height to your preference */
+        object-fit: fill; /* Ensure the image maintains its aspect ratio and covers the area */
+        border-radius: 3px;
     }
+
+    .filter-btn {
+        cursor: pointer;
+        padding: 4px 8px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-right: 8px;
+        transition: background-color 0.3s;
+    }
+
+        .filter-btn:hover {
+            background-color: #ddd;
+        }
+
+        .filter-btn.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
 </style>
 <title>Products</title>
 <script>
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
-<div class="container" style="min-height: 80vh">
-    @foreach (var category in Model?.Getspareservation?.Data ?? new List<Categorys>())
-    {
-        <div class="p-2">
-            <p>@category.Category</p>
-        </div>
-        <div class="row gy-2">
-            @foreach (var child in category.Children ?? new List<Child>())
-            {
-                <div class="col-md-6">
-                    <div class="card p-3 clickable-card" data-department="@category.Code" data-child-department="@child.Code" data-name="@child.Name">
-                        <div class="row">
-                            <div class="col-6">
-                                <img src="@child.Image" alt="img" class="img-fluid card-img-top" />
-                            </div>
-                            <div class="col-6 d-flex align-items-center">
-                                <p>@child.Name</p>
+<div class="bg-light">
+    <div class="container" style="min-height: 80vh">
+        @if (Model?.Getspareservation?.Data?.Count > 0)
+        {
+            var categories = Model?.Getspareservation?.Data ?? new List<Categorys>();
+
+            <!-- Filter Buttons -->
+            <div class="d-flex pt-2 filter-buttons">
+                <div class=" filter-btn active" data-filter="all">
+                    <strong>All</strong>
+                </div>
+                @foreach (var category in categories)
+                {
+                    <div class="pl-2 filter-btn" data-filter="@category.Category">
+                        <strong>@category.Category</strong>
+                    </div>
+                }
+            </div>
+
+            <!-- Cards -->
+            <div class="row pt-2">
+                @foreach (var categors in Model?.Getspareservation?.Data ?? new List<Categorys>())
+                {
+                    @foreach (var child in categors.Children ?? new List<Child>())
+                    {
+                        <div class="col-md-6 py-1 card-wrapper @categors.Category">
+                            <div class="card p-3 clickable-card" data-department="@categors.Code" data-child-department="@child.Code" data-name="@child.Name">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <img src="@Url.Content(child.Image == "" ? "~/Assets/Hulubeje.png" : child.Image)" alt="img" class="img-fluid card-img-top" />
+                                    </div>
+                                    <div class="col-6 d-flex align-items-center">
+                                        <p>@child.Name</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            }
-        </div>
-    }
-</div> 
+                    }
+                }
+            </div>
+        }
+        else
+        {
+        }
+        
+    </div>
+</div>
 <script>
     $('.clickable-card').on('click', function () {
         var department = $(this).data('department');
@@ -58,5 +108,31 @@
         $('body').append(form);
         form.submit();
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.card-wrapper');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove 'active' class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add 'active' class to the clicked button
+                button.classList.add('active');
+
+                const filter = button.getAttribute('data-filter');
+
+                // Show/Hide cards based on the filter
+                cards.forEach(card => {
+                    if (filter === 'all' || card.classList.contains(filter)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
 </script>
+
 <partial name="_Footer" />
