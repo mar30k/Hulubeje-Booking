@@ -20,11 +20,12 @@
                     foreach (var events in Model?.Data ?? new List<EventResponse>())
                     {
                         <div class="col-lg-6 mb-3">
-                            <div class="card p-1 ">
+                            <div class="card p-1 eventsCard" data-code="@events?.Code" data-article-code="@events?.EventArticles?.Code"
+                            data-name="@events?.EventArticles?.Name" data-organizer ="@events?.Organizer">
                                 <div class="row">
                                     <div class="col-sm-4 pt-sm-2">
                                         <div>
-                                            <img src="@events.DefaultImageUrl" class="img-fluid rounded-start" alt="...">
+                                            <img src="@events?.DefaultImageUrl" class="img-fluid rounded-start" alt="...">
                                         </div>
                                     </div>
                                     <div class="col-sm-8 py-2 pl-4">
@@ -66,4 +67,20 @@
         </div>
     }
 </div>
+<script>
+    $('.eventsCard').on('click', function(){
+        var code = $(this).data('code');
+        var eventArticleCode = $(this).data('article-code');
+        var name = $(this).data('name');
+        var organizer = $(this).data('organizer');
+        var form = $('<form action="/eventslist" method="get">' +
+        '<input type="hidden" name="code" value="' + code + '" />' +
+        '<input type="hidden" name="name" value="' + name + '" />' +
+        '<input type="hidden" name="childCode" value="' + eventArticleCode + '" />' +
+        '<input type="hidden" name="organizer" value="' + organizer + '" />' +
+        '</form>');
+        $('body').append(form);
+        form.submit();
+    });
+</script>
 <partial name="_Footer" />
