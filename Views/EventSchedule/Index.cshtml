@@ -4,6 +4,23 @@
     var isVaild = ViewBag.isVaild;
     var isLoggedIN = ViewBag.isLoggedIn;
 }
+<style>
+    .card {
+        transition: box-shadow 1s ease-in-out;
+    }
+
+        .card:hover {
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-img-top {
+        width: 100%; /* Make the image fill the width of its container */
+        height: 150px; /* Adjust the height to your preference */
+        object-fit: fill; /* Ensure the image maintains its aspect ratio and covers the area */
+        border-radius: 3px;
+    }
+</style>
 <script>
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
@@ -76,7 +93,7 @@
         var form = $('<form action="/eventslist" method="get">' +
         '<input type="hidden" name="code" value="' + code + '" />' +
         '<input type="hidden" name="name" value="' + name + '" />' +
-        '<input type="hidden" name="childCode" value="' + eventArticleCode + '" />' +
+        '<input type="hidden" name="articleCode" value="' + eventArticleCode + '" />' +
         '<input type="hidden" name="organizer" value="' + organizer + '" />' +
         '</form>');
         $('body').append(form);
