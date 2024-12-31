@@ -1,0 +1,180 @@
+﻿@using HulubejeBooking.Models.EventModels
+@model EventResponse
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
+<style>
+     .card {
+         transition: box-shadow 1s ease;
+     }
+
+         .card:hover {
+             cursor: pointer;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+         }
+
+     .btn:focus {
+         outline: none;
+         box-shadow: none;
+     }
+
+     .customeStyle {
+         padding-right: 5px !important;
+         padding-left: 5px !important;
+     }
+</style>
+<script>
+    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
+    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
+</script>
+<title>Event List</title>
+<partial name="_Navigation" />
+<div class="bg-light py-3" style="min-height: 80vh;">
+    <div class="container">
+        <div class="position-relative d-flex justify-content-center align-items-center">
+            <h3 class="text-center">@Model?.Name</h3>
+            <button class="btn btn-outline-primary d-none position-absolute" id="cartTotalButton" style="right: 0;" onclick="cartButton()">
+                <div class="d-flex flex-column align-items-center">
+                    <small>with out vat</small>
+                    <small>
+                        <i class="bi bi-cart"></i><span id="totalPrice">0.00</span>
+                    </small>
+                </div>
+            </button>
+        </div>
+        <div class="row gy-2 mt-2">
+            @foreach (var child in Model?.EventArticles?.ChildArticles ?? new List<ChildArticle>())
+            {
+                <div class="col-lg-6">
+                    <div class="card p-3 clickable-card" data-department="@child.Code" data-name="@child.Name">
+                        <div class="row">
+                            <div class="col-5 customeStyle">
+                                <img src="@child?.DefaultImageUrl" alt="img" class="img-fluid card-img-top" />
+                            </div>
+                            <div class="col-7 customeStyle">
+                                <p class="mb-0">@child?.Name</p>
+                                <div class="mt-lg-1">
+                                    <div class="row d-flex justify-content-center align-items-center">
+                                        <div class="col-5 customeStyle">
+                                            <p class="text-danger mb-0">@child?.Price?.ToString("C2")</p>
+                                        </div>
+                                        <div class="col-7 customeStyle">
+                                            <button class="btn btn-danger btn-sm rounded rounded-2 ms-auto" id="addToCart_@child?.Code" onclick="addToCart('@child?.Code', '@child?.Name', @child?.Price)">Add To Cart</button>
+                                            <div class="d-none" id="cartForm_@child?.Code">
+                                                <div class="d-flex align-items-center">
+                                                    <button type="button" class="btn btn-danger btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="decrement('@child?.Code', @child?.Price)">-</button>
+                                                    <div class="number-display mx-3" id="itemQuantityDisplay_@child?.Code">1</div>
+                                                    <button type="button" class="btn btn-success btn-circle d-flex align-items-center justify-content-center btn-sm py-0" onclick="increment('@child?.Code', @child?.Price)">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<partial name="_Footer" />
+<script>
+    let cartItems = [];
+    let totalPrice = 0;
+    function updateTotalPrice() {
+        document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+        const cartTotalButton = document.getElementById('cartTotalButton');
+        if (cartItems.length > 0) {
+            cartTotalButton.classList.remove('d-none');
+        } else {
+            cartTotalButton.classList.add('d-none');
+        }
+    }
+
+    function saveCartToSession() {
+        $.ajax({
+            url: '/eventslist/SaveCart', // Adjust to your controller name
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(cartItems),
+            success: function (response) {
+                console.log('Cart saved successfully');
+            },
+            error: function (xhr, status, error) {
+                console.error('Error saving cart:', error);
+            }
+        });
+    }
+
+    function addToCart(serviceCode, serviceName, price) {
+        const existingItem = cartItems.find(item => item.Code === serviceCode);
+        if (existingItem) {
+            existingItem.Quantity++;
+        } else {
+            cartItems.push({ Code: serviceCode, Name: serviceName, Price: price, Quantity: 1 });
+        }
+        totalPrice += price;
+        updateTotalPrice();
+        replaceButtonWithCartForm(serviceCode);
+        saveCartToSession(); // Save to session
+    }
+
+    function replaceButtonWithCartForm(serviceCode) {
+        var addToCartButton = document.getElementById(`addToCart_${serviceCode}`);
+        var cartForm = document.getElementById(`cartForm_${serviceCode}`);
+        if (addToCartButton && cartForm) {
+            addToCartButton.style.display = 'none';
+            cartForm.classList.remove('d-none');
+            cartForm.style.display = 'flex';
+        } else {
+            console.error("Add to Cart button or Cart Form not found.");
+        }
+    }
+
+    function increment(serviceCode, price) {
+        var itemQuantityDisplay = document.getElementById(`itemQuantityDisplay_${serviceCode}`);
+        var currentQuantity = parseInt(itemQuantityDisplay.textContent);
+        currentQuantity++;
+        itemQuantityDisplay.textContent = currentQuantity;
+
+        // Update cart array and total price
+        let cartItem = cartItems.find(item => item.Code === serviceCode);
+        if (cartItem) {
+            cartItem.Quantity++;
+            totalPrice += price;
+            updateTotalPrice();
+            saveCartToSession(); // Save to session
+        }
+    }
+
+    function decrement(serviceCode, price) {
+        var itemQuantityDisplay = document.getElementById(`itemQuantityDisplay_${serviceCode}`);
+        var addToCartButton = document.getElementById(`addToCart_${serviceCode}`);
+        var currentQuantity = parseInt(itemQuantityDisplay.textContent);
+        if (currentQuantity > 1) {
+            currentQuantity--;
+            itemQuantityDisplay.textContent = currentQuantity;
+
+            let cartItem = cartItems.find(item => item.Code === serviceCode);
+            if (cartItem) {
+                cartItem.Quantity--;
+                totalPrice -= price;
+                updateTotalPrice();
+                saveCartToSession(); // Save to session
+            }
+        }
+        else {
+            addToCartButton.style.display = 'inline-block';
+            var cartForm = document.getElementById(`cartForm_${serviceCode}`);
+            cartForm.style.display = 'none';
+            cartItems = cartItems.filter(item => item.Code !== serviceCode);
+            totalPrice -= price;
+            updateTotalPrice();
+            saveCartToSession(); // Save to session
+        }
+    }
+
+</script>
