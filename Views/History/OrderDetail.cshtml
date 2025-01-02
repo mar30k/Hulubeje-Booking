@@ -2,6 +2,9 @@
 <title>Order</title>
 <partial name="_Navigation" />
 <style>
+    .custom-cont{
+        min-height: 75vh;
+    }
 </style>
 @{
     var isVaild = ViewBag.isVaild;
@@ -12,97 +15,100 @@
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
 <div class="container mb-5">
-    <div class="row">
-        <div class="col-lg-6 mt-3">
-            @if (Model?.Data?.IssuedDate != null && Model?.Data?.CompanyName != null)
-            {
-                <div class="text-right">
-                    <p><stong>Date</stong>: @(Model?.Data?.IssuedDate != null ? DateTime.Parse(Model.Data.IssuedDate.ToString()).ToString("ddd, MMM dd yyyy") : "")</p>
-                </div>
-                <div>
-                    <p><strong>Company</strong>: @Model?.Data?.CompanyName</p>
-                    <p><strong>Company TIN</strong>: @Model?.Data?.ExtraData?.Tin</p>
-                    <p><strong>Voucher Code</strong>: @Model?.Data?.VoucherCode</p>
-                </div>
-            }
-            
-            <hr />
-            <div class="p-lg-2 pt-0">
-                @* Check if the response was successful *@
-                @if (Model?.IsSuccessful ?? false)
+    <div class="custom-cont">
+        <div class="row">
+            <div class="col-lg-6 mt-3">
+                @if (Model?.Data?.IssuedDate != null && Model?.Data?.CompanyName != null)
                 {
-                    <div class="row d-flex justify-content-between">
-                        <div class="col-3 ">
-                            <strong>Description</strong>
-                        </div>
-                        <div class="col-3 d-flex justify-content-center">
-                            <strong>Qty</strong>
-                        </div>
-                        <div class="col-3 d-flex justify-content-center">
-                            <strong>Price</strong>
-                        </div>
-                        <div class="col-3 text-right">
-                            <strong>Amount</strong>
-                        </div>
+                    <div class="text-right">
+                        <p><stong>Date</stong>: @(Model?.Data?.IssuedDate != null ? DateTime.Parse(Model.Data.IssuedDate.ToString() ?? "").ToString("ddd, MMM dd yyyy") : "")</p>
                     </div>
-                    <hr />
-                    @if (Model.Data?.LineItems != null && Model.Data.LineItems.Any())
-                    {
-                        @foreach (var item in Model.Data.LineItems)
-                        {
-                            <div class="row d-flex justify-content-around">
-                                <div class="col-3">
-                                    <p>@item.Name</p>
-                                </div>
-                                <div class="col-3 d-flex justify-content-center">
-                                    <p>@(item.Quantity.HasValue ? item.Quantity.Value.ToString("N0") : "-")</p>
-                                </div>
-                                <div class="col-3 d-flex justify-content-center">
-                                    <p>@item.UnitAmount?.ToString("N2")</p>
-                                </div>
-                                <div class="col-3 text-right">
-                                    <p>@(item.TaxableAmount?.ToString("N2") ?? "-")</p>
-                                </div>
-                            </div>
+                    <div>
+                        <p><strong>Company</strong>: @Model?.Data?.CompanyName</p>
+                        <p><strong>Company TIN</strong>: @Model?.Data?.ExtraData?.Tin</p>
+                        <p><strong>Voucher Code</strong>: @Model?.Data?.VoucherCode</p>
+                    </div>
+                }
 
-                        }
-                    }
-                    <hr />
-                    @if (Model.Data?.ExtraCharge != null)
+                <hr />
+                <div class="p-lg-2 pt-0">
+                    @* Check if the response was successful *@
+                    @if (Model?.IsSuccessful ?? false)
                     {
-                        <div class="row">
-                            <div class="col-6"><strong>TXBL 1:</strong></div>
-                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TXBL1?.ToString("0.00") ?? "-")</p></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6"><strong>TXBL 15%:</strong></div>
-                            <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TAX115?.ToString("0.00") ?? "-")</p></div>
+                        <div class="row d-flex justify-content-between">
+                            <div class="col-3 ">
+                                <strong>Description</strong>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center">
+                                <strong>Qty</strong>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center">
+                                <strong>Price</strong>
+                            </div>
+                            <div class="col-3 text-right">
+                                <strong>Amount</strong>
+                            </div>
                         </div>
                         <hr />
+                        @if (Model.Data?.LineItems != null && Model.Data.LineItems.Any())
+                        {
+                            @foreach (var item in Model.Data.LineItems)
+                            {
+                                <div class="row d-flex justify-content-around">
+                                    <div class="col-3">
+                                        <p>@item.Name</p>
+                                    </div>
+                                    <div class="col-3 d-flex justify-content-center">
+                                        <p>@(item.Quantity.HasValue ? item.Quantity.Value.ToString("N0") : "-")</p>
+                                    </div>
+                                    <div class="col-3 d-flex justify-content-center">
+                                        <p>@item.UnitAmount?.ToString("N2")</p>
+                                    </div>
+                                    <div class="col-3 text-right">
+                                        <p>@(item.TaxableAmount?.ToString("N2") ?? "-")</p>
+                                    </div>
+                                </div>
+
+                            }
+                        }
+                        <hr />
+                        @if (Model.Data?.ExtraCharge != null)
+                        {
+                            <div class="row">
+                                <div class="col-6"><strong>TXBL 1:</strong></div>
+                                <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TXBL1?.ToString("0.00") ?? "-")</p></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6"><strong>TXBL 15%:</strong></div>
+                                <div class="col-6 text-right"><p>@(Model.Data.ExtraCharge.TAX115?.ToString("0.00") ?? "-")</p></div>
+                            </div>
+                            <hr />
+                        }
+                        <div class="row">
+                            <div class="col-6"><strong>Grand Total</strong></div>
+                            <div class="col-6 text-right"><strong>@((Model?.Data?.GrandTotal ?? 0).ToString("0.00"))</strong></div>
+                        </div>
                     }
-                    <div class="row">
-                        <div class="col-6"><strong>Grand Total</strong></div>
-                        <div class="col-6 text-right"><strong>@((Model?.Data?.GrandTotal ?? 0).ToString("0.00"))</strong></div>
-                    </div>
-                }
-                else
+                    else
+                    {
+                        <div class="alert alert-danger " role="alert">
+                            <strong>Error:</strong> Failed to retrieve bill details. Please try again later.
+                        </div>
+                    }
+                    <hr />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                @if (Model?.IsSuccessful ?? false)
                 {
-                    <div class="alert alert-danger " role="alert">
-                        <strong>Error:</strong> Failed to retrieve bill details. Please try again later.
-                    </div>
+                    if (Model?.QRCodeImage != null)
+                    {
+                        <img class="img-fluid" src="@Model?.QRCodeImage" alt="QR Code" />
+                    }
                 }
-                <hr />
             </div>
         </div>
-        <div class="col-lg-6">
-            @if (Model?.IsSuccessful ?? false)
-            {
-                if (Model?.QRCodeImage != null)
-                {
-                    <img class="img-fluid" src="@Model?.QRCodeImage" alt="QR Code" />
-                }
-            }
-        </div>
     </div>
+    
 </div>
 <partial name="_Footer" />
