@@ -66,7 +66,7 @@
                                     var tin = company?.TIN;
                                     var branchCode = company?.BranchCode;
 
-                                    <button class="button" onclick="onCompanyButtonClick('@companyCode','@santizedMovieName')">
+                                    <button class="button" onclick="onCompanyButtonClick('@santizedMovieName', '@branchCode', '@tin')">
                                         @companyName
                                     </button>
                                 }
@@ -92,11 +92,12 @@ else
     </div>
 }
 <script>
-    function onCompanyButtonClick(companyCode,movieName) {
+    function onCompanyButtonClick(movieName, branchCode, tin) {
         var selectedDate = document.getElementById("selectedDate").value;
         var form = $('<form action="/moviedetails" method="get"></form>');
-        form.append('<input type="hidden" name="companycode" value="' + companyCode + '">');
         form.append('<input type="hidden" name="moviename" value="' + movieName + '">');
+        form.append('<input type="hidden" name="branchCode" value="' + branchCode + '">');
+        form.append('<input type="hidden" name="tin" value="' + tin + '">');
 
         $('body').append(form);
         form.submit();
