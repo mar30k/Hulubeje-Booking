@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using HulubejeBooking.Controllers.Authentication;
 using System.Text;
+using HulubejeBooking.Models.HotelModels;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaMovieDetailsController : Controller
@@ -32,10 +33,9 @@ namespace HulubejeBooking.Controllers.CinemaController
             if (movieData != null && movieData.Data != null)
             {
 
-                var company = movieData.Data.FirstOrDefault(c => c.CompanyCode == companyCode);
-                branchCode = company?.BranchCode ?? 0;
+                var company = movieData.Data.FirstOrDefault(c => c.BranchCode == branchCode && c.TIN == tin);
+                companyCode = company?.CompanyCode ?? 0;
                 companyName = company?.CompanyName ?? companyName;
-                tin = company?.TIN ?? tin;
                 branchName = company?.BranchName ?? branchName;
                 if (company != null && company.Movies != null)
                 {
