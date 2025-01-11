@@ -1,5 +1,6 @@
 ﻿using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.BusModels;
+using HulubejeBooking.Models.HotelModels;
 
 namespace HulubejeBooking.Models.CInemaModels
 {
@@ -10,7 +11,7 @@ namespace HulubejeBooking.Models.CInemaModels
         public List<CompanyData>? TrendingMovies { get; set; }
         public string[]? ErrorMessages { get; set; }
         public string[]? AdditionalParameters { get; set; }
-        public CookieValidation? CookieValidation { get; set; }
+        public GetcompaniesbyType? Companies { get; set; }
 
     }
 
@@ -102,5 +103,6 @@ namespace HulubejeBooking.Models.CInemaModels
     {
         public string? Tin { get; set; }
         public string? BranchCode { get; set; }
+        public string? CompanyName { get; set; }
     }
 }
