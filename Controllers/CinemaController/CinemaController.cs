@@ -12,6 +12,7 @@ using HulubejeBooking.Models.BusModels;
 using HulubejeBooking.Models.PaymentModels;
 using Movie = HulubejeBooking.Models.CInemaModels.Movie;
 using HulubejeBooking.Helpers;
+using HulubejeBooking.Models.HotelModels;
 namespace HulubejeBooking.Controllers.CinemaController
 {
     public class CinemaController : Controller
@@ -35,6 +36,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 try
                 {
+                    var getcompaniesbytyp = await GetcompaniesbyType("1988", token);
                     string? formattedDate = date?.ToString("yyyy-MM-dd");
                     Movie? movies = (await Getmovies(formattedDate ?? "", token ?? "", "2")) as Movie ?? new Movie();
                     string serverTimeString = (await _miscellaneousApiRequests.GetServerTime(token ?? "") ?? "").Trim('\"');
@@ -45,6 +47,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                         List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
                         movies.TrendingMovies = trendingMovies?.ToList();
                     }
+                    movies.Companies = getcompaniesbytyp;
                     var moviesJson = JsonConvert.SerializeObject(movies);
                     HttpContext.Session.SetString("movies", moviesJson);
                     return View(movies);
@@ -56,11 +59,13 @@ namespace HulubejeBooking.Controllers.CinemaController
             }
             else
             {
+                var getcompaniesbytyp = await GetcompaniesbyType("1988", token);
                 var movies = new Movie();
                 List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
                 List<CompanyData>? cachedMovies = await GetTrendingMovies(token, "service/cinema/getConsolidatedMovies");
                 movies.Data = cachedMovies != null && cachedMovies.Count > 0 ? cachedMovies : (await Getmovies(DateTime.Today.ToString("yyyy-MM-dd"), token ?? "", "1")) as List<CompanyData> ?? new List<CompanyData>();
                 movies.TrendingMovies = trendingMovies;
+                movies.Companies = getcompaniesbytyp;
                 var moviesJson = JsonConvert.SerializeObject(movies);
                 HttpContext.Session.SetString("movies", moviesJson);
                 return View(movies);
@@ -89,6 +94,28 @@ namespace HulubejeBooking.Controllers.CinemaController
                 return new object();
             }
 
+        }
+
+
+        public async Task<GetcompaniesbyType> GetcompaniesbyType(string companyType, string? token)
+        {
+            try
+            {
+                var getcompaniesbyType = new GetcompaniesbyType();
+                var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+                _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpResponseMessage responseMessage = await _v7Client.GetAsync($"routing/getcompaniesbytype?industryType={companyType}");
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    string responseMessageData = await responseMessage.Content.ReadAsStringAsync();
+                    getcompaniesbyType = JsonConvert.DeserializeObject<GetcompaniesbyType>(responseMessageData);
+                }
+                return getcompaniesbyType ?? new GetcompaniesbyType();
+            }
+            catch
+            {
+                return new GetcompaniesbyType();
+            }
         }
 
         public async Task<List<CompanyData>?> GetTrendingMovies(string? token, string endpoint)
