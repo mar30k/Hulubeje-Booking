@@ -28,16 +28,10 @@ namespace HulubejeBooking.Controllers
 		public async Task<IActionResult> Index()
         {
             var identificationResult = await _authenticationManager.identificationValid();
-            //while (identificationResult==null || identificationResult?.UserData?.FirstName == null)
-            //{
-            //    identificationResult = await _authenticationManager.identificationValid();
-            //}
-            var Picures = new Images
-            {
-                CookieValidation = identificationResult
-            };
             if (identificationResult != null)
             {
+                ViewBag.isVaild = identificationResult.isValid;
+                ViewBag.isLoggedIn = identificationResult.isLoggedIn;
                 ViewBag.FirstName = identificationResult?.UserData?.FirstName;
                 ViewBag.LastName = identificationResult?.UserData?.LastName;
                 ViewBag.MiddleName = identificationResult?.UserData?.MiddleName;
@@ -50,20 +44,8 @@ namespace HulubejeBooking.Controllers
                 ViewBag.EmailAddress = identificationResult?.UserData?.Email;
             }
 
-
-            //var busResponse = await PicturesResonseAsync("wbus");
-            //var cinemaResponse = await PicturesResonseAsync("wmovie");
-            //var spaResponse = await PicturesResonseAsync("wspa");
-            //var eventResposne = await PicturesResonseAsync("wevent");
-            //var hotelResponse = await PicturesResonseAsync("whotel");
-
-            //Picures.Bus = busResponse ?? new List<string>();
-            //Picures.Cinema = cinemaResponse ?? new List<string>();
-            //Picures.Event = eventResposne ?? new List<string>();
-            //Picures.Hotel = hotelResponse ?? new List<string>();
-            //Picures.Spa = spaResponse ?? new List<string>();
             
-            return View(Picures);
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

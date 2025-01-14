@@ -27,11 +27,12 @@
         }
     </style>
 </head>
-@{
-    var isVaild = Model?.CookieValidation?.isValid;
-    var isLoggedIN = Model?.CookieValidation?.isLoggedIn;
-}
+
 @model HulubejeBooking.Models.Images
+@{
+    var isVaild = ViewBag.isVaild;
+    var isLoggedIN = ViewBag.isLoggedIn;
+}
 <script>
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
