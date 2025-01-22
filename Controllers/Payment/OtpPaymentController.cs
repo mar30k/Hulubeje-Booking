@@ -33,7 +33,7 @@ namespace HulubejeBooking.Controllers.Payment
             {
                 TempData["ErrorMessage"] = "Incorrect Otp Or Couldn't Process Your Payment!";
             }
-            HttpContext.Session.Remove("error");
+            //HttpContext.Session.Remove("error");
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
             {
