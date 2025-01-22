@@ -38,7 +38,7 @@ builder.Services.AddAuthentication("cnet.erp.v6")
      .AddCookie("cnet.erp.v6", options =>
      {
          options.AccessDeniedPath = "/account/denied";
-         options.LoginPath = "/login";
+         options.LoginPath = "/signin";
      });
 builder.Services.AddHttpClient("HulubejeBooking", httpClient =>
 {
