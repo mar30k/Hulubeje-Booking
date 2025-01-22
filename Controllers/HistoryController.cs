@@ -117,7 +117,7 @@ namespace HulubejeBooking.Controllers
         public async Task<IActionResult> OrderDetail(string voucher)
         {
             try {
-                string decryptedVoucher = Decrypts(voucher, "MAKV2SPBNI992121");
+                string decryptedVoucher = await Decrypt(voucher);
                 var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
                 var identificationResult = await _authenticationManager.identificationValid();
                 if (identificationResult != null)
@@ -387,28 +387,6 @@ namespace HulubejeBooking.Controllers
             }
             return "";
 
-        }
-        public static string Decrypts(string cipherText, string password)
-        {
-            string plainText;
-            using (Aes aesAlg = Aes.Create())
-            {
-                aesAlg.Key = Encoding.UTF8.GetBytes(password);
-                aesAlg.IV = Encoding.UTF8.GetBytes(password);
-
-                aesAlg.Padding = PaddingMode.PKCS7;
-                aesAlg.Mode = CipherMode.CBC;
-
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
-
-                using MemoryStream msDecrypt = new(Convert.FromBase64String(cipherText));
-                using CryptoStream csDecrypt = new(msDecrypt, decryptor, CryptoStreamMode.Read);
-                using StreamReader srDecrypt = new(csDecrypt);
-                {
-                    plainText = srDecrypt.ReadToEnd();
-                }
-            }
-            return plainText;
         }
 
         public IActionResult GenerateQRCode(string text)
