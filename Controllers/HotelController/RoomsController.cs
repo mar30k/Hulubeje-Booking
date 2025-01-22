@@ -26,13 +26,18 @@ namespace HulubejeBooking.Controllers.HotelController
         [HttpGet]
         public async Task<IActionResult> Index([FromQuery] RoomFormData roomFormData)
         {
-            var dt = DateRangeParser.ParseDateRange(roomFormData.Date);
-            var arrivalDateString = dt.startDateString.Trim();
-            var departureDateString = dt.endDateString.Trim();
-            DateTime arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            DateTime departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-            roomFormData.ArrivalDate = arrivalDate;
-            roomFormData.DepartureDate = departureDate;
+            var arrivalDate= new DateTime();
+            var departureDate = new DateTime();
+            if (roomFormData.Date!=null)
+            {
+                var dt = DateRangeParser.ParseDateRange(roomFormData.Date);
+                var arrivalDateString = dt.startDateString.Trim();
+                var departureDateString = dt.endDateString.Trim();
+                arrivalDate = DateTime.ParseExact(arrivalDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                departureDate = DateTime.ParseExact(departureDateString, "MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                roomFormData.ArrivalDate = arrivalDate;
+                roomFormData.DepartureDate = departureDate;
+            }
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)
