@@ -97,6 +97,7 @@ namespace HulubejeBooking.Models.CInemaModels
         public int? SpaceId { get; set; }
         public string? CinemaHall { get; set; }
         public decimal? PriceValue { get; set; }
+        public decimal? OldPriceValue { get; set; }
         public int? DefaultTax { get; set; }
     }
     public class Companies

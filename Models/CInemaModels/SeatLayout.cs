@@ -30,6 +30,7 @@
         public int SpaceId { get; set; }
         public string? Id { get; set; }
         public decimal? Price { get; set; }
+        public decimal? OldPriceValue { get; set; }
         public List<SeatInfo>? Seats { get; set; }
         public string? MaxSeats { get; set; }
 
