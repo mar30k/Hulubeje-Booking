@@ -869,10 +869,9 @@
         DateTime parsedDate;
         if (DateTime.TryParse(date, out parsedDate))
         {
-            string dayOfWeek = parsedDate.ToString("ddd"); // Get abbreviated day of the week
-            string formattedDate = parsedDate.ToString("dd-MM-yyyy"); // "dd-MM-yyyy" gives the desired format
+            string dayOfWeek = parsedDate.ToString("ddd, MMM dd yyyy"); // Get abbreviated day of the week
 
-            return $"{dayOfWeek} {formattedDate}";
+            return $"{dayOfWeek}";
         }
 
         return string.Empty;

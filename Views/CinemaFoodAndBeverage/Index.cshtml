@@ -312,14 +312,14 @@
                     }
                 </div>
                 @functions {
-                    public string GetFormattedDateWithDayOfWeek(string date)
+                    public string GetFormattedDateWithDayOfWeek(string? date)
                     {
                         DateTime parsedDate;
                         if (DateTime.TryParse(date, out parsedDate))
                         {
-                            string dayOfWeek = parsedDate.ToString("ddd"); // Get abbreviated day of the week
-                            string formattedDate = parsedDate.ToString("dd-MM-yyyy"); // "dd-MM-yyyy" gives the desired format
-                            return $"{dayOfWeek} {formattedDate}";
+                            string dayOfWeek = parsedDate.ToString("ddd, MMM dd yyyy"); // Get abbreviated day of the week
+
+                            return $"{dayOfWeek}";
                         }
 
                         return string.Empty;
