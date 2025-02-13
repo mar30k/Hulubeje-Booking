@@ -25,6 +25,8 @@
         public string? Dimension { get; set; }
         public string? MovieScheduleCode { get; set; }
         public string? BranchCode { get; set; }
+        public string? BranchName { get; set; }
+        public string? CinemaHall { get; set; }
         public int MaxX { get; set; }
         public int MaxY { get; set; }
         public int SpaceId { get; set; }
