@@ -69,98 +69,39 @@
         </li>
     </ul>
     <div class="tab-content mt-4 ">
+        
         <div class="tab-pane fade show active" id="tab1">
-            <div class="customContainer" id="ordersContainer">
-            </div>
-
-            <div class="pagination justify-content-center" id="pagination">
-            </div>
-
-            <div class="message-container" id="noHistoryMessage" style="display: none;">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
-                    <p class="mt-2">We apologize, but it seems there is no available history.</p>
+            @foreach (var order in Model?.OrdersModel?.Data ?? new List<VoucherData>())
+            {
+                <div class="card p-2 customcard mb-3">
+                    <div class="row">
+                        <div class="col-4">
+                            <img src="@order.Logo" class="img-fluid companyimage" alt="Supplier Logo" />
+                        </div>
+                        <div class="col-8 col-md-4">
+                            <div>
+                                <p style="margin: 2px; ">@order.CompanyName</p>
+                                <small style="color: blue">@order.BranchName</small>
+                                <p style="margin: 2px; ">@order.VoucherCode</p>
+                                <p style="margin: 2px; "> @order.IssuedDate.ToString("ddd, MMM dd yyyy hh:mm tt")</p>
+                                <p style="margin: 2px; ">@order.GrandTotal?.ToString("0.00") Birr</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-2 mt-2 d-flex justify-content-center" style="position: absolute; bottom: 0; right: 0;">
+                            <a type="button" class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" target="_blank"
+                               href="https://www.google.com/maps/search/?api=1&query= @order.Latitude,@order.Longitude">Direction</a>
+                            <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2 details-btn" data-companyCode="@order.CompanyCode"
+                                    data-industryType="@order.IndustryType" data-voucherCode="@order.VoucherCode" data-issuedDate="@order.IssuedDate" data-company="@order.CompanyName">
+                                Details
+                            </button>
+                            <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal" data-company="@order.CompanyName"
+                                    data-article="@order.Articles" data-branchcode="@order.BranchCode">
+                                Review
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <script>
-                $(document).ready(function () {
-                    var ordersData = @Html.Raw(Model.OrdersModel != null && Model.OrdersModel.Data != null ? Json.Serialize(Model.OrdersModel.Data) : "null");
-
-                    if (ordersData && ordersData.length > 0) {
-                        var pageSize = 10;
-                        var totalPages = Math.ceil(ordersData.length / pageSize);
-
-                        function renderOrders(pageNumber) {
-                            var startIndex = (pageNumber - 1) * pageSize;
-                            var endIndex = Math.min(startIndex + pageSize, ordersData.length);
-                            var currentPageOrders = ordersData.slice(startIndex, endIndex);
-
-                            $('#ordersContainer').empty(); 
-
-                            currentPageOrders.forEach(function (order) {
-                                var formattedDate = new Date(order.issuedDate);
-                                var options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-                                var formattedDateString = formattedDate.toLocaleDateString('en-US', options);
-                                var orderHtml = `
-                                            <div class="card p-2 customcard mb-3">
-                                                <div class="row">
-                                                    <div class="col-4">
-                                                        <img src="${order.logo}" class="img-fluid companyimage" alt="Supplier Logo" />
-                                                    </div>
-                                                    <div class="col-8 col-md-4">
-                                                        <div>
-                                                            <p style="margin: 2px; ">${order.companyName}</p>
-                                                            <small style="color: blue">${order.branchName}</small>
-                                                            <p style="margin: 2px; "> ${order.voucherCode}</p>
-                                                            <p style="margin: 2px; "> ${formattedDateString}</p>
-                                                            <p style="margin: 2px; ">${order.grandTotal} Birr</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-4 mb-2 mt-2 d-flex justify-content-center" style="position: absolute; bottom: 0; right: 0;">
-                                                        <a type="button" class="mr-2 mr-md-1 btn btn-primary btn-sm px-2"  target="_blank" 
-                                                        href="https://www.google.com/maps/search/?api=1&query= ${order.latitude},${order.longitude}">Direction</a>
-                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2 details-btn" data-companyCode="${order.companyCode}" 
-                                                        data-industryType="${order.industryType}" data-voucherCode="${order.voucherCode}" data-issuedDate="${order.issuedDate}" data-company="${order.companyName}">Details</button>
-                                                        <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal" data-company="${order.companyName}" 
-                                                        data-article="${order.articles}" data-branchcode="${order.branchCode}">Review</button>
-                                                    </div>
-                                                </div>
-                                            </div>`;
-                                $('#ordersContainer').append(orderHtml);
-                            });
-                        }
-
-                        function renderPagination() {
-                            $('#pagination').empty();
-
-                            for (var i = 1; i <= totalPages; i++) {
-                                var activeClass = (i === 1) ? 'active' : '';
-                                var paginationHtml = `<button class="page-link ${activeClass}" data-page="${i}">${i}</button>`;
-                                $('#pagination').append(paginationHtml);
-                            }
-                        }
-
-                        renderOrders(1);
-                        renderPagination();
-
-                        $(document).on('click', '.pagination .page-link', function (e) {
-                            e.preventDefault();
-                            var pageNumber = $(this).data('page');
-                            renderOrders(pageNumber);
-                            $('.pagination .page-link').removeClass('active');
-                            $(this).addClass('active');
-                        });
-                    } else {
-                        $('#noHistoryMessage').show().css({
-                            'display': 'flex',
-                            'align-items': 'center',
-                            'justify-content': 'center',
-                            'height': '50vh'
-                        });
-                    }
-                });
-            </script>
+            }
         </div>
         <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
             <div class="modal-dialog">

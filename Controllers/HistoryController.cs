@@ -144,12 +144,16 @@ namespace HulubejeBooking.Controllers
                     string responseData = await gethistorydetailResponse.Content.ReadAsStringAsync();
                     review = responseData != null ? JsonConvert.DeserializeObject<GetHistoryDetailResposne>(responseData) : new GetHistoryDetailResposne();
                 }
-
-                var text = $"CNET_REDEEM,{review?.Data?.ExtraData?.Tin},{review?.Data?.BranchCode?.ToString()},{review?.Data?.PhoneNumber}," +
+                var qrCodeBytes = Array.Empty<byte>();
+                if (review?.Data?.ExtraInformation?.Count !=0 || review?.Data?.ExtraData?.Status != null)
+                {
+                    var text = $"CNET_REDEEM,{review?.Data?.ExtraData?.Tin},{review?.Data?.BranchCode?.ToString()},{review?.Data?.PhoneNumber}," +
                     $"{review?.Data?.ExtraData?.VoucherId},{review?.Data?.IssuedDate?.ToString("MM/dd/yyyy hh:mm:ss tt")}," +
                     $"{review?.Data?.GrandTotal?.ToString("0.00")}";
-                var encrypt = Encrypt(text, "MAKV2SPBNI992121");
-                var qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(encrypt);
+                    var encrypt = Encrypt(text, "MAKV2SPBNI992121");
+                    qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(encrypt);
+                }
+                
 
 
                 if (review != null & review?.Data?.ExtraData?.Status == "Reedemed")
@@ -258,12 +262,18 @@ namespace HulubejeBooking.Controllers
                     string responseData = await gethistorydetailResponse.Content.ReadAsStringAsync();
                     review = responseData != null ? JsonConvert.DeserializeObject<GetHistoryDetailResposne>(responseData) : new GetHistoryDetailResposne();
                 }
+                var qrCodeBytes = Array.Empty<byte>();
 
-                var text = $"CNET_REDEEM,{review?.Data?.ExtraData?.Tin},{voucherData?.BranchCode},{phoneNumber}," +
+                if (review?.Data?.ExtraInformation?.Count != 0 || review?.Data?.ExtraData?.Status != null)
+                {
+                    var text = $"CNET_REDEEM,{review?.Data?.ExtraData?.Tin},{voucherData?.BranchCode},{phoneNumber}," +
                     $"{review?.Data?.ExtraData?.VoucherId},{voucherData?.IssuedDate.ToString("MM/dd/yyyy hh:mm:ss tt")}," +
                     $"{review?.Data?.GrandTotal?.ToString("0.00")}";
-                var encrypt = Encrypt(text, "MAKV2SPBNI992121");
-                var qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(encrypt);
+                    var encrypt = Encrypt(text, "MAKV2SPBNI992121");
+                    qrCodeBytes = _qrCodeGeneratorService.GenerateQRCode(encrypt);
+                }
+
+
 
 
                 if (review != null & review?.Data?.ExtraData?.Status == "Reedemed")
