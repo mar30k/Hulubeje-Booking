@@ -513,7 +513,7 @@
                 button.addEventListener('click', function () {
                     console.log("buttonclicked");
                     var selectedSeats = retrieveSelectedSeatsFromStorage();
-                    var companyTinNumber = "@Model?.Data?.CompanyTinNumber";
+                    var branchName = "@Model?.Data?.BranchCode";
                     var companyCode = "@Model?.Data?.CompanyCode";
                     var movieScheduleCode = "@Model?.Data?.MovieScheduleCode";
                     var articleCode = "@Model?.Data?.ArticleCode";
@@ -524,10 +524,8 @@
                     var hallName = "@Model?.Data?.HallName";
                     var price = "@Model?.Data?.Price";
                     var dimension = "@Model?.Data?.Dimension";
-                    var spaceType = "@Model?.Data?.SpaceType";
+                    var spaceType = "@Model?.Data?.CinemaHall";
                     var branchCode = "@Model?.Data?.BranchCode";
-                    var scheduleCode = "@Model?.Data?.MovieScheduleCode";
-                    var phoneNumber = "@Model?.Data?.BranchCode";
                     var spaceId = "@Model?.Data?.SpaceId";
                     var remainingTime = countdown ?? 0;
 
@@ -552,6 +550,7 @@
                     form.append('<input type="hidden" name="spaceType" value="' + spaceType + '" />');
                     form.append('<input type="hidden" name="articleCode" value="' + articleCode + '" />');
                     form.append('<input type="hidden" name="branchCode" value="' + branchCode + '" />');
+                    form.append('<input type="hidden" name="branchName" value="' + branchName + '" />');
                     form.append('<input type="hidden" name="seats" value="' + numberOfElements + '" />');
                     form.append('<input type="hidden" name="seatCacheKey" value="' + seatCacheKey + '" />');
                     form.append('<input type="hidden" name="companyCode" value="' + companyCode + '" />');
@@ -697,19 +696,30 @@
                             <h4 style="color: #333; margin-bottom: 10px; background-color:#F9F7F5; padding: 10px;">@Model?.Data?.CompanyName</h4>
                             <div style="text-align: left;">
                                 <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                                    <strong>Movie:</strong>&nbsp; @Regex.Unescape(Model?.Data?.MovieName ?? "")
+                                    <i class="bi bi-film text-black"></i>&nbsp; @Regex.Unescape(Model?.Data?.MovieName ?? "")
                                 </p>
                                 <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                                    <strong>Hall Name:</strong>&nbsp; @Model?.Data?.HallName
+                                    <i class="bi bi-building text-black"></i>&nbsp; @Model?.Data?.HallName | @Model?.Data?.CinemaHall
+                                </p>
+                                <div class="d-flex flex-row mb-1" style="line-height: 1;">
+                                    <i class="bi bi-cash-stack me-2 @(Model?.Data?.OldPriceValue !=null ? "mt-2" : "") text-black"></i> &nbsp;
+                                    <div class="d-flex flex-column">
+                                        <span style="text-decoration: line-through; color: #888; font-size: 14px;">
+                                            @(Model?.Data?.OldPriceValue != null ? $"{Model?.Data?.OldPriceValue} ETB" : "")
+                                        </span>
+                                        <span style="font-weight: bold; font-size: 16px; color: #222;">
+                                            @Model?.Data?.Price?.ToString("0.00") ETB
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
+                                    <i class="bi bi-clock text-black"></i>&nbsp; @Model?.Data?.UtcTime (@GetEthiopianTime(Model?.Data?.UtcTime) Local)
                                 </p>
                                 <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                                    <strong>Time:</strong>&nbsp; @Model?.Data?.UtcTime (@GetEthiopianTime(Model?.Data?.UtcTime) Local)
+                                    <i class="bi bi-calendar text-black"></i>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.Data?.SelectedDate)
                                 </p>
-                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                                    <strong>Date:</strong>&nbsp; @GetFormattedDateWithDayOfWeek(Model?.Data?.SelectedDate)
-                                </p>
-                                <p class="mb-1" style="margin: 0; color: #555; font-size: 15px;">
-                                    <strong>Dimension:</strong>&nbsp;
+                                <p class="mb-1" style="margin: 0 ; color: #555; font-size: 15px;">
+                                    <i class="bi bi-aspect-ratio text-black"></i>&nbsp;
                                     <span style="background-color: @(Model?.Data?.Dimension == "2D" ? "blue" : "red"); color:white; padding: 1.5px; border-radius:3px;">
                                         @Model?.Data?.Dimension
                                     </span>
