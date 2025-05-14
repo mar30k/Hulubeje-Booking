@@ -69,14 +69,14 @@ namespace HulubejeBooking.Models
     public class GetHistoryDetailResposne
     {
         public bool? IsSuccessful { get; set; }
-        public Data? Data { get; set; }
+        public GetHistoryResponse? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
         public List<string>? AdditionalParameters { get; set; }
         public string? QRCodeImage { get; set; }
 
     }
 
-    public class Data
+    public class GetHistoryResponse
     {
         public List<LineItem>? LineItems { get; set; }
         public ExtraCharge? ExtraCharge { get; set; }

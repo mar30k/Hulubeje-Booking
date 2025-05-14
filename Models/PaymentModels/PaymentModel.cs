@@ -1,4 +1,5 @@
 ﻿using HulubejeBooking.Models.CInemaModels;
+using HulubejeBooking.Models.PaymentModels.BusPaymentModel;
 
 namespace HulubejeBooking.Models.PaymentModels
 {
@@ -128,6 +129,7 @@ namespace HulubejeBooking.Models.PaymentModels
         public string Platform { get; set; } = "Web";
         public Movie? Movie { get; set; }
         public HotelDetail? HotelDetail { get; set; }
+        public PassengerInfo? PassengerInfo { get; set; }
         public ActivityLog? ActivityLog { get; set; } 
     }
 
