@@ -119,7 +119,7 @@
         public string? OriginTerminalName { get; set; }
         public string? ViaDescription { get; set; }
         public int? DestiantionCity { get; set; }
-        public int? NoOfSeat { get; set; }
+        public int? NoOfSeat { get; set; } 
         public int? DestinationTerminal { get; set; }
         public string? DestCityName { get; set; }
         public string? DestinationTerminalName { get; set; }
@@ -127,7 +127,7 @@
         public string? OperatorName { get; set; }
         public string? Terminal { get; set; } 
         public string? Amount { get; set; } 
-        public List<string>? SeatName { get; set; } 
+        public List<string>? SeatName { get; set; }   
         public DateTime? Time { get; set; } 
         public List<string>? SeatId { get; set; } 
     }
