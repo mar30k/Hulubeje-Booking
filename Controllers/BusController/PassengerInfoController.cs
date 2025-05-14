@@ -26,6 +26,7 @@ namespace HulubejeBooking.Controllers.BusController
                 ViewBag.FirstName = identificationResult?.UserData.FirstName;
                 ViewBag.LastName = identificationResult?.UserData.LastName;
                 ViewBag.MiddleName = identificationResult?.UserData.MiddleName;
+                ViewBag.Gender = identificationResult?.UserData.Gender;
                 ViewBag.Personalattachment = identificationResult?.UserData.PersonalAttachment;
                 ViewBag.Idnumber = identificationResult?.UserData.IdNumber;
                 ViewBag.Idtype = identificationResult?.UserData.IdType;
