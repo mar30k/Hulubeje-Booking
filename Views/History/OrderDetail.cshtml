@@ -3,7 +3,7 @@
 <partial name="_Navigation" />
 <style>
     .custom-cont{
-        min-height: 75vh;
+    min-height: 75vh;
     }
 </style>
 @{
@@ -14,10 +14,17 @@
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
     sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
 </script>
-<div class="container mb-5">
+<div class="container mb-3 mt-3">
     <div class="custom-cont">
-        <div class="row">
-            <div class="col-lg-6 mt-3">
+        @{
+            var colClass = (Model?.Data?.ExtraInformation?.Count != 0 || Model?.Data?.ExtraData?.Status == "Reedemed" )? "col-lg-6" : "col-lg-8";
+            var rowClass = (Model?.Data?.ExtraInformation?.Count != 0 || Model?.Data?.ExtraData?.Status != null) ? "pl-lg-5" : "";
+        }
+        <div class="d-flex justify-content-center align-items-center bg-secondary p-2">
+            <h5 class="text-white mb-0">Bill Details</h5>
+        </div>
+        <div class="row justify-content-center @rowClass mt-2">
+            <div class="@colClass">
                 @if (Model?.Data?.IssuedDate != null && Model?.Data?.CompanyName != null)
                 {
                     <div class="text-right">
@@ -98,15 +105,16 @@
                     <hr />
                 </div>
             </div>
-            <div class="col-lg-6">
+            
                 @if (Model?.IsSuccessful ?? false)
                 {
-                    if (Model?.QRCodeImage != null)
+                    if (Model?.QRCodeImage != null && Model?.Data?.ExtraInformation?.Count != 0 || Model?.Data?.ExtraData?.Status != null)
                     {
-                        <img class="img-fluid" src="@Model?.QRCodeImage" alt="QR Code" />
+                        <div class="col-lg-6">
+                            <img class="img-fluid" src="@Model?.QRCodeImage" alt="QR Code" />
+                        </div>
                     }
                 }
-            </div>
         </div>
     </div>
     
