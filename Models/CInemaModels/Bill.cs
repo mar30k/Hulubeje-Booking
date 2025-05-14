@@ -24,7 +24,7 @@ namespace HulubejeBooking.Models.CInemaModels
     public class Bill
     {
         public bool? IsSuccessful { get; set; }
-        public Data? Data { get; set; }
+        public GetHistoryResponse? Data { get; set; }
         public List<string>? ErrorMessages { get; set; }
         public Dictionary<string, object>? AdditionalParameters { get; set; }
     }
