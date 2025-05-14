@@ -23,7 +23,7 @@ namespace CinemaSeatBooking.Controllers
         }
         [HttpGet]
         [Route("moviemenu")]
-        public async Task<IActionResult> IndexAsync(ProductsViewModel productsViewModel)
+        public async Task<IActionResult> Index(ProductsViewModel productsViewModel)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
 
@@ -67,7 +67,6 @@ namespace CinemaSeatBooking.Controllers
                         productsViewModel.ScheduleDate = movie?.Date != null ? (DateTime)movie.Date : productsViewModel.ScheduleDate;
                         productsViewModel.ArticleCode = movie?.Article ?? productsViewModel.ArticleCode;
                         var movieSchedule = movie?.MovieSchedule?.Where(c => c.SchdetailId == productsViewModel.MovieScheduleCode).FirstOrDefault();
-                        productsViewModel.HallName = movieSchedule?.MovieSpaces?.Where(c => c.SpaceId == productsViewModel.SpaceID).FirstOrDefault()?.CinemaHall ?? productsViewModel.HallName;
                     }
 
                 }
@@ -99,7 +98,7 @@ namespace CinemaSeatBooking.Controllers
         }
 
         [Route("calculatebill")]
-        public async Task<IActionResult> CalculateBill(string movieName,int branchCode,string movieDimension, DateTime date, string time, string company, string hallName,
+        public async Task<IActionResult> CalculateBill(string movieName,int branchCode,string movieDimension, DateTime date, string time, string company, string hallName, string spaceType,
             decimal moviePrice, int movieScheduleCode, string companyTin, int movieArticleCode, string numberOfSeats, string selectedItems, int companyCode, string seatCacheKey)
         {
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
@@ -180,6 +179,7 @@ namespace CinemaSeatBooking.Controllers
                 calculatedModel.Seats = numberOfSeats;
                 calculatedModel.CompanyCode = companyCode;
                 calculatedModel.SeatCacheKey = seatCacheKey;
+                calculatedModel.SpaceType = spaceType;
                 return PartialView("_Bill", calculatedModel);
             }
             catch (Exception)

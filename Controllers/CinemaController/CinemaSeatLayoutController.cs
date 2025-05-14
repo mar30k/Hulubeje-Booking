@@ -20,7 +20,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             _httpContextAccessor = httpContextAccessor;
             _httpClientFactory = httpClientFactory;
         }
-        public async Task<IActionResult> IndexAsync(SeatLayout seatLayout)
+        public async Task<IActionResult> Index(SeatLayout seatLayout)
         {
             int? companyscode = 0;
             if (HttpContext.Session.TryGetValue("movies", out var movies))
@@ -29,6 +29,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                 var movie = JsonConvert.DeserializeObject<Movie>(moviesString);
                 var companyData = movie?.Data?.FirstOrDefault(c => c.BranchCode.ToString() == seatLayout.BranchCode);
                 seatLayout.CompanyTinNumber = companyData?.TIN;
+                seatLayout.BranchName = companyData?.BranchName;
                 companyscode = companyData?.CompanyCode;
                 seatLayout.CompanyName = companyData?.CompanyName;
             }
@@ -117,6 +118,8 @@ namespace HulubejeBooking.Controllers.CinemaController
                 seats.Data.CompanyTinNumber = seatLayout?.CompanyTinNumber;
                 seats.Data.CompanyName = seatLayout?.CompanyName;
                 seats.Data.BranchCode = seatLayout?.BranchCode;
+                seats.Data.CinemaHall = seatLayout?.CinemaHall;
+                seats.Data.BranchName = seatLayout?.BranchName;
                 seats.Data.MovieScheduleCode = seatLayout?.MovieScheduleCode;
                 seats.Data.PhoneNumber = phoneNumber;
                 seats.Data.CompanyCode = seatLayout?.CompanyCode;
@@ -126,6 +129,7 @@ namespace HulubejeBooking.Controllers.CinemaController
                 seats.Data.MovieName = seatLayout?.MovieName;
                 seats.Data.SelectedDate = seatLayout?.SelectedDate;
                 seats.Data.Price = seatLayout?.Price;
+                seats.Data.OldPriceValue = seatLayout?.OldPriceValue;
             }
 
             return seats != null ? View(seats) : View(null);
