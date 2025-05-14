@@ -269,7 +269,7 @@
                 <strong>No hotels found.</strong>
             </div>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-3" id="hotelContainer">
             @foreach (var hotel in Model?.Companies?.Data ?? new List<Companies>())
             {
                 foreach (var branch in hotel.Branches ?? new List<Branch>())
@@ -296,7 +296,7 @@
                                             @branch?.City@(branch?.SpecificAddress != null ? $", {branch.SpecificAddress}" : "")
                                         </p>
                                         <small class="mb-0 text-sm">
-                                            @for(var i= 0; i < branch?.StarRating; i++)
+                                            @for (var i = 0; i < branch?.StarRating; i++)
                                             {
                                                 <span class="text-warning">
                                                     <i class="fa-solid fa-star"></i>
@@ -311,37 +311,123 @@
                 }
             }
         </div>
+
+        <ul id="pagination" class="pagination justify-content-center my-0"></ul>
+
         <script>
-            function filterHotels() {
-                var input, filter, cards, card, hotelName, i, txtValue, matchFound;
-                input = document.getElementById("searchInput");
-                filter = input.value.toUpperCase();
-                cards = document.getElementsByClassName("hotelbranches");
-                matchFound = false;
+            let currentPage = 1;
+            const cardsPerPage = 26;
+            const cards = Array.from(document.getElementsByClassName("hotelbranches"));
 
-                for (i = 0; i < cards.length; i++) {
-                    card = cards[i];
-                    hotelName = card.getElementsByClassName("card-title")[0];
-                    if (hotelName) {
-                        txtValue = hotelName.textContent || hotelName.innerText;
-                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                            card.style.display = "";
-                            matchFound = true;
-                        } else {
-                            card.style.display = "none";
-                        }
-                    }
-                }
+            function showPage(page) {
+                const start = (page - 1) * cardsPerPage;
+                const end = start + cardsPerPage;
 
-                var messageElement = document.getElementById("searchMessage");
-                if (matchFound) {
-                    messageElement.style.display = "none";
-                } else {
-                    messageElement.style.display = "flex";
-                    messageElement.style.height = "20vh";
-                    messageElement.style.marginTop = "25px"; // Corrected the syntax error here
+                cards.forEach((card, index) => {
+                    card.style.display = (index >= start && index < end) ? "block" : "none";
+                });
+            }
+
+            function createBootstrapPagination() {
+                const totalPages = Math.ceil(cards.length / cardsPerPage);
+                const pagination = document.getElementById("pagination");
+                pagination.innerHTML = "";
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+
+                    const a = document.createElement("a");
+                    a.className = "page-link";
+                    a.href = "#";
+                    a.textContent = i;
+
+                    a.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        currentPage = i;
+                        showPage(currentPage);
+                        createBootstrapPagination();
+                    });
+
+                    li.appendChild(a);
+                    pagination.appendChild(li);
                 }
             }
+
+            function filterHotels() {
+                const input = document.getElementById("searchInput").value.toUpperCase().trim();
+                let filteredCards = [];
+
+                cards.forEach(card => {
+                    const hotelName = card.querySelector(".card-title").textContent.toUpperCase();
+                    if (hotelName.includes(input)) {
+                        card.style.display = "block";
+                        filteredCards.push(card);
+                    } else {
+                        card.style.display = "none";
+                    }
+                });
+
+                const messageElement = document.getElementById("searchMessage");
+                if (filteredCards.length === 0) {
+                    messageElement.style.display = "flex";
+                    messageElement.style.height = "20vh";
+                    messageElement.style.marginTop = "25px";
+                } else {
+                    messageElement.style.display = "none";
+                }
+
+                if (input === "") {
+                    showPage(currentPage);
+                    createBootstrapPagination();
+                } else {
+                    currentPage = 1;
+                    paginateFilteredResults(filteredCards);
+                }
+            }
+
+            function paginateFilteredResults(filteredCards) {
+                const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
+                const pagination = document.getElementById("pagination");
+                pagination.innerHTML = "";
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+
+                    const a = document.createElement("a");
+                    a.className = "page-link";
+                    a.href = "#";
+                    a.textContent = i;
+
+                    a.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        currentPage = i;
+                        showFilteredPage(filteredCards, currentPage);
+                        paginateFilteredResults(filteredCards);
+                    });
+
+                    li.appendChild(a);
+                    pagination.appendChild(li);
+                }
+
+                showFilteredPage(filteredCards, currentPage);
+            }
+
+            function showFilteredPage(filteredCards, page) {
+                const start = (page - 1) * cardsPerPage;
+                const end = start + cardsPerPage;
+
+                filteredCards.forEach((card, index) => {
+                    card.style.display = (index >= start && index < end) ? "block" : "none";
+                });
+            }
+
+            document.getElementById("searchInput").addEventListener("input", filterHotels);
+            document.addEventListener("DOMContentLoaded", () => {
+                showPage(currentPage);
+                createBootstrapPagination();
+            });
         </script>
     </div>
 </div>
