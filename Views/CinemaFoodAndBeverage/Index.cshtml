@@ -297,8 +297,12 @@
                             }
                         </div>
                         <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
-                            <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">Hall</span>
+                            <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">Hall Name</span>
                             <span style="text-align: right;margin-right: 10px">@Model.HallName</span>
+                        </div>
+                        <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
+                            <span style="flex: 2 1 0%; text-align: left; margin-right: auto;">Space Type</span>
+                            <span style="text-align: right;margin-right: 10px">@Model.SpaceType</span>
                         </div>
 
                         <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
@@ -415,6 +419,7 @@
             var movieArticleCode = "@Model?.ArticleCode";
             var numberOfSeats = "@Model?.Seats";
             var hallName = "@Model?.HallName";
+            var spaceType = "@Model?.SpaceType";
             var company = "@Model?.CompanyName";
             var time = "@Model?.ScheduleTime";
             var date = "@Model?.ScheduleDate";
@@ -425,6 +430,7 @@
                 companyCode: companyCode,
                 branchCode: branchCode,
                 hallName: hallName,
+                spaceType: spaceType,
                 company: company,
                 time: time,
                 date: date,

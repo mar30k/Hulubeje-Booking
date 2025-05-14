@@ -46,7 +46,9 @@
     <div class="dotted-line"></div>
     <div style="flex: 0 0 100%; margin: 5px; display: flex; justify-content: space-between;">
         <span style="flex: 2 1 0%; text-align: left; margin-right: auto;"><strong>GRAND TOTAL</strong></span>
-        <span style="text-align: right; margin-right: 10px">Total Amount: @(Model?.Bill?.Data?.GrandTotal?.ToString("F2") ?? "N/A")</span>
+        <span id="totalAmount" style="text-align: right; margin-right: 10px">
+             @(Model?.Bill?.Data?.GrandTotal?.ToString("F2") ?? "N/A")
+        </span>
     </div>
 </div>
 <script>
@@ -123,7 +125,7 @@
             onSuccess: {
                 firstName: '@ViewBag?.FirstName',
                 company: '@Model?.CompanyName',
-                branch: '@Model?.CompanyName',
+                branch: '@Model?.BranchName',
                 seats: selectedSeatNames,
                 movieName: '@Model?.MovieName',
                 movieDimension: '@Model?.Dimension',
