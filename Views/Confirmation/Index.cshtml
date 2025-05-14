@@ -133,7 +133,7 @@
             count += 1;
         }
     </div>*@
-    <div style="height: auto;" class="mb-2 pb-0">
+    <div style="min-height: 65vh;" class="mb-2 pb-0">
         @foreach (var passenger in Model?.PassengerModelData ?? new List<PassengerModel>())
         {
             <div class="row border-bottom mb-3">
@@ -212,11 +212,10 @@
                 </div>
             </div>
         }
-    </div>
-
-    <div style="display: flex;justify-content: center;align-items: center;">
+        <div class="mt-5" style="display: flex;justify-content: center;align-items: center;">
         <button type="submit" id="confirmButton" class="btn btn-success mb-2">Confirm</button>
     </div>
+</div>
 </div>
 <partial name="_Footer" />
 @{
@@ -224,8 +223,8 @@
 }
 <script>
     var tarrif = "@Model?.VwRouteScheduleData?.Tariff";
-    var vehicleOperatorId = "@Model?.VwRouteScheduleData?.VehicleOperatorId";
-    var routeScheduleId = "@Model?.VwRouteScheduleData?.Id";
+    var vehicleOperatorId =parseInt('@Model?.VwRouteScheduleData?.VehicleOperatorId');
+    var routeScheduleId = parseInt('@Model?.VwRouteScheduleData?.Id');
     var routeScheduleDate = "@Model?.VwRouteScheduleData?.Date";
     var index = tarrif.indexOf(' ');
     var result = (index > 0) ? tarrif.substring(0, index) : tarrif;
