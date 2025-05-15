@@ -3,50 +3,60 @@
     <title>Route Schedule</title>
     <style>
         .busAmenities {
-            display: flex;
-            flex-wrap: wrap;
+        display: flex;
+        flex-wrap: wrap;
         }
 
-            .busAmenities div {
-                flex-basis: 50%;
-                box-sizing: border-box;
-            }
+        .busAmenities div {
+        flex-basis: 50%;
+        box-sizing: border-box;
+        }
 
         .amenities {
-            display: flex;
-            align-items: center;
+        display: flex;
+        align-items: center;
         }
 
         label {
-            white-space: nowrap;
-            margin-left: 5px;
+        white-space: nowrap;
+        margin-left: 5px;
         }
 
         .no-schedule-message {
-            height: 260px;
-            background-color: #f8f9fa;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-            transition: box-shadow 1s ease;
+        height: 260px;
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        transition: box-shadow 1s ease;
         }
 
-            .no-schedule-message p {
-                font-size: 18px;
-                color: #6c757d;
-            }
+        .no-schedule-message p {
+        font-size: 18px;
+        color: #6c757d;
+        }
 
-            .no-schedule-message:hover {
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            }
+        .no-schedule-message:hover {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
 
         .customs{
-            min-height: 75vh;
+        min-height: 75vh;
         }
     </style>
 </head>
 @{
     var isVaild = ViewBag.isVaild;
     var isLoggedIN = ViewBag.isLoggedIn;
+    var iconMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "wifi", "fa-wifi" },
+        { "charger", "fa-charging-station" },
+        { "snack", "fa-cookie" },
+        { "bottled water", "fa-glass-whiskey" },
+        { "air conditioner", "fa-snowflake" },
+        { "tv", "fa-tv" },
+        { "confy chair", "fa-couch" },
+    };
 }
 <script>
     sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
@@ -154,11 +164,15 @@
                                                     <button class="book btn btn-sm btn-primary">Book</button>
                                                 </div>
                                                 <div class="d-flex justify-content-lg-start align-text-center flex-wrap">
-                                                    <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;"><i class="fas fa-wifi"></i></span>
-                                                    <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;"><i class="fas fa-charging-station"></i></span>
-                                                    <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;"><i class="fas fa-cookie"></i></span>
-                                                    <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;"><i class="fas fa-tv"></i></span>
-                                                    <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;"><i class="fas fa-snowflake"></i></span>
+                                                    @foreach (var amenitiy in schedule?.Amenities ?? new List<string>())
+                                                    {
+                                                        if (iconMap.TryGetValue(amenitiy, out var icon))
+                                                        {
+                                                            <span class="mr-2 mb-2" style="padding: 5px; border: 1px solid #dee2e6; border-radius: 5px;">
+                                                                <i class="fas @icon fa-xs"></i>
+                                                            </span>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
