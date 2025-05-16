@@ -3,6 +3,7 @@ using HulubejeBooking.Models.PaymentModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Packaging.Signing;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -39,6 +40,7 @@ namespace HulubejeBooking.Controllers.Payment
             string? token = b?.UserData?.Token;
 
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            var _busClient = _httpClientFactory.CreateClient("BusBooking");
             var saveResponse = new SaveResponse
             {
                 ErrorMessages = new List<string>{"Unknown Error Occured. Please try again Later!"}
@@ -67,32 +69,90 @@ namespace HulubejeBooking.Controllers.Payment
 
 
                     _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    _busClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                     if (paymentModelData != null)
                     {
-                        paymentModelData.Code = activityLog?.Code;
-                        paymentModelData.PaymentInfo = new PaymentInfo
+                        if (paymentModelData.PassengerInfo == null)
                         {
-                            Type = authorizatioData?.AdditionalParameters?.Type,
-                            IsAsyncMode = authorizatioData?.AdditionalParameters?.IsAsyncMode?.ToString(),
-                            PaymentTransactionRequest = paymentTransactionRequest ?? new PaymentTransactionRequest()
-                        };
+                            paymentModelData.Code = activityLog?.Code;
+                            paymentModelData.PaymentInfo = new PaymentInfo
+                            {
+                                Type = authorizatioData?.AdditionalParameters?.Type,
+                                IsAsyncMode = authorizatioData?.AdditionalParameters?.IsAsyncMode?.ToString(),
+                                PaymentTransactionRequest = paymentTransactionRequest ?? new PaymentTransactionRequest()
+                            };
 
-                        if (paymentModelData.PaymentInfo.PaymentTransactionRequest != null)
-                        {
-                            paymentModelData.PaymentInfo.PaymentTransactionRequest.Pin = pin;
+                            if (paymentModelData.PaymentInfo.PaymentTransactionRequest != null)
+                            {
+                                paymentModelData.PaymentInfo.PaymentTransactionRequest.Pin = pin;
+                            }
+                            paymentModelData.ActivityLog = activityLog;
+                            paymentModelData.PaymentMethod = paymentProcessorData?.PaymentProcessorName;
+                            var content = JsonConvert.SerializeObject(paymentModelData);
+                            var httpContent = new StringContent(content, Encoding.UTF8, "application/json");
+                            HttpResponseMessage saveResponseRequest = await _v7Client.PostAsync("voucher/save", httpContent);
+                            if (saveResponseRequest.IsSuccessStatusCode)
+                            {
+                                var savaResponseData = await saveResponseRequest.Content.ReadAsStringAsync();
+                                saveResponse = savaResponseData != null ? JsonDeserializationHelper.Deserialize<SaveResponse>(savaResponseData) : new SaveResponse();
+                            }
+                            return Json(saveResponse);
                         }
-                        paymentModelData.ActivityLog = activityLog;
-                        paymentModelData.PaymentMethod = paymentProcessorData?.PaymentProcessorName;
-                        var content = JsonConvert.SerializeObject(paymentModelData);
-                        var httpContent = new StringContent(content, Encoding.UTF8, "application/json");
-                        HttpResponseMessage saveResponseRequest = await _v7Client.PostAsync("voucher/save", httpContent);
-                        if (saveResponseRequest.IsSuccessStatusCode)
+                        else if (paymentModelData.PassengerInfo != null)
                         {
-                            var savaResponseData = await saveResponseRequest.Content.ReadAsStringAsync();
-                            saveResponse = savaResponseData != null ? JsonDeserializationHelper.Deserialize<SaveResponse>(savaResponseData) : new SaveResponse();
+                            paymentModelData.PassengerInfo.PaymentProcessor = 0;
+                            paymentModelData.PassengerInfo.PaymentIssueDate = DateTime.Now;
+                            paymentModelData.PassengerInfo.MaturityDate = DateTime.Now;
+                            paymentModelData.PassengerInfo.PaymentRefNumber = paymentTransactionRequest.TransactionId;
+                            foreach (var passenger in paymentModelData.PassengerInfo.TicketDetail ?? new List<Models.PaymentModels.BusPaymentModel.TicketDetail>())
+                            {
+                                passenger.NationalId = "";
+                                passenger.EmergencyContact = "";
+                                passenger.Woreda = "";
+                                passenger.HouseNumber = "";
+                                passenger.SpecificAddress = "";
+                                passenger.ImageUrl = "";
+                                passenger.BillToTin = "";
+                            }
+                            paymentTransactionRequest.Pin = pin;
+
+                            var data = new
+                            {
+                                isAsyncMode = authorizatioData?.AdditionalParameters?.IsAsyncMode?.ToString(),
+                                paymentTransactionRequest
+                            };
+
+                            var content = JsonConvert.SerializeObject(paymentModelData.PassengerInfo);
+                            var transactionContent = JsonConvert.SerializeObject(data);
+                            var transactionJson = new StringContent(transactionContent ?? "", Encoding.UTF8, "application/json");
+                            var paymentModelDataJson = new StringContent(content ?? "", Encoding.UTF8, "application/json");
+                            var trasactPayemnt = new PaymentAuthorizationResponse();
+                            HttpResponseMessage authorizationResponse = await _v7Client.PostAsync($"payment/transaction", transactionJson);
+                            if (authorizationResponse.IsSuccessStatusCode)
+                            {
+                                var authorizationResponseData = await authorizationResponse.Content.ReadAsStringAsync();
+                                trasactPayemnt = JsonConvert.DeserializeObject<PaymentAuthorizationResponse>(authorizationResponseData) ?? new PaymentAuthorizationResponse();
+                            }
+                            if (trasactPayemnt.IsSuccessful) {
+                                HttpResponseMessage saveResponseRequest = await _busClient.PostAsync("tickets/saveTickets", paymentModelDataJson);
+                                if (saveResponseRequest.IsSuccessStatusCode)
+                                {
+                                    var savaResponseData = await saveResponseRequest.Content.ReadAsStringAsync();
+                                    saveResponse = new SaveResponse { IsSuccessful = true };
+                                }
+                            }
+                            else
+                            {
+                                saveResponse.ErrorMessages = (trasactPayemnt?.ErrorMessages) ?? new List<string> { "Unknown Error Occured. Please try again Later!" };
+                            }
+                            return Json(saveResponse);
                         }
-                        return Json(saveResponse);
+                        else
+                        {
+                            return BadRequest();
+                        }
+
                     }
                     else
                     {
