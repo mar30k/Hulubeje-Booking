@@ -25,54 +25,73 @@
                 </div>
             </div>
             <div class="col-md-6 p-lg-3 p-2">
+                @{
+                    var allImages = Model?.ImageModel?.Data?.OrderBy(o=>Guid.NewGuid()).ToList() ?? new List<string>();
+                    var previewCount = 5;
+                    var previewImages = allImages.Take(previewCount).ToList();
+                    var remainingCount = allImages.Count - previewCount;
+                }
+
                 <div class="row">
-                    @foreach (var image in Model?.ImageModel?.Data?.OrderBy(x => Guid.NewGuid()).Take(5).ToList() ?? new List<string>())
+                    @for (int i = 0; i < previewImages.Count; i++)
                     {
-                        <div class="col-6" style="padding-right: 5px !important; padding-left: 5px !important;">
-                            <img src="@image" class="img-fluid image mb-2" alt="Hotel Image" style="max-width: 100%; height: auto;" />
+                        var isLast = (i == previewImages.Count - 1) && (remainingCount > 0);
+                        <div class="col-6 col-md-6 col-lg-4 p-1 position-relative">
+                            <div class="image-container position-relative @(isLast ? "open-modal" : "")" style="cursor: @(isLast ? "pointer" : "default");">
+                                <img src="@previewImages[i]"
+                                     class="img-fluid thumb-image"
+                                     alt="Image"
+                                     style="aspect-ratio: 1 / 1; object-fit: cover; width: 100%; border-radius: 10px;" />
+
+                                @if (isLast)
+                                {
+                                    <div class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                                         style="background-color: rgba(0,0,0,0.5); border-radius: 10px; color: white; font-size: 24px; font-weight: bold;">
+                                        +@remainingCount
+                                    </div>
+                                }
+                            </div>
                         </div>
                     }
                 </div>
-                <script>
-                    $(document).ready(function () {
-                        $('.image').click(function (e) {
-                            e.preventDefault();
-                            $('#imageModal').modal('show');
-                        });
-                        $('#imageModal').on('click', '.cancel', function (e) {
-                            $('#imageModal').modal('hide');
-                        });
 
-                        $('#imageModal').on('click', '.close', function (e) {
-                            $('#imageModal').modal('hide');
-                        });
-                    });
-                </script>
+
+                <!-- Modal Gallery -->
                 <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-xl" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="imageModalLabel">All Images</h5>
+                                <h5 class="modal-title">All Images</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
+                                    <span>&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
                                 <div class="row">
-                                    @foreach (var image in Model?.ImageModel?.Data ?? new List<string>())
+                                    @foreach (var img in allImages)
                                     {
-                                        <div class="col-lg-3 col-md-4 col-sm-6" style="padding-right: 5px !important; padding-left: 5px !important;">
-                                            <img src="@image" class="img-fluid mb-2" alt="Hotel Image" style="max-height:auto;" />
+                                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                            <img src="@img" class="img-fluid" style="object-fit: cover; width: 100%; height: 200px;" />
                                         </div>
                                     }
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary close" data-dismiss="modal">Close</button>
-                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- JavaScript -->
+                <script>
+                    $(document).ready(function () {
+                        $(".open-modal").on("click", function () {
+                            $("#imageModal").modal("show");
+                        });
+
+                        $('#imageModal').on('click', '.cancel, .close', function () {
+                            $('#imageModal').modal('hide');
+                        });
+                    });
+                </script>
             </div>
         </div>
         <div class="row p-1">
