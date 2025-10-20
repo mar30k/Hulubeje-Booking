@@ -1,0 +1,103 @@
+﻿@model HulubejeResponse<ReviewResponse>
+@{
+    int pageSize = 5; // reviews per page
+    int totalReviews = Model?.Data?.Reviews?.Count ?? 0;
+    bool needPagination = totalReviews > pageSize;
+}
+
+<div class="">
+    <h5><strong>Reviews</strong></h5>
+    @if (totalReviews == 0)
+    {
+        <div class="alert alert-info" role="alert">
+            No reviews available for this branch.
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <small>
+                <span class="bg-warning p-1 rounded rounded-1">@Model?.Data?.Rating.ToString("0.0") / 5</span>
+                @("  ") @totalReviews review(s)
+            </small>
+        </div>
+
+        <div id="reviewsList" class="list-group">
+            @foreach (var review in Model?.Data?.Reviews ?? new List<Reviews>())
+            {
+                <div class="list-group-item mb-2 review-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">@review.FullName</h6>
+                        <small>@review.Date.ToString("MMM dd, yyyy hh:mm")</small>
+                    </div>
+                    <small>@Html.Raw(RenderStars(review.Rating))</small>
+                    <p class="mb-1">@review.Review</p>
+                </div>
+            }
+        </div>
+        @if (needPagination)
+        {
+            <!-- Pagination controls only if needed -->
+            <nav class="d-flex justify-content-center" aria-label="Reviews pagination">
+                <ul id="reviewsPagination" class="pagination mt-2"></ul>
+            </nav>
+        }
+    }
+</div>
+
+@functions {
+    string RenderStars(double rating)
+    {
+        int fullStars = (int)Math.Round(rating); // round to nearest full star
+        int emptyStars = 5 - fullStars;
+
+        string starsHtml = "";
+
+        for (int i = 0; i < fullStars; i++)
+        {
+            starsHtml += "<i class='bi bi-star-fill text-warning'></i>";
+        }
+        for (int i = 0; i < emptyStars; i++)
+        {
+            starsHtml += "<i class='bi bi-star text-warning'></i>";
+        }
+
+        return starsHtml;
+    }
+}
+<script>
+    $(document).ready(function () {
+        const reviews = $(".review-item");
+        const pageSize = 5;
+        let currentPage = 1;
+        const totalPages = Math.ceil(reviews.length / pageSize);
+
+        function showPage(page) {
+            currentPage = page;
+            reviews.hide();
+            const start = (page - 1) * pageSize;
+            const end = start + pageSize;
+            reviews.slice(start, end).show();
+
+            // Render pagination buttons
+            let paginationHtml = '';
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHtml += `<li class="page-item ${i === page ? 'active' : ''}">
+                    <a class="page-link" href="#">${i}</a>
+                </li>`;
+            }
+            $("#reviewsPagination").html(paginationHtml);
+        }
+
+        // Initial display
+        showPage(1);
+
+        // Handle click
+        $(document).on("click", "#reviewsPagination .page-link", function (e) {
+            e.preventDefault();
+            const page = parseInt($(this).text());
+            showPage(page);
+        });
+    });
+</script>
+

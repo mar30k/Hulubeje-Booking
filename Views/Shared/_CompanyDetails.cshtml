@@ -1,52 +1,167 @@
 ﻿@model HulubejeBooking.Models.HotelModels.CompanyDetailModel
-<style>
-    .description {
-        max-height: 400px;
-        overflow-y: auto;
-        padding-right: 10px; /* To accommodate scrollbars */
-    }
 
-    @@media (max-width: 500px) {
-        .description {
-            max-height: 250px;
+<style>
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        40% {
+            transform: translateX(-50%) translateY(5px);
+        }
+
+        60% {
+            transform: translateX(-50%) translateY(3px);
         }
     }
+
+    /* Card styling */
+    .amenity-card, .payment-card {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+    }
+
+        .amenity-card:hover, .payment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .amenity-card img, .payment-card img {
+            margin-right: 0.75rem;
+            object-fit: contain;
+            height: 32px;
+            width: 32px;
+        }
+
+    h4 {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    @@media (max-width: 576px) {
+        .company-description {
+            max-height: 200px;
+        }
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: #333;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 0.3rem;
+    }
+
+    .info-card.compact {
+        padding: 0.4rem 0.6rem;
+        margin-bottom: 0.4rem;
+        font-size: 0.9rem;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .info-card.compact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+
+    .icon-img {
+        height: 28px;
+        width: 28px;
+        object-fit: contain;
+    }
+
+    @@media (max-width: 576px) {
+        .info-card.compact {
+            justify-content: flex-start;
+        }
+    }
+
+    .image-container {
+        height: 100%;
+    }
+
+    .image-container {
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        background: #fff;
+    }
+
+    .thumb-image {
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .image-container:hover .thumb-image {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
 </style>
+
 @if (Model != null)
 {
-    <div class="container" style="min-height: 65vh;">
-        <div class="row p-3 p-1">
-            <div class="col-md-6 mt-3">
-                <div class="row border rounded rounded-2 bg-white p-2" style="min-height: 100px">
-                    <h4>About Us</h4>
-                    <div class="description" style="color: #333;">
-                        @Html.Raw(Model?.Description?.Replace("\n", "<br>"))
+    <div class="container py-3">
+        <!-- About Section -->
+        <div class="company-section row d-flex align-items-start">
+            <div class="col-lg-6 mb-4 d-flex flex-column">
+                <h5><strong>About Us</strong></h5>
+                <div class="card shadow-sm rounded-3 flex-grow-1">
+                    <div class="card-body position-relative">
+                        <div class="company-description" id="companyDescription"
+                             style="max-height: 300px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                            @Html.Raw(Model?.Description?.Replace("\n", "<br>"))
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 p-lg-3 p-2">
-                @{
-                    var allImages = Model?.ImageModel?.Data?.OrderBy(o=>Guid.NewGuid()).ToList() ?? new List<string>();
-                    var previewCount = 5;
-                    var previewImages = allImages.Take(previewCount).ToList();
-                    var remainingCount = allImages.Count - previewCount;
-                }
 
-                <div class="row">
+            <div class="col-lg-6 mb-4 d-flex flex-column">
+                <h5><strong>Gallery</strong></h5>
+                <div class="row g-2 flex-grow-1">
+                    @{
+                        var allImages = Model?.ImageModel?.Data?.OrderBy(o => Guid.NewGuid()).ToList() ?? new List<string>();
+                        var previewCount = 6;
+                        var previewImages = allImages.Take(previewCount).ToList();
+                        var remainingCount = allImages.Count - previewCount;
+                    }
+
                     @for (int i = 0; i < previewImages.Count; i++)
                     {
                         var isLast = (i == previewImages.Count - 1) && (remainingCount > 0);
-                        <div class="col-6 col-md-6 col-lg-4 p-1 position-relative">
+                        <div class="col-6 col-md-4 p-1">
                             <div class="image-container position-relative @(isLast ? "open-modal" : "")" style="cursor: @(isLast ? "pointer" : "default");">
                                 <img src="@previewImages[i]"
-                                     class="img-fluid thumb-image"
+                                     class="thumb-image img-fluid"
+                                     loading="lazy"
                                      alt="Image"
-                                     style="aspect-ratio: 1 / 1; object-fit: cover; width: 100%; border-radius: 10px;" />
+                                     style="aspect-ratio: 1 / 1; object-fit: cover; width: 100%;" />
 
                                 @if (isLast)
                                 {
-                                    <div class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                                         style="background-color: rgba(0,0,0,0.5); border-radius: 10px; color: white; font-size: 24px; font-weight: bold;">
+                                    <div class="overlay d-flex align-items-center justify-content-center">
                                         +@remainingCount
                                     </div>
                                 }
@@ -54,83 +169,117 @@
                         </div>
                     }
                 </div>
-
-
-                <!-- Modal Gallery -->
-                <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-xl" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">All Images</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span>&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row">
-                                    @foreach (var img in allImages)
-                                    {
-                                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                                            <img src="@img" class="img-fluid" style="object-fit: cover; width: 100%; height: 200px;" />
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- JavaScript -->
-                <script>
-                    $(document).ready(function () {
-                        $(".open-modal").on("click", function () {
-                            $("#imageModal").modal("show");
-                        });
-
-                        $('#imageModal').on('click', '.cancel, .close', function () {
-                            $('#imageModal').modal('hide');
-                        });
-                    });
-                </script>
             </div>
         </div>
-        <div class="row p-1">
-            <div class="col-md-6">
+
+        <!-- Amenities & Payment Section -->
+        <div class="company-section row">
+            <!-- Amenities -->
+            <div class="col-lg-6 mb-3">
                 @if (Model?.CompanySchedule?.Data?.Aminities?.Count > 0)
                 {
-                    <h4 class="bg-light p-2 text-center"> Amenities </h4>
-                    <div class="p-lg-3 p-1 row">
-                        @foreach (var amenity in Model?.CompanySchedule?.Data?.Aminities ?? new List<HulubejeBooking.Models.HotelModels.Amenity>())
+                    <h4 class="section-title">Amenities</h4>
+                    <div class="row g-2">
+                        @foreach (var amenity in Model.CompanySchedule.Data.Aminities)
                         {
-                            <div class="col-lg-6 col-md-6 col-sm-12 mb-2 " style="padding-right: 5px !important; padding-left: 5px !important;">
-                                <div class="p-2 border bg-white">
-                                    <img src="@amenity.ImageUrl" alt="img" class="rounded me-2" style="height: 30px; object-fit: contain;">
-                                    <span>@amenity.Name</span>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="info-card compact d-flex align-items-center bg-white rounded">
+                                    <img src="@amenity.ImageUrl" alt="@amenity.Name" class="icon-img me-2" />
+                                    <span class="fw-semibold text-dark">@amenity.Name</span>
                                 </div>
                             </div>
                         }
                     </div>
                 }
             </div>
-            <div class="col-md-6">
+
+            <!-- Payment Options -->
+            <div class="col-lg-6 mb-3">
                 @if (Model?.PaymentOptions?.Data?.Count > 0)
                 {
-                    <h4 class="bg-light p-2 text-center">Payment Options</h4>
-                    <div class="row g-3 p-lg-3 p-1">
-                        @foreach (var paymentMethod in Model.PaymentOptions.Data ?? new List<HulubejeBooking.Models.PaymentModels.PaymentProcessorData>())
+                    <h4 class="section-title">Payment Options</h4>
+                    <div class="row g-2">
+                        @foreach (var payment in Model.PaymentOptions.Data)
                         {
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-6 " style="padding-right: 5px !important;padding-left: 5px !important;">
-                                <div class="card h-100 shadow-sm rounded-3 border-0 p-1">
-                                    <div class="card-body p-0">
-                                        <img src="@paymentMethod.PaymentProcessorImage" class="img-fluid mb-2" alt="@paymentMethod?.PaymentProcessorName" style="max-width: 100%; height: auto;">
-                                        <p class="card-title text-center">@paymentMethod?.PaymentProcessorUnitName</p>
-                                    </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div class="info-card compact d-flex align-items-center bg-white rounded">
+                                    <img src="@payment?.PaymentProcessorUnitImage" alt="@payment?.PaymentProcessorUnitName" class="icon-img me-2" />
+                                    <span class="fw-semibold text-dark">@payment?.PaymentProcessorUnitName</span>
                                 </div>
                             </div>
                         }
                     </div>
                 }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                @await Html.PartialAsync("_LocationView", Model?.Branch ?? new HulubejeBooking.Models.HotelModels.Branch())
+            </div>
+            <div class="col-md-6" id="reviewsContainer">
+                <div id="reviewsContainer">
+                    <div id="reviewsLoader" class="d-flex flex-column align-items-center justify-content-center py-5">
+                        <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+                        <p class="mb-0">Loading reviews, please wait...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">All Images</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        @foreach (var img in allImages)
+                        {
+                            <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                                <img src="@img" class="img-fluid" style="object-fit: cover; width: 100%; height: 200px;" />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $(".open-modal").on("click", function () {
+                $("#imageModal").modal("show");
+            });
+            var branchCode = '@Model?.OrgOUD';
+
+            const data = JSON.stringify({
+                branchCode: branchCode,
+                retriveAllReviews: true
+            });
+            $.ajax({
+                type: 'POST',
+                contentType: 'application/json',
+                url: '/history/getReviews',
+                data: data,
+                cache: false,
+                success: function (response) {
+                    if (response.success) {
+                        // Insert the rendered partial HTML into the container
+                        $("#reviewsContainer").html(response.html);
+                    } else {
+                        // Show error message inside the container
+                        $("#reviewsContainer").html(
+                            '<div class="alert alert-warning" role="alert">' +
+                                (response.message || "Could not load reviews.") +
+                            '</div>'
+                        );
+                    }
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        });
+    </script>
 }

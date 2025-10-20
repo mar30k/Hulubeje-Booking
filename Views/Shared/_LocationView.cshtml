@@ -1,0 +1,33 @@
+﻿@model HulubejeBooking.Models.HotelModels.Branch
+<div class="d-flex flex-column ">
+    <div class="mb-2">
+        <h5><strong>Location</strong></h5>
+    </div>
+    <div id="map-container" style="position: relative; width: 100%; padding-bottom: 50%;">
+        <div id="map" style="position: absolute; top: 0; left: 0; height: 100%; width: 100%;"></div>
+    </div>
+</div>
+
+<script>
+    function initMap() {
+        const center = { lat: @Model.Latitude, lng: @Model.Longitude };
+
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 13,
+            center: center,
+            mapTypeId: "hybrid"
+        });
+
+        new google.maps.Marker({
+            position: center,
+            map: map,
+            title: "@Model.Name",
+
+        });
+    }
+</script>
+
+<!-- Google loads the API, then runs initMap -->
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAA8U3kqWJt2stT_CX_r8md8FKsj0-rmiQ&callback=initMap&libraries=places,geometry&v=weekly">
+</script>

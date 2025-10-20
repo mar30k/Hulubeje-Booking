@@ -1,0 +1,21 @@
+﻿@model List<string>
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">All Images</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    @foreach (var img in Model)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <img src="@img" class="img-fluid" style="object-fit: cover; width: 100%; height: 200px;" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

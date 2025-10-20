@@ -341,98 +341,7 @@
                 <div class="hotelsContainer" id="hotelContainer">
                     @if (Model?.Data?.Count > 0)
                     {
-                        var count = 0;
-                        @foreach (var hotel in Model.Data)
-                        {
-                            count += 1;
-                            <div class="cardH hotelCards card w-100 mt-3"
-                                 data-hotel-ratings="@hotel?.HotelRating"
-                                 data-hotel-name="@hotel?.OrganizationName"
-                                 data-original-count="@count"
-                                 data-hotel-price="@hotel?.TotalPrice"
-                                 data-hotel-amenities="@string.Join(",", hotel?.RoomAminities ?? Enumerable.Empty<string>())"
-                                 data-room-amenities="@string.Join(",", hotel?.HotelAminities ?? Enumerable.Empty<string>())"
-                                 data-min-room-value="@hotel?.MinRoomValue"
-                                 data-tin="@hotel?.OrgTin" data-oud="@hotel?.BranchCode"
-                                 data-hotelRating="@hotel?.HotelRating">
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <img src="@hotel?.PortraitPicture" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
-                                    </div>
-                                    <div class="col-sm-8">
-
-
-                                        <div class="card-body">
-                                            <div class="row align-items-start ">
-                                                <div class="col">
-                                                    <a href="#"><h5 class="card-title">@hotel?.OrganizationName</h5></a>
-                                                    @{
-                                                        var dynamicRating = string.IsNullOrEmpty(hotel?.HotelRating?.ToString())
-                                                        ? 0
-                                                        : (int)Math.Round(double.Parse(hotel.HotelRating.ToString() ?? "0", CultureInfo.InvariantCulture));
-                                                    }
-
-                                                    @for (var i = 0; i < dynamicRating; i++)
-                                                    {
-                                                        <i class="bi bi-star-fill text-warning"></i>
-                                                    }
-
-                                                    @for (var j = dynamicRating; j < 5; j++)
-                                                    {
-                                                        <i class="bi bi-star text-primary"></i>
-                                                    }
-                                                    <p class="card-text"><small class="text-body-secondary">@hotel?.BranchName</small></p>
-                                                    <div>
-                                                        <span><i class="bi bi-geo-alt-fill"></i> @hotel?.SpecificLocation</span>
-                                                    </div>
-                                                    <div>
-                                                        <span class="p-1 rounded" style="display: inline-block; background-color: green; color: white;">@hotel?.RateDescription</span>
-                                                    </div>
-                                                </div>
-                                                <span class="mt-2">
-                                                    <i class="bi bi-cash-stack"></i>Starting from: ETB @((hotel?.MinRoomValue ?? 0).ToString("N2", new System.Globalization.CultureInfo("am-ET")))
-                                                </span>
-                                                <div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <div class="mt-2">
-                                                        <div style="border-left: 1px solid black; padding-left: 8px;">
-                                                            <span type="text" data-toggle="tooltip" data-placement="bottom" title="">
-                                                                Type Of Rooms: @hotel?.HotelRoomsCount
-                                                            </span>
-                                                            <br>
-                                                            <span type="text"
-                                                                  data-toggle="tooltip"
-                                                                  data-placement="bottom"
-                                                                  title=""
-                                                                  style="color: @(hotel?.IsTaxInclusive == true ? "green" : "red")">
-                                                                @(hotel?.IsTaxInclusive == true ? "Tax Inclusive" : "Tax Exclusive")
-                                                            </span>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <h5>Total Price: ETB @string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:N2}", hotel?.TotalPrice ?? 0)</h5>
-                                                    <button class="btn btn-primary btn-sm viewAvailabilityBtn"
-                                                            data-org-code="@hotel?.OrganizationCode"
-                                                            data-cityname="@hotel?.CityName"
-                                                            data-hotel="@hotel?.OrganizationName"
-                                                            data-oud="@hotel?.BranchCode"
-                                                            data-branch="@hotel?.BranchName">
-                                                        View Availability
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
+                        @await Html.PartialAsync("_HotelList", Model?.Data)
                     }
                     else
                     {
@@ -443,7 +352,6 @@
                 </div>
 
                 <div class="d-flex justify-content-center mt-2" style="display: none;">
-                    <!-- Add your loading spinner here -->
                     <div class="spinner-border text-primary" id="loadingSpinner" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
@@ -485,176 +393,95 @@
         $('#searchInput').on('keyup', filterHotelsByName);
     });
 
-    function generateStarRatings(rating) {
-        var dynamicRating = rating ? Math.round(parseFloat(rating)) : 0;
-        var starsHtml = '';
-        for (var i = 0; i < dynamicRating; i++) {
-            starsHtml += '<i class="bi bi-star-fill text-warning"></i>';
-        }
-        for (var j = dynamicRating; j < 5; j++) {
-            starsHtml += '<i class="bi bi-star text-primary"></i>';
-        }
-        return starsHtml;
-    }
-    var page = @Model?.HotelsCount;
-    var currentPage = 2;
-    var isLoading = false;
-    var count = (currentPage -1 )* 5 + 1;
-    function loadMoreHotels() {
-        if (isLoading) return;
-        if (currentPage > page * 2) {
-            $('#loadingSpinner').hide();
-            const roundedMinPrice = Math.floor(minTotalPrice / 100) * 100;
-            const roundedMaxPrice = Math.ceil(maxTotalPrice / 100) * 100;
-            filterByPrice(roundedMinPrice, roundedMaxPrice)
-            return;
-        }
-        isLoading = true;
-        $('#loadingSpinner').show();
-        var data = {
-            city: @Model?.RoomFormData?.city,
-            roomsCount: @Model?.RoomFormData?.roomsCount,
-            numberOfNights: @Model?.RoomFormData?.numberOfNights,
-            childrenCount: @Model?.RoomFormData?.childrenCount,
-            adultCount: @Model?.RoomFormData?.adultCount,
-            dateRange: '@Model?.RoomFormData?.Date',
-            page: currentPage,
-        };
-        $.ajax({
-            url: '/AdditionalPages',
-            type: 'GET',
-            data: data,
-            success: function (response) {
-                const hotels = response.data;
-                if (hotels && hotels.length > 0) {
-                    const totalPrices = hotels.map(hotel => hotel.totalPrice);
-                    const tempMaxTotalPrice = Math.max(...totalPrices);
-                    const tempMinTotalPrice = Math.min(...totalPrices);
-
-                    if (tempMaxTotalPrice > maxTotalPrice) {
-                        maxTotalPrice = tempMaxTotalPrice;
-                    }
-                    if (tempMinTotalPrice < minTotalPrice) {
-                        minTotalPrice = tempMinTotalPrice;
-                    }
-                    const roundedMinPrice = Math.floor(minTotalPrice / 100) * 100;
-                    const roundedMaxPrice = Math.ceil(maxTotalPrice / 100) * 100;
-                    filterByPrice(roundedMinPrice, roundedMaxPrice)
-                }
-                if (response != null && response.data != null) {
-                    response.data.forEach(function (hotel) {
-                        var stars = generateStarRatings(hotel.hotelRating);
-                        var hotelHtml = `
-                            <div class="cardH hotelCards card w-100 mt-3"
-                                    data-hotel-ratings="${hotel.hotelRating}"
-                                    data-hotel-name="${hotel.organizationName}"
-                                    data-original-count="${count}"
-                                    data-hotel-price="${hotel.totalPrice}"
-                                    data-hotel-amenities="${hotel.roomAminities.join(',')}"
-                                    data-room-amenities="${hotel.hotelAminities.join(',')}"
-                                    data-min-room-value="${hotel.minRoomValue}"
-                                    data-tin="${hotel.orgTin}" data-oud="${hotel.branchCode}"
-                                    data-hotelRating="${hotel.hotelRating}">
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <img src="${hotel.portraitPicture}" class="img-fluid rounded-start" alt="..." style="height:300px; width:300px;">
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <div class="card-body">
-                                            <a href="#"><h5 class="card-title">${hotel.organizationName}</h5></a>
-                                            ${stars}
-                                            <p class="card-text"><small class="text-body-secondary">${hotel.branchName}</small></p>
-                                            <div>
-                                                <span><i class="bi bi-geo-alt-fill"></i> ${hotel.specificLocation}</span>
-                                            </div>
-                                            <div>
-                                                <span class="p-1 rounded" style="display: inline-block; background-color: green; color: white;">${hotel.rateDescription}</span>
-                                            </div>
-                                            <span class="mt-2">
-                                                <i class="bi bi-cash-stack"></i> Starting from: ETB ${hotel.minRoomValue}
-                                            </span>
-                                            <!-- Add more details here as needed -->
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <div class="mt-2">
-                                                        <div style="border-left: 1px solid black; padding-left: 8px;">
-                                                            <span type="text" data-toggle="tooltip" data-placement="bottom" title="">
-                                                                Type Of Rooms: ${hotel.hotelRoomsCount}
-                                                            </span>
-                                                            <br>
-                                                            <span type="text"
-                                                                    data-toggle="tooltip"
-                                                                    data-placement="bottom"
-                                                                    title=""
-                                                                    style="color: ${hotel.isTaxInclusive ? 'green' : 'red'}">
-                                                                ${hotel.isTaxInclusive ? 'Tax Inclusive' : 'Tax Exclusive'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <h5>Total Price: ETB ${hotel.totalPrice.toFixed(2)}</h5>
-                                                    <button class="btn btn-primary btn-sm viewAvailabilityBtn"
-                                                            data-org-code="${hotel.organizationCode}"
-                                                            data-cityname="${hotel.cityName}"
-                                                            data-hotel="${hotel.organizationName}"
-                                                            data-oud="${hotel.branchCode}"
-                                                            data-branch="${hotel.branchName}">
-                                                        View Availability
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        $('#hotelContainer').append(hotelHtml);
-                        count++;
-                    });
-                    currentPage++;
-                }
-                isLoading = false;
-                loadMoreHotels();
-                $('#loadingSpinner').hide();
-            },
-            error: function () {
-                isLoading = false;
-                $('#loadingSpinner').hide();
-            }
-        });
-        function filterByPrice(minTotalPrice, maxTotalPrice) {
-            // Update range sliders and displayed values
-            const minPriceInput = document.getElementById('filter-min-value');
-            const maxPriceInput = document.getElementById('filter-max-value');
-            const minValueDisplay = document.getElementById('min-value');
-            const maxValueDisplay = document.getElementById('max-value');
-
-            // Set the min, max, and value attributes for the range sliders
-            minPriceInput.min = minTotalPrice;
-            minPriceInput.max = maxTotalPrice;
-            minPriceInput.value = minTotalPrice;
-
-            maxPriceInput.min = minTotalPrice;
-            maxPriceInput.max = maxTotalPrice;
-            maxPriceInput.value = maxTotalPrice;
-
-            // Update the displayed min and max values
-            minValueDisplay.textContent = `ETB ${minTotalPrice}`;
-            maxValueDisplay.textContent = `ETB ${maxTotalPrice}`;
-
-            // Add event listeners to update the displayed values when the slider is moved
-            minPriceInput.addEventListener('input', function () {
-                minValueDisplay.textContent = `ETB ${minPriceInput.value}`;
-            });
-
-            maxPriceInput.addEventListener('input', function () {
-                maxValueDisplay.textContent = `ETB ${maxPriceInput.value}`;
-            });
-        }
-    }
     $(document).ready(function () {
+
+        var currentPage = 2;        // first page is already rendered from server
+        var isLoading = false;      // guard to prevent duplicate requests
+        var hasMoreHotels = true;   // stop when API gives no more hotels
+
+        function loadMoreHotels() {
+            console.log(isLoading ,!hasMoreHotels)
+            if (isLoading || !hasMoreHotels) return;
+
+            isLoading = true;
+            $('#loadingSpinner').show();
+
+            var data = {
+                city: @Model?.RoomFormData?.city,
+                roomsCount: @Model?.RoomFormData?.roomsCount,
+                numberOfNights: @Model?.RoomFormData?.numberOfNights,
+                childrenCount: @Model?.RoomFormData?.childrenCount,
+                adultCount: @Model?.RoomFormData?.adultCount,
+                dateRange: '@Model?.RoomFormData?.Date',
+                page: currentPage,
+                alreadyLoadedCount: $('#hotelContainer .cardH').length // ensures hotel numbering
+            };
+
+            $.ajax({
+                url: '/AdditionalPages',
+                type: 'GET',
+                data: data,
+                success: function(response) {
+                    if (response.trim() === "") {
+                        // API returned no more hotels → stop lazy load
+                        hasMoreHotels = false;
+                        return;
+                    }
+
+                    // Append new hotels
+                    $('#hotelContainer').append(response);
+
+                    // Update filter slider after new hotels load
+                    var prices = $('#hotelContainer .cardH').map(function () {
+                        return parseFloat($(this).data('hotel-price')) || 0;
+                    }).get();
+
+                    if (prices.length > 0) {
+                        var minTotalPrice = Math.min.apply(Math, prices);
+                        var maxTotalPrice = Math.max.apply(Math, prices);
+                        updatePriceSlider(minTotalPrice, maxTotalPrice);
+                    }
+
+                    currentPage++;
+                },
+                complete: function() {
+                    $('#loadingSpinner').hide();
+                    isLoading = false;
+                    loadMoreHotels();
+                },
+                error: function() {
+                    console.error('Error loading additional hotels');
+                    isLoading = false;
+                }
+            });
+        }
         loadMoreHotels();
+        filterByPrice();
+        function filterByPrice(){
+            var prices = $('#hotelContainer .cardH').map(function () {
+                return parseFloat($(this).data('hotel-price')) || 0;
+            }).get();
+
+            minTotalPrice = Math.min.apply(Math, prices);
+            maxTotalPrice = Math.max.apply(Math, prices);
+
+            console.log(minTotalPrice, maxTotalPrice)
+            updatePriceSlider(minTotalPrice, maxTotalPrice);
+        }
+        function updatePriceSlider(minPrice, maxPrice) {
+            // Round values to nearest 50 or 100 for cleaner UI
+            var roundedMin = Math.floor(minPrice / 50) * 50;
+            var roundedMax = Math.ceil(maxPrice / 50) * 50;
+
+            // Update slider attributes
+            $('#filter-min-value').attr("min", roundedMin).attr("max", roundedMax).val(roundedMin);
+            $('#filter-max-value').attr("min", roundedMin).attr("max", roundedMax).val(roundedMax);
+
+            // Update labels
+            $('#min-value').text("ETB " + roundedMin.toLocaleString());
+            $('#max-value').text("ETB " + roundedMax.toLocaleString());
+
+        }
         function sortByLowToHigh() {
             var hotels = $(".hotelCards").toArray();
             hotels.sort(function (a, b) {

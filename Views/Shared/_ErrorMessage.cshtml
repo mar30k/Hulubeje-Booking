@@ -1,0 +1,10 @@
+﻿@{
+    var message = ViewData["Message"] as string ?? "Something Went wrong!";
+}
+
+<div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 70vh;">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
+        <p class="mt-2">@message</p>
+    </div>
+</div>
