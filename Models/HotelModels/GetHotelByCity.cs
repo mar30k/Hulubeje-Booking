@@ -2,6 +2,7 @@
 {
     public class Hotel
     {
+        public int Count { get; set; }
         public int? OrganizationCode { get; set; }
         public string? OrganizationName { get; set; }
         public string? OrgTin { get; set; }

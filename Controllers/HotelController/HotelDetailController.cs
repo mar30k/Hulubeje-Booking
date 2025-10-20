@@ -46,6 +46,7 @@ namespace HulubejeBooking.Controllers.HotelController
                 var getsupplierpaymentoptions = new PaymentProcessorResponse();
                 var getcompanyschedule = new GetCompanySchedule();
                 var getcompanyimages = new GetCompanyImages();
+                var getcompaniesbytype = new GetcompaniesbyType();
                 if (getcompanyscheduleResponse.IsSuccessStatusCode)
                 {
                     string getcompanyscheduleData = await getcompanyscheduleResponse.Content.ReadAsStringAsync();
@@ -54,7 +55,12 @@ namespace HulubejeBooking.Controllers.HotelController
 
                 HttpResponseMessage getsupplierpaymentoptionsResponse = await _v7Client.GetAsync($"payment/getsupplierpaymentoptions?code={orgCode}&branchCode={oud}");
                 HttpResponseMessage getcompanyimagesResponse = await _v7Client.GetAsync($"routing/getcompanyimages?tin={orgTin}&branchCode={oud}&industryType=1989");
-
+                HttpResponseMessage getcompaniesbytypeResponse = await _v7Client.GetAsync("routing/getcompaniesbytype?industryType=1989");
+                if (getcompaniesbytypeResponse.IsSuccessStatusCode)
+                {
+                    string getcompaniesbytypeResponseData = await getcompaniesbytypeResponse.Content.ReadAsStringAsync();
+                    getcompaniesbytype = JsonConvert.DeserializeObject<GetcompaniesbyType>(getcompaniesbytypeResponseData);
+                }
                 if (getsupplierpaymentoptionsResponse.IsSuccessStatusCode)
                 {
                     string getsupplierpaymentoptionsData = await getsupplierpaymentoptionsResponse.Content.ReadAsStringAsync();
@@ -65,8 +71,11 @@ namespace HulubejeBooking.Controllers.HotelController
                     string getcompanyimagesData = await getcompanyimagesResponse.Content.ReadAsStringAsync();
                     getcompanyimages = JsonConvert.DeserializeObject<GetCompanyImages>(getcompanyimagesData);
                 }
+                var company = getcompaniesbytype?.Data?.Where(x=> x.Code == orgCode ).FirstOrDefault();
+                var branch = company?.Branches?.Where(x=> x.Code == oud).FirstOrDefault();
                 var CompanyDetailModel = new CompanyDetailModel
                 {
+                    Branch = branch,
                     BranchName = branchName,
                     PaymentOptions = getsupplierpaymentoptions,
                     Description = description,

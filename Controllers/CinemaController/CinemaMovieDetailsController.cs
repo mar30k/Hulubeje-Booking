@@ -138,7 +138,7 @@ namespace HulubejeBooking.Controllers.CinemaController
             movieDetails.PhoneNumber = code;
             movieDetails.ArticleCode = articleCode.ToString();
             movieDetails.PhoneNumber = phoneNumber?.ToString();
-            if (_appEnvironment.EnvironmentName != "Development")
+            if (_appEnvironment.IsProduction())
             {
                 _ = await UpdateMovieAnalyticsAsync(tin, movieName, posterUrl);
             }

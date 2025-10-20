@@ -158,7 +158,7 @@
                                data-operator-name="@item?.CompanyName">
                                 <div class="row g-0">
                                     <div class="col-lg-4">
-                                        <img class="img-fluid" src="@(item?.ImgUrl!=null? item.ImgUrl : "../Assets/bus.png")">
+                                        <img class="img-fluid" src="@(!string.IsNullOrEmpty(item?.ImgUrl)? item?.ImgUrl: "../Assets/bus.png")"/>
                                     </div>
                                     <div class="col-lg-8">
                                         <div class="card-body">
@@ -181,11 +181,11 @@
             var destinationSelect = $('#destination');
             var allCities = @Html.Raw(Json.Serialize(Model?.RouteModel));
             var selectedDepartureCityObject = allCities.find(city => city.originCityName === selectedDepartureCity);
-            var destinationCitiesList = selectedDepartureCityObject.routes;
+            if (selectedDepartureCityObject) {
+                var destinationCitiesList = selectedDepartureCityObject.routes;
 
-            destinationCitiesList.sort((a, b) => a.destinationCityName.localeCompare(b.destinationCityName));
+                destinationCitiesList.sort((a, b) => a.destinationCityName.localeCompare(b.destinationCityName));
 
-            if (destinationCitiesList) {
                 destinationCitiesList.forEach(city => {
                     destinationSelect.append($('<option>', {
                         value: city.routeId,

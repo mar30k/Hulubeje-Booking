@@ -213,9 +213,9 @@
             </div>
         }
         <div class="mt-5" style="display: flex;justify-content: center;align-items: center;">
-        <button type="submit" id="confirmButton" class="btn btn-success mb-2">Confirm</button>
+            <button type="submit" id="confirmButton" class="btn btn-success mb-2">Confirm</button>
+        </div>
     </div>
-</div>
 </div>
 <partial name="_Footer" />
 @{
@@ -283,13 +283,16 @@
 
     $('#confirmButton').on('click', function () {
         var data = {
-            AuthorizePaymentData: {
-                UserMobileNumber: userMobileNumber,
-                SupplierTin: '0000017872',
-                SupplierOUD: 'OUD000000048',
-                Amount: 0.1,
-            },
-            PassengerInfoData: {
+            Amount: 0.1,
+            Code: userMobileNumber,
+            CompanyCode: 212123,
+            BranchCode: 55915,
+            IndustryType: 2005,
+            PaymentProcessor: 111,
+            Longitude: 0.0,
+            Latitude: 0.0,
+            PaymentMethod: '144',
+            PassengerInfo: {
                 PaymentStatus: 86,
                 Payer: userMobileNumber,
                 RouteSchedule: routeScheduleId,
@@ -298,8 +301,8 @@
                 RouteScheduleDate: routeScheduleDate,
                 Platform: 'Web',
                 IpAddress: '192.168.1.1',
-                Longitude: 9.016595,
-                Latitude: 38.7657617,
+                Longitude: 0.0,
+                Latitude: 0.0,
                 PaymentMethod: 144,
 
                 TicketDetail: ticketDetail,

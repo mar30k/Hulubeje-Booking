@@ -86,7 +86,7 @@ namespace HulubejeBooking.Controllers.BusController
 
             }
             var seatValuesJson = HttpContext.Session.GetString("BusValues");
-            HttpContext.Session.Remove("BusValues");
+            //HttpContext.Session.Remove("BusValues");
             if (seatValuesJson != null)
             {
                 var seatValues = JsonConvert.DeserializeObject<BusSeatLayout>(seatValuesJson);
@@ -144,17 +144,17 @@ namespace HulubejeBooking.Controllers.BusController
                 
                schedueleInfo.SeatLayout = seatLayout;
             }
-            else
-            {
-                HttpResponseMessage defaultResponse = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={239}");
-                if (defaultResponse.IsSuccessStatusCode)
-                {
-                    string resopnseData = await defaultResponse.Content.ReadAsStringAsync();
-                    var seatLayout = JsonConvert.DeserializeObject<SeatLayoutStructure>(resopnseData);
+            //else
+            //{
+            //    HttpResponseMessage defaultResponse = await busSeatLayoutClient.GetAsync($"vehicles/getvehicleseatlayout?id={vehicle}");
+            //    if (defaultResponse.IsSuccessStatusCode)
+            //    {
+            //        string resopnseData = await defaultResponse.Content.ReadAsStringAsync();
+            //        var seatLayout = JsonConvert.DeserializeObject<SeatLayoutStructure>(resopnseData);
 
-                    schedueleInfo.SeatLayout = seatLayout;
-                }
-            }
+            //        schedueleInfo.SeatLayout = seatLayout;
+            //    }
+            //}
             HttpResponseMessage soldSeatsRespnse = await busSeatLayoutClient.GetAsync($"routeschedule/getsoldseats?RouteSchedule={sheduleId}");
             if (soldSeatsRespnse.IsSuccessStatusCode)
             {

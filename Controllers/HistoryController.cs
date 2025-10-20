@@ -1,20 +1,21 @@
-﻿using HulubejeBooking.Models;
+﻿using CNET_ERP_V7_VoucherPrintDialogue.Models;
+using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models;
 using HulubejeBooking.Models.Authentication;
 using HulubejeBooking.Models.BusModels;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.Net.Http;
-using HulubejeBooking.Controllers.Authentication;
-using Tweetinvi.Core.Models;
-using NuGet.Common;
-using System.Net.Http.Headers;
-using System.Text;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using System.Security.Cryptography;
-using System.Drawing.Imaging;
-using System.Drawing;
-using CNET_ERP_V7_VoucherPrintDialogue.Models;
 using HulubejeBooking.Models.EventModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Newtonsoft.Json;
+using NuGet.Common;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
+using Tweetinvi.Core.Models;
+using static QRCoder.PayloadGenerator;
 namespace HulubejeBooking.Controllers
 {
     public class HistoryController : Controller
@@ -32,7 +33,7 @@ namespace HulubejeBooking.Controllers
             _qrCodeGeneratorService = qRCodeGeneratorService;
         }
 
-        public async Task<IActionResult> IndexAsync(string? phoneNumber)
+        public async Task<IActionResult> Index(string? phoneNumber)
         {
             string? token = "";
             var identificationResult = await _authenticationManager.identificationValid();
@@ -68,17 +69,84 @@ namespace HulubejeBooking.Controllers
                 historyWrapper.HistoryModel = busHistory;
             }
             _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            HttpResponseMessage historyResponse = await _v7Client.GetAsync($"voucher/gethistory?code={phoneNumber}&page=1");
-            if (historyResponse.IsSuccessStatusCode)
-            {
-                string responseData = await historyResponse.Content.ReadAsStringAsync();
-                var history = JsonConvert.DeserializeObject<OrdersModel>(responseData);
-                historyWrapper.OrdersModel = history;
-            }
-
+            string phoneParam = $"?code={phoneNumber}";
+            historyWrapper.OrdersModel = await GetHistoryAsync($"voucher/gethistory{phoneParam}", 1);
+            historyWrapper.PayementsHistory = await GetHistoryAsync($"voucher/getpaymenthistory{phoneParam}", 1);
             return View(historyWrapper);
 
         }
+
+
+        public async Task<HulubejeResponse<List<VoucherData>>?> GetHistoryAsync(string endpoint, int page)
+        {
+            var identificationResult = await _authenticationManager.identificationValid();
+            string? token = identificationResult.UserData?.Token;
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _v7Client.GetAsync($"{endpoint}&page={page}");
+            if (response.IsSuccessStatusCode)
+            {
+                string responseData = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<HulubejeResponse<List<VoucherData>>>(responseData);
+            }
+            return null;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPaymentHistoryPartial(string endPoint, string phone, int page)
+        {
+            if(endPoint.ToLower() == "gethistory") { ViewData["IsOrderHistory"] = true; }
+            var result = await GetHistoryAsync($"voucher/{endPoint}?code={phone}", page);
+
+            if (result?.Data == null || !result.Data.Any())
+            {
+                return Content("");
+            }
+
+            return PartialView("_VoucherHistoryPartial", result.Data);
+        }
+
+        public async Task<IActionResult> GetReviews([FromBody] GetReviewsRequest request)
+        {
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+            string? token = "";
+            var review = new HulubejeResponse<ReviewResponse>();
+
+            //request.BranchCode = 55915;
+            var identificationResult = await _authenticationManager.identificationValid();
+            if (identificationResult != null)
+            {
+                token = identificationResult?.UserData?.Token;
+            }
+
+            var jsonBody = JsonConvert.SerializeObject(request);
+            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            if (request == null)
+            {
+                return Json(new { success = false, message = "Invalid request body." });
+            }
+
+            _v7Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage ratingResponse = await _v7Client.PostAsync($"review/get", content);
+
+            if (ratingResponse.IsSuccessStatusCode)
+            {
+                string responseData = await ratingResponse.Content.ReadAsStringAsync();
+                review = JsonConvert.DeserializeObject<HulubejeResponse<ReviewResponse>>(responseData);
+
+                if(review!=null && review.Data!=null)
+                {
+                    review.Data.BranchCode = request.BranchCode;
+                }
+                // Render the partial view into a string
+                var html = await this.RenderViewAsync("_CompanyReviews", review, true);
+                return Json(new { success = true, html });
+            }
+
+            return Json(new { success = false, message = "Failed to retrieve reviews from the server." });
+        }
+
         public async Task<IActionResult> SubmitRating([FromBody] Ratings? rating)
         {
             string? token = "";
@@ -94,7 +162,6 @@ namespace HulubejeBooking.Controllers
             if (rating != null)
             {
                 rating.Code = phoneNumber;
-                rating.BranchCode = 45;
             }
             var jsonBody = JsonConvert.SerializeObject(rating);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -106,7 +173,7 @@ namespace HulubejeBooking.Controllers
                 if (ratingResponse.IsSuccessStatusCode)
                 {
                     string responseData = await ratingResponse.Content.ReadAsStringAsync();
-                    var review = JsonConvert.DeserializeObject<RatingResponse>(responseData);
+                    var review = JsonConvert.DeserializeObject<HulubejeResponse<bool>>(responseData);
                     return Json(review);
                 }
                 return BadRequest("Error");
@@ -145,7 +212,7 @@ namespace HulubejeBooking.Controllers
                     review = responseData != null ? JsonConvert.DeserializeObject<GetHistoryDetailResposne>(responseData) : new GetHistoryDetailResposne();
                 }
                 var qrCodeBytes = Array.Empty<byte>();
-                if (review?.Data?.ExtraInformation?.Count !=0 || review?.Data?.ExtraData?.Status != null)
+                if (!string.IsNullOrWhiteSpace(review?.Data?.ExtraData?.Status))
                 {
                     var text = $"CNET_REDEEM,{review?.Data?.ExtraData?.Tin},{review?.Data?.BranchCode?.ToString()},{review?.Data?.PhoneNumber}," +
                     $"{review?.Data?.ExtraData?.VoucherId},{review?.Data?.IssuedDate?.ToString("MM/dd/yyyy hh:mm:ss tt")}," +
@@ -225,8 +292,8 @@ namespace HulubejeBooking.Controllers
         //{
         //    return input.Replace(" ", "+");
         //}
-        [Route("history/orderdetail")]
-        public async Task<IActionResult> OrderDetail([FromForm] VoucherData? voucherData)
+        [Route("orderdetail")]
+        public async Task<IActionResult> OrderDetail([FromQuery] VoucherData? voucherData)
         {
             try
             {
@@ -276,7 +343,7 @@ namespace HulubejeBooking.Controllers
 
 
 
-                if (review != null & review?.Data?.ExtraData?.Status == "Reedemed")
+                if (review != null & review?.Data?.ExtraData?.Status == "Reedemed" && review?.Data!=null)
                 {
                     review.Data.CompanyName = voucherData?.CompanyName;
                     review.Data.VoucherCode = voucherData?.VoucherCode;
@@ -295,6 +362,7 @@ namespace HulubejeBooking.Controllers
                     var base64QRCode = Convert.ToBase64String(qrCodeBytes);
                     review.QRCodeImage = $"data:image/png;base64,{base64QRCode}";
                 }
+                review.VoucherData = voucherData;
                 return View(review);
             }
             catch (Exception ex) 

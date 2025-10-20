@@ -36,17 +36,33 @@ namespace HulubejeBooking.Controllers.CinemaController
             {
                 try
                 {
+                    if (date.Value.Date < DateTime.Today)
+                    {
+                        return View(null);
+                    }
                     var getcompaniesbytyp = await GetcompaniesbyType("1988", token);
                     string? formattedDate = date?.ToString("yyyy-MM-dd");
                     Movie? movies = (await Getmovies(formattedDate ?? "", token ?? "", "2")) as Movie ?? new Movie();
                     string serverTimeString = (await _miscellaneousApiRequests.GetServerTime(token ?? "") ?? "").Trim('\"');
-                    DateTimeOffset? serverTime = DateTimeOffset.Parse(serverTimeString);
-                    DateTime serverDate = serverTime.Value.DateTime;
-                    if (date?.ToString("MM/dd/yyyy") == serverDate.ToString("MM/dd/yyyy"))
+                    if (DateTimeOffset.TryParse(serverTimeString, out var parsedTime))
                     {
-                        List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
-                        movies.TrendingMovies = trendingMovies?.ToList();
+                        DateTime serverDate = parsedTime.Date;
+
+                        if (date?.Date == serverDate)
+                        {
+                            List<CompanyData>? trendingMovies = await GetTrendingMovies(token, "service/cinema/getTrendingMovies");
+                            movies.TrendingMovies = trendingMovies?.ToList();
+                        }
+                        else
+                        {
+                            movies.TrendingMovies = new List<CompanyData>(); 
+                        }
                     }
+                    else
+                    {
+                        movies.TrendingMovies = new List<CompanyData>();
+                    }
+
                     movies.Companies = getcompaniesbytyp;
                     var moviesJson = JsonConvert.SerializeObject(movies);
                     HttpContext.Session.SetString("movies", moviesJson);

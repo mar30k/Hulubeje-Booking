@@ -33,7 +33,7 @@
         public string? CompanyName { get; set; }
         public string? TIN { get; set; }
         public string? Note { get; set; }
-        public DateTime EstablishmentDate { get; set; }
+        public DateTime? EstablishmentDate { get; set; }
         public int? NumberOfShareHolders { get; set; }
         public int SideNumStart { get; set; }
         public int SideNumEnds { get; set; }

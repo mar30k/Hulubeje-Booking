@@ -15,6 +15,7 @@ namespace HulubejeBooking.Models.HotelModels
         public GetCompanySchedule? CompanySchedule { get; set; }
         public PaymentProcessorResponse? PaymentOptions { get; set; }
         public GetCompanyImages? ImageModel { get; set; }
+        public Branch? Branch { get; set; }
         public string? Description { get; set; }
         public string? Name { get; set; }
         public int? CompanyCode { get; set; }

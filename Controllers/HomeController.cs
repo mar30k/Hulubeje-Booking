@@ -1,11 +1,12 @@
-﻿using HulubejeBooking.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using HulubejeBooking.Controllers.Authentication;
-using System.Net.Http;
-using HulubejeBooking.Models.HotelModels;
-using Newtonsoft.Json;
+﻿using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models;
 using HulubejeBooking.Models.Authentication;
+using HulubejeBooking.Models.HotelModels;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Net.Http.Headers;
 namespace HulubejeBooking.Controllers
 {
     public class HomeController : Controller
@@ -43,9 +44,10 @@ namespace HulubejeBooking.Controllers
                 ViewBag.PhoneNumber = identificationResult?.UserData?.Code;
                 ViewBag.EmailAddress = identificationResult?.UserData?.Email;
             }
+            var picturesUrl = await PicturesResonseAsync(1, identificationResult?.UserData?.Token);
 
-            
-            return View();
+
+            return View(picturesUrl);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -53,16 +55,16 @@ namespace HulubejeBooking.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        public async Task<List<string>> PicturesResonseAsync(string type) {
-            var _client = _httpClientFactory.CreateClient("CnetHulubeje");
-
-            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"/Ecommerce/GetBannerImages?directory={type}");
+        public async Task<List<string>> PicturesResonseAsync(int type, string? token) {
+            var _client = _httpClientFactory.CreateClient("HulubejeBooking");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + $"routing/getbannerimages?industryType={type}");
 
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                var images = JsonConvert.DeserializeObject<List<string>>(data);
-                return images ?? new List<string>();
+                var images = JsonConvert.DeserializeObject<HulubejeResponse<List<string>>>(data);
+                return images?.Data ?? new List<string>();
             }
             return new List<string>();
         }
