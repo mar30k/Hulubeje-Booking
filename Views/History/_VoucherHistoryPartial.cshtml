@@ -1,0 +1,69 @@
+﻿@model IEnumerable<VoucherData>
+@{
+    bool isOrderHistory = ViewData["IsOrderHistory"] as bool? ?? false;
+}
+
+@foreach (var order in Model ?? new List<VoucherData>())
+{
+    if (isOrderHistory)
+    {
+        <div class="card p-2 customcard mb-3">
+            <div class="row">
+                <div class="col-4">
+                    <img src="@order.Logo" class="img-fluid companyimage" alt="Supplier Logo" />
+                </div>
+                <div class="col-8 col-md-4">
+                    <div>
+                        <p style="margin: 2px;">@order.CompanyName</p>
+                        <small style="color: blue">@order.BranchName</small>
+                        <p style="margin: 2px;">@order.VoucherCode</p>
+                        <p style="margin: 2px;">@order.IssuedDate.ToString("ddd, MMM dd yyyy hh:mm tt")</p>
+                        <p style="margin: 2px;">@order.GrandTotal?.ToString("0.00") Birr</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2 mt-2 d-flex justify-content-center"
+                     style="position: absolute; bottom: 0; right: 0;">
+                    <a class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" target="_blank"
+                       href="https://www.google.com/maps/search/?api=1&query=@order.Latitude,@order.Longitude">
+                        Direction
+                    </a>
+                    <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2 details-btn"
+                            data-companyCode="@order.CompanyCode"
+                            data-industryType="@order.IndustryType"
+                            data-voucherCode="@order.VoucherCode"
+                            data-issuedDate="@order.IssuedDate"
+                            data-company="@order.CompanyName">
+                        Details
+                    </button>
+                    <button class=" mr-2 mr-md-1 btn btn-primary btn-sm px-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#reviewModal"
+                            data-company="@order.CompanyName"
+                            data-article="@order.Articles"
+                            data-branchcode="@order.BranchCode">
+                        Review
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <a class="card p-2 customcard mb-3" href="@order.AttachmentLink" target="_blank">
+            <div class="row">
+                <div class="col-4">
+                    <img src="@order.Logo" class="img-fluid companyimage" alt="Supplier Logo" />
+                </div>
+                <div class="col-8 col-md-4">
+                    <div>
+                        <p style="margin: 2px;">@order.CompanyName</p>
+                        <small style="color: blue">@order.BranchName</small>
+                        <p style="margin: 2px;">@order.VoucherCode</p>
+                        <p style="margin: 2px;">@order.IssuedDate.ToString("ddd, MMM dd yyyy hh:mm tt")</p>
+                        <p style="margin: 2px;">@order.GrandTotal?.ToString("0.00") Birr</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+    }
+}

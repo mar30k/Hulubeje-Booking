@@ -51,8 +51,13 @@
                     <select id="country-code-select" style="margin-right: 10px;">
                         @foreach (var country in Model)
                         {
-                            <option value="@($"{country?.Idd?.Root}{country?.Idd?.Suffixes?[0]}")">
-                                @country?.Name?.Common @country?.Idd?.Root@(country?.Idd?.Suffixes?[0])
+                            // Safely get the first suffix if available
+                            var firstSuffix = (country?.Idd?.Suffixes != null && country.Idd.Suffixes.Count > 0)
+                            ? country.Idd.Suffixes[0]
+                            : "";
+
+                            <option value="@($"{country?.Idd?.Root}{firstSuffix}")">
+                                @country?.Name?.Common @($"{country?.Idd?.Root}{firstSuffix}")
                             </option>
                         }
                     </select>

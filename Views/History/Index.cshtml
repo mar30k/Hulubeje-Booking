@@ -2,24 +2,31 @@
 @using HulubejeBooking.Models.BusModels;
 <partial name="_Navigation" />
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <title>History</title>
     <style>
         .btn:focus {
             outline: none;
             box-shadow: none;
         }
+
         .wide-tab {
             max-width: 300px;
         }
-        .customcard{
+
+        .customcard {
             height: 180px;
+            color: inherit;
         }
+
+            .customcard:hover {
+                cursor: pointer;
+                color: inherit; 
+                text-decoration: none;
+            }
 
         .companyimage {
             object-fit: contain;
-            max-height: 150px; 
+            max-height: 150px;
             width: 100%;
         }
 
@@ -51,192 +58,51 @@
 
         #myTabs {
             flex-wrap: nowrap;
-
         }
-            .nav-link.active {
-                font-weight: bold;
-            }
+
+        .nav-link.active {
+            font-weight: bold;
+        }
 
     </style>
 </head>
 <div class="container vh-50 mt-3 mb-3">
     <ul class="nav nav-tabs" id="myTabs">
         <li class="nav-item">
-            <a class="nav-link active wide-tab" id="tab1-tab" data-toggle="tab" href="#tab1">Booking History</a>
+            <a class="nav-link active wide-tab" id="tab1-tab" data-toggle="tab" href="#tab1">Orders</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link wide-tab" id="tab2-tab" data-toggle="tab" href="#tab2">Transportaion History</a>
+            <a class="nav-link wide-tab" id="tab2-tab" data-toggle="tab" href="#tab2">Trips </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link wide-tab" id="tab3-tab" data-toggle="tab" href="#tab3">Payment</a>
         </li>
     </ul>
     <div class="tab-content mt-4 ">
-        
+
         <div class="tab-pane fade show active" id="tab1">
-            @foreach (var order in Model?.OrdersModel?.Data ?? new List<VoucherData>())
+            @if (Model?.OrdersModel?.Data?.Count() > 0)
             {
-                <div class="card p-2 customcard mb-3">
-                    <div class="row">
-                        <div class="col-4">
-                            <img src="@order.Logo" class="img-fluid companyimage" alt="Supplier Logo" />
-                        </div>
-                        <div class="col-8 col-md-4">
-                            <div>
-                                <p style="margin: 2px; ">@order.CompanyName</p>
-                                <small style="color: blue">@order.BranchName</small>
-                                <p style="margin: 2px; ">@order.VoucherCode</p>
-                                <p style="margin: 2px; "> @order.IssuedDate.ToString("ddd, MMM dd yyyy hh:mm tt")</p>
-                                <p style="margin: 2px; ">@order.GrandTotal?.ToString("0.00") Birr</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-2 mt-2 d-flex justify-content-center" style="position: absolute; bottom: 0; right: 0;">
-                            <a type="button" class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" target="_blank"
-                               href="https://www.google.com/maps/search/?api=1&query= @order.Latitude,@order.Longitude">Direction</a>
-                            <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2 details-btn" data-companyCode="@order.CompanyCode"
-                                    data-industryType="@order.IndustryType" data-voucherCode="@order.VoucherCode" data-issuedDate="@order.IssuedDate" data-company="@order.CompanyName">
-                                Details
-                            </button>
-                            <button class="mr-2 mr-md-1 btn btn-primary btn-sm px-2" data-toggle="modal" data-target="#reviewModal" data-company="@order.CompanyName"
-                                    data-article="@order.Articles" data-branchcode="@order.BranchCode">
-                                Review
-                            </button>
-                        </div>
-                    </div>
+                <div id="orders-history">
+                    @await Html.PartialAsync("_VoucherHistoryPartial", Model?.OrdersModel?.Data, new ViewDataDictionary(ViewData) {
+                { "IsOrderHistory", true }
+                })
+                </div>
+                <div id="orders-loading-indicator" class="text-center my-3 loading-indicator" style="display:none;">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+                <div class="text-center my-3">
+                    <button id="load-more-orders" class="btn btn-primary">Load More</button>
                 </div>
             }
+            else
+            {
+                @await Html.PartialAsync("_ErrorMessage", null, new ViewDataDictionary(ViewData) {
+                { "Message", "No order history found." }
+                })
+            }
         </div>
-        <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reviewModalLabel"></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="starRating">How was it?</label>
-                            <div id="starRating">
-                                <i class="far fa-star" data-value="1"></i>
-                                <i class="far fa-star" data-value="2"></i>
-                                <i class="far fa-star" data-value="3"></i>
-                                <i class="far fa-star" data-value="4"></i>
-                                <i class="far fa-star" data-value="5"></i>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="reviewText">Share your detail of experience:</label>
-                            <textarea class="form-control" id="reviewText" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary btn-sm submit" data-dismiss="modal">Submit</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script>
-            $(document).ready(function () {
-                var companyName;
-                var branchCode;
-                var article;
-                $('#reviewModal').on('show.bs.modal', function (event) {
-                    const button = $(event.relatedTarget); // Button that triggered the modal
-                    companyName = button.data('company'); // Extract info from data-* attributes
-                    article = button.data('article'); // Extract info from data-* attributes
-                    branchCode = button.data('branchcode'); // Extract info from data-* attributes
-
-                    const modal = $(this);
-                    modal.find('.modal-title').text(companyName); // Set the company name to the modal label
-
-                    const stars = modal.find('#starRating i');
-                    stars.removeClass('fas text-warning').addClass('far');
-                    modal.find('#reviewText').val(''); // Clear the text area
-                });
-
-                // Star rating logic
-                $('#reviewModal').on('click', '#starRating i', function () {
-                    const stars = $(this).parent().find('i');
-                    const rating = stars.index($(this)) + 1; // Calculate the rating based on the clicked star index
-
-                    // Toggle all stars up to the clicked one
-                    stars.removeClass('fas text-warning').addClass('far');
-                    stars.slice(0, rating).removeClass('far').addClass('fas text-warning');
-                });
-                $('#reviewModal').on('click', '.submit', function (e) {
-                    e.preventDefault();
-                    const stars = $('#starRating i.fas');
-                    const rating = stars.length;
-                    const reviewText = $('#reviewText').val().trim();
-                    const companyName = $('#companyNameInput').val();
-
-                    if (rating === 0) {
-                        alert('Please select a star rating before submitting.');
-                        return;
-                    }
-
-                    const data = JSON.stringify({
-                        branchCode: branchCode,
-                        rating: rating,
-                        review: reviewText,
-                        article: article
-                    });
-
-                    $.ajax({
-                        type: 'POST',
-                        contentType: 'application/json',
-                        url: '/history/SubmitRating',
-                        data: data,
-                        cache: false,
-                        success: function (response) {
-                            if (response.isSuccessful) {
-                                alert('Review submitted successfully.');
-                            } else {
-                                alert(response.errorMessages.join(', '));
-                            }
-                        },
-                        error: function (error) {
-                            $('#reviewModal').modal('hide');
-                            alert('An error occurred while submitting your review. Please try again.');
-                        }
-                    });
-
-                    return false;
-                });
-                // Event listener to reset modal content when modal is hidden
-                $('#reviewModal').on('hidden.bs.modal', function () {
-                    $('#reviewText').val(''); // Clear review text input
-                    $('#starRating i.fas').removeClass('fas text-warning').addClass('far'); // Reset star rating
-                });
-
-
-                $(document).on('click', '.details-btn', function () {
-                    // Get data attributes from the button
-                    const companyCode = $(this).data('companycode');
-                    const industryType = $(this).data('industrytype');
-                    const voucherCode = $(this).data('vouchercode');
-                    const issuedDate = $(this).data('issueddate');
-                    const companyname = $(this).data('company');
-
-                    // Create a form dynamically
-                    var form = $('<form>', {
-                        action: '/history/orderdetail',
-                        method: 'post'
-                    });
-
-                    // Add hidden input fields with the data
-                    form.append($('<input>', { type: 'hidden', name: 'CompanyName', value: companyname }));
-                    form.append($('<input>', { type: 'hidden', name: 'CompanyCode', value: companyCode }));
-                    form.append($('<input>', { type: 'hidden', name: 'IssuedDate', value: issuedDate }));
-                    form.append($('<input>', { type: 'hidden', name: 'IndustryType', value: industryType }));
-                    form.append($('<input>', { type: 'hidden', name: 'VoucherCode', value: voucherCode }));
-
-                    // Append the form to the body and submit it
-                    $('body').append(form);
-                    form.submit();
-                });
-            });
-        </script>
+        <partial name="_ReviewModal" />
 
         <div class="tab-pane fade" id="tab2">
             @if (Model?.HistoryModel?.Count() > 0)
@@ -282,26 +148,53 @@
                     }
                     else
                     {
-                        <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
-                                <p class="mt-2">We apologize, but it seems there is no available history.</p>
-                            </div>
-                        </div>
+                        @await Html.PartialAsync("_ErrorMessage", null, new ViewDataDictionary(ViewData) {
+                        { "Message", "No trip history found." }
+                        })
                     }
                 }
             }
             else
             {
-                <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 50vh;">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
-                        <p class="mt-2">We apologize, but it seems there is no available history.</p>
-                    </div>
+                @await Html.PartialAsync("_ErrorMessage", null, new ViewDataDictionary(ViewData) {
+                    { "Message", "No trip history found." }
+                    })
+            }
+        </div>
+        <div class="tab-pane fade" id="tab3">
+            @if (Model?.PayementsHistory?.Data?.Count() > 0)
+            {
+                <div id="payment-history">
+                    @await Html.PartialAsync("_VoucherHistoryPartial", Model?.PayementsHistory?.Data, new ViewDataDictionary(ViewData) {
+                { "IsOrderHistory", false }
+                })
+                </div>
+
+                <div id="loading-indicator" class="text-center my-3" style="display:none;">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+
+                <div class="text-center my-3">
+                    <button id="load-more-payments" class="btn btn-primary">Load More</button>
                 </div>
             }
+            else
+            {
+                @await Html.PartialAsync("_ErrorMessage", null, new ViewDataDictionary(ViewData) {
+                    { "Message", "No payment history found." }
+                    })
+                
+            }
+            
         </div>
     </div>
 </div>
+<script>
+    window.phoneNumber = '@ViewBag.PhoneNumber';
+</script>
+@section Scripts {
+    <script src="~/js/history/history.js" asp-append-version="true"></script>
+    <script src="~/js/history/review-modal.js" asp-append-version="true"></script>
+}
 <partial name="_Footer" />
 

@@ -1,322 +1,229 @@
-﻿<head>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.5.1/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+﻿@model List<string>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hulubeje Booking</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
     <style>
-        .carousel-inner{
-            position: relative;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out;
-            overflow: hidden;
-            height: 200px;
-        }
-        .carouselExample {
-            transition: transform 0.3s ease-in-out;
+        /* === Base Styles === */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
         }
 
-            .carouselExample:hover {
-                transform: scale(1.05);
+        a {
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+            a:hover {
+                text-decoration: none;
+                color: #0d6efd;
             }
+
+        h5 {
+            font-weight: 600;
+        }
+
+        /* === Carousel Styles === */
         .carousel-item {
-            height: 200px;
-            transform: scale(1.05);
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9; /* keeps 16:9 ratio */
+            max-height: 550px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+            .carousel-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
+
+        @@media (min-width: 768px) {
+            .carousel-item img:hover {
+                transform: scale(1.05); /* subtle zoom on hover */
+            }
+        }
+
+        .carousel-indicators [data-bs-target] {
+            background-color: #0d6efd;
+        }
+
+        /* === Service Cards === */
+        .service-card {
+            border: none;
+            border-radius: 15px;
+            padding: 25px 20px;
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+            .service-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            }
+
+            .service-card i {
+                font-size: 3rem;
+                color: #0d6efd;
+                margin-bottom: 15px;
+            }
+
+        /* === Responsive adjustments === */
+        @@media (max-width: 576px) {
+            .service-card {
+                padding: 20px 10px;
+            }
+
+                .service-card i {
+                    font-size: 2.5rem;
+                }
+        }
+
+        /* === Footer spacing === */
+        footer {
+            margin-top: 50px;
         }
     </style>
 </head>
 
-@model HulubejeBooking.Models.Images
-@{
-    var isVaild = ViewBag.isVaild;
-    var isLoggedIN = ViewBag.isLoggedIn;
-}
-<script>
-    sessionStorage.setItem("isValid", @Json.Serialize(@isVaild));
-    sessionStorage.setItem("isLoggedIn", @Json.Serialize(@isLoggedIN));
-</script>
-<partial name="_Navigation" />
-
-
 <body>
-    <div class="container mt-3" style="background-color:rgba(255, 255, 255, 0); min-height: 75vh">
-        @if (TempData["InfoMessage"] != null)
-        {
-            <div class="alert alert-success mt-2" role="alert" id="errorAlert">
-                <p class="text-center" style="margin: 0;">@TempData["InfoMessage"]</p>
-            </div>
+    <!-- Navigation -->
+    <partial name="_Navigation" />
 
-            <script>
-                setTimeout(function () {
-                    document.getElementById('errorAlert').style.display = 'none';
-                }, 3000);
-            </script>
-        }
-        @if (TempData["ErrorMessage"] != null)
-        {
-            <div class="alert alert-danger mt-2" role="alert" id="errorAlert">
-                <p class="text-center " style="margin: 0;">@TempData["ErrorMessage"]</p>
-            </div>
+    <main class="container my-4">
+        <!-- === Hero Carousel === -->
+        <div id="heroCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+            <div class="carousel-inner" id="heroCarouselInner"></div>
 
-            <script>
-                setTimeout(function () {
-                    document.getElementById('errorAlert').style.display = 'none';
-                }, 3000);
-            </script>
-        }
-        <div class="row mt-3 mb-3 gy-md-2 gy-0" >
-            <div class="col-lg-4 col-md-6 mb-3">
-                <a asp-action="Index" asp-controller="hotel">
-                    <div id="carouselExample" class="carousel carouselExample slide" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aG90ZWwlMjByb29tfGVufDB8fDB8fHww"
-                                     class="d-block w-100" alt="Image 1">
-                                <div class="carousel-caption">
-                                    <h2>Hotel </h2>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8aG90ZWwlMjByb29tfGVufDB8fDB8fHww"
-                                     class="d-block w-100" alt="Image 2">
-                                <div class="carousel-caption">
-                                    <h2>Hotel </h2>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        <ol class="carousel-indicators">
-                            <li data-target="#carouselExample" data-slide-to="0" class="active"></li>
-                            <li data-target="#carouselExample" data-slide-to="1"></li>
-                        </ol>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-3">
-                <a asp-action="Index" asp-controller="cinema">
-                    <div id="cinemaCarousel" class="carousel slide carouselExample" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                     class="w-100" alt="Image 1">
-                                <div class="carousel-caption">
-                                    <h2>Cinema </h2>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="https://i.pinimg.com/564x/1a/49/13/1a49137c70d89f9d43ebebe1d7000c25.jpg"
-                                     class="w-100" alt="Image 2">
-                                <div class="carousel-caption">
-                                    <h2>Cinema </h2>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#cinemaCarousel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#cinemaCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        <ol class="carousel-indicators">
-                            <li data-target="#cinemaCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#cinemaCarousel" data-slide-to="1"></li>
-                        </ol>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-3">
-                <a asp-controller="bus" asp-action="Index">
-                    <div id="busCarousel" class="carousel slide carouselExample" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="https://images.unsplash.com/photo-1509749837427-ac94a2553d0e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                     class="d-block w-100" alt="Image 1">
-                                <div class="carousel-caption">
-                                    <h2>Bus</h2>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                     class="d-block w-100" alt="Image 2">
-                                <div class="carousel-caption">
-                                    <h2>Bus</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#busCarousel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#busCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        <ol class="carousel-indicators">
-                            <li data-target="#busCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#busCarousel" data-slide-to="1"></li>
-                        </ol>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-3">
-                <a asp-controller="spa" asp-action="Index">
-                    <div id="spaCarousel" class="carousel slide carouselExample" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                     class="d-block w-100" alt="Image 1">
-                                <div class="carousel-caption">
-                                    <h2>Spa </h2>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="https://media.istockphoto.com/id/1475287987/photo/facial-massage-by-professional-woman-for-beautiful-black-woman.webp?b=1&s=170667a&w=0&k=20&c=Q6W0tvp-eNDvYULlnZZKKhIvDNwW9pBFKcpElHNJPYA="
-                                     class="d-block w-100" alt="Image 2">
-                                <div class="carousel-caption">
-                                    <h2>Spa </h2>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#spaCarousel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#spaCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        <ol class="carousel-indicators">
-                            <li data-target="#spaCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#spaCarousel" data-slide-to="1"></li>
-                        </ol>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-3">
-                <a asp-controller="event" asp-action="Index">
-                    <div id="eventCarousel" class="carousel slide carouselExample" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="https://images.unsplash.com/photo-1578559284795-c9e0d7f3198a?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                                     class="d-block w-100" alt="Image 1">
-                                <div class="carousel-caption">
-                                    <h2>Event </h2>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="https://images.unsplash.com/photo-1574672009742-218e990bec89?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8c21hbGwlMjBjb25jZXJ0fGVufDB8fDB8fHww"
-                                     class="d-block w-100" alt="Image 2">
-                                <div class="carousel-caption">
-                                    <h2>Event</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#eventCarousel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#eventCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        <ol class="carousel-indicators">
-                            <li data-target="#eventCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#eventCarousel" data-slide-to="1"></li>
-                        </ol>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-md-6 mb-3">
-                <a asp-controller="stadium" asp-action="Index">
-                    <div id="stadiumCarousel" class="carousel slide carouselExample" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="https://seatlab.com/wp-content/uploads/Stadium-Ticketing-System.jpg"
-                                     class="d-block w-100" alt="Image 1">
-                                <div class="carousel-caption">
-                                    <h2>Stadium</h2>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="https://seatlab.com/wp-content/uploads/Sports-Ticket-Management-Software.jpg"
-                                     class="d-block w-100" alt="Image 2">
-                                <div class="carousel-caption">
-                                    <h2>Stadium</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <a class="carousel-control-prev" href="#stadiumCarousel" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#stadiumCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        <ol class="carousel-indicators">
-                            <li data-target="#stadiumCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#stadiumCarousel" data-slide-to="1"></li>
-                        </ol>
-                    </div>
-                </a>
-            </div>
-            @* @{
-                var firstPIc = Model.Bus?.FirstOrDefault();
-            }
-            <div class="col-lg-4 col-md-6 mb-3">
-                <a asp-action="Index" asp-controller="HotelHome">
-                    <div id="carouselExample" class="carousel slide carouselExample" data-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="@firstPIc"
-                                     class="d-block w-100" alt="Image 1">
-                                <div class="carousel-caption">
-                                    <h2>Hotel Booking</h2>
-                                </div>
-                            </div>
-                            @foreach (var pics in Model.Bus ?? new List<string>()){
-                                <div class="carousel-item">
-                                    <img src="@pics"
-                                         class="d-block w-100" alt="Image 2">
-                                    <div class="carousel-caption">
-                                        <h2>Hotel Booking</h2>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                        <ol class="carousel-indicators">
-                            @for (var i = 0; i < Model.Bus?.Count; i++)
-                            {
-                                <li data-target="#carouselExample" data-slide-to="@i" class="@((i == 0) ? "active" : "")"></li>
-                            }
-                        </ol>
-                    </div>
-                </a>
-            </div> *@
+            <!-- Carousel Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
-    </div>
 
+        <!-- === Services Section === -->
+        <section class="row g-4">
+            <!-- Hotels -->
+            <div class="col-md-4 col-sm-6">
+                <a asp-controller="hotel" asp-action="Index" class="text-dark">
+                    <div class="service-card">
+                        <i class="bi bi-building"></i>
+                        <h5>Hotels</h5>
+                        <p>Book the best stays with Hulubeje.</p>
+                    </div>
+                </a>
+            </div>
 
+            <!-- Cinema -->
+            <div class="col-md-4 col-sm-6">
+                <a asp-controller="cinema" asp-action="Index" class="text-dark">
+                    <div class="service-card">
+                        <i class="bi bi-film"></i>
+                        <h5>Cinema</h5>
+                        <p>Reserve seats and enjoy the latest movies.</p>
+                    </div>
+                </a>
+            </div>
 
+            <!-- Bus -->
+            <div class="col-md-4 col-sm-6">
+                <a asp-controller="bus" asp-action="Index" class="text-dark">
+                    <div class="service-card">
+                        <i class="bi bi-bus-front"></i>
+                        <h5>Bus</h5>
+                        <p>Find and book bus tickets with ease.</p>
+                    </div>
+                </a>
+            </div>
 
+            <!-- Spa -->
+            <div class="col-md-4 col-sm-6">
+                <a asp-controller="spa" asp-action="Index" class="text-dark">
+                    <div class="service-card">
+                        <i class="bi bi-person-lines-fill"></i> <!-- updated icon more spa-like -->
+                        <h5>Spa</h5>
+                        <p>Relax and refresh with top spa bookings.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Events -->
+            <div class="col-md-4 col-sm-6">
+                <a asp-controller="event" asp-action="Index" class="text-dark">
+                    <div class="service-card">
+                        <i class="bi bi-calendar-event"></i>
+                        <h5>Events</h5>
+                        <p>Never miss concerts, shows, and gatherings.</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Stadiums -->
+            <div class="col-md-4 col-sm-6">
+                <a asp-controller="stadium" asp-action="Index" class="text-dark">
+                    <div class="service-card">
+                        <i class="bi bi-trophy"></i>
+                        <h5>Stadiums</h5>
+                        <p>Book stadium tickets for sports & more.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <partial name="_Footer" />
+
+    <!-- === Carousel Script === -->
+    <script>
+        // Convert Razor List<string> into JS array
+        let heroImages = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model));
+
+        // Keep only valid image URLs
+        const validExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
+        heroImages = heroImages.filter(url => validExtensions.some(ext => url.toLowerCase().endsWith(ext)));
+
+        const carouselInner = document.getElementById('heroCarouselInner');
+
+        if (!heroImages || heroImages.length === 0) {
+            // Fallback image if no images exist
+            const fallbackDiv = document.createElement('div');
+            fallbackDiv.className = "carousel-item active";
+            fallbackDiv.innerHTML = `
+                <img src="https://ftp-hulubeje.cnetcommerce.com/AppIndustrySectors/Banner/1/Customer support.png"
+                     class="d-block w-100" alt="Fallback Image">
+            `;
+            carouselInner.appendChild(fallbackDiv);
+        } else {
+            heroImages.forEach((src, idx) => {
+                const div = document.createElement('div');
+                div.className = `carousel-item ${idx === 0 ? 'active' : ''}`;
+                div.innerHTML = `<img src="${src}" class="d-block w-100" alt="Slide ${idx + 1}">`;
+                carouselInner.appendChild(div);
+            });
+        }
+    </script>
 </body>
-<partial name="_Footer" />
+</html>

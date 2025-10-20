@@ -7,47 +7,47 @@
 }
 <style>
 	.custom-line {
-	border: none;
-	border-top: 1px solid #777;
+		border: none;
+		border-top: 1px solid #777;
 	}
 
-	.roomimages:hover{
-	cursor: pointer;
+	.roomimages:hover {
+		cursor: pointer;
 	}
 
 	.visually-hidden {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	border: 0;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
 	}
 
 	.hidden-amenities {
-	display: none;
+		display: none;
 	}
 
 	.toggle-amenities:checked ~ .hidden-amenities {
-	display: flex;
+		display: flex;
 	}
 
 	.toggle-label::after {
-	content: "Show More";
+		content: "Show More";
 	}
 
 	.toggle-amenities:checked ~ .toggle-label::after {
-	content: "Show Less";
+		content: "Show Less";
 	}
 
 	.toggle-label.show-less {
-	display: none;
+		display: none;
 	}
 
 	.toggle-amenities:checked ~ .toggle-label.show-less {
-	display: block;
+		display: block;
 	}
 </style>
 <script>
@@ -59,64 +59,74 @@
 	<div class="container">
 		@{
 			var AllPictureUrls = new List<string>();
-			foreach (var rooms in Model.Data ?? new List<RoomType>())
+			foreach (var room in Model?.Data ?? new List<RoomType>())
 			{
-				foreach (var picture in rooms.PictureUrls ?? new List<string>())
+				foreach (var picture in room.PictureUrls ?? new List<string>())
 				{
 					AllPictureUrls.Add(picture);
 				}
 			}
 			AllPictureUrls = AllPictureUrls.OrderBy(x => Guid.NewGuid()).ToList();
+			var imageCount = AllPictureUrls.Count;
+			var maxThumbnails = 4;
 		}
 
-		<div class="row mt-2 g-2">
-			<a href="#" id="hotelLink"><h5 class="card-title"><strong>@Model.HotelName</strong></h5></a>
-			<div class="col-6">
+		<div class="container mt-3">
+			<a href="#" id="hotelLink">
+				<h5 class="card-title fw-bold">@Model?.HotelName</h5>
+			</a>
+
+			@if (imageCount > 0)
+			{
 				<div class="row">
-					@if (AllPictureUrls?.Count > 0)
-					{
-						@for (int i = 1; i < 5 && i < AllPictureUrls?.Count; i++)
-						{
-							<div class="col-6 mb-2 d-flex align-items-start" id="myElement" style="padding-left: 5px;
-							padding-right: 5px;">
-								<img src="@AllPictureUrls[i]" alt="room picture" class="roomimages w-100  " />
-							</div>
-						}
-					}
-				</div>
-			</div>
-			@if (AllPictureUrls?.Count > 1)
-			{
-				<div class="col-6 mb-2 d-flex flex-wrap" style="padding-left: 5px; padding-right: 5px;">
-					<img src="@AllPictureUrls[1]" alt="room picture" class="roomimages w-100 h-200  " />
-				</div>
-			}
-
-
-
-		</div>
-		<div class="row g-2 additionalroomimages">
-			@if (AllPictureUrls?.Count > 0)
-			{
-				@for (int i = 1; i < 5 && i < AllPictureUrls.Count; i++)
-				{
-					<div class="col-md-3 col-6 mb-2 " style="padding-left: 5px;
-							padding-right: 5px;">
-						<img src="@AllPictureUrls[i]" alt="room picture" class="w-100 roomimages  " />
+					<div class="col-12 col-lg-6">
+						<img src="@AllPictureUrls[0]" alt="Main room image"
+							 class="img-fluid w-100"
+							 style="object-fit: cover; border-radius: 10px;" />
 					</div>
-				}
+
+					<div class="col-12 col-lg-6">
+						<div class="row g-1">
+							<!-- Reduced spacing here -->
+							@for (int i = 1; i <= maxThumbnails && i < imageCount; i++)
+							{
+								var isLastVisibleWithMorePics = (i == maxThumbnails && imageCount > maxThumbnails + 1);
+								var containerClass = isLastVisibleWithMorePics ? "last-thumb-container" : "";
+								<div class="col-6 position-relative @containerClass" style="cursor:@(isLastVisibleWithMorePics ? "pointer" : "default");">
+									<div class="thumbnail-wrapper position-relative w-100" style="overflow: hidden; border-radius: 10px;">
+										<img src="@AllPictureUrls[i]" alt="room thumbnail"
+											 class="img-fluid w-100"
+											 style="object-fit: cover; border-radius: 10px;" />
+
+										@if (isLastVisibleWithMorePics)
+										{
+											<div class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+												 style="background-color: rgba(0,0,0,0.4); color: white; font-size: 24px; font-weight: bold; border-radius: 10px;">
+												+@((imageCount - (maxThumbnails + 1)))
+											</div>
+										}
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				</div>
 			}
 		</div>
+		@await Html.PartialAsync("_AllImagesModal", AllPictureUrls)
+		<script>
+			$(document).ready(function () {
+				// Use event delegation or direct selector on container div with class last-thumb-container
+				$('.last-thumb-container').on('click', function () {
+					$("#imageModal").modal("show");
+				});
+			});
+		</script>
+
+
 
 		<script>
 			$(document).ready(function () {
-				$('.roomimages').click(function (e) {
-					e.preventDefault();
-					$('#modal1').modal('show');
-				});
-				$('#modal1').on('click', '.close', function (e) {
-					$('#modal1').modal('hide');
-				});
 				$('.show-more-amenities').click(function () {
 					var target = $(this).data('target');
 					var expanded = $(this).data('expanded');
@@ -131,33 +141,6 @@
 			});
 		</script>
 
-		<div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="modal1Label" aria-hidden="true">
-			<div class="modal-dialog modal-xl">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="imageModalLabel">All Images</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="row">
-							<div class="d-flex flex-wrap">
-								@foreach (var roomPics in Model?.Data ?? new List<RoomType>())
-								{
-									@foreach (var pictureUrl in roomPics.PictureUrls ?? new List<string>())
-									{
-										<div class="col-lg-4 col-md-4 col-sm-4 mb-3">
-											<img src="@pictureUrl" class="img-fluid shadow-1-strong rounded mb-4 w-100 h-200" alt="room picture" />
-										</div>
-									}
-								}
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
 		<h5 class="mt-2 font-monospace">Hotel Amenities</h5>
 		<div class="mt-1 bg-white p-2  border border-2 rounded">
 			@{

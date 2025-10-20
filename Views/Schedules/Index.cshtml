@@ -102,12 +102,9 @@
         }
         else
         {
-             <div class="message-container" style=" display: flex; align-items: center; justify-content: center; height: 40vh;">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-exclamation-circle mr-2" style="font-size: 60px; color: red;"></i>
-                    <p class="mt-2">No available schedules for this day. Please try another date.</p>
-                </div>
-            </div>    
+            @await Html.PartialAsync("_ErrorMessage", null, new ViewDataDictionary(ViewData) {
+                { "Message", "No available schedules for this day. Please try another date." }
+                })
         }
 
     </div>

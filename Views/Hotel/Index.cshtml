@@ -180,7 +180,7 @@
 @{
     var cities = Model?.Companies?.Data;
 }
-<div class="row" style="background-color:#063970;">
+<div style="background-color:#063970;">
     <div class="container">
         <header class="container-fluid" style="padding-top: 2%" >
             <div>
@@ -256,8 +256,8 @@
         </div>
     </div>
 </div>
-<div class="bg-light">
-    <div class="container pt-2">
+<div class="bg-light py-2">
+    <div class="container">
         <div class="search-container ">
             <input type="text" id="searchInput" class="search-input" placeholder="Search hotels" onkeyup="filterHotels()">
             <button class="search-button" onclick="filterHotels()">
@@ -639,6 +639,6 @@
 
     });
 </script>
-
+    
 
 <partial name="_Footer" />

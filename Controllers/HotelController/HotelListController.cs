@@ -1,10 +1,11 @@
-﻿using HulubejeBooking.Models.HotelModels;
+﻿using HulubejeBooking.Controllers.Authentication;
+using HulubejeBooking.Models.CInemaModels;
+using HulubejeBooking.Models.HotelModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
-using HulubejeBooking.Controllers.Authentication;
 
 namespace HulubejeBooking.Controllers.HotelController
 {
@@ -84,6 +85,7 @@ namespace HulubejeBooking.Controllers.HotelController
             HttpResponseMessage gethotelsbycityResponse = await _v7Client.PostAsync($"hotel/gethotelsbycity", content);
             if (gethotelsbycityResponse.IsSuccessStatusCode)
             {
+                var count = 1;
                 string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
                 gethotelsbycity = gethotelsbycityData != null ? JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData) : new GetHotelByCity();
                 if (gethotelsbycity != null && citiesJson != null)
@@ -92,6 +94,11 @@ namespace HulubejeBooking.Controllers.HotelController
                     int hotelsCount = (int)(cityData?.Hotels != null ? cityData.Hotels : 0);
                     gethotelsbycity.HotelsCount = (int)Math.Ceiling((double)hotelsCount / 10);
                     gethotelsbycity.RoomFormData = data;
+                    foreach (var hotel in gethotelsbycity.Data ?? new List<Hotel>())
+                    {
+                        hotel.Count = count;
+                        count++;
+                    }
                 }
 
             }
@@ -99,7 +106,7 @@ namespace HulubejeBooking.Controllers.HotelController
         }
         [Route("AdditionalPages")]
         [HttpGet]
-        public async Task<IActionResult> AdditionalPages(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange, int page)
+        public async Task<IActionResult> AdditionalPages(int city, int roomsCount, int numberOfNights, int childrenCount, int adultCount, string dateRange, int page, int alreadyLoadedCount)
         {
             var numberOfDay = numberOfNights <= 0 ? 1 : numberOfNights;
             var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
@@ -144,12 +151,19 @@ namespace HulubejeBooking.Controllers.HotelController
             {
                 string gethotelsbycityData = await gethotelsbycityResponse.Content.ReadAsStringAsync();
                 gethotelsbycity = gethotelsbycityData != null ? JsonConvert.DeserializeObject<GetHotelByCity>(gethotelsbycityData) : new GetHotelByCity();
+                var count = alreadyLoadedCount + 1;
+                
                 if (gethotelsbycity != null)
                 {
+                    foreach (var hotel in gethotelsbycity.Data ?? new List<Hotel>())
+                    {
+                        hotel.Count = count;
+                        count++;
+                    }
                     gethotelsbycity.RoomFormData = data;
                 }
             }
-            return Json(gethotelsbycity);
+            return PartialView("_HotelList", gethotelsbycity?.Data);
         }
 
     }
