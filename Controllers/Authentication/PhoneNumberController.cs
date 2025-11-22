@@ -20,7 +20,7 @@ namespace HulubejeBooking.Controllers.Authentication
         public async Task<IActionResult> Index()
         {
             List<CountryResponse> sortedCountryCodes = new();
-            var endPoint = "https://restcountries.com/v3.1/all?fields=name,idd";
+            var endPoint = "https://restcountries.com/v3.1/all?fields=flags,name,idd";
             HttpResponseMessage response = await _httpClient.GetAsync(endPoint);
             if (response.IsSuccessStatusCode)
             {

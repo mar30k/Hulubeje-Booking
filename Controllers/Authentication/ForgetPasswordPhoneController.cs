@@ -31,7 +31,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 return RedirectToAction("Index", "home");
             }
             List<CountryResponse> sortedCountryCodes = new();
-            var endPoint = "https://restcountries.com/v3.1/all";
+            var endPoint = "https://restcountries.com/v3.1/all?fields=flags,idd,name";
             HttpResponseMessage response = await _httpClient.GetAsync(endPoint);
             if (response.IsSuccessStatusCode)
             {

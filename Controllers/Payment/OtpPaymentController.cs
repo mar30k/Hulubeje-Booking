@@ -22,17 +22,17 @@ namespace HulubejeBooking.Controllers.Payment
         }
         public async Task<IActionResult> IndexAsync()
         {
-            var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
-            var value = HttpContext.Session.GetString("cinema");
-            if (value != null)
-            {
-                ViewBag.CoutDown = value;
-            }
-            var errorValue = HttpContext.Session.GetString("error");
-            if (errorValue != null)
-            {
-                TempData["ErrorMessage"] = "Incorrect Otp Or Couldn't Process Your Payment!";
-            }
+            //var paymentOptionsJson = HttpContext.Session.GetString("PaymentOptions");
+            //var value = HttpContext.Session.GetString("cinema");
+            //if (value != null)
+            //{
+            //    ViewBag.CoutDown = value;
+            //}
+            //var errorValue = HttpContext.Session.GetString("error");
+            //if (errorValue != null)
+            //{
+            //    TempData["ErrorMessage"] = "Incorrect Otp Or Couldn't Process Your Payment!";
+            //}
             //HttpContext.Session.Remove("error");
             var identificationResult = await _authenticationManager.identificationValid();
             if (identificationResult != null)

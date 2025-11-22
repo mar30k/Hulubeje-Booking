@@ -3,6 +3,7 @@ using HulubejeBooking.Models.Authentication;
 using Newtonsoft.Json;
 using System.Text;
 using System.Net.Http.Headers;
+using DevExpress.ClipboardSource.SpreadsheetML;
 namespace HulubejeBooking.Controllers.Authentication
 {
     public class ChangePasswordController : Controller
@@ -80,13 +81,16 @@ namespace HulubejeBooking.Controllers.Authentication
                 string jsonBody2 = JsonConvert.SerializeObject(param2);
                 var content2 = new StringContent(jsonBody2, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _V7client.PostAsync($"auth/login", content);
-                
+
                 if (response.IsSuccessStatusCode) {
 
                     string loginResponse = await response.Content.ReadAsStringAsync();
                     var userexistsDataResponse = JsonConvert.DeserializeObject<LoginAuthentication>(loginResponse);
                     if (loginResponse != null && userexistsDataResponse?.Data != null && userexistsDataResponse?.Data?.Token != null) 
                     {
+                        _authenticationManager.SignOut();
+                        _authenticationManager.SignIn(userexistsDataResponse.Data, true);
+
                         _V7client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userexistsDataResponse?.Data?.Token);
                         HttpResponseMessage response2 = await _V7client.PostAsync($"auth/changepassword", content2);
                         string responseData = await response2.Content.ReadAsStringAsync();

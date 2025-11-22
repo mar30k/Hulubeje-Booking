@@ -49,16 +49,7 @@ namespace HulubejeBooking.Controllers.Authentication
                 var userObject = new
                 {
                     code = phoneNumber,
-                    password,
-                    ActivityLog = new
-                    {
-                        code = "",
-                        target = "",
-                        platform = "Web",
-                        latitude = 0,
-                        longitude = 0,
-                        appVersion = "2.0.1+65"
-                    }
+                    password
                 };
 
                 string jsonBody = JsonConvert.SerializeObject(userObject);
