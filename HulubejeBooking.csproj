@@ -28,12 +28,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="CNET_ERP_V7_VoucherPrintDialogue">
-			<HintPath>..\..\..\Downloads\Telegram Desktop\CNET_ERP_V7_VoucherPrintDialogue.dll</HintPath>
-		</Reference>
-		<Reference Include="CNET_V7_Domain">
-			<HintPath>..\..\..\Downloads\Telegram Desktop\CNET_V7_Domain.dll</HintPath>
-		</Reference>
+	  <Reference Include="Cnetv7BufferHolder">
+	    <HintPath>D:\Cnetv7BufferHolder.dll</HintPath>
+	  </Reference>
+	  <Reference Include="CNET_ERP_V7_VoucherPrintDialogue">
+	    <HintPath>D:\v7_print\CNET_ERP_V7_VoucherPrintDialogue\bin\Debug\net6.0\CNET_ERP_V7_VoucherPrintDialogue.dll</HintPath>
+	  </Reference>
+	  <Reference Include="CNET_V7_Domain">
+	    <HintPath>D:\CNET_V7_Domain.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>

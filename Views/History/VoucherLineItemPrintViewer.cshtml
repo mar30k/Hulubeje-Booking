@@ -1,6 +1,7 @@
 ﻿@model VoucherPrintModel
 @using DevExpress.AspNetCore
 @using System.IO;
+@using DevExpress.Compatibility.System.Web
 @using Microsoft.AspNetCore.Mvc;
 @using CNET.WEB.VoucherPrintDialogueDesigns;
 @using CNET_ERP_V7_VoucherPrintDialogue.Models;
@@ -8,6 +9,11 @@
 @using DevExpress.XtraPrinting.Drawing;
 @using Microsoft.AspNetCore.Hosting
 @using CNET_ERP_V7_VoucherPrintDialogue;
+@using CNET_V7_Domain.Misc;
+@using CNET_V7_Domain.Misc.CommonTypes;
+
+@inject HulubejeBooking.Helpers.SharedHelpers sharedHelpers
+ 
 <style>
 /*    .dx-menu-base .dx-menu-item .dx-menu-item-content {
     white-space: nowrap;
@@ -52,15 +58,10 @@
 @inject IWebHostEnvironment _appEnvironment;
 
 @{
-    //string prtActcode = "";
-    //if (Model?.AllWorkFlow != null && Model?.AllWorkFlow?.Count > 0)
-    //{
-    //    prtActcode = Model.AllWorkFlow.FirstOrDefault(x => x.description == CNETConstantes.LookUp_Description_Printed)?.code;
-    //}
     DevExpress.XtraReports.UI.XtraReport report = null;
     if (Model != null)
     {
-        if (string.IsNullOrWhiteSpace(Model?.PaperSize))
+        if (string.IsNullOrWhiteSpace(Model.PaperSize))
         {
             Model.PaperSize = "A4";
         }
@@ -68,41 +69,8 @@
         uint mLinesPerPage = 30;
         string mTextToPrint = string.Empty;
         string mBackImage = null;
-        var LogoPic = System.IO.Path.Combine(_appEnvironment.WebRootPath, "images/AttachmentLogo/") + "Logo.png";
-        var LogoExists = false;
-        try
-        {
-            if (!File.Exists(LogoPic))
-            {
-                LogoPic = null;
-            }
-        }
-        catch
-        {
-            LogoPic = null;
-        }
-        if (Model.PaperType == "Continuous")
-        {
-            LogoPic = null;
-        }
-        //var TermList = await _uIProcessManager.GetVoucherTermViewByVoucherCode(Model?.AttachmentDatasource?.FirstOrDefault()?.code);
-
+        string waterMark = null;
         var result = Model;
-
-        var termsPic = System.IO.Path.Combine(_appEnvironment.WebRootPath, "images/") + "performaTermsAndCondition.png";
-        try
-        {
-            if (!File.Exists(termsPic))
-            {
-                termsPic = null;
-            }
-        }
-        catch
-        {
-            termsPic = null;
-        }
-        var isIssued = Model.IsIssued;
-
         if (Model.NoOfLineItemPerPage > 0)
         {
             //  mLinesPerPage = Model.NoOfLineItemPerPage;
@@ -114,19 +82,17 @@
         }
         else if (Model.IsIssued)
         {
-            if (Model?.PrintWaterMark == "Standard")
+            if (Model.PrintWaterMark == "Standard")
             {
-                if (Model?.IsVoid == true)
+                if (Model.IsVoid)
                 {
                     mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Void.jpg";
+                    waterMark = "Void";
                 }
-                else if (Model?.IsPreview == true)
+                else if (Model.IsPreview)
                 {
                     mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "draft.jpg";
-                }
-                else if (!Model?.IsIssued == true)
-                {
-                    mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "NotValid.jpg";
+                    waterMark = "Draft";
                 }
                 else
                 {
@@ -136,6 +102,7 @@
                         {
 
                             mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Original.jpg";
+                            waterMark = "Original";
                         }
                         else if (Model.PrintCount == 1)
                         {
@@ -147,6 +114,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("1st copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "1st COPY.jpg";
+                                        waterMark = "1st Copy";
                                     }
                                 }
                             }
@@ -162,6 +130,7 @@
                                     {
 
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "2nd COPY.jpg";
+                                        waterMark = "2nd Copy";
                                     }
                                 }
                             }
@@ -177,6 +146,7 @@
                                     {
 
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "3rd COPY.jpg";
+                                        waterMark = "3rd Copy";
                                     }
                                 }
                             }
@@ -191,6 +161,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("4th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "4th COPY.jpg";
+                                        waterMark = "4th Copy";
                                     }
                                 }
                             }
@@ -205,6 +176,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("5th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "5th COPY.jpg";
+                                        waterMark = "5th Copy";
                                     }
                                 }
                             }
@@ -219,6 +191,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("6th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "6th COPY.jpg";
+                                        waterMark = "6th Copy";
                                     }
                                 }
                             }
@@ -233,6 +206,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("6th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "7th COPY.jpg";
+                                        waterMark = "7th Copy.jpg";
                                     }
                                 }
                             }
@@ -247,6 +221,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("6th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "8th COPY.jpg";
+                                        waterMark = "8th Copy";
                                     }
                                 }
                             }
@@ -261,6 +236,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("6th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "9th COPY.jpg";
+                                        waterMark = "9th Copy";
                                     }
                                 }
                             }
@@ -275,6 +251,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("6th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "10th COPY.jpg";
+                                        waterMark = "10th Copy";
                                     }
                                 }
                             }
@@ -289,6 +266,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("6th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "11th COPY.jpg";
+                                        waterMark = "11th Copy";
                                     }
                                 }
                             }
@@ -303,6 +281,7 @@
                                     if (Model.CopyDescriptionString.ToLower().Contains("6th copy"))
                                     {
                                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "12th COPY.jpg";
+                                        waterMark = "12th Copy";
                                     }
                                 }
                             }
@@ -310,32 +289,33 @@
                         else
                         {
                             mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Copy 1.JPG";
+                            waterMark = "Copy";
                         }
                     }
                     else
                     {
                         mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Original.jpg";
+                        waterMark = "Original";
                     }
                 }
 
             }
-            else if (Model?.PrintWaterMark == "Attachment")
+            else if (Model.PrintWaterMark == "Attachment")
             {
-                if (Model?.IsVoid == true)
+                if (Model.IsVoid == true)
                 {
                     mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Void.jpg";
+                    waterMark = "Void";
                 }
-                else if (Model?.IsPreview == true)
+                else if (Model.IsPreview == true)
                 {
                     mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "draft.jpg";
-                }
-                else if (!Model.IsIssued == true)
-                {
-                    mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Not Valid.jpg";
+                    waterMark = "Draft";
                 }
                 else
                 {
                     mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Attachment.jpg";
+                    waterMark = "Attachment";
                 }
 
                 Model.footerString = "INVALID WITHOUT FISCAL OR Refund ATTACHED";
@@ -345,9 +325,14 @@
         else
         {
             mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "NotValid.jpg";
+            waterMark = "NOT VALID";
         }
 
-        //Model.logoPath = LogoPic;
+        if (Model.Note != "" && Model.Note != null)
+        {
+            Model.Note = Model.Note.Replace("\\n", "                                                                                                                                                         ");
+        }
+
         if (Model.PaperSize == "A4")
         {
             if (Model.TINNo == "0065916744" && (Model.voucherDefinition == 104 || Model.voucherDefinition == 116 || Model.voucherDefinition == 110))
@@ -356,11 +341,64 @@
                 { report = new prtHoletaPrintOut(Model); }
                 catch (Exception e) { }
             }
+            else if (Model.TINNo == "0025239533" && Model.voucherDefinition == 116)
+            {//ESMELALEM  proforma
+                report = new prtA4ProformaInvoice(Model);
+                mBackImage = null;
+
+                if (!string.IsNullOrWhiteSpace(waterMark))
+                {
+                    Watermark pictureWatermark = new Watermark();
+                    report.Watermark.Text = waterMark;
+                    report.Watermark.TextDirection = DirectionMode.ForwardDiagonal;
+                    report.Watermark.ShowBehind = false;
+                    report.Watermark.Font = new System.Drawing.Font("calibri", 130, FontStyle.Bold);
+                    report.Watermark.ForeColor = Color.LightGray;
+                    report.Watermark.TextTransparency = 100;
+                }
+            }
+            else if (Model.TINNo == "0025239533" && Model.voucherDefinition == 284)
+            {//ESMELALEM  proforma
+                report = new prtTestCertificate(Model);
+
+            }
             else
             {
                 try
                 {
-                    report = new prtA4LineItemVoucher(Model);
+                    if (Model.enableEinvoice)
+                    {
+                        var queryString = System.Web.HttpUtility.ParseQueryString(string.Empty);
+                        queryString.Add("voucherId", Model.voucherId.ToString());
+                        var _invoiceResult = await sharedHelpers.GetReqAsync<ResponseModel<EinvoiceVoucherDetailDTO>>("TransactionLibrary/get_einvoice_voucher_detail?" + queryString.ToString());
+                        if (Model.voucherDefinition == 217)
+                        {
+                            report = new XRWithHoldingEinvoiceA4(_invoiceResult?.Data, Model);
+                        }
+                        else if (Model.voucherDefinition == 197)
+                        {
+                            report = new XCashRecieptEinvoiceA4(_invoiceResult?.Data, Model);
+                        }
+                        else
+                        {
+                            JavaScriptSerializer serializer = new JavaScriptSerializer();
+                            string json = serializer.Serialize(_invoiceResult?.Data);
+                            string model = serializer.Serialize(Model);
+                            report = new XReInvoiceA4(_invoiceResult?.Data, Model);
+                        }
+
+                    }
+                    else
+                    {
+                        if (Model.VoucherOrientation == "Landscape")
+                        {
+                            report = new prtA4LandScapeLineItemVoucher(Model);
+                        }
+                        else
+                        {
+                            report = new prtA4LineItemVoucher(Model);
+                        }
+                    }
                 }
                 catch { }
             }
@@ -370,7 +408,14 @@
         {
             try
             {
-                report = new prtA5LineItemVoucher(Model);
+                if (Model.VoucherOrientation == "Landscape")
+                {
+                    report = new prtA5LandScapeLineItemVoucher(Model);
+                }
+                else
+                {
+                    report = new prtA5LineItemVoucher(Model);
+                }
             }
             catch (Exception e)
             {
@@ -400,19 +445,14 @@
     }
 }
 @Html.DevExpress().WebDocumentViewer("WebDocumentViewer").Height("1000px").Width("100%").Bind(report)
-@if (!Model.IsVoucherPrinted)
-{
-    <script>
 
-    </script>
-}
 <script>
     $(document).ready(function () {
         $('.dxrd-image-print').click(function () {
             $.ajax({
                 type: "post",
                 url: "/PrintDialogue/SavePrintedVoucher",
-                data: { Id: '@Model.NonListDataSource.Id', IsPrintCoppy: '@Model.PrintCopyDistribution', DisNumber: '@Model.NoOfCoppyDistributions' },
+                data: { Id: '@Model?.NonListDataSource.Id', IsPrintCoppy: '@Model?.PrintCopyDistribution', DisNumber: '@Model?.NoOfCoppyDistributions' },
                 success: function (response) {
 
                 },

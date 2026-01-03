@@ -1,10 +1,11 @@
-using HulubejeBooking.Models.HotelModels;
-using HulubejeBooking.Controllers.Authentication;
-using HulubejeBooking.Controllers;
-using DevExpress.AspNetCore.Reporting.WebDocumentViewer.Native.Services;
-using DevExpress.AspNetCore.Reporting.WebDocumentViewer;
 using DevExpress.AspNetCore;
+using DevExpress.AspNetCore.Reporting.WebDocumentViewer;
+using DevExpress.AspNetCore.Reporting.WebDocumentViewer.Native.Services;
+using HulubejeBooking.Controllers;
+using HulubejeBooking.Controllers.Authentication;
 using HulubejeBooking.Helpers;
+using HulubejeBooking.Models;
+using HulubejeBooking.Models.HotelModels;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,6 +19,7 @@ var busBookingApi = configuration.GetValue<string>("BusBooking");
 var hulubejeCahceApi = configuration.GetValue<string>("HulubejeCahce");
 var tmdbApi = configuration.GetValue<string>("TmdbApi");
 var v6Api = configuration.GetValue<string>("V6Api");
+var einvoiceClient = configuration.GetValue<string>("EInvoiceClient");
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient();
@@ -33,6 +35,11 @@ builder.Services.AddHttpClient("BusBooking", httpClient =>
 {
     httpClient.BaseAddress = new Uri(busBookingApi);
     httpClient.DefaultRequestHeaders.Add("x-api-key", "9BE090F9-7F52-4297-93A1-32D03D361DE9");
+});
+builder.Services.AddHttpClient("EinvoiceClient", httpClient =>
+{
+    httpClient.BaseAddress = new Uri(einvoiceClient);
+    httpClient.DefaultRequestHeaders.Add("x-api-key", "07A489CC-476A-45F9-AF3E-F68441C04208");
 });
 builder.Services.AddAuthentication("cnet.erp.v6")
      .AddCookie("cnet.erp.v6", options =>
@@ -54,9 +61,12 @@ builder.Services.AddHttpClient("MovieDb", httpClient =>
 {
     httpClient.BaseAddress = new Uri(tmdbApi);
 });
+builder.Services.Configure<OtherSettings>(configuration.GetSection("OtherSettings"));
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<InitialBufferPopulator>();
 builder.Services.AddSingleton<HotelListBuffer>();
 builder.Services.AddScoped<MiscellaneousApiRequests>();
+builder.Services.AddScoped<SharedHelpers>();
 builder.Services.AddSingleton<Buffers>();
 builder.Services.AddTransient<IQRCodeGeneratorService, QRCodeGeneratorService>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
