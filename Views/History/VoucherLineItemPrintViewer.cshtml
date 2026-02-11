@@ -381,9 +381,8 @@
                         }
                         else
                         {
-                            JavaScriptSerializer serializer = new JavaScriptSerializer();
-                            string json = serializer.Serialize(_invoiceResult?.Data);
-                            string model = serializer.Serialize(Model);
+                            DevExpress.Compatibility.System.Web.JavaScriptSerializer serializer = new DevExpress.Compatibility.System.Web.JavaScriptSerializer();
+                            string json = serializer.Serialize(Model);
                             report = new XReInvoiceA4(_invoiceResult?.Data, Model);
                         }
 
@@ -396,7 +395,14 @@
                         }
                         else
                         {
-                            report = new prtA4LineItemVoucher(Model);
+                            if (Model.TINNo == "0002796661" && Model.voucherDefinition == 174)
+                            {
+                                report = new prtGirmayHailuA4LineItemVoucher(Model);
+                            }
+                            else
+                            {
+                                report = new prtA4LineItemVoucher(Model);
+                            }
                         }
                     }
                 }
@@ -426,7 +432,7 @@
         {
             report.RequestParameters = false;
         }
-        if (report != null && !(Model.TINNo == "0065916744" && (Model.voucherDefinition == 104 || Model.voucherDefinition == 116 || Model.voucherDefinition == 110)))
+        if (!Model.enableEinvoice && report != null && !(Model.TINNo == "0065916744" && (Model.voucherDefinition == 104 || Model.voucherDefinition == 116 || Model.voucherDefinition == 110)))
         {
 
             if (!string.IsNullOrWhiteSpace(mBackImage))
@@ -441,18 +447,37 @@
             }
 
         }
+        else if (Model.enableEinvoice && Model.IsVoid)
+        {
+            if (Model.IsVoid)
+            {
+                mBackImage = System.IO.Path.Combine(_appEnvironment.WebRootPath, "resources/") + "Void.jpg";
+                Watermark pictureWatermark = new Watermark();
+                pictureWatermark.ImageSource = ImageSource.FromFile(mBackImage);
+                pictureWatermark.ImageAlign = ContentAlignment.MiddleLeft;
+                pictureWatermark.ImageTiling = false;
+                pictureWatermark.ImageViewMode = ImageViewMode.Zoom;
+                pictureWatermark.ShowBehind = true;
+                report.Watermark.CopyFrom(pictureWatermark);
+            }
+        }
         // report.Margins = new Margins(0, 0, 10, 0);
     }
 }
 @Html.DevExpress().WebDocumentViewer("WebDocumentViewer").Height("1000px").Width("100%").Bind(report)
+@if (!Model.IsVoucherPrinted)
+{
+    <script>
 
+    </script>
+}
 <script>
     $(document).ready(function () {
         $('.dxrd-image-print').click(function () {
             $.ajax({
                 type: "post",
                 url: "/PrintDialogue/SavePrintedVoucher",
-                data: { Id: '@Model?.NonListDataSource.Id', IsPrintCoppy: '@Model?.PrintCopyDistribution', DisNumber: '@Model?.NoOfCoppyDistributions' },
+                data: { Id: '@Model.NonListDataSource.Id', IsPrintCoppy: '@Model.PrintCopyDistribution', DisNumber: '@Model.NoOfCoppyDistributions' },
                 success: function (response) {
 
                 },

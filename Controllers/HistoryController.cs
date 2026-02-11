@@ -267,32 +267,53 @@ namespace HulubejeBooking.Controllers
 
         [Route("print")]
         public async Task<IActionResult> VoucherLineItemPrintViewer(string voucher)
+        
         {
             try 
             {
                 string decryptedVoucher  = voucher;
                 bool isEinvoice = false;
-                if (voucher.Contains("einvoice"))
+                if (!string.IsNullOrEmpty(voucher) && voucher.Contains("einvoice"))
                 {
                     isEinvoice = true;
                     decryptedVoucher = decryptedVoucher.Replace("einvoice", "id");
                 }
-                else 
+                else
                 {
                     decryptedVoucher = await Decrypt(voucher?.ToString());
                 }
                 var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
-                var eInvoiceClient = _httpClientFactory.CreateClient("EinvoiceClient");
-                var identificationResult = await _authenticationManager.identificationValid();
+                var eInvoiceClient = _httpClientFactory.CreateClient();
 
+                var identificationResult = await _authenticationManager.identificationValid();
                 var printvoucher = new HulubejeResponse<VoucherPrintModel>();
                 if (isEinvoice)
                 {
+                    var voucherId = decryptedVoucher.Split("id").Last();
+                    HttpResponseMessage baseUrlResponse =
+                        await _v7Client.GetAsync($"voucher/getbaseurl{voucherId}");
+
+                    if (!baseUrlResponse.IsSuccessStatusCode)
+                        throw new Exception("Failed to retrieve E-Invoice base URL.");
+                    string baseUrlResponseData =
+                         await baseUrlResponse.Content.ReadAsStringAsync();
+
+                    var baseUrl =
+                        JsonConvert.DeserializeObject<HulubejeResponse<string>>(baseUrlResponseData);
+
+                    if (baseUrl?.IsSuccessful != true || string.IsNullOrWhiteSpace(baseUrl.Data))
+                        throw new Exception("Invalid E-Invoice base URL returned.");
+
+                    string eInvoiceBaseUrl = $"{baseUrl.Data}/api";
+
+                    // 2️⃣ Configure HttpClient safely
+                    eInvoiceClient.BaseAddress = new Uri(eInvoiceBaseUrl);
+
                     //HttpResponseMessage einvoiceResponse = await eInvoiceClient.GetAsync($"TransactionLibrary/get_einvoice_voucher_detail?voucherId={decryptedVoucher.Split("id").Last()}");
                     //if (einvoiceResponse.IsSuccessStatusCode)
                     //{
                     await _Initialization();
-                    var req = await _sharedHelpers.GetReqAsync<ResponseModel<VoucherDetailDTO>>("TransactionLibrary/get_voucher_detail?voucherId=" + decryptedVoucher.Split("id").Last());
+                    var req = await _sharedHelpers.GetReqAsync<ResponseModel<VoucherDetailDTO>>($"TransactionLibrary/get_voucher_detail?voucherId={voucherId}" );
                         //SystemConstantDTO check_islineitem = GeneralBufferHolder.SystemConstants.FirstOrDefault(s => s.Id == VoucherDetail.VoucherHeader.DefinitionId);
                         //string einvoiceResponseData = await einvoiceResponse.Content.ReadAsStringAsync();
                         //var einvoiceDetails = einvoiceResponseData != null ? JsonConvert.DeserializeObject<ResponseModel<EinvoiceVoucherDetailDTO>>(einvoiceResponseData) : new ResponseModel<EinvoiceVoucherDetailDTO>();
@@ -300,7 +321,7 @@ namespace HulubejeBooking.Controllers
                         //if (VoucherDetail != null && (check_islineitem?.Category == "LineItem" && (VoucherDetail.VoucherHeader?.DefinitionId == 197 || VoucherDetail.VoucherHeader?.DefinitionId == 217)))
                         //{
                         PrintDocumentVoucher printDocumentVoucher = new PrintDocumentVoucher(eInvoiceClient, _sharedHelpers, _ftpSettings);
-                        printvoucher.Data = await printDocumentVoucher.PrintLineItemVoucher(req.Data);
+                        printvoucher.Data = await printDocumentVoucher.EInvoiceLineItemVoucher(req.Data);
                         printvoucher.Data.PaperSize = "A4";
                         var serializejson = JsonConvert.SerializeObject(printvoucher.Data);
                         //}
@@ -331,26 +352,26 @@ namespace HulubejeBooking.Controllers
             GeneralBufferHolder.AllSubCountry = await _initialBufferPopulator.GetAllSubCountry();
             GeneralBufferHolder.CompanyInformations = await _sharedHelpers.GetCompanyInfo(comp?.Tin);
             GeneralBufferHolder.AllCurrencies = await _initialBufferPopulator.GetAllCurrencies();
-            //GeneralBufferHolder.SystemConstants = await _initialBufferPopulator.GetAllSystemConstants();
-            //GeneralBufferHolder.AllTaxs = await _initialBufferPopulator.GetAllTaxs();
-            //GeneralBufferHolder.ConfigrationSettings = await _initialBufferPopulator.GetAllConfigration();
-            //GeneralBufferHolder.AllActivityDefns = await _initialBufferPopulator.GetAllActivityDefns();
-            //GeneralBufferHolder.AllPeriods = await _initialBufferPopulator.GetPeriod();
-            //GeneralBufferHolder.AllPreferences = await _initialBufferPopulator.GetAllPreferences();
-            //GeneralBufferHolder.AllLookups = await _initialBufferPopulator.GetLookUps();
-            //GeneralBufferHolder.AllValueFactorDefinitions = await _initialBufferPopulator.GetAllValueFactorDefinitions();
-            //GeneralBufferHolder.AllRelationStates = await _initialBufferPopulator.GetAllRelationStates();
-            //GeneralBufferHolder.AllVoucherExtDefinitions = await _initialBufferPopulator.GetAllVoucherExtDefns();
-            //GeneralBufferHolder.AllConsineeUnit = await _initialBufferPopulator.GetAllConsigneeUnits(comp.Id);
-            //GeneralBufferHolder.AllVoucherTermDefinitions = await _initialBufferPopulator.GetAllVoucherTermDefns();
-            //GeneralBufferHolder.AllRelations = await _initialBufferPopulator.GetAllRelationss();
-            //GeneralBufferHolder.AllTermDefns = await _initialBufferPopulator.GetAllTermDefns();
-            //GeneralBufferHolder.AccountMapBufferList = await _initialBufferPopulator.GetAllAccountMap();
-            //GeneralBufferHolder.AllSerialDefinitions = await _initialBufferPopulator.GetAllSerialDefns();
-            //GeneralBufferHolder.AllUserRoleMapper = await _initialBufferPopulator.GetAllUserRoleMapper();
-            //GeneralBufferHolder.AllDevices = await _initialBufferPopulator.GetAllDevices();
-            //GeneralBufferHolder.AllFixedAssetArt = await _initialBufferPopulator.GetAllFixedAsset();
-            //GeneralBufferHolder.AllMappedStores = await _initialBufferPopulator.GetAllMappedStores();
+            GeneralBufferHolder.SystemConstants = await _initialBufferPopulator.GetAllSystemConstants();
+            GeneralBufferHolder.AllTaxs = await _initialBufferPopulator.GetAllTaxs();
+            GeneralBufferHolder.ConfigrationSettings = await _initialBufferPopulator.GetAllConfigration();
+            GeneralBufferHolder.AllActivityDefns = await _initialBufferPopulator.GetAllActivityDefns();
+            GeneralBufferHolder.AllPeriods = await _initialBufferPopulator.GetPeriod();
+            GeneralBufferHolder.AllPreferences = await _initialBufferPopulator.GetAllPreferences();
+            GeneralBufferHolder.AllLookups = await _initialBufferPopulator.GetLookUps();
+            GeneralBufferHolder.AllValueFactorDefinitions = await _initialBufferPopulator.GetAllValueFactorDefinitions();
+            GeneralBufferHolder.AllRelationStates = await _initialBufferPopulator.GetAllRelationStates();
+            GeneralBufferHolder.AllVoucherExtDefinitions = await _initialBufferPopulator.GetAllVoucherExtDefns();
+            GeneralBufferHolder.AllConsineeUnit = await _initialBufferPopulator.GetAllConsigneeUnits(comp.Id);
+            GeneralBufferHolder.AllVoucherTermDefinitions = await _initialBufferPopulator.GetAllVoucherTermDefns();
+            GeneralBufferHolder.AllRelations = await _initialBufferPopulator.GetAllRelationss();
+            GeneralBufferHolder.AllTermDefns = await _initialBufferPopulator.GetAllTermDefns();
+            GeneralBufferHolder.AccountMapBufferList = await _initialBufferPopulator.GetAllAccountMap();
+            GeneralBufferHolder.AllSerialDefinitions = await _initialBufferPopulator.GetAllSerialDefns();
+            GeneralBufferHolder.AllUserRoleMapper = await _initialBufferPopulator.GetAllUserRoleMapper();
+            GeneralBufferHolder.AllDevices = await _initialBufferPopulator.GetAllDevices();
+            GeneralBufferHolder.AllFixedAssetArt = await _initialBufferPopulator.GetAllFixedAsset();
+            GeneralBufferHolder.AllMappedStores = await _initialBufferPopulator.GetAllMappedStores();
         }
         //public static string ReplaceSpacesWithPlus(string input)
         //{

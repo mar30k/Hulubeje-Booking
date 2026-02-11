@@ -59,19 +59,11 @@ namespace HulubejeBooking.Helpers
             voucherPrint.voucherId = NonListDataSource.Id;
             var LineItemList = rdatasource.VoucherDetail;
             var activityList = rdatasource.ActivityDetail;
-            
+
             Dictionary<string, List<LineItemConversionValues>> ConversionObj = new Dictionary<string, List<LineItemConversionValues>>();
             ArticleObjsPrint LineItemObj = new ArticleObjsPrint();
             List<ArticleObjsPrint> ListLineItemObj = new List<ArticleObjsPrint>();
-             var configBuffer = await _sharedHelpers.GetFilterDynamicResponseModel<List<ConfigurationDTO>>("Configuration/dynamic", new Dictionary<string, string>() { { "reference", NonListDataSource.DefinitionId.ToString() } });
-            var taxTransBuffer = await _sharedHelpers.GetFilterDynamicResponseModel<List<TaxTransactionDTO>>("TaxTransaction/dynamic", new Dictionary<string, string>() { { "voucher", NonListDataSource.Id.ToString() } });
-            var rDistribution = await _sharedHelpers.GetFilterDynamicResponseModel<List<DistributionDTO>>("Distribution/dynamic", new Dictionary<string, string>() { { "SystemConstant", NonListDataSource.DefinitionId.ToString() }, { "type", "1578" } });
-            var terms = await _sharedHelpers.GetFilterDynamicResponseModel<List<VwVoucherTermViewDTO>>("VwVoucherTermView/dynamic", new Dictionary<string, string>() { { "Voucher", NonListDataSource.Id.ToString() } });
-            var currencyTrans = await _sharedHelpers.GetFilterDynamicResponseModel<List<TransactionCurrencyDTO>>("TransactionCurrency/dynamic", new Dictionary<string, string>() { { "Voucher", NonListDataSource.Id.ToString() } });
-            voucherPrint.TermListView = terms;
-            var systemConstantBuffer = GeneralBufferHolder.SystemConstants;
-            #endregion
-
+            var configBuffer = await _sharedHelpers.GetFilterDynamicResponseModel<List<ConfigurationDTO>>("Configuration/dynamic", new Dictionary<string, string>() { { "reference", NonListDataSource.DefinitionId.ToString() } });
             #region print setting
             string attchmentUl = null;
             voucherPrint.attachmentPath = attchmentUl;
@@ -248,6 +240,15 @@ namespace HulubejeBooking.Helpers
                 catch { }
             }
             #endregion
+            var taxTransBuffer = await _sharedHelpers.GetFilterDynamicResponseModel<List<TaxTransactionDTO>>("TaxTransaction/dynamic", new Dictionary<string, string>() { { "voucher", NonListDataSource.Id.ToString() } });
+            var rDistribution = await _sharedHelpers.GetFilterDynamicResponseModel<List<DistributionDTO>>("Distribution/dynamic", new Dictionary<string, string>() { { "SystemConstant", NonListDataSource.DefinitionId.ToString() }, { "type", "1578" } });
+            var terms = await _sharedHelpers.GetFilterDynamicResponseModel<List<VwVoucherTermViewDTO>>("VwVoucherTermView/dynamic", new Dictionary<string, string>() { { "Voucher", NonListDataSource.Id.ToString() } });
+            var currencyTrans = await _sharedHelpers.GetFilterDynamicResponseModel<List<TransactionCurrencyDTO>>("TransactionCurrency/dynamic", new Dictionary<string, string>() { { "Voucher", NonListDataSource.Id.ToString() } });
+            voucherPrint.TermListView = terms;
+            var systemConstantBuffer = GeneralBufferHolder.SystemConstants;
+            #endregion
+
+
             #region voucher Information and Voucher values
             if (voucherPrint.DateFormat?.ToLower() == "longdate")
                 voucherPrint.IssuedDate = NonListDataSource.IssuedDate.ToString();
@@ -274,9 +275,9 @@ namespace HulubejeBooking.Helpers
                 SubTotal = NonListDataSource.SubTotal,
                 Remark = NonListDataSource.Remark,
                 AdditionalCharge = NonListDataSource.AddCharge,
-                AdditionalChargeLabel= rdatasource.AddChargeDescription,
-                GrandTotal = decimal.Parse(string.Format("{0:n2}", NonListDataSource.GrandTotal)),
-                GrandTotalInWords = numToEng.changeCurrencyToWords(string.Format("{0:n2}", NonListDataSource.GrandTotal), currencyBuffer),
+                AdditionalChargeLabel = rdatasource.AddChargeDescription,
+                GrandTotal = decimal.Parse(String.Format("{0:n2}", NonListDataSource.GrandTotal)),
+                GrandTotalInWords = numToEng.changeCurrencyToWords(String.Format("{0:n2}", NonListDataSource.GrandTotal), currencyBuffer),
                 Discount = NonListDataSource.Discount,
             };
 
@@ -284,7 +285,7 @@ namespace HulubejeBooking.Helpers
             voucherPrint.TaxBuffer = GeneralBufferHolder.AllTaxs;
             voucherPrint.voucherValues = voucherValue;
             voucherPrint.GrandTotalInWords = voucherValue.GrandTotalInWords;
-            voucherPrint.withHoldingAmount = voucherValue.VoucherTax.FirstOrDefault(x => x.Tax == 6)?.TaxAmount??0;
+            voucherPrint.withHoldingAmount = voucherValue.VoucherTax.FirstOrDefault(x => x.Tax == 6)?.TaxAmount ?? 0;
             if (voucherPrint.enableEinvoice)
             {
                 var _invoice = await Get_EInvoice_By_VoucherId(NonListDataSource.Id, CNETConstants.Einvoice_RN_Type_Invoice);
@@ -299,7 +300,7 @@ namespace HulubejeBooking.Helpers
             {
 
             }
-           
+
             voucherPrint.VoucherString = NonListDataSource.Code;
             voucherPrint.IsVoid = NonListDataSource.IsVoid;
             voucherPrint.IsIssued = NonListDataSource.IsIssued;
@@ -410,7 +411,7 @@ namespace HulubejeBooking.Helpers
                     var act = await _sharedHelpers.GetFilterDynamicResponseModel<List<ActivityDTO>>("Activity/dynamic", new Dictionary<string, string>() { { "Reference", NonListDataSource.Id.ToString() }, { "Pointer", "3097" }, { "requiredFields", "Id" } });
                     if (act?.Count > 0)
                     {
-                        voucherPrint.PrintCount = act.Count();// GetCount.Item2;
+                        voucherPrint.PrintCount = (int)act.Count();// GetCount.Item2;
                     }
                     string mDistTo = null;
                     if (voucherPrint.PrintWaterMark == "Standard")
@@ -548,10 +549,10 @@ namespace HulubejeBooking.Helpers
                 {
                     var req1 = requiredGsls.FirstOrDefault(x => x.Index == 0);
                     if (voucherPrint.PrintConsigneeCode)
-                        NonListDataSource.Consignee1FullName = NonListDataSource.Consignee1FullName + " (" + NonListDataSource.ConsigneeCode??"" + ")";
+                        NonListDataSource.Consignee1FullName = NonListDataSource.Consignee1FullName + " (" + NonListDataSource.ConsigneeCode ?? "" + ")";
                     var Cons1 = new OtherConsigneeDetail()
                     {
-                        consignee = NonListDataSource.Consignee1Id??0,
+                        consignee = NonListDataSource.Consignee1Id ?? 0,
                         consigneeFullName = NonListDataSource.Consignee1FullName,
                         consigneTin = NonListDataSource.Tin,
                         requiredGSlDesc = req1?.Description
@@ -568,7 +569,7 @@ namespace HulubejeBooking.Helpers
                     var req = requiredGsls.FirstOrDefault(x => x.Index == 1);
                     var Cons = new OtherConsigneeDetail()
                     {
-                        consignee = NonListDataSource.Consignee2Id??0,
+                        consignee = NonListDataSource.Consignee2Id ?? 0,
                         consigneeFullName = NonListDataSource.Consignee2FullName,
                         requiredGSlDesc = req?.Description
                     };
@@ -583,7 +584,7 @@ namespace HulubejeBooking.Helpers
                     var req = requiredGsls.FirstOrDefault(x => x.Index == 2);
                     var Cons = new OtherConsigneeDetail()
                     {
-                        consignee = NonListDataSource.Consignee3Id??0,
+                        consignee = NonListDataSource.Consignee3Id ?? 0,
                         consigneeFullName = NonListDataSource.Consignee3FullName,
                         requiredGSlDesc = req?.Description
                     };
@@ -598,7 +599,7 @@ namespace HulubejeBooking.Helpers
                     var req = requiredGsls.FirstOrDefault(x => x.Index == 3);
                     var Cons = new OtherConsigneeDetail()
                     {
-                        consignee = NonListDataSource.Consignee4Id??0,
+                        consignee = NonListDataSource.Consignee4Id ?? 0,
                         consigneeFullName = NonListDataSource.Consignee4FullName,
                         requiredGSlDesc = req?.Description
                     };
@@ -613,7 +614,7 @@ namespace HulubejeBooking.Helpers
                     var req = requiredGsls.FirstOrDefault(x => x.Index == 4);
                     var Cons = new OtherConsigneeDetail()
                     {
-                        consignee = NonListDataSource.Consignee5Id??0,
+                        consignee = NonListDataSource.Consignee5Id ?? 0,
                         consigneeFullName = NonListDataSource.Consignee5FullName,
                         requiredGSlDesc = req?.Description
                     };
@@ -623,12 +624,12 @@ namespace HulubejeBooking.Helpers
                     if (consUn?.Count > 0)
                         consigneeUnitBuffer.Add(consUn.FirstOrDefault());
                 }
-                if (NonListDataSource.Consignee6Id != null ||  requiredGsls?.Count ==5)
+                if (NonListDataSource.Consignee6Id != null || requiredGsls?.Count == 5)
                 {
                     var req = requiredGsls.FirstOrDefault(x => x.Index == 5);
                     var Cons = new OtherConsigneeDetail()
                     {
-                        consignee = NonListDataSource.Consignee6Id??0,
+                        consignee = NonListDataSource.Consignee6Id ?? 0,
                         consigneeFullName = NonListDataSource.Consignee6FullName,
                         requiredGSlDesc = req?.Description
                     };
@@ -662,7 +663,7 @@ namespace HulubejeBooking.Helpers
 
                         if (rOrganization.Tin == "0000028457")
                         {
-                            objectADD.ArticleCode = string.IsNullOrWhiteSpace(objectADD.LocalCode)? objectADD.BarCode: objectADD.LocalCode;
+                            objectADD.ArticleCode = string.IsNullOrWhiteSpace(objectADD.LocalCode) ? objectADD.BarCode : objectADD.LocalCode;
                         }
                         if (ConversionObj.ContainsKey(objectADD.LineItemId.ToString()))
                         {
@@ -672,7 +673,7 @@ namespace HulubejeBooking.Helpers
                                 LICv = new LineItemConversionValues();
                                 LICv.code = objectADD.LineItemId.ToString();
                                 LICv.uom = objectADD?.Uom.ToString();
-                                LICv.UnitAmount = objectADD.UnitAmount != null ? objectADD.UnitAmount : 0;
+                                LICv.UnitAmount = objectADD.UnitAmount != null ? (decimal)objectADD.UnitAmount : 0;
                                 LICv.Quantity = objectADD.Quantity != null ? (double)objectADD.Quantity : 0;
                                 LICv.UOMLookupDescription = systemConstantBuffer.Where(x => x.Id == objectADD.Uom)?.FirstOrDefault()?.Description;
                                 LineItemConversion.Add(LICv);
@@ -687,7 +688,7 @@ namespace HulubejeBooking.Helpers
                                 LICv.code = objectADD.LineItemId.ToString();
 
                                 LICv.uom = objectADD.Uom.ToString();
-                                LICv.UnitAmount = objectADD.UnitAmount != null ? objectADD.UnitAmount : 0;
+                                LICv.UnitAmount = objectADD.UnitAmount != null ? (decimal)objectADD.UnitAmount : 0;
                                 LICv.Quantity = objectADD.Quantity != null ? (double)objectADD.Quantity : 0;
                                 LICv.UOMLookupDescription = systemConstantBuffer.Where(x => x.Id == objectADD.Uom)?.FirstOrDefault()?.Description; ;
                                 LineItemConversion.Add(LICv);
@@ -698,8 +699,8 @@ namespace HulubejeBooking.Helpers
                         if (!ListLineItemObj.Any(l => l.LineItemCode == objectADD.LineItemId.ToString()))
                         {
                             int rndQty = 0;
-                            int.TryParse(voucherPrint.RoundDigitQuantity,out rndQty);
-                            if (rndQty <= 0 || rndQty>8)
+                            int.TryParse(voucherPrint.RoundDigitQuantity, out rndQty);
+                            if (rndQty <= 0 || rndQty > 8)
                                 rndQty = 2;
 
                             int rndUA = 0;
@@ -727,12 +728,12 @@ namespace HulubejeBooking.Helpers
                                 if (_specs?.Count > 0)
                                 {
                                     var txtspec = "";
-                                    _specs.ForEach(c => txtspec += string.Format("    {0}{1}", c.Attribute, Environment.NewLine));
-                                    objectADD.LineItemDescription = string.Format("{0}{1}{2}", objectADD.LineItemDescription, Environment.NewLine, txtspec);
+                                    _specs.ForEach(c => txtspec += String.Format("    {0}{1}", c.Attribute, System.Environment.NewLine));
+                                    objectADD.LineItemDescription = String.Format("{0}{1}{2}", objectADD.LineItemDescription, System.Environment.NewLine, txtspec);
                                 }
                             }
                             LineItemObj.Description = objectADD.LineItemDescription;
-                            LineItemObj.Quantity =  Math.Round(objectADD.Quantity, rndQty);
+                            LineItemObj.Quantity = Math.Round(objectADD.Quantity, rndQty);
                             LineItemObj.UnitAmnt = Math.Round(objectADD.UnitAmount, rndUA);
                             LineItemObj.UOM = systemConstantBuffer.Where(x => x.Id == objectADD?.Uom)?.FirstOrDefault()?.Description;
                             LineItemObj.size1 = objectADD.Size1;
@@ -751,22 +752,22 @@ namespace HulubejeBooking.Helpers
                                         var artDefURL = (await _sharedHelpers.GetFilterDynamicResponseModel<List<ArticleDTO>>("Article/dynamic", new Dictionary<string, string>() { { "id", objectADD.ArticleId.ToString() }, { "requiredFields", "DefaultImageUrl" } }))?.FirstOrDefault();
                                         if (!string.IsNullOrWhiteSpace(artDefURL?.DefaultImageUrl))
                                         {
-                                             ftpFilePath2 =string.Format("{0}{1}", _ftpSettings.FtpFilePathIP,artDefURL.DefaultImageUrl);
+                                            ftpFilePath2 = String.Format("{0}{1}", _ftpSettings.FtpFilePathIP, artDefURL.DefaultImageUrl);
                                             var task = Task.Run(async () =>
                                             {
-                                                FtpWebRequest request = (FtpWebRequest)WebRequest.Create(ftpFilePath2);
-                                                request.Method = WebRequestMethods.Ftp.GetFileSize; 
-                                                request.Credentials = new NetworkCredential(userName, passWord);
-                                                FtpWebResponse response = await request.GetResponseAsync() as FtpWebResponse;
-                                                request = (FtpWebRequest)WebRequest.Create(ftpFilePath2);
-                                                request.Method = WebRequestMethods.Ftp.DownloadFile; 
-                                                request.Credentials = new NetworkCredential(userName, passWord);
+                                                System.Net.FtpWebRequest request = (System.Net.FtpWebRequest)System.Net.WebRequest.Create(ftpFilePath2);
+                                                request.Method = System.Net.WebRequestMethods.Ftp.GetFileSize;
+                                                request.Credentials = new System.Net.NetworkCredential(userName, passWord);
+                                                System.Net.FtpWebResponse response = await request.GetResponseAsync() as System.Net.FtpWebResponse;
+                                                request = (System.Net.FtpWebRequest)System.Net.WebRequest.Create(ftpFilePath2);
+                                                request.Method = System.Net.WebRequestMethods.Ftp.DownloadFile;
+                                                request.Credentials = new System.Net.NetworkCredential(userName, passWord);
 
                                                 using (Stream responseStream = request.GetResponse().GetResponseStream())
                                                 {
                                                     using (MemoryStream memoryStream = new MemoryStream())
                                                     {
-                                                        responseStream.CopyTo(memoryStream); 
+                                                        responseStream.CopyTo(memoryStream);
                                                         LineItemObj.articlePic = memoryStream.ToArray();
 
                                                     }
@@ -789,13 +790,13 @@ namespace HulubejeBooking.Helpers
                                 LineItemObj.Description = LineItemObj.LineItemNote;
                                 if (!string.IsNullOrWhiteSpace(LineItemObj.Description))
                                 {
-                                    LineItemObj.Description.Replace("\n", Environment.NewLine);
+                                    LineItemObj.Description.Replace("\n", System.Environment.NewLine);
                                 }
                             }
-                            if (voucherPrint.voucherDefinition== 284  && rOrganization.Tin == "0025239533")
+                            if (voucherPrint.voucherDefinition == 284 && rOrganization.Tin == "0025239533")
                             {
-                                var lineitemEx = GeneralBufferHolder.AllVoucherExtDefinitions.Where(x => x.Type == 1963 && x.VoucherDefinition== 284)?.ToList();
-                                if (lineitemEx?.Count>0)
+                                var lineitemEx = GeneralBufferHolder.AllVoucherExtDefinitions.Where(x => x.Type == 1963 && x.VoucherDefinition == 284)?.ToList();
+                                if (lineitemEx?.Count > 0)
                                 {
                                     var dict = new Dictionary<int, string>();
                                     var inx = 0;
@@ -805,11 +806,11 @@ namespace HulubejeBooking.Helpers
                             }
                             sn++;
                         }
-                       
-        
+
+
                     }
                 }
-               
+
             }
 
             voucherPrint.OtherConsigneeDetail = OtherConsList;
@@ -831,7 +832,7 @@ namespace HulubejeBooking.Helpers
                         opList.Add(val.UserName ?? "");
                         string dt = val.ActivityDate != null ? val.ActivityDate?.ToString("dd-MM-yyyy") : "";
                         dateList.Add(dt);
-                        actList.Add(val.ActivityDefDesc ??"");
+                        actList.Add(val.ActivityDefDesc ?? "");
                         isManualList.Add(val.IsManual ?? false);
                     }
 
@@ -840,7 +841,7 @@ namespace HulubejeBooking.Helpers
                 voucherPrint.ActivityDate = dateList;
                 voucherPrint.ActivityDefDesc = actList;
                 voucherPrint.WorkflowManual = isManualList;
-                bool isPrintActivitiyReferenceSet = !string.IsNullOrEmpty(voucherPrint.PrintReferenceActivity) && !voucherPrint.PrintReferenceActivity.ToLower().Equals("notapplicable") ? true : false;
+                bool isPrintActivitiyReferenceSet = (!string.IsNullOrEmpty(voucherPrint.PrintReferenceActivity) && !voucherPrint.PrintReferenceActivity.ToLower().Equals("notapplicable")) ? true : false;
                 if (!string.IsNullOrEmpty(voucherPrint.SortLineItem))
                 {
                     if (voucherPrint.SortLineItem.ToLower() == "asentered")
@@ -902,8 +903,8 @@ namespace HulubejeBooking.Helpers
                                 oppText += voucherPrint.ActivityDefDesc[z];
                                 oppText += " by  ";
                                 oppText += voucherPrint.WorkflowManual[z] ? " ________________  " : voucherPrint.Voucheroperators[z];
-                                oppText += " on  " + activityDate[z]+"  ";
-                                oppText += voucherPrint.WorkflowManual[z] ? "__________":"";
+                                oppText += " on  " + activityDate[z] + "  ";
+                                oppText += voucherPrint.WorkflowManual[z] ? "__________" : "";
                                 opereratorString.Add(oppText);
                             }
                             catch { }
@@ -923,21 +924,22 @@ namespace HulubejeBooking.Helpers
                 }
             }
             voucherPrint.fsNo = NonListDataSource.FsNumber;
-            if (voucherPrint.EnablePaymentOptions) { 
-                voucherPrint.payment_method = NonListDataSource.PaymentMethodDesc;
-                }
             if (voucherPrint.EnablePaymentOptions)
             {
-                string _paytxt = NonListDataSource.PaymentMethodDesc??"";
+                voucherPrint.payment_method = NonListDataSource.PaymentMethodDesc;
+            }
+            if (voucherPrint.EnablePaymentOptions)
+            {
+                string _paytxt = NonListDataSource.PaymentMethodDesc ?? "";
                 if (NonListDataSource.PaymentMethod != null && NonListDataSource.PaymentMethod != 1748)
                 {
                     if (NonListDataSource.ProcessingEntityName != null)
-                        _paytxt +=string.Format(", {0}",NonListDataSource.ProcessingEntityName); 
+                        _paytxt += String.Format(", {0}", NonListDataSource.ProcessingEntityName);
                     if (NonListDataSource.PaymentRefNumber != null)
-                        _paytxt +=string.Format(", {0}",NonListDataSource.PaymentRefNumber); 
+                        _paytxt += String.Format(", {0}", NonListDataSource.PaymentRefNumber);
                     if (NonListDataSource.PaymentIssueDate != null)
-                        _paytxt +=string.Format(", Maturity: {0}", NonListDataSource.PaymentIssueDate.Value.ToString("MM/dd/yyyy"));
-               }
+                        _paytxt += String.Format(", Maturity: {0}", NonListDataSource.PaymentIssueDate.Value.ToString("MM/dd/yyyy"));
+                }
                 voucherPrint.payment_method = _paytxt;
             }
             voucherPrint.mrsNo = NonListDataSource.Mrc;
@@ -951,7 +953,7 @@ namespace HulubejeBooking.Helpers
                 foreach (var TrRef in rdatasource.tranReferenced)
                 {
                     refText += TrRef.Remark + ",";
-                    if (TrRef.ReferencedVoucherDefn == 354 && TrRef.Referenced !=null)
+                    if (TrRef.ReferencedVoucherDefn == 354 && TrRef.Referenced != null)
                     {
                         var voucher = await _sharedHelpers.GetFilterDynamicData<List<VoucherDTO>>("Voucher/dynamic", new Dictionary<string, string>() { { "id", TrRef.Referenced.ToString() }, { "requiredFields", "Id,Code,Definition" } });
                         voucherPrint.RegNo = voucher.FirstOrDefault().Code.ToString();
@@ -969,7 +971,7 @@ namespace HulubejeBooking.Helpers
             if (refText != null && refText != "")
                 RefAndExt.Add("References", refText);
 
-            var extensionDefinition = GeneralBufferHolder.AllVoucherExtDefinitions.Where(x =>x.Type== 1965 && x.VoucherDefinition == NonListDataSource.DefinitionId).ToList();
+            var extensionDefinition = GeneralBufferHolder.AllVoucherExtDefinitions.Where(x => x.Type == 1965 && x.VoucherDefinition == NonListDataSource.DefinitionId).ToList();
             if (extensionDefinition?.Count > 0)
             {
                 var i = 0;
@@ -991,10 +993,10 @@ namespace HulubejeBooking.Helpers
 
 
             #region companyInformation
-            if(companyName== "CompanyName" || string.IsNullOrWhiteSpace(companyName))
-                voucherPrint.CompanyName = rOrganization.FirstName;   
-            if(companyName== "BranchName")
-                voucherPrint.CompanyName = rdatasource.VoucherHeader.OriginConsigneeFullName?? rOrganization.FirstName;
+            if (companyName == "CompanyName" || string.IsNullOrWhiteSpace(companyName))
+                voucherPrint.CompanyName = rOrganization.FirstName;
+            if (companyName == "BranchName")
+                voucherPrint.CompanyName = rdatasource.VoucherHeader.OriginConsigneeFullName ?? rOrganization.FirstName;
 
             voucherPrint.TINNo = rOrganization.Tin;
             var consIdentification = await _sharedHelpers.GetFilterDynamicResponseModel<List<IdentificationDTO>>("Identification/dynamic", new Dictionary<string, string>() { { "Type", "535" }, { "Consignee", rOrganization.Id.ToString() } });
@@ -1039,7 +1041,52 @@ namespace HulubejeBooking.Helpers
             #endregion
 
             return voucherPrint;
-        } 
+        }
+        public async Task<VoucherPrintModel> EInvoiceLineItemVoucher(VoucherDetailDTO rdatasource)
+        {
+            #region Header
+            VoucherPrintModel voucherPrint = new VoucherPrintModel();
+            var NonListDataSource = rdatasource.VoucherHeader;
+            voucherPrint.NonListDataSource = NonListDataSource;
+            voucherPrint.voucherId = NonListDataSource.Id;
+            voucherPrint.voucherDefinition = NonListDataSource.DefinitionId;
+            var LineItemList = rdatasource.VoucherDetail;
+            var activityList = rdatasource.ActivityDetail;
+
+            Dictionary<string, List<LineItemConversionValues>> ConversionObj = new Dictionary<string, List<LineItemConversionValues>>();
+            ArticleObjsPrint LineItemObj = new ArticleObjsPrint();
+            List<ArticleObjsPrint> ListLineItemObj = new List<ArticleObjsPrint>();
+            var configBuffer = await _sharedHelpers.GetFilterDynamicResponseModel<List<ConfigurationDTO>>("Configuration/dynamic", new Dictionary<string, string>() { { "reference", NonListDataSource.DefinitionId.ToString() } });
+            #region print setting
+            string attchmentUl = null;
+            voucherPrint.attachmentPath = attchmentUl;
+            ConsigneeDTO rOrganization = await _sharedHelpers.GetCompany();
+            var voucherDefinition = NonListDataSource.Definition.ToString();
+            voucherPrint.Type = "Template Type 1";
+            List<ConfigurationDTO> value = configBuffer;
+            string companyName = "CompanyName";
+            foreach (var va in value)
+            {
+                switch (va.Attribute.ToString())
+                {
+                    case "Paper Type":
+                        voucherPrint.PaperType = va.CurrentValue.ToString();
+                        break;
+                    case "Paper Size":
+                        voucherPrint.PaperSize = va.CurrentValue.ToString();
+                        break;
+                }
+            }
+            #endregion
+            #endregion
+
+            var consIdentification = await _sharedHelpers.GetFilterDynamicResponseModel<List<IdentificationDTO>>("Identification/dynamic", new Dictionary<string, string>() { { "Type", "535" }, { "Consignee", rOrganization.Id.ToString() } });
+            voucherPrint.VATNo = consIdentification?.FirstOrDefault()?.IdNumber;
+            voucherPrint.logoPath = await GetLogoImage(rOrganization.Tin);
+            voucherPrint.IsVoid = NonListDataSource.IsVoid;
+            voucherPrint.enableEinvoice = true;
+            return voucherPrint;
+        }
         private  async Task<EinvoiceDTO> Get_EInvoice_By_VoucherId(int voucherId, int type)
         {
             var res =  await _sharedHelpers.GetFilterDynamicResponseModel<List<EinvoiceDTO>>("Einvoice/dynamic", new Dictionary<string, string>() { { "VoucherId", voucherId.ToString() },{ "Type", type.ToString() } });
