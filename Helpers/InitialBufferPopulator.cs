@@ -13,9 +13,9 @@ namespace HulubejeBooking.Helpers
     public class InitialBufferPopulator
     {
         private readonly HttpClient _httpClient;
-        public InitialBufferPopulator(IHttpClientFactory httpClientFactory)
+        public InitialBufferPopulator(HttpClient httpClient)
         {
-            _httpClient = httpClientFactory.CreateClient("EinvoiceClient");
+            _httpClient = httpClient;
         }
         public async Task<List<SystemConstantDTO>> GetAllSystemConstants()
         {

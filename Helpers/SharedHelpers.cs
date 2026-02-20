@@ -27,9 +27,9 @@ namespace HulubejeBooking.Helpers
         private readonly IHttpContextAccessor _httpContextAccessor; // [Added]
         private ConsigneeDTO? _organization;
         private UserDTO? _loggedInUser;
-        public SharedHelpers(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public SharedHelpers(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
-            _httpClient = httpClientFactory.CreateClient("EinvoiceClient");
+            _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
         }
         public virtual async Task<ConsigneeDTO?> GetCompany()
@@ -694,21 +694,23 @@ namespace HulubejeBooking.Helpers
         }
         public async Task<TResponse> GetReqAsync<TResponse>(string path)
         {
+            var baseUrl = _httpContextAccessor.HttpContext?
+                .Session
+                .GetString("EInvoiceBaseUrl");
 
-            HttpResponseMessage response = await _httpClient.GetAsync(path);
-            if (response.IsSuccessStatusCode)
-            {
+            if (string.IsNullOrWhiteSpace(baseUrl))
+                throw new Exception("EInvoiceBaseUrl not found in session.");
 
-                var responseJson = await response.Content.ReadAsStringAsync();
-                var responseData = JsonConvert.DeserializeObject<TResponse>(responseJson);
-                return responseData;
-            }
-            else
-            {
-                var responseJson = await response.Content.ReadAsStringAsync();
-                var responseData = JsonConvert.DeserializeObject<TResponse>(responseJson);
+            var fullUrl = $"{baseUrl.TrimEnd('/')}/{path.TrimStart('/')}";
+
+            var response = await _httpClient.GetAsync(fullUrl);
+
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
                 throw new Exception(responseJson);
-            }
+
+            return JsonConvert.DeserializeObject<TResponse>(responseJson)!;
         }
 
         public async Task<TResponse> GetReqAsyncx<TResponse>(string path)

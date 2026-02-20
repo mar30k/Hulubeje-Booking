@@ -289,22 +289,11 @@ namespace HulubejeBooking.Controllers
                 var printvoucher = new HulubejeResponse<VoucherPrintModel>();
                 if (isEinvoice)
                 {
-                    var voucherId = decryptedVoucher.Split("id").Last();
-                    HttpResponseMessage baseUrlResponse =
-                        await _v7Client.GetAsync($"voucher/getbaseurl{voucherId}");
+                    var splited = decryptedVoucher.Split("id");
+                    var voucherId = splited.LastOrDefault();
+                    var id = splited.FirstOrDefault();
 
-                    if (!baseUrlResponse.IsSuccessStatusCode)
-                        throw new Exception("Failed to retrieve E-Invoice base URL.");
-                    string baseUrlResponseData =
-                         await baseUrlResponse.Content.ReadAsStringAsync();
-
-                    var baseUrl =
-                        JsonConvert.DeserializeObject<HulubejeResponse<string>>(baseUrlResponseData);
-
-                    if (baseUrl?.IsSuccessful != true || string.IsNullOrWhiteSpace(baseUrl.Data))
-                        throw new Exception("Invalid E-Invoice base URL returned.");
-
-                    string eInvoiceBaseUrl = $"{baseUrl.Data}/api";
+                    string eInvoiceBaseUrl = await GetEInvoiceBaseUrl(id);
 
                     // 2️⃣ Configure HttpClient safely
                     eInvoiceClient.BaseAddress = new Uri(eInvoiceBaseUrl);
@@ -312,18 +301,23 @@ namespace HulubejeBooking.Controllers
                     //HttpResponseMessage einvoiceResponse = await eInvoiceClient.GetAsync($"TransactionLibrary/get_einvoice_voucher_detail?voucherId={decryptedVoucher.Split("id").Last()}");
                     //if (einvoiceResponse.IsSuccessStatusCode)
                     //{
-                    await _Initialization();
-                    var req = await _sharedHelpers.GetReqAsync<ResponseModel<VoucherDetailDTO>>($"TransactionLibrary/get_voucher_detail?voucherId={voucherId}" );
-                        //SystemConstantDTO check_islineitem = GeneralBufferHolder.SystemConstants.FirstOrDefault(s => s.Id == VoucherDetail.VoucherHeader.DefinitionId);
-                        //string einvoiceResponseData = await einvoiceResponse.Content.ReadAsStringAsync();
-                        //var einvoiceDetails = einvoiceResponseData != null ? JsonConvert.DeserializeObject<ResponseModel<EinvoiceVoucherDetailDTO>>(einvoiceResponseData) : new ResponseModel<EinvoiceVoucherDetailDTO>();
+                    _httpContextAccessor?.HttpContext?
+                    .Session
+                    .SetString("EInvoiceBaseUrl", eInvoiceBaseUrl);
+                    var _sharedHelpers = new SharedHelpers(eInvoiceClient, _httpContextAccessor!);
+                    await _Initialization(eInvoiceClient);
+                    var req = await _sharedHelpers.GetReqAsync<ResponseModel<VoucherDetailDTO>>($"TransactionLibrary/get_voucher_detail?voucherId={voucherId}");
+                    
+                    //SystemConstantDTO check_islineitem = GeneralBufferHolder.SystemConstants.FirstOrDefault(s => s.Id == VoucherDetail.VoucherHeader.DefinitionId);
+                    //string einvoiceResponseData = await einvoiceResponse.Content.ReadAsStringAsync();
+                    //var einvoiceDetails = einvoiceResponseData != null ? JsonConvert.DeserializeObject<ResponseModel<EinvoiceVoucherDetailDTO>>(einvoiceResponseData) : new ResponseModel<EinvoiceVoucherDetailDTO>();
 
-                        //if (VoucherDetail != null && (check_islineitem?.Category == "LineItem" && (VoucherDetail.VoucherHeader?.DefinitionId == 197 || VoucherDetail.VoucherHeader?.DefinitionId == 217)))
-                        //{
-                        PrintDocumentVoucher printDocumentVoucher = new PrintDocumentVoucher(eInvoiceClient, _sharedHelpers, _ftpSettings);
-                        printvoucher.Data = await printDocumentVoucher.EInvoiceLineItemVoucher(req.Data);
-                        printvoucher.Data.PaperSize = "A4";
-                        var serializejson = JsonConvert.SerializeObject(printvoucher.Data);
+                    //if (VoucherDetail != null && (check_islineitem?.Category == "LineItem" && (VoucherDetail.VoucherHeader?.DefinitionId == 197 || VoucherDetail.VoucherHeader?.DefinitionId == 217)))
+                    //{
+                    var printDocumentVoucher = new PrintDocumentVoucher(eInvoiceClient, _sharedHelpers, _ftpSettings);
+                    printvoucher.Data = await printDocumentVoucher.EInvoiceLineItemVoucher(req?.Data ?? new VoucherDetailDTO());
+                    printvoucher.Data.PaperSize = "A4";
+                    var serializejson = JsonConvert.SerializeObject(printvoucher.Data);
                         //}
                         //else if (VoucherDetail != null && check_islineitem?.Category == "Non-LineItem")
                         //    return await printNonLineItemVoucher(VoucherDetail, isNotPartial);
@@ -346,9 +340,32 @@ namespace HulubejeBooking.Controllers
             }
             
         }
-        private async Task _Initialization()
+
+        private async Task<string> GetEInvoiceBaseUrl(string? id)
         {
-            var comp = await _sharedHelpers.GetCompany();
+            var _v7Client = _httpClientFactory.CreateClient("HulubejeBooking");
+
+            var response = await _v7Client.GetAsync($"voucher/getbaseurl?id={id}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Failed to retrieve E-Invoice base URL.");
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var baseUrl =
+                JsonConvert.DeserializeObject<HulubejeResponse<string>>(content);
+
+            if (baseUrl?.IsSuccessful != true ||
+                string.IsNullOrWhiteSpace(baseUrl.Data))
+                throw new Exception("Invalid E-Invoice base URL returned.");
+
+            return $"{baseUrl.Data}/api/";
+        }
+        private async Task _Initialization(HttpClient client)
+        {
+            var _initialBufferPopulator = new InitialBufferPopulator(client);
+            var _sharedHelpers = new SharedHelpers(client, _httpContextAccessor);
+            var comp= await _sharedHelpers.GetCompany();
             GeneralBufferHolder.AllSubCountry = await _initialBufferPopulator.GetAllSubCountry();
             GeneralBufferHolder.CompanyInformations = await _sharedHelpers.GetCompanyInfo(comp?.Tin);
             GeneralBufferHolder.AllCurrencies = await _initialBufferPopulator.GetAllCurrencies();

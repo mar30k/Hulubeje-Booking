@@ -477,7 +477,7 @@
             $.ajax({
                 type: "post",
                 url: "/PrintDialogue/SavePrintedVoucher",
-                data: { Id: '@Model.NonListDataSource.Id', IsPrintCoppy: '@Model.PrintCopyDistribution', DisNumber: '@Model.NoOfCoppyDistributions' },
+                data: { Id: '@Model?.NonListDataSource?.Id', IsPrintCoppy: '@Model?.PrintCopyDistribution', DisNumber: '@Model?.NoOfCoppyDistributions' },
                 success: function (response) {
 
                 },

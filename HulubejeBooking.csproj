@@ -29,13 +29,13 @@
 
 	<ItemGroup>
 	  <Reference Include="Cnetv7BufferHolder">
-	    <HintPath>D:\Cnetv7BufferHolder.dll</HintPath>
+	    <HintPath>C:\Users\Admin\Downloads\Ref\Cnetv7BufferHolder.dll</HintPath>
 	  </Reference>
 	  <Reference Include="CNET_ERP_V7_VoucherPrintDialogue">
-	    <HintPath>D:\CNET_ERP_V7_VoucherPrintDialogue.dll</HintPath>
+	    <HintPath>C:\Users\Admin\Downloads\Ref\CNET_ERP_V7_VoucherPrintDialogue.dll</HintPath>
 	  </Reference>
 	  <Reference Include="CNET_V7_Domain">
-	    <HintPath>D:\CNET_V7_Domain.dll</HintPath>
+	    <HintPath>C:\Users\Admin\Downloads\Ref\CNET_V7_Domain.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 
