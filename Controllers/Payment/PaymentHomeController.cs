@@ -63,7 +63,12 @@ namespace HulubejeBooking.Controllers.Payment
                 return BadRequest();
             }
         }
-
+        [HttpGet("/paymentsuccessful")]
+        public async Task<IActionResult> PaymentSuccessful(string? voucherCode)
+        {
+            ViewBag.VoucherCode = voucherCode ?? "";
+            return View();
+        }
         public async Task<IActionResult> SelectedOption([FromBody] PaymentProcessorData data)
         {
             if (data != null)

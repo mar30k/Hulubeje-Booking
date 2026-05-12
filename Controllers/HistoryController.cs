@@ -267,10 +267,10 @@ namespace HulubejeBooking.Controllers
 
         [Route("print")]
         public async Task<IActionResult> VoucherLineItemPrintViewer(string voucher)
-        
         {
             try 
             {
+                //test "http://196.191.244.144:7558/api/" and print?voucher=802875einvoice6560
                 string decryptedVoucher  = voucher;
                 bool isEinvoice = false;
                 if (!string.IsNullOrEmpty(voucher) && voucher.Contains("einvoice"))

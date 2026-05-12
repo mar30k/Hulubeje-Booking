@@ -84,17 +84,7 @@
                     if (response.isSuccessful) {
                         $('.input-group').hide();
                         $('.inform').hide();
-                        $('#payment-success-message').html(
-                            '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-9.5 -9.5 69.00 69.00" xml:space="preserve" width="200px" height="200px" fill="#25AE88" transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)">' +
-                            '<g id="SVGRepo_bgCarrier" stroke-width="0" transform="translate(6,6), scale(0.76)"></g>' +
-                            '<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.1"></g>' +
-                            '<g id="SVGRepo_iconCarrier">' +
-                            '<circle cx="25" cy="25" r="25"></circle>' +
-                            '<polyline style="fill:none;stroke:#FFFFFF;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" points=" 38,15 22,33 12,25 "></polyline>' +
-                            '</g>' +
-                            '</svg>' +
-                            ' Payment successful!'
-                        ).fadeIn(300);
+                        window.location.href = "/paymentsuccessful";
                     } else if (!response.isSuccessful && response.errorMessages.length > 0) {
                         var errorMessage = response.errorMessages[0];
                         $('#error-message').text(errorMessage).fadeIn(300);

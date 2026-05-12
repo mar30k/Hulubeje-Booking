@@ -151,12 +151,12 @@
             var isChecked = this.checked;
 
             if (isChecked) {
-                var dob = "@ViewBag.Dob"; // Ensure that this variable is properly rendered and available
-                var dobDatePart = dob.split(" ")[0];
+                var dob = "@(((DateTime)ViewBag.Dob).ToString("yyyy-MM-dd"))";
 
-                console.log("dob", dobDatePart);
+                console.log("dob", dob);
 
                 document.getElementById("name1").value = "@ViewBag.FirstName";
+                document.getElementById("date1").value = dob;
                 document.getElementById("middle1").value = "@ViewBag.MiddleName";
                 document.getElementById("last1").value = "@ViewBag.LastName";
 
