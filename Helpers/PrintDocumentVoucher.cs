@@ -42,7 +42,7 @@ namespace HulubejeBooking.Helpers
         ArticleSpecificationPrint Spec = new ArticleSpecificationPrint();
         List<ArticleSpecificationPrint> Specification = new List<ArticleSpecificationPrint>();
         List<LineItemConversionValuesPrint> LineItemConversion = new List<LineItemConversionValuesPrint>();
-        VoucherValues VoucherValues = new VoucherValues();
+        CNET_ERP_V7_VoucherPrintDialogue.Models.VoucherValues VoucherValues = new CNET_ERP_V7_VoucherPrintDialogue.Models.VoucherValues();
         ConsigneeInformationPrint ConsigneeRecord = new ConsigneeInformationPrint();
         NonCashTransactionInformationPrint NonCashPayment = new NonCashTransactionInformationPrint();
         //  VoucherInformationPrint VoucherInfo = new VoucherInformationPrint();
@@ -270,7 +270,7 @@ namespace HulubejeBooking.Helpers
                 currency.IsDefault = true;
             }
             currencyBuffer.Add(currency);
-            VoucherValues voucherValue = new VoucherValues()
+            CNET_ERP_V7_VoucherPrintDialogue.Models.VoucherValues voucherValue = new CNET_ERP_V7_VoucherPrintDialogue.Models.VoucherValues()
             {
                 SubTotal = NonListDataSource.SubTotal,
                 Remark = NonListDataSource.Remark,
@@ -733,15 +733,15 @@ namespace HulubejeBooking.Helpers
                                 }
                             }
                             LineItemObj.Description = objectADD.LineItemDescription;
-                            LineItemObj.Quantity = Math.Round(objectADD.Quantity, rndQty);
-                            LineItemObj.UnitAmnt = Math.Round(objectADD.UnitAmount, rndUA);
+                            LineItemObj.Quantity = Math.Round(objectADD.Quantity, rndQty).ToString();
+                            LineItemObj.UnitAmnt = Math.Round(objectADD.UnitAmount, rndUA).ToString();
                             LineItemObj.UOM = systemConstantBuffer.Where(x => x.Id == objectADD?.Uom)?.FirstOrDefault()?.Description;
-                            LineItemObj.size1 = objectADD.Size1;
-                            LineItemObj.size2 = objectADD.Size2;
+                            LineItemObj.size1 = objectADD.Size1.ToString();
+                            LineItemObj.size2 = objectADD.Size2.ToString();
 
                             LineItemObj.sn = sn;
                             LineItemObj.Description = voucherPrint.PaperSize == "A5" ? string.Format("{0} [{1}]", LineItemObj.Description, LineItemObj.UOM) : LineItemObj.Description;
-                            LineItemObj.TotalAmount = Math.Round(objectADD.TotalAmount, rndTA);
+                            LineItemObj.TotalAmount = Math.Round(objectADD.TotalAmount, rndTA).ToString();
                             if (rOrganization.Tin == "0025239533" && voucherPrint.voucherDefinition == 116)
                             {
                                 string? ftpFilePath2 = null;

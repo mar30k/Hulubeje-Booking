@@ -271,6 +271,8 @@ namespace HulubejeBooking.Controllers
             try 
             {
                 //test "http://196.191.244.144:7558/api/" and print?voucher=802875einvoice6560
+                //http://196.191.244.144:6079/api/ and /print?voucher=1309095einvoice4675
+
                 string decryptedVoucher  = voucher;
                 bool isEinvoice = false;
                 if (!string.IsNullOrEmpty(voucher) && voucher.Contains("einvoice"))
